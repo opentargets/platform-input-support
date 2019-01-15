@@ -1,0 +1,6 @@
+https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml,uniprot-{suffix}.txt,unic
+https://www.reactome.org/download/current/ReactomePathways.txt,rea-{suffix}.txt,rea
+http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json,hgnc_complete_set-{suffix}.json,hgnc
+http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz,human_all_hcop_sixteen_column-{suffix}.txt.gz,hgnc
+http://www.informatics.jax.org/downloads/reports/HMD_HumanPhenotype.rpt,HMD_HumanPhenotype-{suffix}.rpt,mouse
+http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt,MGI_PhenoGenoMP-{suffix}.rpt,mouse
