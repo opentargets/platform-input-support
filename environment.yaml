@@ -1,0 +1,5 @@
+name: platform-input-support-py2.7
+channels:
+  - defaults
+dependencies:
+  - python=2.7.15
