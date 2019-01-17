@@ -1,3 +1,7 @@
+# Google Application Credential
+# do not upload/share this file
+open-targets-gac.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

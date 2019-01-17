@@ -47,3 +47,10 @@ or
 cd modules
 python -m RetrieveAnnotations -h
 ```
+
+# Google Bucket example
+```
+python platform-input-support.py -gkey /path/open-targets-gac.json -gb ot-snapshots/es5-sufentanil/tmp
+
+python platform-input-support.py --google_credential_key /path/open-targets-gac.json --google_bucket ot-snapshots/es5-sufentanil/tmp
+```

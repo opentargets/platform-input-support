@@ -18,12 +18,16 @@ def setup_parser():
     p.add('-c', '--config', is_config_file=True,
         env_var="CONFIG", help='path to config file (YAML)')
 
-    p.add('-o', '--output_dir',
-        env_var="OT_OUTPUT_DIR", help='By default, the files are generated in the root directory')
-
     p.add('-i', '--input_file',
         env_var="OT_INPUT_FILE", help='By default the file ROOT_DIR/annotations_input.csv will be loaded')
 
+    p.add('-gkey', '--google_credential_key',
+        env_var="GOOGLE_APPLICATION_CREDENTIALS", help='The path were the JSON credential file is stored.')
+
+    p.add('-gb', '--google_bucket', help='Copy the files from the output directory to a specific google bucket')
+
+    p.add('-o', '--output_dir',
+        env_var="OT_OUTPUT_DIR", help='By default, the files are generated in the root directory')
 
     # argument to run the script using thread
     p.add('-t', '--thread', env_var="OT_THREAD", action='store_true', help='Run the script with thread')
