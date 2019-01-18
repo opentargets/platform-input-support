@@ -1,14 +1,20 @@
 import os
 from google.cloud import storage, exceptions
 import google.auth
+import logging
+
+logger = logging.getLogger(__name__)
 
 class GoogleBucketResource(object):
 
     # args -- tuple of anonymous arguments | kwargs -- dictionary of named arguments
     def __init__(self, *args, **kwargs):
         self.bucket_name = kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
-        self.path_object = kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
+        self.object_path = kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
         self.client = storage.Client()
+
+    def __del__(self):
+        logger.debug(__name__, "destroyed")
 
     @staticmethod
     def has_valid_auth_key(google_credential_key):
@@ -18,9 +24,9 @@ class GoogleBucketResource(object):
         os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
         try:
             credentials, project = google.auth.default()
-            print 'Google Bucket connection for {prj}'.format(prj=project)
+            logger.info('\n\tGoogle Bucket connection: %s',project)
         except Exception as error:
-            print 'Google Auth Error: {msg}'.format(msg=error)
+            logger.error('Google Auth Error: %s',error)
             return False
         return True
 
@@ -42,6 +48,19 @@ class GoogleBucketResource(object):
             params=google_bucket_param.split('/',1)
         return params
 
+    def get_full_path(self):
+        # the bucket_name is present.
+        if self.object_path is None:
+            return self.bucket_name
+        else:
+            return self.bucket_name+'/'+self.object_path
+
+    def get_bucket_name(self):
+        return self.bucket_name
+
+    def get_object_path(self):
+        return self.object_path
+
     # Retrieve the list of buckets available for the user
     def get_list_buckets(self):
         return self.client.list_buckets()
@@ -49,13 +68,16 @@ class GoogleBucketResource(object):
     # Retrieve the list of buckets available for the user
     def get_bucket(self):
         if self.bucket_name is None:
-            print("Cannot determine path without bucket name.")
+            logger.error("Cannot determine path without bucket name.")
             return None
 
         try:
             bucket = self.client.get_bucket(self.bucket_name)
         except google.cloud.exceptions.NotFound:
-            print("Sorry, that bucket does not exist!")
+            logger.error("Sorry, that bucket {} does not exist!".format(self.bucket_name))
+            return None
+        except exceptions.Forbidden as ef:
+            logger.error(" ERROR: GCS forbidden access, path={}".format(self.bucket_name))
             return None
         return bucket
 
@@ -66,19 +88,19 @@ class GoogleBucketResource(object):
         blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
 
         for blob in blobs:
-            print "Filename: {0} \n\t Created:{1}\n\t Updated {2}".format(blob.name, blob.time_created, blob.updated)
-            list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated }
+            logger.debug("Filename: %s , Created: %s, Updated: %s",blob.name, blob.time_created, blob.updated)
+            list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
         return list_blobs_dict
 
     def list_blobs_object_path(self):
-        self.list_blobs(self.path_object, '')
+        return self.list_blobs(self.object_path, '')
 
     def copy_from(self, original_filename, dest_filename):
         bucket_link = self.get_bucket()
         if bucket_link is None:
             raise ValueError('Invalid google storage bucket {bucket}'.format(bucket=self.bucket_name))
 
-        blob = bucket_link.blob(self.path_object+'/'+dest_filename)
+        blob = bucket_link.blob(self.object_path + '/' + dest_filename)
         blob.upload_from_filename(filename=original_filename)
 
 

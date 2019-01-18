@@ -6,6 +6,7 @@ from modules.DownloadResource import DownloadResource
 from modules.GoogleBucketResource import GoogleBucketResource
 from definitions import ROOT_DIR, OT_OUTPUT_DIR
 
+
 def main():
 
     cfg.setup_parser()
@@ -13,6 +14,7 @@ def main():
 
     input_file = cfg.get_input_file(args.input_file, ROOT_DIR+'/annotations_input.csv')
     output_dir = cfg.get_output_dir(args.output_dir, OT_OUTPUT_DIR)
+    output_dir = output_dir+"/annotation_files"
     google_opts = GoogleBucketResource.has_google_parameters(args.google_credential_key, args.google_bucket)
     if google_opts:
         GoogleBucketResource.has_valid_auth_key(args.google_credential_key)

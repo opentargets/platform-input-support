@@ -35,6 +35,15 @@ def setup_parser():
     p.add('-s', '--suffix', env_var="OT_SUFFIX_INPUT",
           action='store', help='The default suffix is yyyy-mm-dd')
 
+    p.add('--skip', action='store_true', help='Skip the errors and just report them')
+
+
+    # logging
+    p.add("--log-level", help="set the log level",
+        env_var="LOG_LEVEL", action='store', default='INFO')
+    p.add("--log-config", help="logging configuration file",
+        env_var="LOG_CONFIG", action='store', default='platform-input-support/resources/logging.ini')
+
     return p
 
 

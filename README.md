@@ -54,3 +54,9 @@ python platform-input-support.py -gkey /path/open-targets-gac.json -gb ot-snapsh
 
 python platform-input-support.py --google_credential_key /path/open-targets-gac.json --google_bucket ot-snapshots/es5-sufentanil/tmp
 ```
+
+```
+python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json -gb otar007-cosmic
+python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json -gb otar006-reactome
+  
+```
