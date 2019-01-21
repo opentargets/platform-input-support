@@ -52,14 +52,26 @@ python -m RetrieveAnnotations -h
 ```
 python platform-input-support.py -gkey /path/open-targets-gac.json -gb ot-snapshots/es5-sufentanil/tmp
 
-python platform-input-support.py --google_credential_key /path/open-targets-gac.json --google_bucket ot-snapshots/es5-sufentanil/tmp
+python platform-input-support.py 
+         --google_credential_key /path/open-targets-gac.json 
+         --google_bucket ot-snapshots/es5-sufentanil/tmp
 ```
+
+```
+python -m modules.RetrieveAnnotations  \ 
+       -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json \ 
+       --google_bucket ot-snapshots/es5-sufentanil/tmp/19.02/input/annotation-files
+```
+
 
 ```
 python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
 
-python -m modules.RetrieveEvidences --skip -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
+python -m modules.RetrieveEvidences --skip  \ 
+       -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
 
-python -m modules.RetrieveEvidences --skip -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json -gb ot-snapshots/es5-sufentanil/tmp
+python -m modules.RetrieveEvidences --skip  \ 
+       -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json  \ 
+       -gb ot-snapshots/es5-sufentanil/tmp/19.02/input/evidence-files
   
 ```
