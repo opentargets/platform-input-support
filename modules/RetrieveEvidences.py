@@ -66,6 +66,7 @@ def download_file(bucket, output_dir, output_filename, latest_filename_info):
     blob = bucket.blob(latest_filename_info["latest_filename"])
     blob.download_to_filename(final_filename)
 
+    return final_filename
 
 def main():
 
@@ -85,8 +86,8 @@ def main():
         bucket = google_resource.get_bucket()
         if bucket is not None:
             latest_filename_info = get_latest_file(google_resource)
-            download_file(bucket, output_dir, file_to_download["output_filename"], latest_filename_info)
-            list_files_downloaded.append(google_resource.get_full_path() + '/' + latest_filename_info["latest_filename"])
+            final_filename = download_file(bucket, output_dir, file_to_download["output_filename"], latest_filename_info)
+            list_files_downloaded.append(final_filename)
         else:
             list_files_downladed_failed.append(google_resource.get_bucket_name())
             logger.info("ERROR: Google Cloud Storage, path={}".format(google_resource.get_bucket_name()))
@@ -94,6 +95,18 @@ def main():
                 raise ValueError("ERROR: Google Cloud Storage, path={}".format(google_resource.get_bucket_name()))
 
         del google_resource
+
+    # At this point the auth key is already valid.
+    if args.google_bucket:
+        params = GoogleBucketResource.get_bucket_and_path(args.google_bucket)
+        google_resource = GoogleBucketResource(bucket_name=params)
+        for original_filename in list_files_downloaded:
+            split_filename=original_filename.rsplit('/', 1)
+            dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
+            google_resource.copy_from(original_filename, dest_filename)
+
+        google_resource.list_blobs_object_path()
+
 
 if __name__ == '__main__':
     sys.exit(main())

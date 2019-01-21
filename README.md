@@ -56,7 +56,10 @@ python platform-input-support.py --google_credential_key /path/open-targets-gac.
 ```
 
 ```
-python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json -gb otar007-cosmic
-python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json -gb otar006-reactome
+python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
+
+python -m modules.RetrieveEvidences --skip -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
+
+python -m modules.RetrieveEvidences --skip -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json -gb ot-snapshots/es5-sufentanil/tmp
   
 ```
