@@ -3,16 +3,15 @@ import sys
 # Custom modules
 import modules.cfg as cfg
 from modules.DownloadResource import DownloadResource
+from modules.GoogleSpreadSheet import GoogleSpreadSheet
 from modules.GoogleBucketResource import GoogleBucketResource
 from definitions import ROOT_DIR, OT_OUTPUT_DIR
-
+from modules.common.YAMLReader import YAMLReader
 
 def main():
 
     cfg.setup_parser()
     args = cfg.get_args()
-
-    input_file = cfg.get_input_file(args.input_file, ROOT_DIR+'/annotations_input.csv')
     output_dir = cfg.get_output_dir(args.output_dir, OT_OUTPUT_DIR)
     output_dir = output_dir+"/annotation_files"
     google_opts = GoogleBucketResource.has_google_parameters(args.google_credential_key, args.google_bucket)
@@ -20,15 +19,20 @@ def main():
         GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
 
     list_files_downloaded = []
-    for file_to_download in cfg.get_list_of_file_download(input_file):
+    yaml = YAMLReader()
+    for entry in yaml.get_Dict().annotations:
         download = DownloadResource(output_dir)
         download.replace_suffix(args)
         if args.thread:
-            destination_filename = download.execute_download_threaded(file_to_download)
+            destination_filename = download.execute_download_threaded(entry)
         else:
-            destination_filename = download.execute_download(file_to_download)
+            destination_filename = download.execute_download(entry)
 
         list_files_downloaded.append(destination_filename)
+
+    for spreadsheet_info in yaml.get_Dict().chemical_probes:
+        google_spreedsheet = GoogleSpreadSheet(output_dir+'/chemical_probes')
+        google_spreedsheet.download_as_csv(spreadsheet_info)
 
     # At this point the auth key is already valid.
     if google_opts:

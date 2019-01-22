@@ -1,8 +1,0 @@
-otar006-reactome,reactome-{suffix}.json.gz,reactome
-otar007-cosmic,cosmic-{suffix}.json.gz,cosmic
-otar008-chembl,chembl-{suffix}.json.gz,chembl
-otar009-gwas,gwas-{suffix}.json.gz,gwas
-otar010-atlas,atlas-{suffix}.json.gz,atlas
-otar011-uniprot,uniprot-{suffix}.json.gz,uniprot
-otar012-eva,eva-{suffix}.json.gz,eva
-otar025-epmc,epmc-{suffix}.json.gz,epmc

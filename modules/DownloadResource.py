@@ -30,13 +30,13 @@ class DownloadResource(object):
         return self.output_dir+'/'+param_filename.replace('{suffix}', self.suffix)
 
     def execute_download(self, resource_info):
-        print "Start to download\n\t{uri} data ".format(uri=resource_info["uri"])
+        print "Start to download\n\t{uri} data ".format(uri=resource_info.uri)
         try:
             download = urllib.URLopener()
-            destination_filename = self.set_filename(resource_info["output_filename"])
+            destination_filename = self.set_filename(resource_info.output_filename)
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1,
-                          desc=resource_info["uri"].split('/')[-1]) as t:  # all optional kwargs
-                download.retrieve(resource_info["uri"], destination_filename,
+                          desc=resource_info.uri.split('/')[-1]) as t:  # all optional kwargs
+                download.retrieve(resource_info.uri, destination_filename,
                                   reporthook=t.update_to)
         except IOError as io_error:
             print "IOError: {io_error}".format(io_error=io_error)

@@ -82,14 +82,15 @@ def get_output_dir(output_dir, default_output_dir):
 
     return output_dir
 
-def get_list_of_file_download(config_file):
-    headers = ["URI", "output_filename", "resource"]
+
+def get_list_of_file_download(config_file, headers):
+    number_elem = len(headers)
+    result = {}
     with URLZSource(config_file).open() as source:
         for i, row in enumerate(csv.DictReader(source, fieldnames=headers), start=1):
-                if len(row) != 3:
+                if len(row) != number_elem:
                    raise ValueError('File format unexpected at line %d.' % i)
 
-                yield dict(uri=row["URI"],
-                           output_filename=row["output_filename"],
-                           step=row["resource"],
-                )
+                for item in row:
+                    result[item] = row[item]
+                yield result

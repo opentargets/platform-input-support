@@ -9,6 +9,7 @@ import modules.cfg as cfg
 from modules.GoogleBucketResource import GoogleBucketResource
 from datetime import datetime
 from definitions import ROOT_DIR, OT_OUTPUT_DIR
+from modules.common.YAMLReader import YAMLReader
 
 logger = logging.getLogger(__name__)
 
@@ -73,20 +74,22 @@ def main():
     cfg.setup_parser()
     args = cfg.get_args()
     set_up_logging(args)
-    input_file = cfg.get_input_file(args.input_file, ROOT_DIR+'/evidences_input.csv')
+
     output_dir = cfg.get_output_dir(args.output_dir, OT_OUTPUT_DIR)
     output_dir = output_dir+"/evidence_files"
     GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
 
+
     list_files_downloaded = []
     list_files_downladed_failed = []
-    for file_to_download in cfg.get_list_of_file_download(input_file):
-        param = GoogleBucketResource.get_bucket_and_path(file_to_download["uri"])
+    yaml = YAMLReader()
+    for entry in yaml.get_Dict().evidences:
+        param = GoogleBucketResource.get_bucket_and_path(entry.bucket)
         google_resource = GoogleBucketResource(bucket_name=param)
         bucket = google_resource.get_bucket()
         if bucket is not None:
             latest_filename_info = get_latest_file(google_resource)
-            final_filename = download_file(bucket, output_dir, file_to_download["output_filename"], latest_filename_info)
+            final_filename = download_file(bucket, output_dir, entry.output_filename, latest_filename_info)
             list_files_downloaded.append(final_filename)
         else:
             list_files_downladed_failed.append(google_resource.get_bucket_name())
