@@ -8,7 +8,7 @@ import logging.config
 import modules.cfg as cfg
 from modules.GoogleBucketResource import GoogleBucketResource
 from datetime import datetime
-from definitions import ROOT_DIR, OT_OUTPUT_DIR
+from definitions import ROOT_DIR, PIS_OUTPUT_EVIDENCES
 from modules.common.YAMLReader import YAMLReader
 
 logger = logging.getLogger(__name__)
@@ -74,9 +74,7 @@ def main():
     cfg.setup_parser()
     args = cfg.get_args()
     set_up_logging(args)
-
-    output_dir = cfg.get_output_dir(args.output_dir, OT_OUTPUT_DIR)
-    output_dir = output_dir+"/evidence_files"
+    output_dir = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_EVIDENCES)
     GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
 
 

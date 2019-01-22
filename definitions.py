@@ -1,5 +1,9 @@
 import os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
-OT_OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
+PIS_OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
+PIS_OUTPUT_ANNOTATIONS = os.path.join(PIS_OUTPUT_DIR, 'annotations_files')
+PIS_OUTPUT_EVIDENCES = os.path.join(PIS_OUTPUT_DIR, 'evidences_files')
+PIS_OUTPUT_CHEMICAL_PROBES = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'chemical_probes_tsv')
+
 # CONFIG = os.path.join(ROOT_DIR, 'config.yaml')  # Add later for default config file
