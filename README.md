@@ -1,6 +1,15 @@
 # platform-input-support
 Open Targets Platform input support project.
 
+# Conda for MAC
+For Mac goes here: <br>
+ https://www.anaconda.com/download/#macos. <br>
+ and download Version 2.7 Command-Line Installer
+
+Run  
+```
+bash ~/Downloads/Anaconda2-5.3.0-MacOSX-x86_64.sh
+```
 
 # Installation
 ```
