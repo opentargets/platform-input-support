@@ -1,0 +1,71 @@
+annotations:
+-
+    uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
+    output_filename: uniprot-{suffix}.txt
+    resource: unic
+-
+    uri: https://www.reactome.org/download/current/ReactomePathways.txt
+    output_filename: rea-{suffix}.txt
+    resource: rea
+-
+    uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
+    output_filename: hgnc_complete_set-{suffix}.json
+    resource: hgnc
+-
+    uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
+    output_filename: human_all_hcop_sixteen_column-{suffix}.txt.gz
+    resource: hgnc
+-
+    uri: http://www.informatics.jax.org/downloads/reports/HMD_HumanPhenotype.rpt
+    output_filename: HMD_HumanPhenotype-{suffix}.rpt
+    resource: mouse
+-
+    uri: http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt
+    output_filename: MGI_PhenoGenoMP-{suffix}.rpt
+    resource: mouse
+evidences:
+-
+    bucket: otar006-reactome
+    output_filename: reactome-{suffix}.json.gz
+    resource: reactome
+-
+    bucket: otar007-cosmic
+    output_filename: cosmic-{suffix}.json.gz
+    resource: cosmic
+-
+    bucket: otar008-chembl
+    output_filename: chembl-{suffix}.json.gz
+    resource: chembl
+-
+    bucket: otar009-gwas
+    output_filename: gwas-{suffix}.json.gz
+    resource: gwas
+-
+    bucket: otar010-atlas
+    output_filename: atlas-{suffix}.json.gz
+    resource: atlas
+-
+    bucket: otar011-uniprot
+    output_filename: uniprot-{suffix}.json.gz
+    resource: uniprot
+-
+    bucket: otar012-eva
+    output_filename: eva-{suffix}.json.gz
+    resource: eva
+-
+    bucket: otar025-epmc
+    output_filename: epmc-{suffix}.json.gz
+    resource: epmc
+chemical_probes:
+-
+    gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+    gid: 1686598114
+    output_filename: chemical_probes_SGC.tsv
+-
+    gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+    gid: 1636863333
+    output_filename: chemical_probes_portal.tsv
+-
+    gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+    gid: 349856989
+    output_filename: open_science_probes.tsv
