@@ -57,21 +57,25 @@ evidences:
     output_filename: epmc-{suffix}.json.gz
     resource: epmc
 
-chemical_probes_output_filename: chemicalprobes_alldata2.tsv
-
-chemical_probes_input:
--
-    gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-    gid: 1686598114
-    output_filename: chemical_probes_SGC.tsv
-    cp_type: sgc
--
-    gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-    gid: 1636863333
-    output_filename: chemical_probes_portal.tsv
-    cp_type: cpp
--
-    gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-    gid: 349856989
-    output_filename: open_science_probes.tsv
-    cp_type: osp
+chemical_probes:
+    output_filename: chemicalprobes_alldata2.tsv
+    spreadsheets:
+    -
+       gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+       gid: 1686598114
+       output_filename: chemical_probes_SGC.tsv
+       cp_type: sgc
+    -
+       gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+       gid: 1636863333
+       output_filename: chemical_probes_portal.tsv
+       cp_type: cpp
+    -
+       gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+       gid: 349856989
+       output_filename: open_science_probes.tsv
+       cp_type: osp
+ensembl:
+    conda_env: backend-genetics
+    conda_create: conda env create -f {root_dir}/scripts/ensembl/environment.yaml
+    ensembl_release: homo_sapiens_core_93_38
