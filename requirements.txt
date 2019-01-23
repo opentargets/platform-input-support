@@ -11,6 +11,7 @@ google-cloud-storage==1.13.2
 google-resumable-media==0.3.2
 googleapis-common-protos==1.5.6
 idna==2.8
+numpy==1.16.0
 protobuf==3.6.1
 pyasn1==0.4.5
 pyasn1-modules==0.2.3

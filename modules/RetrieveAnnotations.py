@@ -3,10 +3,27 @@ import sys
 # Custom modules
 import modules.cfg as cfg
 from modules.DownloadResource import DownloadResource
-from modules.GoogleSpreadSheet import GoogleSpreadSheet
 from modules.GoogleBucketResource import GoogleBucketResource
 from definitions import PIS_OUTPUT_ANNOTATIONS, PIS_OUTPUT_CHEMICAL_PROBES
 from modules.common.YAMLReader import YAMLReader
+from modules.ChemicalProbesResource import ChemicalProbesResource
+
+
+def annotations_downloaded_by_uri(args, yaml_dict, output_dir):
+    list_files_downloaded = []
+
+    for entry in yaml_dict.annotations:
+        download = DownloadResource(output_dir)
+        download.replace_suffix(args)
+        if args.thread:
+            destination_filename = download.execute_download_threaded(entry)
+        else:
+            destination_filename = download.execute_download(entry)
+
+        list_files_downloaded.append(destination_filename)
+
+    return list_files_downloaded
+
 
 def main():
 
@@ -17,22 +34,19 @@ def main():
     if google_opts:
         GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
 
-    list_files_downloaded = []
     yaml = YAMLReader()
-    for entry in yaml.get_Dict().annotations:
-        download = DownloadResource(output_dir)
-        download.replace_suffix(args)
-        if args.thread:
-            destination_filename = download.execute_download_threaded(entry)
-        else:
-            destination_filename = download.execute_download(entry)
+    yaml_dict = yaml.get_Dict()
 
-        list_files_downloaded.append(destination_filename)
+    # config.yaml annotations section
+    list_files_downloaded = annotations_downloaded_by_uri(args, yaml_dict, output_dir)
 
-    for spreadsheet_info in yaml.get_Dict().chemical_probes:
-        output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
-        google_spreedsheet = GoogleSpreadSheet(PIS_OUTPUT_CHEMICAL_PROBES)
-        google_spreedsheet.download_as_csv(spreadsheet_info)
+    # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
+    chemical_output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
+    chemical_probes_resource = ChemicalProbesResource(output_dir)
+    chemical_probes_resource.download_spreadsheet(yaml_dict,chemical_output_dir)
+    chemical_filename = chemical_probes_resource.generate_probes(yaml_dict)
+    list_files_downloaded.append(chemical_filename)
+
 
     # At this point the auth key is already valid.
     if google_opts:
