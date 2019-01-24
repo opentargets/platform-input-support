@@ -101,6 +101,7 @@ class GoogleBucketResource(object):
             raise ValueError('Invalid google storage bucket {bucket}'.format(bucket=self.bucket_name))
 
         blob = bucket_link.blob(self.object_path + '/' + dest_filename)
+        logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
         blob.upload_from_filename(filename=original_filename)
 
 

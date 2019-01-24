@@ -169,5 +169,5 @@ class ChemicalProbesResource(object):
             oFile.write(Probes[i] + '\t' + Targets[i] + '\t' + SGClinks[i] + '\t' + CPPlinks[i] + '\t'
                         + OSPlinks[i] + '\t' + iNote + '\n')
         oFile.close()
-
+        logger.info("Chemical probes filename : %s", output_filename)
         return output_filename

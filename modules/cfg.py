@@ -1,7 +1,11 @@
 import os, sys, errno
 import csv
 import configargparse
+import logging
 from common import URLZSource
+
+logger = logging.getLogger(__name__)
+
 
 """
 This will create a singleton argument parser that is appropriately configured
@@ -94,3 +98,31 @@ def get_list_of_file_download(config_file, headers):
                 for item in row:
                     result[item] = row[item]
                 yield result
+
+
+def set_up_logging(args):
+    #set up logging
+    logger = None
+    if args.log_config:
+        if os.path.isfile(args.log_config) and os.access(args.log_config, os.R_OK):
+            logging.config.fileConfig(args.log_config,  disable_existing_loggers=False)
+            logger = logging.getLogger(__name__+".main()")
+        else:
+            logging.basicConfig()
+            logger = logging.getLogger(__name__+".main()")
+            logger.warning("unable to read file {}".format(args.log_config))
+
+    else:
+        logging.basicConfig()
+        logger = logging.getLogger(__name__+".main()")
+
+    if args.log_level:
+        try:
+            root_logger = logging.getLogger()
+            root_logger.setLevel(logging.getLevelName(args.log_level))
+            logger.setLevel(logging.getLevelName(args.log_level))
+            logger.info('main log level set to: '+ str(args.log_level))
+            root_logger.info('root log level set to: '+ str(args.log_level))
+        except Exception, e:
+            root_logger.exception(e)
+            return 1

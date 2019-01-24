@@ -1,0 +1,9 @@
+name: backend-genetics
+channels:
+  - defaults
+  - bioconda
+dependencies:
+  - python=3
+  - sqlalchemy
+  - pandas
+  - mysqlclient

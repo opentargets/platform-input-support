@@ -30,7 +30,7 @@ class DownloadResource(object):
         return self.output_dir+'/'+param_filename.replace('{suffix}', self.suffix)
 
     def execute_download(self, resource_info):
-        print "Start to download\n\t{uri} data ".format(uri=resource_info.uri)
+        print "Start to download\n\t{uri} ".format(uri=resource_info.uri)
         try:
             download = urllib.URLopener()
             destination_filename = self.set_filename(resource_info.output_filename)
@@ -40,8 +40,10 @@ class DownloadResource(object):
                                   reporthook=t.update_to)
         except IOError as io_error:
             print "IOError: {io_error}".format(io_error=io_error)
+            return None
         except Exception as e:
             print "Error: {msg}".format(msg=e)
+            return None
 
         return destination_filename
 

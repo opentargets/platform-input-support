@@ -8,38 +8,11 @@ import logging.config
 import modules.cfg as cfg
 from modules.GoogleBucketResource import GoogleBucketResource
 from datetime import datetime
-from definitions import ROOT_DIR, PIS_OUTPUT_EVIDENCES
+from definitions import PIS_OUTPUT_EVIDENCES
 from modules.common.YAMLReader import YAMLReader
 
 logger = logging.getLogger(__name__)
 
-
-def set_up_logging(args):
-    #set up logging
-    logger = None
-    if args.log_config:
-        if os.path.isfile(args.log_config) and os.access(args.log_config, os.R_OK):
-            logging.config.fileConfig(args.log_config,  disable_existing_loggers=False)
-            logger = logging.getLogger(__name__+".main()")
-        else:
-            logging.basicConfig()
-            logger = logging.getLogger(__name__+".main()")
-            logger.warning("unable to read file {}".format(args.log_config))
-
-    else:
-        logging.basicConfig()
-        logger = logging.getLogger(__name__+".main()")
-
-    if args.log_level:
-        try:
-            root_logger = logging.getLogger()
-            root_logger.setLevel(logging.getLevelName(args.log_level))
-            logger.setLevel(logging.getLevelName(args.log_level))
-            logger.info('main log level set to: '+ str(args.log_level))
-            root_logger.info('root log level set to: '+ str(args.log_level))
-        except Exception, e:
-            root_logger.exception(e)
-            return 1
 
 def extract_latest_file(list_blobs):
     last_recent_file= None
@@ -73,7 +46,7 @@ def main():
 
     cfg.setup_parser()
     args = cfg.get_args()
-    set_up_logging(args)
+    cfg.set_up_logging(args)
     output_dir = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_EVIDENCES)
     GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
 

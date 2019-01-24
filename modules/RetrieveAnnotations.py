@@ -7,6 +7,7 @@ from modules.GoogleBucketResource import GoogleBucketResource
 from definitions import PIS_OUTPUT_ANNOTATIONS, PIS_OUTPUT_CHEMICAL_PROBES
 from modules.common.YAMLReader import YAMLReader
 from modules.ChemicalProbesResource import ChemicalProbesResource
+from modules.EnsemblResource import EnsemblResource
 
 
 def annotations_downloaded_by_uri(args, yaml_dict, output_dir):
@@ -20,7 +21,10 @@ def annotations_downloaded_by_uri(args, yaml_dict, output_dir):
         else:
             destination_filename = download.execute_download(entry)
 
-        list_files_downloaded.append(destination_filename)
+        if destination_filename is not None:
+            list_files_downloaded.append(destination_filename)
+        elif not args.skip:
+                raise ValueError("Error during downloading: {}",entry.uri)
 
     return list_files_downloaded
 
@@ -29,6 +33,7 @@ def main():
 
     cfg.setup_parser()
     args = cfg.get_args()
+    cfg.set_up_logging(args)
     output_dir = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_ANNOTATIONS)
     google_opts = GoogleBucketResource.has_google_parameters(args.google_credential_key, args.google_bucket)
     if google_opts:
@@ -39,6 +44,12 @@ def main():
 
     # config.yaml annotations section
     list_files_downloaded = annotations_downloaded_by_uri(args, yaml_dict, output_dir)
+
+    # config.yaml ensembl section
+    ensembl_resource = EnsemblResource(yaml_dict.ensembl)
+    ensembl_filename = ensembl_resource.create_genes_dictionary()
+    list_files_downloaded.append(ensembl_filename)
+
 
     # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
     chemical_output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
