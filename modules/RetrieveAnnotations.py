@@ -43,8 +43,8 @@ def main():
     yaml_dict = yaml.get_Dict()
 
     # config.yaml annotations section
-    list_files_downloaded = annotations_downloaded_by_uri(args, yaml_dict, output_dir)
-
+    #list_files_downloaded = annotations_downloaded_by_uri(args, yaml_dict, output_dir)
+    list_files_downloaded = []
     # config.yaml ensembl section
     ensembl_resource = EnsemblResource(yaml_dict.ensembl)
     ensembl_filename = ensembl_resource.create_genes_dictionary()
@@ -52,11 +52,11 @@ def main():
 
 
     # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
-    chemical_output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
-    chemical_probes_resource = ChemicalProbesResource(output_dir)
-    chemical_probes_resource.download_spreadsheet(yaml_dict,chemical_output_dir)
-    chemical_filename = chemical_probes_resource.generate_probes(yaml_dict)
-    list_files_downloaded.append(chemical_filename)
+    #chemical_output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
+    #chemical_probes_resource = ChemicalProbesResource(output_dir)
+    #chemical_probes_resource.download_spreadsheet(yaml_dict,chemical_output_dir)
+    #chemical_filename = chemical_probes_resource.generate_probes(yaml_dict)
+    #list_files_downloaded.append(chemical_filename)
 
 
     # At this point the auth key is already valid.

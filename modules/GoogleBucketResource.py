@@ -14,7 +14,7 @@ class GoogleBucketResource(object):
         self.client = storage.Client()
 
     def __del__(self):
-        logger.debug(__name__, "destroyed")
+        logger.debug('Destroyed instance of %s',__name__)
 
     @staticmethod
     def has_valid_auth_key(google_credential_key):

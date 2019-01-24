@@ -31,13 +31,21 @@ class EnsemblResource(object):
         return valid_conda_env
 
     def create_conda_env(self):
-        print self.conda_env
+        logging.info("Creating a new Conda env. This command might require a couple of minutes...")
+        command = self.conda_create.replace('{root_dir}', ROOT_DIR)
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        process.wait()
+        logging.info("... done! %s",process.returncode)
+        return process.returncode
 
 
     def create_genes_dictionary(self):
         # check if conda env exists.
         if not self.is_valid_conda_env():
-            logger.debug("Conda env "+self.conda_env+" not available")
+            logger.info("Conda env %s not available", self.conda_env)
+            self.create_conda_env()
+
+        logger.info("Conda env %s is available. Ensembl file generation...", self.conda_env)
 
         script_path = ROOT_DIR + "/scripts/ensembl"
         python_command = self.python_script.replace('{script_path}', script_path).replace('{ensembl_output_dir}', self.output_dir)
