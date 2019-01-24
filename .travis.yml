@@ -16,4 +16,4 @@ install:
   - pip install -r requirements.txt
 
 script:
-   - pytest --cov=mrtarget --cov-report term tests/ --fulltrace
+   - pytest --cov=modules --cov-report term tests/ --fulltrace
