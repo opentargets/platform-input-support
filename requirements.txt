@@ -15,9 +15,11 @@ google-cloud-storage==1.13.2
 google-resumable-media==0.3.2
 googleapis-common-protos==1.5.6
 idna==2.8
+mock==2.0.0
 more-itertools==5.0.0
 numpy==1.16.0
 pathlib2==2.3.3
+pbr==5.1.1
 pluggy==0.8.1
 protobuf==3.6.1
 py==1.7.0
