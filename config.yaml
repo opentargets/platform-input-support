@@ -2,27 +2,54 @@ annotations:
 -
     uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
     output_filename: uniprot-{suffix}.txt
-    resource: unic
+    resource: uniprot-uri
 -
     uri: https://www.reactome.org/download/current/ReactomePathways.txt
-    output_filename: rea-{suffix}.txt
-    resource: rea
+    output_filename: ReactomePathways-{suffix}.txt
+    resource: reactome-pathway-data
+-
+    uri: https://www.reactome.org/download/current/ReactomePathwaysRelation.txt
+    output_filename: ReactomePathwaysRelation-{suffix}.txt
+    resource: reactome-pathway-relation
 -
     uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
     output_filename: hgnc_complete_set-{suffix}.json
-    resource: hgnc
+    resource: hgnc-complete-set
 -
     uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
     output_filename: human_all_hcop_sixteen_column-{suffix}.txt.gz
-    resource: hgnc
+    resource: hgnc-ortholog
 -
     uri: http://www.informatics.jax.org/downloads/reports/HMD_HumanPhenotype.rpt
     output_filename: HMD_HumanPhenotype-{suffix}.rpt
-    resource: mouse
+    resource: mouse-phenotypes-orthology
 -
     uri: http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt
     output_filename: MGI_PhenoGenoMP-{suffix}.rpt
-    resource: mouse
+    resource: mouse-phenotypes-report
+-
+    uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
+    output_filename: map_with_efos-{suffix}.json
+    resource: tissue-translation-map
+-
+    uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
+    output_filename: expression_hierarchy_curation-{suffix}.tsv
+    resource: tissue-curation-map
+-
+    uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
+    output_filename: normal_tissue-{suffix}.tsv.zip
+    resource: hpa-normal-tissue
+-   uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
+    output_filename: expatlas.blueprint2.baseline.binned_v2-{suffix}.tsv
+    resource: hpa-rna-level
+-
+    uri: https://storage.googleapis.com/atlas_baseline_expression/exp_summary_NormCounts_genes_all_Blueprint2_v2.txt
+    output_filename: exp_summary_NormCounts_genes_all_Blueprint2_v2-{suffix}.txt
+    resource: hpa-rna-value
+-
+    uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
+    output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
+    resource: hpa-rna-zscore
 evidences:
 -
     bucket: otar006-reactome
