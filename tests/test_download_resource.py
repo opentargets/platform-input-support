@@ -13,11 +13,8 @@ class DownloadResourceTests(unittest.TestCase):
 
     @mock.patch('urllib.URLopener')
     def test_execute_download(self, urlopen_mock):
-        conn = mock.Mock()
-        conn.read.return_value = 'byte'
-        urlopen_mock.return_value = conn
         _download_resource = DownloadResource(PIS_OUTPUT_ANNOTATIONS)
         destination_filename = _download_resource.execute_download(self.resource_info)
         assert re.search('([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))', destination_filename)
 
-    
+
