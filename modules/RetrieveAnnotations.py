@@ -4,10 +4,11 @@ import sys
 import modules.cfg as cfg
 from modules.DownloadResource import DownloadResource
 from modules.GoogleBucketResource import GoogleBucketResource
-from definitions import PIS_OUTPUT_ANNOTATIONS, PIS_OUTPUT_CHEMICAL_PROBES
+from definitions import PIS_OUTPUT_ANNOTATIONS, PIS_OUTPUT_CHEMICAL_PROBES, PIS_OUTPUT_CHEMBL_API
 from modules.common.YAMLReader import YAMLReader
 from modules.ChemicalProbesResource import ChemicalProbesResource
 from modules.EnsemblResource import EnsemblResource
+from modules.ChEMBL import ChEMBLLookup
 import logging
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,14 @@ def main():
     chemical_probes_resource.download_spreadsheet(yaml_dict,chemical_output_dir)
     chemical_filename = chemical_probes_resource.generate_probes(yaml_dict)
     list_files_downloaded.append(chemical_filename)
+
+    # config.yaml ChEMBL REST API
+    output_dir_ChEMBL = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_CHEMBL_API)
+    chembl_handler = ChEMBLLookup(yaml_dict.ChEMBL)
+
+    list_files_ChEMBL = chembl_handler.download_chEMBL_files()
+    list_files_downloaded.extend(list_files_ChEMBL)
+
 
     # At this point the auth key is already valid.
     if google_opts:

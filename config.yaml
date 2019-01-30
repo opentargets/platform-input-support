@@ -39,6 +39,7 @@ annotations:
     uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
     output_filename: normal_tissue-{suffix}.tsv.zip
     resource: hpa-normal-tissue
+
 -   uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.binned_v2-{suffix}.tsv
     resource: hpa-rna-level
@@ -85,7 +86,7 @@ evidences:
     resource: epmc
 
 chemical_probes:
-    output_filename: chemicalprobes_alldata2.tsv
+    output_filename: chemicalprobes_portalprobes-{suffix}.tsv
     spreadsheets:
     -
        gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
@@ -108,3 +109,16 @@ ensembl:
     python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/. -e -z -n
     ensembl_release: homo_sapiens_core_93_38
     extension_file: _genes.json.gz
+ChEMBL:
+    target:
+          uri: https://www.ebi.ac.uk/chembl/api/data/target.json
+          output_filename: chembl_target-{suffix}.json
+    mechanism:
+           uri: https://www.ebi.ac.uk/chembl/api/data/mechanism.json
+           output_filename: chembl_mechanism-{suffix}.json
+    target_component:
+           uri: https://www.ebi.ac.uk/chembl/api/data/target_component.json
+           output_filename: chembl_target_component-{suffix}.json
+    protein_class:
+           uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
+           output_filename: chembl_protein_class-{suffix}.json
