@@ -22,9 +22,6 @@ def setup_parser():
     p.add('-c', '--config', is_config_file=True,
         env_var="CONFIG", help='path to config file (YAML)')
 
-    p.add('-i', '--input_file',
-        env_var="OT_INPUT_FILE", help='By default the file ROOT_DIR/annotations_input.csv will be loaded')
-
     p.add('-gkey', '--google_credential_key',
         env_var="GOOGLE_APPLICATION_CREDENTIALS", help='The path were the JSON credential file is stored.')
 
@@ -38,6 +35,8 @@ def setup_parser():
 
     p.add('-s', '--suffix', env_var="OT_SUFFIX_INPUT",
           action='store', help='The default suffix is yyyy-mm-dd')
+
+    p.add('-step', action='store', help='Run a specific section of the config file')
 
     p.add('--skip', action='store_true', help='Skip the errors and just report them')
 

@@ -1,4 +1,4 @@
-import numpy as np
+import datetime
 import logging
 from modules.GoogleSpreadSheet import GoogleSpreadSheet
 
@@ -14,6 +14,7 @@ class ChemicalProbesResource(object):
         self.filename_osp = input_dir+"/open_science_probes.tsv"
         self.output_dir = output_dir
         self.input_dir = input_dir
+        self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
 
     def set_filename_type(self,spreadsheet_info):
         nome = 'filename_'+spreadsheet_info.cp_type
@@ -29,8 +30,9 @@ class ChemicalProbesResource(object):
 
     def generate_probes(self, yaml_dict):
         # The output file
-        output_filename = self.output_dir + '/'+ yaml_dict.chemical_probes.output_filename
+        output_filename = self.output_dir + '/'+ yaml_dict.chemical_probes.output_filename.replace('{suffix}', self.suffix)
         oFile = open(output_filename, 'w')
+        oFile.write("Probe\tTarget\tSGClink\tCPPlink\tOSPlink\tNote\n")
 
         # Store data for all probes and targets
         Probes = []

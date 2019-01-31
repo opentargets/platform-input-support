@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def annotations_downloaded_by_uri(args, yaml_dict, output_dir):
     list_files_downloaded = []
 
-    for entry in yaml_dict.annotations:
+    for entry in yaml_dict:
         download = DownloadResource(output_dir)
         download.replace_suffix(args)
         if args.thread:
@@ -33,7 +33,6 @@ def annotations_downloaded_by_uri(args, yaml_dict, output_dir):
 
 
 def main():
-
     cfg.setup_parser()
     args = cfg.get_args()
     cfg.set_up_logging(args)
@@ -45,32 +44,35 @@ def main():
     yaml = YAMLReader()
     yaml_dict = yaml.get_Dict()
 
-    # config.yaml annotations section
-    list_files_downloaded = annotations_downloaded_by_uri(args, yaml_dict, output_dir)
+    list_files_downloaded = []
 
-    # Useful with the option --skip
-    logger.info("Number of resources requested / Number of files downloaded: %s / %s",
-                len(yaml_dict.annotations), len(list_files_downloaded))
+    if args.step is None or args.step == "annotations":
+        list_files_downloaded = annotations_downloaded_by_uri(args, yaml_dict.annotations, output_dir)
+        # Useful with the option --skip
+        logger.info("Number of resources requested / Number of files downloaded: %s / %s",
+                  len(yaml_dict.annotations), len(list_files_downloaded))
 
-    # config.yaml ensembl section
-    ensembl_resource = EnsemblResource(yaml_dict.ensembl)
-    ensembl_filename = ensembl_resource.create_genes_dictionary()
-    list_files_downloaded.append(ensembl_filename)
+    if args.step is None or args.step == "ensembl":
+        # config.yaml ensembl section
+        ensembl_resource = EnsemblResource(yaml_dict.ensembl)
+        ensembl_filename = ensembl_resource.create_genes_dictionary()
+        list_files_downloaded.append(ensembl_filename)
 
-    # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
-    chemical_output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
-    chemical_probes_resource = ChemicalProbesResource(output_dir)
-    chemical_probes_resource.download_spreadsheet(yaml_dict,chemical_output_dir)
-    chemical_filename = chemical_probes_resource.generate_probes(yaml_dict)
-    list_files_downloaded.append(chemical_filename)
+    if args.step is None or args.step == "chemical_probes":
+        # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
+        chemical_output_dir = cfg.get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
+        chemical_probes_resource = ChemicalProbesResource(output_dir)
+        chemical_probes_resource.download_spreadsheet(yaml_dict,chemical_output_dir)
+        chemical_filename = chemical_probes_resource.generate_probes(yaml_dict)
+        list_files_downloaded.append(chemical_filename)
 
-    # config.yaml ChEMBL REST API
-    output_dir_ChEMBL = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_CHEMBL_API)
-    chembl_handler = ChEMBLLookup(yaml_dict.ChEMBL)
+    if args.step is None or args.step == "ChEMBL":
+        # config.yaml ChEMBL REST API
+        output_dir_ChEMBL = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_CHEMBL_API)
+        chembl_handler = ChEMBLLookup(yaml_dict.ChEMBL)
 
-    list_files_ChEMBL = chembl_handler.download_chEMBL_files()
-    list_files_downloaded.extend(list_files_ChEMBL)
-
+        list_files_ChEMBL = chembl_handler.download_chEMBL_files()
+        list_files_downloaded.extend(list_files_ChEMBL)
 
     # At this point the auth key is already valid.
     if google_opts:
