@@ -83,4 +83,5 @@ python -m modules.RetrieveEvidences --skip  \
        -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json  \ 
        -gb ot-snapshots/es5-sufentanil/tmp/19.02/input/evidence-files
   
+python -m modules.RetrieveAnnotations -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json --google_bucket ot-snapshots/es5-sufentanil -step chemical_probes
 ```

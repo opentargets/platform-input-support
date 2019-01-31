@@ -13,6 +13,12 @@ with the various command line, environment, and ini/yaml file options.
 
 """
 
+def get_list_steps_on_request(list_steps_requested, keys_list):
+    if list_steps_requested:
+        list_steps='\n\t'.join(keys_list)
+        list_steps='List of steps available:\n\t'+list_steps
+        print list_steps
+        exit(0)
 
 def setup_parser():
     p = configargparse.get_argument_parser(config_file_parser_class=configargparse.YAMLConfigFileParser)
@@ -40,6 +46,7 @@ def setup_parser():
 
     p.add('--skip', action='store_true', help='Skip the errors and just report them')
 
+    p.add('-l','--list_steps', action='store_true', help='List of steps callable')
 
     # logging
     p.add("--log-level", help="set the log level",

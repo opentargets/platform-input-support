@@ -35,14 +35,16 @@ def annotations_downloaded_by_uri(args, yaml_dict, output_dir):
 def main():
     cfg.setup_parser()
     args = cfg.get_args()
+
+    yaml = YAMLReader()
+    yaml_dict = yaml.get_Dict()
+    cfg.get_list_steps_on_request(args.list_steps,yaml.get_list_keys())
+
     cfg.set_up_logging(args)
     output_dir = cfg.get_output_dir(args.output_dir, PIS_OUTPUT_ANNOTATIONS)
     google_opts = GoogleBucketResource.has_google_parameters(args.google_credential_key, args.google_bucket)
     if google_opts:
         GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
-
-    yaml = YAMLReader()
-    yaml_dict = yaml.get_Dict()
 
     list_files_downloaded = []
 
