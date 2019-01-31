@@ -18,6 +18,7 @@ def extract_latest_file(list_blobs):
     last_recent_file= None
     recent_date = datetime.strptime('01-01-1900', '%d-%m-%Y')
     for filename in list_blobs:
+
         find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
         if find_date_file:
             date_file = datetime.strptime(find_date_file.group(1), '%d-%m-%Y')
@@ -28,8 +29,13 @@ def extract_latest_file(list_blobs):
     return {"latest_filename": last_recent_file,"suffix": recent_date.strftime('%d-%m-%Y')}
 
 
-def get_latest_file(google_resource):
-    list_blobs = google_resource.list_blobs_object_path()
+def get_latest_file(google_resource, resource_info):
+    if 'excludes' in resource_info:
+        list_blobs = google_resource.list_blobs_object_path_excludes(resource_info.excludes)
+    elif 'includes' in resource_info:
+        list_blobs = google_resource.list_blobs_object_path_includes(resource_info.includes)
+    else:
+        list_blobs = google_resource.list_blobs_object_path()
     latest_filename_info = extract_latest_file(list_blobs)
 
     return latest_filename_info
@@ -59,7 +65,7 @@ def main():
         google_resource = GoogleBucketResource(bucket_name=param)
         bucket = google_resource.get_bucket()
         if bucket is not None:
-            latest_filename_info = get_latest_file(google_resource)
+            latest_filename_info = get_latest_file(google_resource, entry)
             final_filename = download_file(bucket, output_dir, entry.output_filename, latest_filename_info)
             list_files_downloaded.append(final_filename)
         else:

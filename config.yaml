@@ -52,39 +52,45 @@ annotations:
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
 evidences:
+
 -
     bucket: otar006-reactome
     output_filename: reactome-{suffix}.json.gz
-    resource: reactome
+    resource: input-file
 -
     bucket: otar007-cosmic
     output_filename: cosmic-{suffix}.json.gz
-    resource: cosmic
+    excludes: hallmarks
+    resource: input-file
+-
+    bucket: otar007-cosmic
+    output_filename: cosmic-hallmarks-{suffix}.json.gz
+    resource: hallmark
+    includes: hallmarks
 -
     bucket: otar008-chembl
     output_filename: chembl-{suffix}.json.gz
-    resource: chembl
+    resource: input-file
 -
     bucket: otar009-gwas
     output_filename: gwas-{suffix}.json.gz
-    resource: gwas
+    resource: input-file
 -
     bucket: otar010-atlas
     output_filename: atlas-{suffix}.json.gz
-    resource: atlas
+    resource: input-file
 -
     bucket: otar011-uniprot
     output_filename: uniprot-{suffix}.json.gz
-    resource: uniprot
+    resource: input-file
 -
     bucket: otar012-eva
     output_filename: eva-{suffix}.json.gz
-    resource: eva
+    resource: input-file
 -
     bucket: otar025-epmc
     output_filename: epmc-{suffix}.json.gz
     resource: epmc
-
 chemical_probes:
     output_filename: chemicalprobes_portalprobes-{suffix}.tsv
     spreadsheets:
@@ -109,16 +115,21 @@ ensembl:
     python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/. -e -z -n
     ensembl_release: homo_sapiens_core_93_38
     extension_file: _genes.json.gz
+    resource: ensembl-filename
 ChEMBL:
     target:
           uri: https://www.ebi.ac.uk/chembl/api/data/target.json
           output_filename: chembl_target-{suffix}.json
+          resource: chembl-target
     mechanism:
            uri: https://www.ebi.ac.uk/chembl/api/data/mechanism.json
            output_filename: chembl_mechanism-{suffix}.json
+           resource: chembl-mechanism
     target_component:
            uri: https://www.ebi.ac.uk/chembl/api/data/target_component.json
            output_filename: chembl_target_component-{suffix}.json
+           resource: chembl-component
     protein_class:
            uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
            output_filename: chembl_protein_class-{suffix}.json
+           resource: chembl-protein

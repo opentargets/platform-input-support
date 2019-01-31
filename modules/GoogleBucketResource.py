@@ -81,19 +81,31 @@ class GoogleBucketResource(object):
             return None
         return bucket
 
-    #google_resource.list_blobs('es5-sufentanil/tmp/','/')
-    def list_blobs(self, prefix, delimiter):
+
+
+    #google_resource.list_blobs('es5-sufentanil/tmp/','/', None, None)
+    def list_blobs(self, prefix, delimiter, include, exclude):
         list_blobs_dict = {}
         bucket = self.client.get_bucket(self.bucket_name)
         blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
 
         for blob in blobs:
-            logger.debug("Filename: %s , Created: %s, Updated: %s",blob.name, blob.time_created, blob.updated)
-            list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
+               logger.debug("Filename: %s , Created: %s, Updated: %s", blob.name, blob.time_created, blob.updated)
+               list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
+               if (exclude is not None) and (exclude in blob.name):
+                    list_blobs_dict.pop(blob.name, None)
+               if (include is not None) and (include not in blob.name):
+                   list_blobs_dict.pop(blob.name, None)
         return list_blobs_dict
 
     def list_blobs_object_path(self):
-        return self.list_blobs(self.object_path, '')
+        return self.list_blobs(self.object_path, '', None, None)
+
+    def list_blobs_object_path_excludes(self, excludes_pattern):
+        return self.list_blobs(self.object_path, '', None, excludes_pattern)
+
+    def list_blobs_object_path_includes(self, included_pattern):
+        return self.list_blobs(self.object_path, '', included_pattern, None)
 
     def copy_from(self, original_filename, dest_filename):
         bucket_link = self.get_bucket()
