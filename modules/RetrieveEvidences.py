@@ -1,15 +1,15 @@
 import sys
-import re
 import os
-import logging
+import re
 import logging.config
 
 # Custom modules
 import modules.cfg as cfg
 from modules.GoogleBucketResource import GoogleBucketResource
 from datetime import datetime
-from definitions import PIS_OUTPUT_EVIDENCES
+from definitions import PIS_OUTPUT_EVIDENCES, PIS_EVIDENCES_STATS_FILE
 from modules.common.YAMLReader import YAMLReader
+from common import get_lines
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,12 @@ def main():
 
         del google_resource
 
+    if os.path.exists(PIS_EVIDENCES_STATS_FILE): os.remove(PIS_EVIDENCES_STATS_FILE)
+    stats_file = open(PIS_EVIDENCES_STATS_FILE, "a+")
+    for original_filename in list_files_downloaded:
+        lines = get_lines(original_filename)
+        stats_file.write(original_filename+','+str(lines)+'\n')
+
     # At this point the auth key is already valid.
     if args.google_bucket:
         params = GoogleBucketResource.get_bucket_and_path(args.google_bucket)
@@ -83,6 +89,7 @@ def main():
         for original_filename in list_files_downloaded:
             split_filename=original_filename.rsplit('/', 1)
             dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
+            get_lines(original_filename)
             google_resource.copy_from(original_filename, dest_filename)
 
         google_resource.list_blobs_object_path()

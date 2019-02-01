@@ -133,34 +133,34 @@ evidences:
     output_filename: epmc-{suffix}.json.gz
     resource: epmc
 -
-    bucket: otar000-evidence_input/Gene2Phenotype
+    bucket: otar000-evidence_input/Gene2Phenotype/json
     output_filename: gene2phenotype-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/GenomicsEngland
+    bucket: otar000-evidence_input/GenomicsEngland/json
     output_filename: genomics_england-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/IntOgen
+    bucket: otar000-evidence_input/IntOgen/json
     output_filename: intogen-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/PhenoDigm
+    bucket: otar000-evidence_input/PhenoDigm/json
     output_filename: phenodigm-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/PheWAS
+    bucket: otar000-evidence_input/PheWAS/json
     output_filename: phewas_catalog-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/PROGENy
+    bucket: otar000-evidence_input/PROGENy/json
     output_filename: progeny-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/SLAPEnrich
+    bucket: otar000-evidence_input/SLAPEnrich/json
     output_filename: slapenrich-{suffix}.json.gz
     resource: generated_evidence
 -
-    bucket: otar000-evidence_input/SysBio
+    bucket: otar000-evidence_input/SysBio/json
     output_filename: sysbio-{suffix}.json.gz
     resource: generated_evidence

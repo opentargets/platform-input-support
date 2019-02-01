@@ -5,7 +5,22 @@ import zipfile
 import tempfile as tmp
 import requests as r
 import requests_file
+import gzip
+GZIP_MAGIC_NUMBER = "1f8b"
 
+
+def is_gzip(filename):
+    open_file = open(filename)
+    return open_file.read(2).encode("hex") == GZIP_MAGIC_NUMBER
+
+
+def get_lines(input_filename):
+    i = 0
+    if is_gzip(input_filename):
+        with gzip.open(input_filename, 'rb') as f:
+            for i, l in enumerate(f):
+                pass
+    return i
 
 def urllify(string_name):
     """return a file:// urlified simple path to a file:// is :// is not contained in it"""
