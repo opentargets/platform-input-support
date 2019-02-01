@@ -2,6 +2,8 @@ import os
 from google.cloud import storage, exceptions
 import google.auth
 import logging
+import re
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +118,38 @@ class GoogleBucketResource(object):
         logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
         blob.upload_from_filename(filename=original_filename)
 
+    def extract_latest_file(self, list_blobs):
+        last_recent_file = None
+        recent_date = datetime.strptime('01-01-1900', '%d-%m-%Y')
+        for filename in list_blobs:
+
+            find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
+            if find_date_file:
+                date_file = datetime.strptime(find_date_file.group(1), '%d-%m-%Y')
+                if date_file > recent_date:
+                    recent_date = date_file
+                    last_recent_file = filename
+        logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
+        return {"latest_filename": last_recent_file, "suffix": recent_date.strftime('%d-%m-%Y')}
+
+    def get_latest_file(self,resource_info):
+        if 'excludes' in resource_info:
+            list_blobs = self.list_blobs_object_path_excludes(resource_info.excludes)
+        elif 'includes' in resource_info:
+            list_blobs = self.list_blobs_object_path_includes(resource_info.includes)
+        else:
+            list_blobs = self.list_blobs_object_path()
+        latest_filename_info = self.extract_latest_file(list_blobs)
+
+        return latest_filename_info
+
+    def download_file(self, output_dir, output_filename, latest_filename_info):
+        final_filename = output_dir + '/' + output_filename.replace('{suffix}', latest_filename_info["suffix"])
+        bucket = self.get_bucket()
+        blob = bucket.blob(latest_filename_info["latest_filename"])
+        blob.download_to_filename(final_filename)
+
+        return final_filename
 
     def blob_metadata(bucket_name, blob_name):
         """Prints out a blob's metadata."""

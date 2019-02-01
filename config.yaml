@@ -51,6 +51,11 @@ annotations:
     uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
+annotations_from_buckets:
+    - bucket: otar007-cosmic
+      output_filename: cosmic-hallmarks-{suffix}.json.gz
+      resource: hallmark
+      includes: hallmarks
 chemical_probes:
     output_filename: chemicalprobes_portalprobes-{suffix}.tsv
     spreadsheets:
@@ -103,11 +108,6 @@ evidences:
     output_filename: cosmic-{suffix}.json.gz
     excludes: hallmarks
     resource: input-file
--
-    bucket: otar007-cosmic
-    output_filename: cosmic-hallmarks-{suffix}.json.gz
-    resource: hallmark
-    includes: hallmarks
 -
     bucket: otar008-chembl
     output_filename: chembl-{suffix}.json.gz

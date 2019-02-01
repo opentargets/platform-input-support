@@ -76,6 +76,23 @@ def main():
         list_files_ChEMBL = chembl_handler.download_chEMBL_files()
         list_files_downloaded.extend(list_files_ChEMBL)
 
+    if args.step is None or args.step == "annotations_from_buckets":
+        GoogleBucketResource.has_valid_auth_key(args.google_credential_key)
+        for entry in yaml_dict.annotations_from_buckets:
+            param = GoogleBucketResource.get_bucket_and_path(entry.bucket)
+            google_resource = GoogleBucketResource(bucket_name=param)
+            bucket = google_resource.get_bucket()
+            if bucket is not None:
+                latest_filename_info = google_resource.get_latest_file(entry)
+                final_filename = google_resource.download_file(output_dir, entry.output_filename, latest_filename_info)
+                list_files_downloaded.append(final_filename)
+            else:
+                logger.info("ERROR: Google Cloud Storage, path={}".format(google_resource.get_bucket_name()))
+                if not args.skip:
+                    raise ValueError("ERROR: Google Cloud Storage, path={}".format(google_resource.get_bucket_name()))
+
+        del google_resource
+
     # At this point the auth key is already valid.
     if google_opts:
         params = GoogleBucketResource.get_bucket_and_path(args.google_bucket)
