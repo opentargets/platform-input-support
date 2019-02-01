@@ -51,46 +51,6 @@ annotations:
     uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
-evidences:
-
--
-    bucket: otar006-reactome
-    output_filename: reactome-{suffix}.json.gz
-    resource: input-file
--
-    bucket: otar007-cosmic
-    output_filename: cosmic-{suffix}.json.gz
-    excludes: hallmarks
-    resource: input-file
--
-    bucket: otar007-cosmic
-    output_filename: cosmic-hallmarks-{suffix}.json.gz
-    resource: hallmark
-    includes: hallmarks
--
-    bucket: otar008-chembl
-    output_filename: chembl-{suffix}.json.gz
-    resource: input-file
--
-    bucket: otar009-gwas
-    output_filename: gwas-{suffix}.json.gz
-    resource: input-file
--
-    bucket: otar010-atlas
-    output_filename: atlas-{suffix}.json.gz
-    resource: input-file
--
-    bucket: otar011-uniprot
-    output_filename: uniprot-{suffix}.json.gz
-    resource: input-file
--
-    bucket: otar012-eva
-    output_filename: eva-{suffix}.json.gz
-    resource: input-file
--
-    bucket: otar025-epmc
-    output_filename: epmc-{suffix}.json.gz
-    resource: epmc
 chemical_probes:
     output_filename: chemicalprobes_portalprobes-{suffix}.tsv
     spreadsheets:
@@ -133,3 +93,74 @@ ChEMBL:
            uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
            output_filename: chembl_protein_class-{suffix}.json
            resource: chembl-protein
+evidences:
+-
+    bucket: otar006-reactome
+    output_filename: reactome-{suffix}.json.gz
+    resource: input-file
+-
+    bucket: otar007-cosmic
+    output_filename: cosmic-{suffix}.json.gz
+    excludes: hallmarks
+    resource: input-file
+-
+    bucket: otar007-cosmic
+    output_filename: cosmic-hallmarks-{suffix}.json.gz
+    resource: hallmark
+    includes: hallmarks
+-
+    bucket: otar008-chembl
+    output_filename: chembl-{suffix}.json.gz
+    resource: input-file
+-
+    bucket: otar009-gwas
+    output_filename: gwas-{suffix}.json.gz
+    resource: input-file
+-
+    bucket: otar010-atlas
+    output_filename: atlas-{suffix}.json.gz
+    resource: input-file
+-
+    bucket: otar011-uniprot
+    output_filename: uniprot-{suffix}.json.gz
+    resource: input-file
+-
+    bucket: otar012-eva
+    output_filename: eva-{suffix}.json.gz
+    resource: input-file
+-
+    bucket: otar025-epmc
+    output_filename: epmc-{suffix}.json.gz
+    resource: epmc
+-
+    bucket: otar000-evidence_input/Gene2Phenotype
+    output_filename: gene2phenotype-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/GenomicsEngland
+    output_filename: genomics_england-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/IntOgen
+    output_filename: intogen-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/PhenoDigm
+    output_filename: phenodigm-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/PheWAS
+    output_filename: phewas_catalog-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/PROGENy
+    output_filename: progeny-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/SLAPEnrich
+    output_filename: slapenrich-{suffix}.json.gz
+    resource: generated_evidence
+-
+    bucket: otar000-evidence_input/SysBio
+    output_filename: sysbio-{suffix}.json.gz
+    resource: generated_evidence
