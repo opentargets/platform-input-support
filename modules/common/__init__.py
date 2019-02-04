@@ -20,7 +20,7 @@ def get_lines(input_filename):
         with gzip.open(input_filename, 'rb') as f:
             for i, l in enumerate(f):
                 pass
-    return i
+    return i+1
 
 def urllify(string_name):
     """return a file:// urlified simple path to a file:// is :// is not contained in it"""

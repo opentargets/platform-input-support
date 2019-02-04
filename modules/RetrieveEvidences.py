@@ -41,11 +41,13 @@ def main():
 
         del google_resource
 
+    logger.info("Generating stats files: "+ PIS_EVIDENCES_STATS_FILE)
     if os.path.exists(PIS_EVIDENCES_STATS_FILE): os.remove(PIS_EVIDENCES_STATS_FILE)
     stats_file = open(PIS_EVIDENCES_STATS_FILE, "a+")
     for original_filename in list_files_downloaded:
         lines = get_lines(original_filename)
-        stats_file.write(original_filename+','+str(lines)+'\n')
+        filename_info = original_filename.rsplit('/',1)[1]
+        stats_file.write(filename_info+','+str(lines)+'\n')
 
     # At this point the auth key is already valid.
     if args.google_bucket:

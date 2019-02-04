@@ -9,6 +9,7 @@ __pycache__/
 
 # PyCharm files
 .idea
+.DS_Store
 
 # Output dir
 output/
