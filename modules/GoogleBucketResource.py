@@ -117,6 +117,7 @@ class GoogleBucketResource(object):
         blob = bucket_link.blob(self.object_path + '/' + dest_filename)
         logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
         blob.upload_from_filename(filename=original_filename)
+        return blob.name
 
     def extract_latest_file(self, list_blobs):
         last_recent_file = None
@@ -151,10 +152,10 @@ class GoogleBucketResource(object):
 
         return final_filename
 
-    def blob_metadata(bucket_name, blob_name):
+    def blob_metadata(self, blob_name):
         """Prints out a blob's metadata."""
         storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
+        bucket = storage_client.get_bucket(self.bucket_name)
         blob = bucket.get_blob(blob_name)
 
         print('Blob: {}'.format(blob.name))

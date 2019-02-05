@@ -13,6 +13,7 @@ bash ~/Downloads/Anaconda2-5.3.0-MacOSX-x86_64.sh
 
 # Installation
 ```
+conda install -c conda-forge zip 
 conda env create -f environment.yaml
 conda activate platform-input-support-py2.7
 conda install pip

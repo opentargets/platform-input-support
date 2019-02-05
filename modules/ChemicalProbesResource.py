@@ -23,14 +23,14 @@ class ChemicalProbesResource(object):
             setattr(self, nome, new_filename)
 
     def download_spreadsheet(self, yaml_dict, chemical_output_dir):
-        for spreadsheet_info in yaml_dict.chemical_probes.spreadsheets:
+        for spreadsheet_info in yaml_dict.spreadsheets:
             google_spreadsheet = GoogleSpreadSheet(chemical_output_dir)
             google_spreadsheet.download_as_csv(spreadsheet_info)
             self.set_filename_type(spreadsheet_info)
 
     def generate_probes(self, yaml_dict):
         # The output file
-        output_filename = self.output_dir + '/'+ yaml_dict.chemical_probes.output_filename.replace('{suffix}', self.suffix)
+        output_filename = self.output_dir + '/'+ yaml_dict.output_filename.replace('{suffix}', self.suffix)
         oFile = open(output_filename, 'w')
         oFile.write("Probe\tTarget\tSGClink\tCPPlink\tOSPlink\tNote\n")
 

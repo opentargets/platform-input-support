@@ -50,6 +50,7 @@ class ChEMBLLookup(object):
         self.mechanism_cfg = yaml_dict.mechanism
         self.component_cfg = yaml_dict.target_component
         self.protein_cfg = yaml_dict.protein_class
+        self.molecule_cfg = yaml_dict.molecule
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
 
 
@@ -83,11 +84,19 @@ class ChEMBLLookup(object):
 
         return protein_classes_filename
 
+    def download_molecules(self):
+        '''download the REST API associated to the uri'''
+        self._logger.info('ChEMBL getting molecules from ' + self.molecule_cfg.uri)
+        molecules_filename = get_chembl_url(self.molecule_cfg.uri, self.molecule_cfg.output_filename, self.suffix)
+
+        return molecules_filename
+
     def download_chEMBL_files(self):
-        list_files_ChEMBL_downloaded = []
+        list_files_ChEMBL_downloaded = {}
         self._logger.info('chembl downloading targets/mechanisms/proteins')
-        list_files_ChEMBL_downloaded.append(self.download_targets())
-        list_files_ChEMBL_downloaded.append(self.download_mechanisms())
-        list_files_ChEMBL_downloaded.append(self.download_protein_classification())
-        list_files_ChEMBL_downloaded.append(self.download_protein_class())
+        list_files_ChEMBL_downloaded[self.download_molecules()] = self.molecule_cfg.resource
+        list_files_ChEMBL_downloaded[self.download_targets()] = self.target_cfg.resource
+        list_files_ChEMBL_downloaded[self.download_mechanisms()] = self.mechanism_cfg.resource
+        list_files_ChEMBL_downloaded[self.download_protein_classification()] = self.component_cfg.resource
+        list_files_ChEMBL_downloaded[self.download_protein_class()] = self.protein_cfg.resource
         return list_files_ChEMBL_downloaded
