@@ -1,7 +1,7 @@
 annotations:
 -
     uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
-    output_filename: uniprot-{suffix}.txt
+    output_filename: uniprot-{suffix}.xml.gz
     resource: uniprot-uri
 -
     uri: https://www.reactome.org/download/current/ReactomePathways.txt
