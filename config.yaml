@@ -58,6 +58,7 @@ annotations_from_buckets:
       includes: hallmarks
 chemical_probes:
     output_filename: chemicalprobes_portalprobes-{suffix}.tsv
+    resource : chemical_probes
     spreadsheets:
     -
        gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
@@ -82,6 +83,10 @@ ensembl:
     extension_file: _genes.json.gz
     resource: ensembl-filename
 ChEMBL:
+    molecule:
+          uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
+          output_filename: chembl_molecule-{suffix}.json
+          resource: chembl-molecule
     target:
           uri: https://www.ebi.ac.uk/chembl/api/data/target.json
           output_filename: chembl_target-{suffix}.json
@@ -164,3 +169,6 @@ evidences:
     bucket: otar000-evidence_input/SysBio/json
     output_filename: sysbio-{suffix}.json.gz
     resource: generated_evidence
+data_pipeline_schema:
+  uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget.data.yml
+  output_filename: mrtarget.data.yml
