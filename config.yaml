@@ -1,181 +1,161 @@
+---
 annotations:
--
-    uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
+  gs_output_dir: annotations_files
+  downloads:
+  - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
     output_filename: uniprot-{suffix}.xml.gz
     resource: uniprot-uri
--
-    uri: https://www.reactome.org/download/current/ReactomePathways.txt
+  - uri: https://www.reactome.org/download/current/ReactomePathways.txt
     output_filename: ReactomePathways-{suffix}.txt
     resource: reactome-pathway-data
--
-    uri: https://www.reactome.org/download/current/ReactomePathwaysRelation.txt
+  - uri: https://www.reactome.org/download/current/ReactomePathwaysRelation.txt
     output_filename: ReactomePathwaysRelation-{suffix}.txt
     resource: reactome-pathway-relation
--
-    uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
+  - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
     output_filename: hgnc_complete_set-{suffix}.json
     resource: hgnc-complete-set
--
-    uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
+  - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
     output_filename: human_all_hcop_sixteen_column-{suffix}.txt.gz
     resource: hgnc-orthologs
--
-    uri: http://www.informatics.jax.org/downloads/reports/HMD_HumanPhenotype.rpt
+  - uri: http://www.informatics.jax.org/downloads/reports/HMD_HumanPhenotype.rpt
     output_filename: HMD_HumanPhenotype-{suffix}.rpt
     resource: mouse-phenotypes-orthology
--
-    uri: http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt
+  - uri: http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt
     output_filename: MGI_PhenoGenoMP-{suffix}.rpt
     resource: mouse-phenotypes-report
--
-    uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
+  - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
     output_filename: map_with_efos-{suffix}.json
     resource: tissue-translation-map
--
-    uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
+  - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
     output_filename: expression_hierarchy_curation-{suffix}.tsv
     resource: tissue-curation-map
--
-    uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
+  - uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
     output_filename: normal_tissue-{suffix}.tsv.zip
     resource: hpa-normal-tissue
-
--   uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
+  - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.binned_v2-{suffix}.tsv
     resource: hpa-rna-level
--
-    uri: https://storage.googleapis.com/atlas_baseline_expression/exp_summary_NormCounts_genes_all_Blueprint2_v2.txt
+  - uri: https://storage.googleapis.com/atlas_baseline_expression/exp_summary_NormCounts_genes_all_Blueprint2_v2.txt
     output_filename: exp_summary_NormCounts_genes_all_Blueprint2_v2-{suffix}.txt
     resource: hpa-rna-value
--
-    uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
+  - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
 annotations_from_buckets:
-    - bucket: otar007-cosmic
-      output_filename: cosmic-hallmarks-{suffix}.json.gz
-      resource: hallmark
-      includes: hallmarks
-    - bucket: otar001-core/Tractability
-      output_filename: tractability_buckets-{suffix}.tsv
-      resource: tractability
-    - bucket: otar001-core/CancerBiomarkers/annotation
-      output_filename: cancerbiomarkers-{suffix}.tsv
-      resource: biomarker
-    - bucket: otar001-core/ProbeMiner/annotation
-      output_filename: chemicalprobes_probeminer-{suffix}.tsv
-      resource: chemical-probes-2
+  gs_output_dir: annotations_files
+  downloads:
+  - bucket: otar007-cosmic
+    output_filename: cosmic-hallmarks-{suffix}.json.gz
+    resource: hallmark
+    includes: hallmarks
+  - bucket: otar001-core/Tractability
+    output_filename: tractability_buckets-{suffix}.tsv
+    resource: tractability
+  - bucket: otar001-core/CancerBiomarkers/annotation
+    output_filename: cancerbiomarkers-{suffix}.tsv
+    resource: biomarker
+  - bucket: otar001-core/ProbeMiner/annotation
+    output_filename: chemicalprobes_probeminer-{suffix}.tsv
+    resource: chemical-probes-2
 chemical_probes:
-    output_filename: chemicalprobes_portalprobes-{suffix}.tsv
-    resource : chemical-probes-1
-    spreadsheets:
-    -
-       gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-       gid: 1686598114
-       output_filename: chemical_probes_SGC.tsv
-       cp_type: sgc
-    -
-       gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-       gid: 1636863333
-       output_filename: chemical_probes_portal.tsv
-       cp_type: cpp
-    -
-       gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-       gid: 349856989
-       output_filename: open_science_probes.tsv
-       cp_type: osp
+  output_filename: chemicalprobes_portalprobes-{suffix}.tsv
+  resource: chemical-probes-1
+  gs_output_dir: annotations_files
+  spreadsheets:
+  - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+    gid: 1686598114
+    output_filename: chemical_probes_SGC.tsv
+    cp_type: sgc
+  - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+    gid: 1636863333
+    output_filename: chemical_probes_portal.tsv
+    cp_type: cpp
+  - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
+    gid: 349856989
+    output_filename: open_science_probes.tsv
+    cp_type: osp
 ensembl:
-    conda_env: backend-genetics
-    conda_create: conda env create -f {root_dir}/scripts/ensembl/environment.yaml
-    python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/. -e -z -n
-    ensembl_release: homo_sapiens_core_93_38
-    extension_file: _genes.json.gz
-    resource: ensembl-filename
+  conda_env: backend-genetics
+  conda_create: conda env create -f {root_dir}/scripts/ensembl/environment.yaml
+  python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/.
+    -e -z -n
+  ensembl_release: homo_sapiens_core_93_38
+  extension_file: _genes.json.gz
+  resource: ensembl-filename
+  gs_output_dir: annotations_files
 ChEMBL:
+  gs_output_dir: annotations_files
+  downloads:
     molecule:
-          uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
-          output_filename: chembl_molecule-{suffix}.json
-          resource: chembl-molecule-set-uri-pattern
+      uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
+      output_filename: chembl_molecule-{suffix}.json
+      resource: chembl-molecule-set-uri-pattern
     target:
-          uri: https://www.ebi.ac.uk/chembl/api/data/target.json
-          output_filename: chembl_target-{suffix}.json
-          resource: chembl-target
+      uri: https://www.ebi.ac.uk/chembl/api/data/target.json
+      output_filename: chembl_target-{suffix}.json
+      resource: chembl-target
     mechanism:
-           uri: https://www.ebi.ac.uk/chembl/api/data/mechanism.json
-           output_filename: chembl_mechanism-{suffix}.json
-           resource: chembl-mechanism
+      uri: https://www.ebi.ac.uk/chembl/api/data/mechanism.json
+      output_filename: chembl_mechanism-{suffix}.json
+      resource: chembl-mechanism
     target_component:
-           uri: https://www.ebi.ac.uk/chembl/api/data/target_component.json
-           output_filename: chembl_target_component-{suffix}.json
-           resource: chembl-component
+      uri: https://www.ebi.ac.uk/chembl/api/data/target_component.json
+      output_filename: chembl_target_component-{suffix}.json
+      resource: chembl-component
     protein_class:
-           uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
-           output_filename: chembl_protein_class-{suffix}.json
-           resource: chembl-protein
+      uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
+      output_filename: chembl_protein_class-{suffix}.json
+      resource: chembl-protein
 evidences:
--
-    bucket: otar006-reactome
+  gs_output_dir: evidences_files
+  downloads:
+  - bucket: otar006-reactome
     output_filename: reactome-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar007-cosmic
+  - bucket: otar007-cosmic
     output_filename: cosmic-{suffix}.json.gz
     excludes: hallmarks
     resource: input-file
--
-    bucket: otar008-chembl
+  - bucket: otar008-chembl
     output_filename: chembl-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar009-gwas
+  - bucket: otar009-gwas
     output_filename: gwas-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar010-atlas
+  - bucket: otar010-atlas
     output_filename: atlas-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar011-uniprot
+  - bucket: otar011-uniprot
     output_filename: uniprot-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar012-eva
+  - bucket: otar012-eva
     output_filename: eva-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar025-epmc
+  - bucket: otar025-epmc
     output_filename: epmc-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/Gene2Phenotype/json
+  - bucket: otar000-evidence_input/Gene2Phenotype/json
     output_filename: gene2phenotype-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/GenomicsEngland/json
+  - bucket: otar000-evidence_input/GenomicsEngland/json
     output_filename: genomics_england-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/IntOgen/json
+  - bucket: otar000-evidence_input/IntOgen/json
     output_filename: intogen-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/PhenoDigm/json
+  - bucket: otar000-evidence_input/PhenoDigm/json
     output_filename: phenodigm-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/PheWAS/json
+  - bucket: otar000-evidence_input/PheWAS/json
     output_filename: phewas_catalog-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/PROGENy/json
+  - bucket: otar000-evidence_input/PROGENy/json
     output_filename: progeny-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/SLAPEnrich/json
+  - bucket: otar000-evidence_input/SLAPEnrich/json
     output_filename: slapenrich-{suffix}.json.gz
     resource: input-file
--
-    bucket: otar000-evidence_input/SysBio/json
+  - bucket: otar000-evidence_input/SysBio/json
     output_filename: sysbio-{suffix}.json.gz
     resource: input-file
 data_pipeline_schema:
