@@ -13,12 +13,6 @@ with the various command line, environment, and ini/yaml file options.
 
 """
 
-def get_list_steps_on_request(list_steps_requested, keys_list):
-    if list_steps_requested:
-        list_steps='\n\t'.join(keys_list)
-        list_steps='List of steps available:\n\t'+list_steps
-        print list_steps
-        exit(0)
 
 def setup_parser():
     p = configargparse.get_argument_parser(config_file_parser_class=configargparse.YAMLConfigFileParser)
@@ -42,7 +36,9 @@ def setup_parser():
     p.add('-s', '--suffix', env_var="OT_SUFFIX_INPUT",
           action='store', help='The default suffix is yyyy-mm-dd')
 
-    p.add('-step', action='store', help='Run a specific section of the config file')
+    p.add('-steps', action='store',nargs='+',
+           help='Run a specific list of sections of the config file. Eg\n annotations annotations_from_buckets'
+         )
 
     p.add('--skip', action='store_true', help='Skip the errors and just report them')
 
@@ -79,18 +75,6 @@ def get_input_file(input_filename, default_name_file):
             errno.ENOENT, os.strerror(errno.ENOENT), ' The input file does not exists: %s' % input_filename)
     else:
         return input_filename
-
-
-def get_output_dir(output_dir, default_output_dir):
-    if output_dir is None:
-        output_dir = default_output_dir
-    try:
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-    except OSError:
-        sys.exit('Fatal: output directory "' + output_dir + '" does not exist and cannot be created')
-
-    return output_dir
 
 
 def get_list_of_file_download(config_file, headers):

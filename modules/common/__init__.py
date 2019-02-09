@@ -1,6 +1,7 @@
 import functools
 from contextlib import contextmanager
-import gzip
+import zipfile
+import os, sys
 import zipfile
 import tempfile as tmp
 import requests as r
@@ -21,6 +22,26 @@ def get_lines(input_filename):
             for i, l in enumerate(f):
                 pass
     return i+1
+
+
+def get_output_dir(output_dir, default_output_dir):
+    if output_dir is None:
+        output_dir = default_output_dir
+    try:
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+    except OSError:
+        sys.exit('Fatal: output directory "' + output_dir + '" does not exist and cannot be created')
+
+    return output_dir
+
+
+def make_zip(file_with_path):
+    filename_zip = file_with_path+".zip"
+    zf = zipfile.ZipFile(filename_zip, "w",zipfile.ZIP_DEFLATED, allowZip64 = True)
+    zf.write(file_with_path)
+    zf.close()
+    return filename_zip
 
 def urllify(string_name):
     """return a file:// urlified simple path to a file:// is :// is not contained in it"""

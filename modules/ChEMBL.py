@@ -46,12 +46,13 @@ class ChEMBLLookup(object):
         super(ChEMBLLookup, self).__init__()
         self._logger = logging.getLogger(__name__)
 
-        self.target_cfg = yaml_dict.target
-        self.mechanism_cfg = yaml_dict.mechanism
-        self.component_cfg = yaml_dict.target_component
-        self.protein_cfg = yaml_dict.protein_class
-        self.molecule_cfg = yaml_dict.molecule
+        self.target_cfg = yaml_dict.downloads.target
+        self.mechanism_cfg = yaml_dict.downloads.mechanism
+        self.component_cfg = yaml_dict.downloads.target_component
+        self.protein_cfg = yaml_dict.downloads.protein_class
+        self.molecule_cfg = yaml_dict.downloads.molecule
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
+        self.gs_output_dir = yaml_dict.gs_output_dir
 
 
     def download_targets(self):
@@ -94,9 +95,14 @@ class ChEMBLLookup(object):
     def download_chEMBL_files(self):
         list_files_ChEMBL_downloaded = {}
         self._logger.info('chembl downloading targets/mechanisms/proteins')
-        list_files_ChEMBL_downloaded[self.download_molecules()] = self.molecule_cfg.resource
-        list_files_ChEMBL_downloaded[self.download_targets()] = self.target_cfg.resource
-        list_files_ChEMBL_downloaded[self.download_mechanisms()] = self.mechanism_cfg.resource
-        list_files_ChEMBL_downloaded[self.download_protein_classification()] = self.component_cfg.resource
-        list_files_ChEMBL_downloaded[self.download_protein_class()] = self.protein_cfg.resource
+        # list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
+        #                                                            'gs_output_dir': self.gs_output_dir }
+        list_files_ChEMBL_downloaded[self.download_targets()] = {'resource': self.target_cfg.resource,
+                                                                 'gs_output_dir' : self.gs_output_dir}
+        list_files_ChEMBL_downloaded[self.download_mechanisms()] = {'resource': self.mechanism_cfg.resource,
+                                                                    'gs_output_dir': self.gs_output_dir}
+        list_files_ChEMBL_downloaded[self.download_protein_classification()] = {'resource': self.component_cfg.resource,
+                                                                                'gs_output_dir': self.gs_output_dir}
+        list_files_ChEMBL_downloaded[self.download_protein_class()] = {'resource': self.protein_cfg.resource,
+                                                                       'gs_output_dir': self.gs_output_dir}
         return list_files_ChEMBL_downloaded

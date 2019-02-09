@@ -109,12 +109,16 @@ class GoogleBucketResource(object):
     def list_blobs_object_path_includes(self, included_pattern):
         return self.list_blobs(self.object_path, '', included_pattern, None)
 
-    def copy_from(self, original_filename, dest_filename):
+    def copy_from(self, original_filename, dest_filename, gs_specific_output_dir = None):
         bucket_link = self.get_bucket()
         if bucket_link is None:
             raise ValueError('Invalid google storage bucket {bucket}'.format(bucket=self.bucket_name))
 
-        blob = bucket_link.blob(self.object_path + '/' + dest_filename)
+        object_path = self.object_path
+        if gs_specific_output_dir is not None:
+            object_path = object_path + '/' + gs_specific_output_dir
+
+        blob = bucket_link.blob(object_path + '/' + dest_filename)
         logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
         blob.upload_from_filename(filename=original_filename)
         return blob.name

@@ -14,13 +14,14 @@ logger = logging.getLogger(__name__)
 class DataPipelineConfig(object):
     def __init__(self, yaml_dict, output_dir = PIS_OUTPUT_DIR):
         self.data_pipeline_uri = yaml_dict.uri
-        self.output_filename = yaml_dict.output_filename if 'output_filename' in yaml_dict else 'mrtarget.data.yml'
+        self.output_filename = yaml_dict.output_filename if 'output_filename' in yaml_dict else 'partial.mrtarget.data.yml'
         self.output_dir = output_dir
 
-    def open_config_file(self):
-        filename = self.output_dir + '/' + self.output_filename
-        if os.path.exists(filename): os.remove(filename)
-        conf_file = open(filename, "a+")
+    def open_config_file(self, prefix_file=None):
+        filename = prefix_file + self.output_filename if prefix_file is not None else self.output_filename
+        filename_path = self.output_dir + '/' + filename
+        if os.path.exists(filename_path): os.remove(filename_path)
+        conf_file = open(filename_path, "a+")
         return conf_file
 
     def download_template_schema(self):
@@ -29,21 +30,25 @@ class DataPipelineConfig(object):
         destination_filename = download.execute_download(resource_info)
         return destination_filename
 
-    def create_config_file(self, list_files):
+    def create_config_file(self, list_files, prefix_file = None):
         logging.info("Creating data pipeline config file.")
         data_pipeline_schema = self.download_template_schema()
         data_pipeline_yaml = YAMLReader(data_pipeline_schema)
         data_pipeline_config=data_pipeline_yaml.read_yaml(True)
-        conf_file = self.open_config_file()
         list_resources = {}
         for k, v in list_files.items():
-            list_resources.setdefault(v, []).append(k)
+            list_resources.setdefault(v['resource'], []).append(k)
 
         for k,v in list_resources.items():
             if k in data_pipeline_config:
-               data_pipeline_config[k] = v
+                if len(v) == 1 :
+                    data_pipeline_config[k] = v[0]
+                else:
+                    data_pipeline_config[k] = v
+            else:
+                logging.error("The key {} does not exist", k)
 
-        with self.open_config_file() as outfile:
+        with self.open_config_file(prefix_file) as outfile:
             yaml.safe_dump(data_pipeline_config, outfile,default_flow_style=False, allow_unicode=True)
 
         logging.info("Data Pipeline YAML file created.")
