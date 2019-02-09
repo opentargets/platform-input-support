@@ -1,6 +1,7 @@
 # Google Application Credential
 # do not upload/share this file
 open-targets-gac.json
+mrtarget.data.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
