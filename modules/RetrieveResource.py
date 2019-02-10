@@ -59,7 +59,7 @@ class RetrieveResource(object):
         chemical_probes_resource.download_spreadsheet(self.yaml.chemical_probes,chemical_output_dir)
         chemical_filename = chemical_probes_resource.generate_probes(self.yaml.chemical_probes)
         self.list_files_downloaded[chemical_filename] = {'resource': self.yaml.chemical_probes.resource,
-                                                         'gs_output_dir': self.yaml.chemical_probes.resource}
+                                                         'gs_output_dir': self.yaml.chemical_probes.gs_output_dir}
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
         list_files_ChEMBL ={}

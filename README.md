@@ -98,4 +98,9 @@ conda env create -f environment.yaml
 conda activate platform-input-support-py2.7
 conda install pip
 pip install -r requirements.txt
-python platform-input-support.py -l```
+python platform-input-support.py -l
+```
+
+Use nohup
+
+```nohup python platform-input-support.py [options] &```
