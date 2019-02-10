@@ -95,8 +95,6 @@ class ChEMBLLookup(object):
     def download_chEMBL_files(self):
         list_files_ChEMBL_downloaded = {}
         self._logger.info('chembl downloading targets/mechanisms/proteins')
-        list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
-                                                                   'gs_output_dir': self.gs_output_dir }
         list_files_ChEMBL_downloaded[self.download_targets()] = {'resource': self.target_cfg.resource,
                                                                  'gs_output_dir' : self.gs_output_dir}
         list_files_ChEMBL_downloaded[self.download_mechanisms()] = {'resource': self.mechanism_cfg.resource,
@@ -105,4 +103,6 @@ class ChEMBLLookup(object):
                                                                                 'gs_output_dir': self.gs_output_dir}
         list_files_ChEMBL_downloaded[self.download_protein_class()] = {'resource': self.protein_cfg.resource,
                                                                        'gs_output_dir': self.gs_output_dir}
+        list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
+                                                                   'gs_output_dir': self.gs_output_dir }
         return list_files_ChEMBL_downloaded
