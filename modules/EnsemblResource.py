@@ -53,7 +53,7 @@ class EnsemblResource(object):
         script_path = ROOT_DIR + "/scripts/ensembl"
         python_command = self.python_script.replace('{script_path}', script_path).replace('{ensembl_output_dir}', self.output_dir)
         python_command = python_command + ' ' + self.ensembl_release
-        shell_command = 'bash -c "source activate ' + self.conda_env
+        shell_command = 'bash -c "source ~/anaconda2/bin/activate ' + self.conda_env
         shell_command = shell_command+' && '+ python_command + ' && conda deactivate"'
         print shell_command
         process = subprocess.Popen(shell_command, shell=True, stdout=subprocess.PIPE)
