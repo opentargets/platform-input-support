@@ -33,6 +33,7 @@ class EnsemblResource(object):
     def create_conda_env(self):
         logging.info("Creating a new Conda env. This command might require a couple of minutes...")
         command = self.conda_create.replace('{root_dir}', ROOT_DIR)
+        logging.info("Conda command %s", command)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         process.wait()
         logging.info("... done! %s",process.returncode)
