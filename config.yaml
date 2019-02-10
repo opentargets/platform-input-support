@@ -76,7 +76,7 @@ chemical_probes:
     cp_type: osp
 ensembl:
   conda_env: backend-genetics
-  conda_create: bash -c "conda env create -f {root_dir}/scripts/ensembl/environment.yaml"
+  conda_create: bash -c "~/anaconda2/bin/conda env create -f {root_dir}/scripts/ensembl/environment.yaml"
   python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/.
     -e -z -n
   ensembl_release: homo_sapiens_core_93_38
