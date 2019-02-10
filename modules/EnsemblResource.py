@@ -22,7 +22,9 @@ class EnsemblResource(object):
 
     def is_valid_conda_env(self):
         valid_conda_env = False
-        command = 'conda env list | grep ' + self.conda_env
+        command = 'bash -c "~/anaconda2/bin/conda env list | grep "' + self.conda_env
+        #subprocess.Popen('bash -c "~/anaconda2/bin/conda env list | grep backend"', shell=True)
+        #command = 'conda env list | grep ' + self.conda_env
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         process.wait()
         # maybe process.returncode return 1 when grep is empty
