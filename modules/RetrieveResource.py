@@ -23,6 +23,8 @@ class RetrieveResource(object):
         self.list_files_downladed_failed = {}
 
     def has_step(self, step):
+        if self.args.exclude is not None:
+            if step in self.args.exclude: return False
         if self.args.steps is None: return True
         if step in self.args.steps: return True
         return False

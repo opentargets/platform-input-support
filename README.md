@@ -9,11 +9,16 @@ For Mac goes here: <br>
 Run  
 ```
 bash ~/Downloads/Anaconda2-5.3.0-MacOSX-x86_64.sh
+source ~/.bashrc
+conda update
+```
+The last command ... path/anaconda2
+```
+conda update --prefix path/anaconda2 anaconda
 ```
 
 # Installation
 ```
-conda install -c conda-forge zip 
 conda env create -f environment.yaml
 conda activate platform-input-support-py2.7
 conda install pip
@@ -50,12 +55,7 @@ optional arguments:
 ## Alternative Usage example
 
 ```
-python -m modules.RetrieveAnnotations -h
-```
-or
-```
-cd modules
-python -m RetrieveAnnotations -h
+python platform-input-support.py -h
 ```
 
 # Google Bucket example
@@ -67,22 +67,35 @@ python platform-input-support.py
          --google_bucket ot-snapshots/es5-sufentanil/tmp
 ```
 
-```
-python -m modules.RetrieveAnnotations  \ 
-       -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json \ 
-       --google_bucket ot-snapshots/es5-sufentanil/tmp/19.02/input/annotation-files
-```
 
 
 ```
-python -m modules.RetrieveEvidences -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
-
-python -m modules.RetrieveEvidences --skip  \ 
-       -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json
-
-python -m modules.RetrieveEvidences --skip  \ 
-       -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json  \ 
-       -gb ot-snapshots/es5-sufentanil/tmp/19.02/input/evidence-files
+python -m modules.RetrieveEvidences --skip 
   
-python -m modules.RetrieveAnnotations -gkey /Users/cinzia/gitRepositories/platform-input-support/open-targets-gac.json --google_bucket ot-snapshots/es5-sufentanil -step chemical_probes
+python -m modules.RetrieveAnnotations -gkey path/open-targets-gac.json --google_bucket ot-snapshots/es5-sufentanil -step chemical_probes
 ```
+
+### Use VM such as Google Cloud or Amazon Azure
+
+```
+sudo apt update
+sudo apt install git
+sudo apt-get install bzip2 
+```
+```
+wget https://repo.anaconda.com/archive/Anaconda2-2018.12-Linux-x86_64.sh
+bash Anaconda2-2018.12-Linux-x86_64.sh
+source ~/.bashrc
+conda update --prefix /home/cinzia/anaconda2 anaconda
+```
+
+```
+mkdir gitRepo
+cd gitRepo
+git clone https://github.com/opentargets/platform-input-support.git
+cd platform-input-support
+conda env create -f environment.yaml
+conda activate platform-input-support-py2.7
+conda install pip
+pip install -r requirements.txt
+python platform-input-support.py -l```

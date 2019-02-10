@@ -40,6 +40,10 @@ def setup_parser():
            help='Run a specific list of sections of the config file. Eg\n annotations annotations_from_buckets'
          )
 
+    p.add('-exclude', action='store',nargs='+',
+           help='Exclude a specific list of sections of the config file. Eg\n annotations annotations_from_buckets'
+         )
+
     p.add('--skip', action='store_true', help='Skip the errors and just report them')
 
     p.add('-l','--list_steps', action='store_true', help='List of steps callable')
