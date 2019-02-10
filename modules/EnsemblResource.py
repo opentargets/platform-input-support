@@ -53,8 +53,9 @@ class EnsemblResource(object):
         script_path = ROOT_DIR + "/scripts/ensembl"
         python_command = self.python_script.replace('{script_path}', script_path).replace('{ensembl_output_dir}', self.output_dir)
         python_command = python_command + ' ' + self.ensembl_release
-        shell_command = 'source activate ' + self.conda_env
-        shell_command = shell_command+' && '+ python_command + ' && conda deactivate'
+        shell_command = 'bash -c "source activate ' + self.conda_env
+        shell_command = shell_command+' && '+ python_command + ' && conda deactivate"'
+        print shell_command
         process = subprocess.Popen(shell_command, shell=True, stdout=subprocess.PIPE)
         process.wait()
         logger.info("Ensembl filename downloaded: %s", self.ensembl_release+self.extension_file)
