@@ -158,3 +158,6 @@ class RetrieveResource(object):
         if google_opts: self.copy_files_to_google_storage()
 
         self.create_yaml_config_file()
+
+        logging.info("Done.")
+        return True
