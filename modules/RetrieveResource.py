@@ -40,7 +40,7 @@ class RetrieveResource(object):
 
             if destination_filename is not None:
                  self.list_files_downloaded[destination_filename] = { 'resource' : entry.resource,
-                                                                      'gs_output': self.yaml.annotations_from_buckets.gs_output_dir }
+                                                                      'gs_output_dir': self.yaml.annotations_from_buckets.gs_output_dir }
             elif not self.args.skip:
                  raise ValueError("Error during downloading: {}", entry.uri)
 
