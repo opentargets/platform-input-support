@@ -128,7 +128,7 @@ sudo apt-get install bzip2
 wget https://repo.anaconda.com/archive/Anaconda2-2018.12-Linux-x86_64.sh
 bash Anaconda2-2018.12-Linux-x86_64.sh
 source ~/.bashrc
-conda update --prefix /home/cinzia/anaconda2 anaconda
+conda update --prefix your_home_path/anaconda2 anaconda
 ```
 
 ```
