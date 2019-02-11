@@ -29,6 +29,7 @@ class GoogleBucketResource(object):
             logger.info('\n\tGoogle Bucket connection: %s',project)
         except Exception as error:
             logger.error('Google Auth Error: %s',error)
+            raise ValueError("Google credential is not valid!")
             return False
         return True
 
