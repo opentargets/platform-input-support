@@ -24,15 +24,15 @@ Download Conda for Mac here: <br>
  https://www.anaconda.com/download/#macos. <br>
 [download Version 2.7 Command-Line Installer]
 
-#Conda: installation commands
+Conda: installation commands
 ```
-bash ~/Downloads/Anaconda2-5.3.0-MacOSX-x86_64.sh
+bash path_where_downloaded_the_file/Anaconda2-5.3.0-MacOSX-x86_64.sh
 source ~/.bashrc
 conda update
 conda update --prefix your_home_path/anaconda2 anaconda
 ```
 
-# Set up application
+# Set up application (first time)
 ```
 git clone https://github.com/opentargets/platform-input-support
 cd platform-input-support
@@ -46,6 +46,9 @@ python platform-input-support -h
 ## Usage
 
 ```
+conda activate platform-input-support-py2.7
+cd your_path_application
+python platform-input-support -h
 usage: platform-input-support.py [-h] [-c CONFIG]
                                  [-gkey GOOGLE_CREDENTIAL_KEY]
                                  [-gb GOOGLE_BUCKET] [-o OUTPUT_DIR] [-t]
