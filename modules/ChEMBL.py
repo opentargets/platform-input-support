@@ -1,10 +1,13 @@
 import os
-import logging
 from definitions import PIS_OUTPUT_CHEMBL_API
 from time import sleep
 from modules.common import URLZSource
 import json
 import datetime
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_chembl_url(uri, filename, suffix):
     '''return to json from uri'''
@@ -23,6 +26,7 @@ def get_chembl_url(uri, filename, suffix):
     while next_get:
         sleep(0.1)  # Time in seconds. Slow down to avoid 429
         chunk = None
+        logging.debug("uri:  %s %s %s", uri, limit, offset)
         with URLZSource(uri + _fmt(limit=limit, offset=offset)).open() as f:
             chunk = json.loads(f.read())
 
@@ -95,6 +99,8 @@ class ChEMBLLookup(object):
     def download_chEMBL_files(self):
         list_files_ChEMBL_downloaded = {}
         self._logger.info('chembl downloading targets/mechanisms/proteins')
+        list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
+                                                                   'gs_output_dir': self.gs_output_dir }
         list_files_ChEMBL_downloaded[self.download_targets()] = {'resource': self.target_cfg.resource,
                                                                  'gs_output_dir' : self.gs_output_dir}
         list_files_ChEMBL_downloaded[self.download_mechanisms()] = {'resource': self.mechanism_cfg.resource,
@@ -103,6 +109,4 @@ class ChEMBLLookup(object):
                                                                                 'gs_output_dir': self.gs_output_dir}
         list_files_ChEMBL_downloaded[self.download_protein_class()] = {'resource': self.protein_cfg.resource,
                                                                        'gs_output_dir': self.gs_output_dir}
-        list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
-                                                                   'gs_output_dir': self.gs_output_dir }
         return list_files_ChEMBL_downloaded

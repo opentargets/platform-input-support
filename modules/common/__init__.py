@@ -1,6 +1,5 @@
 import functools
 from contextlib import contextmanager
-import zipfile
 import os, sys
 import zipfile
 import tempfile as tmp
@@ -8,7 +7,7 @@ import requests as r
 import requests_file
 import gzip
 GZIP_MAGIC_NUMBER = "1f8b"
-
+import logging
 
 def is_gzip(filename):
     open_file = open(filename)
@@ -69,6 +68,7 @@ class URLZSource(object):
         self.proxies = None
         self.r_session = r.Session()
         self.r_session.mount('file://', requests_file.FileAdapter())
+        logging.debug(filename)
 
     @contextmanager
     def _open_local(self, filename, mode):
