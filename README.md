@@ -115,6 +115,11 @@ python platform-input-support.py
          --google_bucket ot-snapshots/es5-sufentanil/tmp
          --steps annotations evidences
          --exclude ChEMBL
+or
+python platform-input-support.py 
+         -gkey /path/open-targets-gac.json 
+         -gb bucket/object_path -steps ChEMBL 
+         --log-level DEBUG > log.txt 
 ```
 
 ### Installation command for Google Cloud or Amazon Azure
@@ -145,4 +150,11 @@ python platform-input-support.py -l
 
 Use nohup to avoid that the process hang up.
 
-```nohup python platform-input-support.py [options] &```
+```nohup python platform-input-support.py [options] &
+
+Eg.
+nohup python platform-input-support.py 
+         -gkey /path/open-targets-gac.json 
+         -gb bucket/object_path -steps ChEMBL 
+         --log-level DEBUG > log.txt &
+```
