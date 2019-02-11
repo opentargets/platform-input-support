@@ -104,7 +104,7 @@ ChEMBL:
       resource: chembl-component
     protein_class:
       uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
-      output_filename: chembl_protein_class-{suffix}.json
+      output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
 evidences:
   gs_output_dir: evidences_files
