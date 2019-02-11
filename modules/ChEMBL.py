@@ -17,6 +17,7 @@ def get_chembl_url(uri, filename, suffix):
     uri_to_filename = PIS_OUTPUT_CHEMBL_API+'/'+filename.replace('{suffix}', suffix)
     if os.path.exists(uri_to_filename): os.remove(uri_to_filename)
     file_chembl = open(uri_to_filename, "a+")
+    file_chembl.write("[")
 
     def _fmt(**kwargs):
         '''generate uri string params from kwargs dict'''
@@ -33,16 +34,18 @@ def get_chembl_url(uri, filename, suffix):
         page_meta = chunk['page_meta']
         data_key = list(set(chunk.keys()) - set(['page_meta']))[0]
 
+        json_string_array = json.dumps(chunk[data_key])
+        json_string_array = json_string_array[1:-1]
+        file_chembl.write(json_string_array)
+
         if 'next' in page_meta and page_meta['next'] is not None:
             limit = page_meta['limit']
             offset += limit
+            file_chembl.write(",")
         else:
             next_get = False
 
-        for el in chunk[data_key]:
-            file_chembl.write(json.dumps(el))
-            #yield el
-
+    file_chembl.write("]")
     return uri_to_filename
 
 class ChEMBLLookup(object):

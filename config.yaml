@@ -88,19 +88,19 @@ ChEMBL:
   downloads:
     molecule:
       uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
-      output_filename: chembl_molecule-{suffix}.json
+      output_filename: chembl_molecule_rest_api-{suffix}.json
       resource: chembl-molecule-set-uri-pattern
     target:
       uri: https://www.ebi.ac.uk/chembl/api/data/target.json
-      output_filename: chembl_target-{suffix}.json
+      output_filename: chembl_target_rest_api-{suffix}.json
       resource: chembl-target
     mechanism:
       uri: https://www.ebi.ac.uk/chembl/api/data/mechanism.json
-      output_filename: chembl_mechanism-{suffix}.json
+      output_filename: chembl_mechanism_rest_api-{suffix}.json
       resource: chembl-mechanism
     target_component:
       uri: https://www.ebi.ac.uk/chembl/api/data/target_component.json
-      output_filename: chembl_target_component-{suffix}.json
+      output_filename: chembl_target_component_rest_api-{suffix}.json
       resource: chembl-component
     protein_class:
       uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
@@ -159,5 +159,5 @@ evidences:
     output_filename: sysbio-{suffix}.json.gz
     resource: input-file
 data_pipeline_schema:
-  uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget.data.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/19.02/input/mrtarget.data-2019-02-05.yml
   output_filename: mrtarget.data.yml
