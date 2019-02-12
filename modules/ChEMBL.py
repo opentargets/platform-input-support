@@ -4,7 +4,6 @@ from time import sleep
 from modules.common import URLZSource
 import json
 import datetime
-import itertools
 
 import logging
 
@@ -35,8 +34,9 @@ def get_chembl_url(uri, filename, suffix):
                 page_meta = chunk.pop('page_meta', None)
 
                 dict_key = chunk.keys()[0]
-                i_strs = itertools.imap(json.dumps,chunk[dict_key])
-                file_chembl.writelines(i_strs)
+
+                for el in chunk[dict_key]:
+                    file_chembl.write(json.dumps(el) + '\n')
 
             if 'next' in page_meta and page_meta['next'] is not None:
                 limit = page_meta['limit']
@@ -44,7 +44,7 @@ def get_chembl_url(uri, filename, suffix):
 
             else:
                 next_get = False
-
+            next_get = False
     return uri_to_filename
 
 class ChEMBLLookup(object):

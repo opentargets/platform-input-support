@@ -29,7 +29,7 @@ Conda: installation commands
 bash path_where_downloaded_the_file/Anaconda2-5.3.0-MacOSX-x86_64.sh
 source ~/.bashrc
 conda update
-conda update --prefix your_home_path/anaconda2 anaconda
+conda update --prefix  ~/anaconda2 anaconda
 ```
 
 # Set up application (first time)
@@ -134,7 +134,7 @@ sudo apt-get install bzip2
 wget https://repo.anaconda.com/archive/Anaconda2-2018.12-Linux-x86_64.sh
 bash Anaconda2-2018.12-Linux-x86_64.sh
 source ~/.bashrc
-conda update --prefix your_home_path/anaconda2 anaconda
+conda update --prefix ~/anaconda2 anaconda
 ```
 
 ```
