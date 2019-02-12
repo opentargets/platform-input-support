@@ -7,7 +7,7 @@ from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
-from common import get_lines, make_zip
+from common import get_lines, make_gzip
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class RetrieveResource(object):
         chembl_handler = ChEMBLLookup(self.yaml.ChEMBL)
         list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_files()
         for file_with_path in list_files_ChEMBL_unzipped:
-            filename_zip = make_zip(file_with_path)
+            filename_zip = make_gzip(file_with_path)
             list_files_ChEMBL[filename_zip] = {'resource': list_files_ChEMBL_unzipped[file_with_path]['resource'],
                                                'gs_output_dir': self.yaml.ChEMBL.gs_output_dir }
         self.list_files_downloaded.update(list_files_ChEMBL)

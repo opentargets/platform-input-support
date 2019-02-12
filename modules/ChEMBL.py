@@ -4,6 +4,7 @@ from time import sleep
 from modules.common import URLZSource
 import json
 import datetime
+import itertools
 
 import logging
 
@@ -11,41 +12,39 @@ logger = logging.getLogger(__name__)
 
 def get_chembl_url(uri, filename, suffix):
     '''return to json from uri'''
-    next_get = True
-    limit = 1000000
-    offset = 0
-    uri_to_filename = PIS_OUTPUT_CHEMBL_API+'/'+filename.replace('{suffix}', suffix)
-    if os.path.exists(uri_to_filename): os.remove(uri_to_filename)
-    file_chembl = open(uri_to_filename, "a+")
-    file_chembl.write("[")
-
     def _fmt(**kwargs):
         '''generate uri string params from kwargs dict'''
         l = ['='.join([k, str(v)]) for k, v in kwargs.iteritems()]
         return '?' + '&'.join(l)
 
-    while next_get:
-        sleep(0.1)  # Time in seconds. Slow down to avoid 429
-        chunk = None
-        logging.debug("uri:  %s %s %s", uri, limit, offset)
-        with URLZSource(uri + _fmt(limit=limit, offset=offset)).open() as f:
-            chunk = json.loads(f.read())
+    next_get = True
+    limit = 1000000
+    offset = 0
+    uri_to_filename = PIS_OUTPUT_CHEMBL_API+'/'+filename.replace('{suffix}', suffix)
+    if os.path.exists(uri_to_filename): os.remove(uri_to_filename)
+    with open(uri_to_filename, "a+") as file_chembl:
 
-        page_meta = chunk['page_meta']
-        data_key = list(set(chunk.keys()) - set(['page_meta']))[0]
+        while next_get:
+            sleep(0.1)  # Time in seconds. Slow down to avoid 429
+            chunk = None
+            logging.debug("uri:  %s %s %s", uri, limit, offset)
 
-        json_string_array = json.dumps(chunk[data_key])
-        json_string_array = json_string_array[1:-1]
-        file_chembl.write(json_string_array)
+            with URLZSource(uri + _fmt(limit=limit, offset=offset)).open() as f:
+                chunk = json.loads(f.read())
 
-        if 'next' in page_meta and page_meta['next'] is not None:
-            limit = page_meta['limit']
-            offset += limit
-            file_chembl.write(",")
-        else:
-            next_get = False
+                page_meta = chunk.pop('page_meta', None)
 
-    file_chembl.write("]")
+                dict_key = chunk.keys()[0]
+                i_strs = itertools.imap(json.dumps,chunk[dict_key])
+                file_chembl.writelines(i_strs)
+
+            if 'next' in page_meta and page_meta['next'] is not None:
+                limit = page_meta['limit']
+                offset += limit
+
+            else:
+                next_get = False
+
     return uri_to_filename
 
 class ChEMBLLookup(object):

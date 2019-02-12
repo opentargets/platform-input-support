@@ -35,6 +35,13 @@ def get_output_dir(output_dir, default_output_dir):
     return output_dir
 
 
+def make_gzip(file_with_path):
+    r_filename = file_with_path + '.gz'
+    with open(file_with_path, 'rb') as f_in, gzip.open(r_filename, 'wb') as f_out:
+        f_out.writelines(f_in)
+
+    return r_filename
+
 def make_zip(file_with_path):
     filename_zip = file_with_path+".zip"
     zf = zipfile.ZipFile(filename_zip, "w",zipfile.ZIP_DEFLATED, allowZip64 = True)
