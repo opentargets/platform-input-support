@@ -1,6 +1,6 @@
 ---
 annotations:
-  gs_output_dir: annotations_files
+  gs_output_dir: annotation_files
   downloads:
   - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
     output_filename: uniprot-{suffix}.xml.gz
@@ -42,7 +42,7 @@ annotations:
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
 annotations_from_buckets:
-  gs_output_dir: annotations_files
+  gs_output_dir: annotation_files
   downloads:
   - bucket: otar007-cosmic
     output_filename: cosmic-hallmarks-{suffix}.json.gz
@@ -60,7 +60,7 @@ annotations_from_buckets:
 chemical_probes:
   output_filename: chemicalprobes_portalprobes-{suffix}.tsv
   resource: chemical-probes-1
-  gs_output_dir: annotations_files
+  gs_output_dir: annotation_files
   spreadsheets:
   - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
     gid: 1686598114
@@ -82,9 +82,9 @@ ensembl:
   ensembl_release: homo_sapiens_core_93_38
   extension_file: _genes.json.gz
   resource: ensembl-filename
-  gs_output_dir: annotations_files
+  gs_output_dir: annotation_files
 ChEMBL:
-  gs_output_dir: annotations_files
+  gs_output_dir: annotation_files
   downloads:
     molecule:
       uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
@@ -107,7 +107,7 @@ ChEMBL:
       output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
 evidences:
-  gs_output_dir: evidences_files
+  gs_output_dir: evidence_files
   downloads:
   - bucket: otar006-reactome
     output_filename: reactome-{suffix}.json.gz
