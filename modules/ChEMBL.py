@@ -44,7 +44,7 @@ def get_chembl_url(uri, filename, suffix):
 
             else:
                 next_get = False
-            next_get = False
+
     return uri_to_filename
 
 class ChEMBLLookup(object):
