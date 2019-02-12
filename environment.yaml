@@ -73,5 +73,5 @@ dependencies:
   - tk=8.6.8=hbc83047_0
   - wheel=0.32.3=py27_0
   - zlib=1.2.11=h7b6447c_3
-prefix: /home/mkarmona/opt/anaconda3/envs/platform-input-support-py2.7
+
 
