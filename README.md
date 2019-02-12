@@ -144,8 +144,6 @@ git clone https://github.com/opentargets/platform-input-support.git
 cd platform-input-support
 conda env create -f environment.yaml
 conda activate platform-input-support-py2.7
-conda install pip
-pip install -r requirements.txt
 python platform-input-support.py -l
 ```
 
