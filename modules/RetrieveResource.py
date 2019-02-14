@@ -123,7 +123,7 @@ class RetrieveResource(object):
             dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
             bucket_filename=google_resource.copy_from(original_filename, dest_filename,
                                                       self.list_files_downloaded[original_filename]['gs_output_dir'])
-            bucket_filename = GOOGLE_STORAGE_URI+bucket_filename
+            bucket_filename = GOOGLE_STORAGE_URI+google_resource.bucket_name+'/'+bucket_filename
             self.list_google_storage_files[bucket_filename] = self.list_files_downloaded[original_filename]
 
     def create_yaml_config_file(self):
