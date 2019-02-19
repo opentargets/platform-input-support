@@ -33,8 +33,8 @@ dependencies:
   - mock=2.0.0
   - more-itertools=4.3.0
   - numpy=1.16.1
-  - openblas=0.3.3=h9ac9557_1001
-  - openssl=1.1.1a=h14c3975_1000
+  - openblas=0.3.3
+  - openssl=1.1.1a
   - pathlib2=2.3.3
   - pbr=5.1.2
   - pluggy=0.8.1
