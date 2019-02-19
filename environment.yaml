@@ -21,16 +21,16 @@ dependencies:
   - google-api-core=1.7.0
   - google-auth=1.6.2
   - google-auth-httplib2=0.0.3
-  - google-cloud-core=0.24.1=
+  - google-cloud-core=0.24.1
   - google-cloud-storage=1.1.1
   - google-resumable-media=0.0.2
   - googleapis-common-protos=1.5.6
-  - httplib2=0.12.0=py27_1000
-  - idna=2.8=py27_1000
+  - httplib2=0.12.0
+  - idna=2.8
   - ipaddress=1.0.22
   - libgfortran-ng=7.2.0
   - libprotobuf=3.6.1
-  - mock=2.0.0=py27_1000
+  - mock=2.0.0
   - more-itertools=4.3.0
   - numpy=1.16.1
   - openblas=0.3.3=h9ac9557_1001
