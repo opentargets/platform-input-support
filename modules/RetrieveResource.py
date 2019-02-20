@@ -45,7 +45,7 @@ class RetrieveResource(object):
                  raise ValueError("Error during downloading: {}", entry.uri)
 
         logger.info("Number of resources requested / Number of files downloaded: %s / %s",
-                    len(self.yaml.annotations), len(self.list_files_downloaded))
+                    len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
 
     def get_ensembl(self):
         ensembl_resource = EnsemblResource(self.yaml.ensembl)

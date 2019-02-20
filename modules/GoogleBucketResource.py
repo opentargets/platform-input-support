@@ -136,7 +136,7 @@ class GoogleBucketResource(object):
                     recent_date = date_file
                     last_recent_file = filename
         logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
-        return {"latest_filename": last_recent_file, "suffix": recent_date.strftime('%d-%m-%Y')}
+        return {"latest_filename": last_recent_file, "suffix": recent_date.strftime('%Y-%m-%d')}
 
     def get_latest_file(self,resource_info):
         if 'excludes' in resource_info:
