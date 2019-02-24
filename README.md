@@ -114,8 +114,8 @@ or
 python platform-input-support.py 
          --google_credential_key /path/open-targets-gac.json 
          --google_bucket ot-snapshots/es5-sufentanil/tmp
-         --steps annotations evidences
-         --exclude ChEMBL
+         -steps annotations evidences
+         -exclude ChEMBL
 or
 python platform-input-support.py 
          -gkey /path/open-targets-gac.json 
