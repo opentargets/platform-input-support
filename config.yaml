@@ -45,7 +45,7 @@ annotations_from_buckets:
   gs_output_dir: annotation_files
   downloads:
   - bucket: otar007-cosmic
-    output_filename: cosmic-hallmarks-{suffix}.json.gz
+    output_filename: cosmic-hallmarks-{suffix}.tsv
     resource: hallmark
     includes: hallmarks
   - bucket: otar001-core/Tractability
