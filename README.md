@@ -124,7 +124,7 @@ python platform-input-support.py
 ```
 
 ### Installation command for Google Cloud or Amazon Azure
-Create a linux VM server and run the folloging commands
+Create a linux VM server and run the following commands
 ```
 sudo apt update
 sudo apt install git
