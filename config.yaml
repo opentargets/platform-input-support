@@ -86,6 +86,10 @@ ensembl:
 ChEMBL:
   gs_output_dir: annotation_files
   downloads:
+    drug:
+      uri: https://www.ebi.ac.uk/chembl/api/data/drug_indication.json
+      output_filename: chembl_drug_indication_rest_api-{suffix}.json
+      resource: chembl-drug-indication
     molecule:
       uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
       output_filename: chembl_molecule_rest_api-{suffix}.json
