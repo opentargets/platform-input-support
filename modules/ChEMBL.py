@@ -57,6 +57,7 @@ class ChEMBLLookup(object):
         self.component_cfg = yaml_dict.downloads.target_component
         self.protein_cfg = yaml_dict.downloads.protein_class
         self.molecule_cfg = yaml_dict.downloads.molecule
+        self.drug_cfg = yaml_dict.downloads.drug
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.gs_output_dir = yaml_dict.gs_output_dir
 
@@ -98,9 +99,19 @@ class ChEMBLLookup(object):
 
         return molecules_filename
 
+    def download_drugs(self):
+        '''download the REST API associated to the uri'''
+        self._logger.info('ChEMBL getting drugs from ' + self.drug_cfg.uri)
+        drugs_filename = get_chembl_url(self.drug_cfg.uri, self.drug_cfg.output_filename, self.suffix)
+
+        return drugs_filename
+
+
     def download_chEMBL_files(self):
         list_files_ChEMBL_downloaded = {}
-        self._logger.info('chembl downloading targets/mechanisms/proteins')
+        self._logger.info('chembl downloading drugs/molecules/targets/mechanisms/proteins')
+        list_files_ChEMBL_downloaded[self.download_drugs()] = {'resource': self.drug_cfg.resource,
+                                                                   'gs_output_dir': self.gs_output_dir }
         list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
                                                                    'gs_output_dir': self.gs_output_dir }
         list_files_ChEMBL_downloaded[self.download_targets()] = {'resource': self.target_cfg.resource,
