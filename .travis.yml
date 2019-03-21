@@ -13,7 +13,6 @@ install:
 
   - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
   - source activate test
-  - pip install -r requirements.txt
 
 script:
    - python -m pytest --cov=modules --cov-report term tests/ --fulltrace
