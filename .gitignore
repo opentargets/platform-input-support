@@ -2,6 +2,7 @@
 # do not upload/share this file
 open-targets-gac.json
 mrtarget.data.yml
+opentargets-urlzsource
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,7 +1,7 @@
 import os
 from definitions import PIS_OUTPUT_CHEMBL_API
 from time import sleep
-from modules.common import URLZSource
+from opentargets_urlzsource import URLZSource
 import json
 import datetime
 

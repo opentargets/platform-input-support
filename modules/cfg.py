@@ -2,7 +2,7 @@ import os, sys, errno
 import csv
 import configargparse
 import logging
-from common import URLZSource
+from opentargets_urlzsource import URLZSource
 
 logger = logging.getLogger(__name__)
 
