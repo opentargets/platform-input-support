@@ -11,7 +11,7 @@ install:
   # We just set up a conda environment with the right Python version. This
   # should not need changing.
 
-  - conda create --yes -f environment.yaml python=$TRAVIS_PYTHON_VERSION
+  - conda env create --yes -f environment.yaml python=$TRAVIS_PYTHON_VERSION
 #  - conda env create -f environment.yaml
   - conda activate platform-input-support-py2.7
   - conda skeleton pypi opentargets-urlzsource
