@@ -11,8 +11,15 @@ install:
   # We just set up a conda environment with the right Python version. This
   # should not need changing.
 
-  - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
-  - source activate test
+  - conda create --yes -f environment.yaml python=$TRAVIS_PYTHON_VERSION
+#  - conda env create -f environment.yaml
+  - conda activate platform-input-support-py2.7
+  - conda skeleton pypi opentargets-urlzsource
+  - conda build opentargets-urlzsource
+  - conda build purge
+  - conda install -y --use-local opentargets-urlzsource
+  - source activate platform-input-support-py2.7
+#  - pip install -r requirements.txt
 
 script:
    - python -m pytest --cov=modules --cov-report term tests/ --fulltrace
