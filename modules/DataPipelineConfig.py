@@ -46,7 +46,7 @@ class DataPipelineConfig(object):
                 else:
                     data_pipeline_config[k] = v
             else:
-                logging.error("The key {} does not exist", k)
+                logging.error("The key %s does not exist", k)
 
         with self.open_config_file(prefix_file) as outfile:
             yaml.safe_dump(data_pipeline_config, outfile,default_flow_style=False, allow_unicode=True)

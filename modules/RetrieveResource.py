@@ -111,8 +111,11 @@ class RetrieveResource(object):
     def get_evidences(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         output_dir_evidence = get_output_dir(None, PIS_OUTPUT_EVIDENCES)
+        list_files_evidence = {}
         for entry in self.yaml.evidences.downloads:
-            list_files_evidence = self.get_file_from_bucket(entry, output_dir_evidence, self.yaml.evidences.gs_output_dir)
+            file_from_bucket = self.get_file_from_bucket(entry, output_dir_evidence, self.yaml.evidences.gs_output_dir)
+            list_files_evidence.update(file_from_bucket)
+
         self.get_stats_files(list_files_evidence)
 
     def copy_files_to_google_storage(self):
