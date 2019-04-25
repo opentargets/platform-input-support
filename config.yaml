@@ -41,6 +41,9 @@ annotations:
   - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
+  - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
+    output_filename: eco_scores-{suffix}.tsv
+    resource: eco-scores
 annotations_from_buckets:
   gs_output_dir: annotation-files
   downloads:
