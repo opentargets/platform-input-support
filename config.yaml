@@ -41,6 +41,9 @@ annotations:
   - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
     resource: hpa-rna-zscore
+  - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
+    output_filename: eco_scores-{suffix}.tsv
+    resource: eco-scores
   - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/ibd_2_pheno_associations.owl?format=raw
     output_filename: ibd_2_pheno_associations-{suffix}.owl
     resource: disease-phenotype

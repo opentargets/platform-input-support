@@ -52,3 +52,11 @@ class DataPipelineConfig(object):
             yaml.safe_dump(data_pipeline_config, outfile,default_flow_style=False, allow_unicode=True)
 
         logging.info("Data Pipeline YAML file created.")
+
+    def get_keys_config_file(self):
+        logging.info("List of keys config file")
+        data_pipeline_schema = self.download_template_schema()
+        data_pipeline_yaml = YAMLReader(data_pipeline_schema)
+        data_pipeline_config=data_pipeline_yaml.read_yaml(True)
+
+        return data_pipeline_config.keys()
