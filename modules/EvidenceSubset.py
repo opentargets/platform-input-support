@@ -1,8 +1,5 @@
 import simplejson as json
-import shelve
 import os
-import dumbdbm
-import tempfile
 import yaml
 import datetime
 from opentargets_urlzsource import URLZSource
@@ -19,7 +16,7 @@ class EvidenceSubset(object):
         self.output_dir = output_dir
         self.gs_output_dir = gs_output_dir+'/subsets'
         self.stats = {}
-        self.elem_to_search = []
+        self.elem_to_search = {}
         self.read_subset_file()
 
     def replace_suffix(self, args):
@@ -33,36 +30,37 @@ class EvidenceSubset(object):
         return self.deref_multi(data[keys[0]], keys[1:]) \
             if keys else data
 
-    def create_shelve(self,evidence_file, evidence_info):
-        # Shelve creates a file with specific database. Using a temp file requires a workaround to open it.
-        # dumbdbm creates an empty database file. In this way shelve can open it properly.
-        t_filename = tempfile.NamedTemporaryFile(delete=False).name
+
+    def create_subset(self,evidence_file, evidence_info):
         count = 0
-        dumb_dict = dumbdbm.open(t_filename)
-        shelve_out = shelve.Shelf(dict=dumb_dict, writeback=True)
-        with URLZSource(evidence_file).open() as f_obj:
-            for line in f_obj:
-                try:
-                    read_line = json.loads(line)
-                    new_key = self.deref_multi(read_line, evidence_info['subset_key'])
-                    new_key = new_key.replace(evidence_info['subset_prefix'],'')
-                    count = count + 1
-                    if shelve_out.has_key(new_key):
-                        shelve_out[new_key].append(read_line)
-                    else:
-                        temp = []
-                        temp.append(read_line)
-                        shelve_out[new_key]=temp
-                except Exception as e:
-                    logging.info("This line is not in a JSON format. Skipped it")
-        self.stats[evidence_file]['num_key'] = count
-        logging.debug("File shelve created")
-        return shelve_out
+        path_filename, filename_attr = os.path.split(evidence_file)
+        new_filename = "subset_" + filename_attr.replace('.gz', '')
+        uri_to_filename = self.output_dir + '/' + new_filename
+        with open(uri_to_filename, "a+") as file_subset:
+            with URLZSource(evidence_file).open() as f_obj:
+                for line in f_obj:
+                    try:
+                        read_line = json.loads(line)
+                        new_key = self.deref_multi(read_line, evidence_info['subset_key'])
+                        new_key = new_key.replace(evidence_info['subset_prefix'],'')
+                        count = count + 1
+                        if new_key in self.elem_to_search:
+                            file_subset.write(line + '\n')
+                            self.stats[evidence_file]['ensembl'][new_key] = 1
+
+                    except Exception as e:
+                        logging.info("This line is not in a JSON format. Skipped it")
+            self.stats[evidence_file]['num_key'] = count
+
+        logging.debug("LadyGaga")
+
+        return uri_to_filename
 
     def read_subset_file(self):
         with URLZSource(self.filename_subset_evidence).open() as f_obj:
             for line in f_obj:
-                self.elem_to_search.append(line.rstrip('\n'))
+                self.elem_to_search.add(line.rstrip('\n'))
+
 
     def create_subset_file(self,shelve_out, filename):
         path_filename, filename_attr = os.path.split(filename)
@@ -91,8 +89,10 @@ class EvidenceSubset(object):
             logging.info("Start process for the file {}".format(evidence_file))
             self.stats[evidence_file] = {}
             if evidences_list[evidence_file]['subset_key'] is not None:
-                shelve_out = self.create_shelve(evidence_file,evidences_list[evidence_file])
-                subset_file = self.create_subset_file(shelve_out,evidence_file)
+                #shelve_out = self.create_shelve(evidence_file,evidences_list[evidence_file])
+                #subset_file = self.create_subset_file(shelve_out,evidence_file)
+                subset_file = self.create_subset(evidence_file, evidences_list[evidence_file])
+                print subset_file
                 filename_zip = make_gzip(subset_file)
                 list_files_subset_evidence[filename_zip] = {'resource': 'subset_evidence', 'gs_output_dir': self.gs_output_dir}
                 self.stats[evidence_file]['filename'] = filename_zip
