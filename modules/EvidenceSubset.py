@@ -31,7 +31,7 @@ class EvidenceSubset(object):
         new_filename = "subset_" + filename_attr.replace('.gz', '')
         uri_to_filename = self.output_dir + '/' + new_filename
         if os.path.exists(uri_to_filename): os.remove(uri_to_filename)
-        self.stats[evidence_file]['ensembl'] = {}
+        self.stats[filename_attr]['ensembl'] = {}
         with open(uri_to_filename, "a+") as file_subset:
             with URLZSource(evidence_file).open() as f_obj:
                 for line in f_obj:
@@ -42,15 +42,15 @@ class EvidenceSubset(object):
                         count = count + 1
                         if new_key in self.elem_to_search:
                             file_subset.write(line)
-                            if new_key not in self.stats[evidence_file]['ensembl']:
-                                self.stats[evidence_file]['ensembl'][new_key] = 1
+                            if new_key not in self.stats[filename_attr]['ensembl']:
+                                self.stats[filename_attr]['ensembl'][new_key] = 1
                             else:
-                                self.stats[evidence_file]['ensembl'][new_key]= self.stats[evidence_file]['ensembl'][new_key] + 1
+                                self.stats[filename_attr]['ensembl'][new_key]= self.stats[filename_attr]['ensembl'][new_key] + 1
 
                     except Exception as e:
                         logging.info("This line is not in a JSON format. Skipped it")
 
-            self.stats[evidence_file]['num_key'] = count
+            self.stats[filename_attr]['num_key'] = count
         logging.debug("Finished")
         return uri_to_filename
 
@@ -68,17 +68,18 @@ class EvidenceSubset(object):
     def execute_subset(self, evidences_list):
         list_files_subset_evidence = {}
         for evidence_file in evidences_list:
-            logging.info("Start process for the file {}".format(evidence_file))
-            self.stats[evidence_file] = {}
+            path_filename, filename_attr = os.path.split(evidence_file)
+            logging.info("Start process for the file {}".format(filename_attr))
+            self.stats[filename_attr] = {}
             if evidences_list[evidence_file]['subset_key'] is not None:
                 subset_file = self.create_subset(evidence_file, evidences_list[evidence_file])
                 filename_zip = make_gzip(subset_file)
                 list_files_subset_evidence[filename_zip] = {'resource': 'subset_evidence', 'gs_output_dir': self.gs_output_dir}
-                self.stats[evidence_file]['filename'] = filename_zip
+                self.stats[filename_attr]['filename'] = filename_zip
                 logging.info("File {} has been created".format(filename_zip))
             else:
-                self.stats[evidence_file]['filename'] = "The file {} won't have subset evidence file.".format(evidence_file)
-                logger.info("The file {} won't have subset evidence file.".format(evidence_file))
+                self.stats[filename_attr]['filename'] = "The file {} won't have subset evidence file.".format(filename_attr)
+                logger.info("The file {} won't have subset evidence file.".format(filename_attr))
 
         return list_files_subset_evidence
 
