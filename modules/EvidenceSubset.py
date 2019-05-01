@@ -5,6 +5,7 @@ import datetime
 from opentargets_urlzsource import URLZSource
 from common import make_gzip
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ class EvidenceSubset(object):
 
     def execute_subset(self, evidences_list):
         list_files_subset_evidence = {}
+        start=time.time()
         for evidence_file in evidences_list:
             path_filename, filename_attr = os.path.split(evidence_file)
             logging.info("Start process for the file {}".format(filename_attr))
@@ -81,5 +83,7 @@ class EvidenceSubset(object):
                 self.stats[filename_attr]['filename'] = "The file {} won't have subset evidence file.".format(filename_attr)
                 logger.info("The file {} won't have subset evidence file.".format(filename_attr))
 
+        end=time.time()
+        logging.info("Subset Stats evidence file: time of execution {}".format(str(end - start)))
         return list_files_subset_evidence
 

@@ -9,6 +9,7 @@ from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
 from common import get_lines, make_gzip
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +149,7 @@ class RetrieveResource(object):
             data_pipeline_config_file.create_config_file(self.list_files_downloaded, 'local.')
 
     def get_stats_files(self, list_files):
+        start = time.time()
         logger.info("Generating stats files: " + PIS_EVIDENCES_STATS_FILE)
         if os.path.exists(PIS_EVIDENCES_STATS_FILE): os.remove(PIS_EVIDENCES_STATS_FILE)
         stats_file = open(PIS_EVIDENCES_STATS_FILE, "a+")
@@ -155,6 +157,8 @@ class RetrieveResource(object):
             lines = get_lines(original_filename)
             filename_info = original_filename.rsplit('/', 1)[1]
             stats_file.write(filename_info + ',' + str(lines) + '\n')
+        end=time.time()
+        logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
     def run(self):
         output_dir_annotations = get_output_dir(self.args.output_dir, PIS_OUTPUT_ANNOTATIONS)
