@@ -140,9 +140,17 @@ evidences:
   - bucket: otar000-evidence_input/CRISPR/json
     output_filename: crispr-{suffix}.json.gz
     resource: input-file
+    subset_key:
+    - target
+    - id
+    subset_prefix: http://identifiers.org/ensembl/
   - bucket: otar006-reactome
     output_filename: reactome-{suffix}.json.gz
     resource: input-file
+    subset_key:
+    - target
+    - id
+    subset_prefix: http://identifiers.org/ensembl/
   - bucket: otar007-cosmic
     output_filename: cosmic-{suffix}.json.gz
     excludes: hallmarks
@@ -154,10 +162,10 @@ evidences:
   - bucket: otar008-chembl
     output_filename: chembl-{suffix}.json.gz
     resource: input-file
-#    subset_key:
-#    - target
-#    - id
-#    subset_prefix: http://identifiers.org/uniprot/
+    subset_key:
+    - target
+    - id
+    subset_prefix: http://identifiers.org/uniprot/
   - bucket: otar009-gwas
     output_filename: gwas-{suffix}.json.gz
     resource: input-file
@@ -175,6 +183,10 @@ evidences:
   - bucket: otar011-uniprot
     output_filename: uniprot-{suffix}.json.gz
     resource: input-file
+    subset_key:
+    - target
+    - id
+    subset_prefix: http://identifiers.org/ensembl/
   - bucket: otar012-eva
     output_filename: eva-{suffix}.json.gz
     resource: input-file
