@@ -73,14 +73,19 @@ class EvidenceSubset(object):
             path_filename, filename_attr = os.path.split(evidence_file)
             logging.info("Start process for the file {}".format(filename_attr))
             self.stats[filename_attr] = {}
-            if evidences_list[evidence_file]['subset_key'] is not None:
-                subset_file = self.create_subset(evidence_file, evidences_list[evidence_file])
-                filename_zip = make_gzip(subset_file)
-                list_files_subset_evidence[filename_zip] = {'resource': 'subset_evidence', 'gs_output_dir': self.gs_output_dir}
-                self.stats[filename_attr]['filename'] = filename_zip
-                logging.info("File {} has been created".format(filename_zip))
+            if 'subset_key' in evidences_list[evidence_file]:
+                if evidences_list[evidence_file]['subset_key'] is not None:
+                    subset_file = self.create_subset(evidence_file, evidences_list[evidence_file])
+                    filename_zip = make_gzip(subset_file)
+                    list_files_subset_evidence[filename_zip] = {'resource': 'subset_evidence',
+                                                                'gs_output_dir': self.gs_output_dir}
+                    self.stats[filename_attr]['filename'] = filename_zip
+                    logging.info("File {} has been created".format(filename_zip))
+                else:
+                    self.stats[filename_attr]['filename'] = "The file {} won't have subset evidence file.".format(
+                        filename_attr)
+                    logger.info("The file {} won't have subset evidence file.".format(filename_attr))
             else:
-                self.stats[filename_attr]['filename'] = "The file {} won't have subset evidence file.".format(filename_attr)
                 logger.info("The file {} won't have subset evidence file.".format(filename_attr))
 
         end=time.time()
