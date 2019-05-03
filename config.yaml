@@ -150,7 +150,7 @@ evidences:
     subset_key:
     - target
     - id
-    subset_prefix: http://identifiers.org/ensembl/
+    subset_prefix: http://identifiers.org/uniprot/
   - bucket: otar007-cosmic
     output_filename: cosmic-{suffix}.json.gz
     excludes: hallmarks
@@ -186,7 +186,7 @@ evidences:
     subset_key:
     - target
     - id
-    subset_prefix: http://identifiers.org/ensembl/
+    subset_prefix: http://identifiers.org/uniprot/
   - bucket: otar012-eva
     output_filename: eva-{suffix}.json.gz
     resource: input-file
@@ -197,6 +197,10 @@ evidences:
   - bucket: otar025-epmc
     output_filename: epmc-{suffix}.json.gz
     resource: input-file
+    subset_key:
+    - target
+    - id
+    subset_prefix: http://identifiers.org/uniprot/
   - bucket: otar000-evidence_input/Gene2Phenotype/json
     output_filename: gene2phenotype-{suffix}.json.gz
     resource: input-file
