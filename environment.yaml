@@ -70,5 +70,6 @@ dependencies:
   - tk=8.6.8
   - wheel=0.32.3
   - zlib=1.2.11
+  - simplejson=3.16.1
 
 

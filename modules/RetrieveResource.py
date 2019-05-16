@@ -7,7 +7,9 @@ from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
+from EvidenceSubset import EvidenceSubset
 from common import get_lines, make_gzip
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -79,13 +81,17 @@ class RetrieveResource(object):
         google_resource = GoogleBucketResource(bucket_name=param)
         bucket = google_resource.get_bucket()
         list_files_bucket = {}
+        subset_field = None if 'subset_key' not in entry else entry.subset_key
+        subset_prefix = None if 'subset_prefix' not in entry else entry.subset_prefix
         if bucket is not None:
             latest_filename_info = google_resource.get_latest_file(entry)
             if latest_filename_info["latest_filename"] is not None:
                 final_filename = google_resource.download_file(output, entry.output_filename,
                                                                latest_filename_info)
                 self.list_files_downloaded[final_filename] = {'resource': entry.resource,
-                                                              'gs_output_dir': gs_output_dir}
+                                                              'gs_output_dir': gs_output_dir,
+                                                              'subset_key': subset_field,
+                                                              'subset_prefix': subset_prefix}
                 # fill in a specific variable for just evidence step.
                 list_files_bucket[final_filename] = entry.resource
             else:
@@ -116,7 +122,14 @@ class RetrieveResource(object):
             file_from_bucket = self.get_file_from_bucket(entry, output_dir_evidence, self.yaml.evidences.gs_output_dir)
             list_files_evidence.update(file_from_bucket)
 
+
         self.get_stats_files(list_files_evidence)
+        output_dir_subset = get_output_dir(None, PIS_OUTPUT_SUBSET_EVIDENCES)
+        subsetEvidence = EvidenceSubset(ROOT_DIR+'/minimal_ensembl.txt',output_dir_subset,self.yaml.evidences.gs_output_dir)
+        list_files_subsets = subsetEvidence.execute_subset(self.list_files_downloaded)
+        subsetEvidence.create_stats_file()
+        self.list_files_downloaded.update(list_files_subsets)
+
 
     def copy_files_to_google_storage(self):
         params = GoogleBucketResource.get_bucket_and_path(self.args.google_bucket)
@@ -136,6 +149,7 @@ class RetrieveResource(object):
             data_pipeline_config_file.create_config_file(self.list_files_downloaded, 'local.')
 
     def get_stats_files(self, list_files):
+        start = time.time()
         logger.info("Generating stats files: " + PIS_EVIDENCES_STATS_FILE)
         if os.path.exists(PIS_EVIDENCES_STATS_FILE): os.remove(PIS_EVIDENCES_STATS_FILE)
         stats_file = open(PIS_EVIDENCES_STATS_FILE, "a+")
@@ -143,6 +157,8 @@ class RetrieveResource(object):
             lines = get_lines(original_filename)
             filename_info = original_filename.rsplit('/', 1)[1]
             stats_file.write(filename_info + ',' + str(lines) + '\n')
+        end=time.time()
+        logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
     def run(self):
         output_dir_annotations = get_output_dir(self.args.output_dir, PIS_OUTPUT_ANNOTATIONS)
