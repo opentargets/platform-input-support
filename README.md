@@ -13,6 +13,8 @@ List of available steps:
 - ChEMBL 
 - evidences
 
+The step 'evidences' uploads the last evidences from different providers and it generates a subset of these evidences using the file minimal_ensembl.txt
+
 Below more details about how to execute the script.
 
 # Installation Requirements
