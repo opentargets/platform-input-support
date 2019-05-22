@@ -139,7 +139,7 @@ ChEMBL:
     molecule:
       uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
       output_filename: chembl_molecule_rest_api-{suffix}.json
-      resource: chembl-molecule-set-uri-pattern
+      resource: chembl-molecule
     target:
       uri: https://www.ebi.ac.uk/chembl/api/data/target.json
       output_filename: chembl_target_rest_api-{suffix}.json
