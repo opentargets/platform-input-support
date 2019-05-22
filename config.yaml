@@ -65,9 +65,6 @@ annotations:
 annotations_from_buckets:
   gs_output_dir: annotation-files
   downloads:
-  - bucket: otar001-core/TargetSafety/annotation
-    output_filename: known_adverse_effects-{suffix}.json
-    resource: safety
   - bucket: otar007-cosmic
     output_filename: cosmic-hallmarks-{suffix}.tsv.gz
     resource: hallmark
@@ -98,6 +95,31 @@ chemical_probes:
     gid: 349856989
     output_filename: open_science_probes.tsv
     cp_type: osp
+known_target_safety:
+  output_filename: known_target_safety-{suffix}.json
+  resource: safety
+  gs_output_dir: annotation_files
+  spreadsheets:
+  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
+    gid: 1760619926
+    output_filename: adverse_effects.tsv
+    s_type: adr
+  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
+    gid: 650742396
+    output_filename: safety_risk_information.tsv
+    s_type: sri
+  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
+    gid: 1774810192
+    output_filename: UBERON_mapping.tsv
+    s_type: ubr
+  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
+    gid: 1717378859
+    output_filename: EFO_mapping.tsv
+    s_type: efo
+  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
+    gid: 1223815020
+    output_filename: references.tsv
+    s_type: ref
 ensembl:
   conda_env: backend-genetics
   conda_create: bash -c "~/anaconda2/bin/conda env create -f {root_dir}/scripts/ensembl/environment.yaml"

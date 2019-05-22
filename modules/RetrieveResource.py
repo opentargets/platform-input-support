@@ -5,6 +5,7 @@ from GoogleBucketResource import GoogleBucketResource
 from EnsemblResource import EnsemblResource
 from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
+from KnownTargetSafetyResource import KnownTargetSafetyResource
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
@@ -62,6 +63,16 @@ class RetrieveResource(object):
         chemical_filename = chemical_probes_resource.generate_probes(self.yaml.chemical_probes)
         self.list_files_downloaded[chemical_filename] = {'resource': self.yaml.chemical_probes.resource,
                                                          'gs_output_dir': self.yaml.chemical_probes.gs_output_dir}
+
+    def get_known_target_safety(self):
+        # config.yaml known target safety file : download spreadsheets + generate file for data_pipeline
+        safety_output_dir = get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
+        known_target_safety_resource = KnownTargetSafetyResource(self.output_dir)
+        known_target_safety_resource.download_spreadsheet(self.yaml.known_target_safety,safety_output_dir)
+        ksafety_filename = known_target_safety_resource.generate_known_safety_json(self.yaml.known_target_safety)
+        self.list_files_downloaded[ksafety_filename] = {'resource': self.yaml.known_target_safety.resource,
+                                                         'gs_output_dir': self.yaml.known_target_safety.gs_output_dir}
+
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
         list_files_ChEMBL ={}
@@ -169,6 +180,7 @@ class RetrieveResource(object):
         if self.has_step("annotations") : self.annotations_downloaded_by_uri()
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("chemical_probes"): self.get_chemical_probes()
+        if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()

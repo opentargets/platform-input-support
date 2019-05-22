@@ -9,6 +9,7 @@ List of available steps:
 - annotations
 - annotations from buckets
 - chemical probes
+- known target safety
 - ensembl
 - ChEMBL 
 - evidences
