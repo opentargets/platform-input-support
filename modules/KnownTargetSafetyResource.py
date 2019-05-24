@@ -82,6 +82,16 @@ class KnownTargetSafetyResource(object):
                     "code": code})
             return (term_list)
 
+        # Function for generating the references list in the required format
+        def make_ref_obj(reflist, ref_links):
+            references = []
+            for ref in reflist:
+                references.append({
+                    "ref_label": ref,
+                    "pmid": ref_links[ref.upper()]["pmid"],
+                    "ref_link": ref_links[ref.upper()]["link"]})
+            return (references)
+
 
         targets = {}
 
@@ -101,8 +111,7 @@ class KnownTargetSafetyResource(object):
                     targets[target]["adverse_effects"] = []
 
                 inner = {}
-                #ref = line[0].strip()
-                ref = [x.strip() for x in line[0].split(";") if x]
+                reflist = [x.strip() for x in line[0].split(";") if x]
                 organs = [x.strip() for x in line[2].split(";") if x]
                 unspec_effects = [x.strip() for x in line[3].split(";") if x]
                 act_acute = [x.strip() for x in line[4].split(";") if x]
@@ -115,9 +124,7 @@ class KnownTargetSafetyResource(object):
                 inh_gen = [x.strip() for x in line[11].split(";") if x]
                 if inh_gen == [""]: inh_gen = []
 
-                inner["reference"] = ref
-                inner["pmid"] = [ref_links[x.upper()]["pmid"] for x in ref]
-                inner["ref_link"] = [ref_links[x.upper()]["link"] for x in ref]
+                inner["references"] = make_ref_obj(reflist, ref_links)
 
                 inner["organs_systems_affected"] = make_term_list(organs, uberon_map)
 
@@ -161,11 +168,8 @@ class KnownTargetSafetyResource(object):
                     targets[target]["safety_risk_info"] = []
 
                 inner = {}
-                # ref = line[0].strip()
-                ref = [x.strip() for x in line[0].split(";") if x]
-                inner["reference"] = ref
-                inner["pmid"] = [ref_links[x.upper()]["pmid"] for x in ref]
-                inner["ref_link"] = [ref_links[x.upper()]["link"] for x in ref]
+                reflist = [x.strip() for x in line[0].split(";") if x]
+                inner["references"] = make_ref_obj(reflist, ref_links)
 
                 organs = [x.strip() for x in line[2].split(";")]
                 inner["organs_systems_affected"] = make_term_list(organs, uberon_map)
