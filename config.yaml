@@ -281,5 +281,5 @@ evidences:
     subset_prefix: http://identifiers.org/ensembl/
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/19.04/input/mrtarget.data.19.04.5.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/19.06/template.gs.drug.mrtarget.data.yml
   output_filename: mrtarget.data.yml

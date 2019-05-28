@@ -41,7 +41,7 @@ class DataPipelineConfig(object):
 
         for k,v in list_resources.items():
             if k in data_pipeline_config:
-                if len(v) == 1 :
+                if (len(v) == 1) and isinstance(data_pipeline_config[k], basestring):
                     data_pipeline_config[k] = v[0]
                 else:
                     data_pipeline_config[k] = v
