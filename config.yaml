@@ -98,7 +98,7 @@ chemical_probes:
 known_target_safety:
   output_filename: known_target_safety-{suffix}.json
   resource: safety
-  gs_output_dir: annotation_files
+  gs_output_dir: annotation-files
   spreadsheets:
   - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
     gid: 1760619926
