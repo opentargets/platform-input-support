@@ -131,6 +131,10 @@ python platform-input-support.py
          --log-level DEBUG > log.txt 
 ```
 
+### Check if the files generated are correpted
+The zip files generated might be corrupted. The follow command checks if the files are correct.
+sh check_corrupted_files.sh
+
 ### Installation command for Google Cloud or Amazon Azure
 Create a linux VM server and run the following commands
 ```
