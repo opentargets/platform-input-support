@@ -5,10 +5,10 @@ annotations:
   - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
     output_filename: uniprot-{suffix}.xml.gz
     resource: uniprot-uri
-  - uri: https://www.reactome.org/download/current/ReactomePathways.txt
+  - uri: https://reactome.org/download/current/ReactomePathways.txt
     output_filename: ReactomePathways-{suffix}.txt
     resource: reactome-pathway-data
-  - uri: https://www.reactome.org/download/current/ReactomePathwaysRelation.txt
+  - uri: https://reactome.org/download/current/ReactomePathwaysRelation.txt
     output_filename: ReactomePathwaysRelation-{suffix}.txt
     resource: reactome-pathway-relation
   - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
