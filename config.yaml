@@ -135,7 +135,7 @@ ChEMBL:
     drug:
       uri: https://www.ebi.ac.uk/chembl/api/data/drug_indication.json
       output_filename: chembl_drug_indication_rest_api-{suffix}.json
-      resource: chembl-drug-indication
+      resource: chembl-indication
     molecule:
       uri: https://www.ebi.ac.uk/chembl/api/data/molecule.json
       output_filename: chembl_molecule_rest_api-{suffix}.json
@@ -159,7 +159,7 @@ ChEMBL:
 evidences:
   gs_output_dir: evidence-files
   downloads:
-  - bucket: otar000-evidence_input/CRISPR/json
+  input/CRISPR/json
     output_filename: crispr-{suffix}.json.gz
     resource: input-file
     subset_key:
