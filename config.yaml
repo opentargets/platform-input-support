@@ -159,7 +159,7 @@ ChEMBL:
 evidences:
   gs_output_dir: evidence-files
   downloads:
-  input/CRISPR/json
+  - bucket: otar000-evidence_input/CRISPR/json
     output_filename: crispr-{suffix}.json.gz
     resource: input-file
     subset_key:
