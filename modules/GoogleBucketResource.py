@@ -146,14 +146,17 @@ class GoogleBucketResource(object):
         else:
             list_blobs = self.list_blobs_object_path()
         latest_filename_info = self.extract_latest_file(list_blobs)
-
         return latest_filename_info
 
-    def download_file(self, output_dir, output_filename, latest_filename_info):
-        final_filename = output_dir + '/' + output_filename.replace('{suffix}', latest_filename_info["suffix"])
+    def download_file(self, filename_to_download, filename_destination):
         bucket = self.get_bucket()
-        blob = bucket.blob(latest_filename_info["latest_filename"])
-        blob.download_to_filename(final_filename)
+        blob = bucket.blob(filename_to_download)
+        blob.download_to_filename(filename_destination)
+        return filename_destination
+
+    def download_file_helper(self, output_dir, output_filename, latest_filename_info):
+        filename_destination = output_dir + '/' + output_filename.replace('{suffix}', latest_filename_info["suffix"])
+        final_filename = self.download_file(latest_filename_info["latest_filename"], filename_destination )
 
         return final_filename
 

@@ -9,6 +9,7 @@ from KnownTargetSafetyResource import KnownTargetSafetyResource
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
+from AnnotationQC import AnnotationQC
 from common import get_lines, make_gzip
 import time
 
@@ -18,7 +19,7 @@ class RetrieveResource(object):
 
     def __init__(self,args, yaml, yaml_data_pipeline_schema):
         self.args = args
-        self.output_dir = get_output_dir(args.output_dir, PIS_OUTPUT_ANNOTATIONS)
+        self.output_dir = get_output_dir(args.output_dir, PIS_OUTPUT_DIR)
         self.yaml = yaml
         self.yaml_data_pipeline_schema = yaml_data_pipeline_schema
         self.list_files_downloaded = {}
@@ -33,8 +34,9 @@ class RetrieveResource(object):
         return False
 
     def annotations_downloaded_by_uri(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         for entry in self.yaml.annotations.downloads:
-            download = DownloadResource(self.output_dir)
+            download = DownloadResource(output_dir_annotations)
             download.replace_suffix(self.args)
             if self.args.thread:
                 destination_filename = download.execute_download_threaded(entry)
@@ -56,18 +58,20 @@ class RetrieveResource(object):
         self.list_files_downloaded[ensembl_filename] = {'resource': self.yaml.ensembl.resource, 'gs_output_dir': self.yaml.ensembl.gs_output_dir}
 
     def get_chemical_probes(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
         chemical_output_dir = get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
-        chemical_probes_resource = ChemicalProbesResource(self.output_dir)
+        chemical_probes_resource = ChemicalProbesResource(output_dir_annotations)
         chemical_probes_resource.download_spreadsheet(self.yaml.chemical_probes,chemical_output_dir)
         chemical_filename = chemical_probes_resource.generate_probes(self.yaml.chemical_probes)
         self.list_files_downloaded[chemical_filename] = {'resource': self.yaml.chemical_probes.resource,
                                                          'gs_output_dir': self.yaml.chemical_probes.gs_output_dir}
 
     def get_known_target_safety(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         # config.yaml known target safety file : download spreadsheets + generate file for data_pipeline
         safety_output_dir = get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
-        known_target_safety_resource = KnownTargetSafetyResource(self.output_dir)
+        known_target_safety_resource = KnownTargetSafetyResource(output_dir_annotations)
         known_target_safety_resource.download_spreadsheet(self.yaml.known_target_safety,safety_output_dir)
         ksafety_filename = known_target_safety_resource.generate_known_safety_json(self.yaml.known_target_safety)
         self.list_files_downloaded[ksafety_filename] = {'resource': self.yaml.known_target_safety.resource,
@@ -97,7 +101,7 @@ class RetrieveResource(object):
         if bucket is not None:
             latest_filename_info = google_resource.get_latest_file(entry)
             if latest_filename_info["latest_filename"] is not None:
-                final_filename = google_resource.download_file(output, entry.output_filename,
+                final_filename = google_resource.download_file_helper(output, entry.output_filename,
                                                                latest_filename_info)
                 self.list_files_downloaded[final_filename] = {'resource': entry.resource,
                                                               'gs_output_dir': gs_output_dir,
@@ -121,9 +125,10 @@ class RetrieveResource(object):
         return list_files_bucket
 
     def get_annotations_from_bucket(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         for entry in self.yaml.annotations_from_buckets.downloads:
-            self.get_file_from_bucket(entry, self.output_dir,self.yaml.annotations_from_buckets.gs_output_dir)
+            self.get_file_from_bucket(entry, output_dir_annotations ,self.yaml.annotations_from_buckets.gs_output_dir)
 
     def get_evidences(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
@@ -141,6 +146,14 @@ class RetrieveResource(object):
         subsetEvidence.create_stats_file()
         self.list_files_downloaded.update(list_files_subsets)
 
+    def annotations_qc(self, google_opts):
+        if not google_opts:
+            logging.error("The Annotation QC step requires Google Cloud credential")
+        else:
+            output_dir_qc = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
+            datatype_qc = AnnotationQC(self.yaml.annotations_qc, self.list_files_downloaded, output_dir_qc)
+            list_files_downloaded = datatype_qc.execute()
+            self.list_files_downloaded.update(list_files_downloaded)
 
     def copy_files_to_google_storage(self):
         params = GoogleBucketResource.get_bucket_and_path(self.args.google_bucket)
@@ -172,7 +185,6 @@ class RetrieveResource(object):
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
     def run(self):
-        output_dir_annotations = get_output_dir(self.args.output_dir, PIS_OUTPUT_ANNOTATIONS)
         google_opts = GoogleBucketResource.has_google_parameters(self.args.google_credential_key, self.args.google_bucket)
         if google_opts:
             GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
@@ -184,6 +196,8 @@ class RetrieveResource(object):
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
+        if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
+
 
         # At this point the auth key is already valid.
         if google_opts: self.copy_files_to_google_storage()

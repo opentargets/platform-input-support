@@ -279,6 +279,44 @@ evidences:
     - target
     - id
     subset_prefix: http://identifiers.org/ensembl/
+annotations_qc:
+  gs_output_dir: annotation-files
+  release_to_compare: open-targets-data-releases/19.06/input
+  list_datatypes:
+    - datatype: tractability
+      keycols: ['ensembl_gene_id']
+      separator: "\t"
+      out_type: summary
+      out_prefix: QC_tract
+      filename_regular_expression: .*tractability_buckets-.*.tsv
+    - datatype: cancerhallmarks
+      keycols: ['ID_CENSUS_ANNOT']
+      separator: "\t"
+      out_type: summary
+      out_prefix: QC_cancerhallmarks
+      filename_regular_expression: .*cosmic-hallmarks-.*.tsv.gz
+    - datatype: portalprobes
+      keycols: ['Probe','Target']
+      separator: "\t"
+      out_type: summary
+      out_prefix: QC_portalprobes
+      filename_regular_expression: .*chemicalprobes_portalprobes-.*.tsv
+    - datatype: probeminer
+      keycols: ['hgnc_symbol','uniprot_symbol']
+      separator: "\t"
+      out_type: summary
+      out_prefix: QC_probeminer
+      filename_regular_expression: .*chemicalprobes_probeminer-.*.tsv
+    - datatype: biomarkers
+      keycols: ['Alteration', 'AlterationType', 'AssayType', 'Association', 'Biomarker', 'Comments',
+                'CurationDate', 'Curator', 'Drug', 'DrugFamily', 'DrugFullName', 'DrugStatus', 'EvidenceLevel',
+                'Gene', 'MetastaticTumorType', 'PrimaryTumorAcronym', 'PrimaryTumorTypeFullName', 'Source',
+                'TCGIincluded', 'Targeting', 'cDNA', 'gDNA', 'IndividualMutation', 'Info', 'Region', 'Strand',
+                'Transcript', 'PrimaryTumorType']
+      separator: "\t"
+      out_type: summary
+      out_prefix: QC_biomarkers
+      filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
   uri: https://storage.googleapis.com/open-targets-data-releases/19.06/templates/template.19.06.mrtarget.data.yml
