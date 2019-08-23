@@ -280,7 +280,7 @@ evidences:
     - id
     subset_prefix: http://identifiers.org/ensembl/
 annotations_qc:
-  gs_output_dir: annotation-files
+  gs_output_dir: other
   release_to_compare: open-targets-data-releases/19.06/input
   list_datatypes:
     - datatype: tractability

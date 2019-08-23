@@ -12,7 +12,7 @@ class AnnotationQC(object):
     def __init__(self, yaml_info, list_files_downloaded, output_dir):
         self.annonations_qc = yaml_info
         self.output_dir = output_dir
-        self.gs_output_dir = yaml_info.gs_output_dir+'/annotation_qc'
+        self.gs_output_dir = yaml_info.gs_output_dir+'/qc_annotations'
         self.gs_resource = self.init_gs_resource(yaml_info)
         self.gs_files = self.init_gs_files()
         self.local_files = list_files_downloaded
