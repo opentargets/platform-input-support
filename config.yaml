@@ -30,7 +30,7 @@ annotations:
     output_filename: expression_hierarchy_curation-{suffix}.tsv
     resource: tissue-curation-map
   - uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
-    output_filename: normal_tissue-{suffix}.tsv.zip
+    output_filename: normal_tissue-{suffix}.tsv
     resource: hpa-normal-tissue
   - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.binned_v2-{suffix}.tsv
