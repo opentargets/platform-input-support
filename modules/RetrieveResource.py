@@ -10,7 +10,7 @@ from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
 from AnnotationQC import AnnotationQC
-from common import get_lines, make_gzip
+from common import get_lines, make_gzip, make_unzip_single_file
 import time
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,10 @@ class RetrieveResource(object):
                 destination_filename = download.execute_download(entry)
 
             if destination_filename is not None:
-                 self.list_files_downloaded[destination_filename] = { 'resource' : entry.resource,
+                if 'unzip_file' in entry:
+                    destination_filename = make_unzip_single_file(destination_filename)
+
+                self.list_files_downloaded[destination_filename] = { 'resource' : entry.resource,
                                                                       'gs_output_dir': self.yaml.annotations_from_buckets.gs_output_dir }
             elif not self.args.skip:
                  raise ValueError("Error during downloading: {}", entry.uri)
@@ -197,7 +200,6 @@ class RetrieveResource(object):
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
         if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
-
 
         # At this point the auth key is already valid.
         if google_opts: self.copy_files_to_google_storage()
