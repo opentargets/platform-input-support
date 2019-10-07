@@ -34,6 +34,7 @@ dependencies:
   - numpy=1.16.1
   - openblas=0.3.3
   - openssl=1.1.1a
+  - pandas=0.24.2
   - pathlib2=2.3.3
   - pbr=5.1.2
   - pluggy=0.8.1

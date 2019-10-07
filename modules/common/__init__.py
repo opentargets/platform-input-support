@@ -1,8 +1,7 @@
-import functools
-from contextlib import contextmanager
 import os, sys
 import zipfile
 import gzip
+import shutil
 GZIP_MAGIC_NUMBER = "1f8b"
 
 def is_gzip(filename):
@@ -38,9 +37,19 @@ def make_gzip(file_with_path):
 
     return r_filename
 
+def make_ungzip(file_with_path):
+    filename_unzip = file_with_path.replace('.gz', '').replace('.gzip', '').replace('.zip', '')
+    with gzip.open(file_with_path, 'rb') as f_in:
+        with open(filename_unzip, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    return filename_unzip
+
+
 def make_zip(file_with_path):
     filename_zip = file_with_path+".zip"
     zf = zipfile.ZipFile(filename_zip, "w",zipfile.ZIP_DEFLATED, allowZip64 = True)
     zf.write(file_with_path)
     zf.close()
     return filename_zip
+
+
