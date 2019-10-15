@@ -79,6 +79,9 @@ annotations_from_buckets:
   - bucket: otar001-core/ProbeMiner/annotation
     output_filename: chemicalprobes_probeminer-{suffix}.tsv
     resource: chemical-probes-2
+  - bucket: otar001-core/AdverseEvents/annotation
+    output_filename: adverse-events-{suffix}.tsv
+    resource: adverse-events
 chemical_probes:
   output_filename: chemicalprobes_portalprobes-{suffix}.tsv
   resource: chemical-probes-1
@@ -320,5 +323,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/19.09/templates/mrtarget.data.19.09.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/19.11/templates/mrtarget.data.19.11.yml
   output_filename: mrtarget.data.yml
