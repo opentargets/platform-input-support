@@ -83,7 +83,7 @@ annotations_from_buckets:
     output_filename: adverse-events-{suffix}.csv.gz
     resource: adverse-events
   - bucket: otar001-core/DrugBank/annotation
-    output_filename: drugbank-{suffix}.csv.gz	
+    output_filename: drugbank-{suffix}.csv.gz
     resource: drugbank
 chemical_probes:
   output_filename: chemicalprobes_portalprobes-{suffix}.tsv
