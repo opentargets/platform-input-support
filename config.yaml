@@ -323,5 +323,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/19.11/templates/mrtarget.data.19.11.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/19.11/templates/template.mrtarget.data.19.11.yml
   output_filename: mrtarget.data.yml
