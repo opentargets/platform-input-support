@@ -156,6 +156,10 @@ git clone https://github.com/opentargets/platform-input-support.git
 cd platform-input-support
 conda env create -f environment.yaml
 conda activate platform-input-support-py2.7
+conda skeleton pypi opentargets-urlzsource
+conda build opentargets-urlzsource
+conda build purge
+conda install -y --use-local opentargets-urlzsource
 python platform-input-support.py -l
 ```
 
