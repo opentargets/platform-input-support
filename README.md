@@ -140,7 +140,7 @@ Create a linux VM server and run the following commands
 ```
 sudo apt update
 sudo apt install git
-sudo apt-get install bzip2 
+sudo apt-get install bzip2 wget
 ```
 ```
 wget https://repo.anaconda.com/archive/Anaconda2-2018.12-Linux-x86_64.sh
