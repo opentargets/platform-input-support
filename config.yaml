@@ -32,7 +32,6 @@ annotations:
   - uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
     output_filename: normal_tissue-{suffix}.tsv.zip
     resource: hpa-normal-tissue
-    unzip_file: true
   - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
     output_filename: expatlas.blueprint2.baseline.binned_v2-{suffix}.tsv
     resource: hpa-rna-level
