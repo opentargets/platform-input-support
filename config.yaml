@@ -200,7 +200,7 @@ evidences:
     - id
     subset_prefix: http://identifiers.org/uniprot/
   - bucket: otar000-evidence_input/Genetics_portal/json/
-    output_filename: genetics_portal_evidences-{suffix}.json.gz
+    output_filename: genetics-portal-evidences-{suffix}.json.gz
     resource: input-file
     subset_key:
     - target
