@@ -86,6 +86,9 @@ annotations_from_buckets:
   - bucket: otar001-core/DrugBank/annotation
     output_filename: drugbank-{suffix}.csv.gz
     resource: drugbank
+  - bucket: otar001-core/ExperimentalToxicity
+    output_filename: experimental-toxicity-{suffix}.tsv
+    resource: experimental-toxicity
 chemical_probes:
   output_filename: chemicalprobes_portalprobes-{suffix}.tsv
   resource: chemical-probes-1
@@ -196,6 +199,13 @@ evidences:
     - target
     - id
     subset_prefix: http://identifiers.org/uniprot/
+  - bucket: otar000-evidence_input/Genetics_portal/json/
+    output_filename: genetics_portal_evidences-{suffix}.json.gz
+    resource: input-file
+    subset_key:
+    - target
+    - id
+    subset_prefix: http://identifiers.org/ensembl/
   - bucket: otar009-gwas
     output_filename: gwas-{suffix}.json.gz
     resource: input-file
@@ -327,5 +337,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/19.11/templates/template.mrtarget.data.19.11.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/20.04/templates/template.mrtarget.data.20.04.yml
   output_filename: mrtarget.data.yml
