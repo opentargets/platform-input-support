@@ -98,10 +98,8 @@ def get_list_of_file_download(config_file, headers):
 def set_up_logging(args):
     #set up logging
     logger = None
-    print(BASE_DIR)
     if args.log_config:
         if os.path.isfile(args.log_config) and os.access(args.log_config, os.R_OK):
-            print(os.path.join(BASE_DIR, args.log_config))
             logging.config.fileConfig(os.path.join(BASE_DIR, args.log_config), disable_existing_loggers=False)
             logger = logging.getLogger(__name__+".main()")
         else:
