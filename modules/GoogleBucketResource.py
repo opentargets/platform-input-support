@@ -139,17 +139,23 @@ class GoogleBucketResource(object):
 
     def extract_latest_file(self, list_blobs):
         last_recent_file = None
+        possible_recent_date_collision = False
         recent_date = datetime.strptime('01-01-1900', '%d-%m-%Y')
         for filename in list_blobs:
             date_file = self.extract_date_from_file(filename)
             if date_file:
                 if date_file == recent_date:
-                    # Raise an error
-                    logger.error("Error TWO files with the same date: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
-                    exit(1)
+                    possible_recent_date_collision = True
                 if date_file > recent_date:
+                    possible_recent_date_collision = False
                     recent_date = date_file
                     last_recent_file = filename
+
+        if possible_recent_date_collision:
+            # Raise an error
+            logger.error("Error TWO files with the same date: %s %s", last_recent_file,
+                         recent_date.strftime('%d-%m-%Y'))
+            exit(1)
         logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
         return {"latest_filename": last_recent_file, "suffix": recent_date.strftime('%Y-%m-%d')}
 
