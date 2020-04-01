@@ -24,7 +24,6 @@ def main():
     get_list_steps_on_request(args.list_steps,yaml.get_list_keys())
     cfg.set_up_logging(args)
 
-    google_opts = GoogleBucketResource.has_google_parameters(args.google_credential_key, args.google_bucket)
     resources = RetrieveResource(args, yaml_dict, yaml_dict.data_pipeline_schema)
     resources.run()
 
