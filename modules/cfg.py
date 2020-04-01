@@ -6,6 +6,7 @@ from opentargets_urlzsource import URLZSource
 
 logger = logging.getLogger(__name__)
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 """
 This will create a singleton argument parser that is appropriately configured
@@ -52,7 +53,7 @@ def setup_parser():
     p.add("--log-level", help="set the log level",
         env_var="LOG_LEVEL", action='store', default='INFO')
     p.add("--log-config", help="logging configuration file",
-        env_var="LOG_CONFIG", action='store', default='platform-input-support/resources/logging.ini')
+        env_var="LOG_CONFIG", action='store', default='resources/logging.ini')
 
     return p
 
@@ -97,9 +98,11 @@ def get_list_of_file_download(config_file, headers):
 def set_up_logging(args):
     #set up logging
     logger = None
+    print(BASE_DIR)
     if args.log_config:
         if os.path.isfile(args.log_config) and os.access(args.log_config, os.R_OK):
-            logging.config.fileConfig(args.log_config,  disable_existing_loggers=False)
+            print(os.path.join(BASE_DIR, args.log_config))
+            logging.config.fileConfig(os.path.join(BASE_DIR, args.log_config), disable_existing_loggers=False)
             logger = logging.getLogger(__name__+".main()")
         else:
             logging.basicConfig()
