@@ -16,6 +16,10 @@ __pycache__/
 # Output dir
 output/
 
+# Log output file
+.log
+*.log
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
