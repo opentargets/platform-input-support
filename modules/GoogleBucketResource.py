@@ -124,14 +124,25 @@ class GoogleBucketResource(object):
         blob.upload_from_filename(filename=original_filename)
         return blob.name
 
+
+    def extract_date_from_file(self, filename):
+        date_file = None
+        find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
+        if find_date_file:
+            date_file = datetime.strptime(find_date_file.group(1), '%d-%m-%Y')
+        else:
+            find_date_file = re.search("([0-9]{4}\-[0-9]{2}\-[0-9]{2})", filename)
+            if find_date_file:
+                date_file = datetime.strptime(find_date_file.group(1), '%Y-%m-%d')
+
+        return date_file
+
     def extract_latest_file(self, list_blobs):
         last_recent_file = None
         recent_date = datetime.strptime('01-01-1900', '%d-%m-%Y')
         for filename in list_blobs:
-
-            find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
-            if find_date_file:
-                date_file = datetime.strptime(find_date_file.group(1), '%d-%m-%Y')
+            date_file = self.extract_date_from_file(filename)
+            if date_file:
                 if date_file == recent_date:
                     # Raise an error
                     logger.error("Error TWO files with the same date: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
