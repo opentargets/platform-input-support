@@ -95,6 +95,23 @@ def get_list_of_file_download(config_file, headers):
                 yield result
 
 
+def setBasicConfigLog():
+    logFilename = os.path.join(BASE_DIR, 'log/output.log')
+    logging.basicConfig(level=logging.INFO, filename=logFilename, format= '%(name)-12s: %(levelname)-8s %(message)s',
+     datefmt='%H:%M:%S')
+
+    # set up logging to console
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)
+    # set a format which is simpler for console use
+    formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s - %(message)s')
+    console.setFormatter(formatter)
+    # add the handler to the root logger
+    logging.getLogger('').addHandler(console)
+
+    logger = logging.getLogger(__name__)
+    return logger
+
 def set_up_logging(args):
     #set up logging
     logger = None
@@ -103,13 +120,11 @@ def set_up_logging(args):
             logging.config.fileConfig(os.path.join(BASE_DIR, args.log_config), disable_existing_loggers=False)
             logger = logging.getLogger(__name__+".main()")
         else:
-            logging.basicConfig()
-            logger = logging.getLogger(__name__+".main()")
+            logger = setBasicConfigLog()
             logger.warning("unable to read file {}".format(args.log_config))
 
     else:
-        logging.basicConfig()
-        logger = logging.getLogger(__name__+".main()")
+        logger= setBasicConfigLog
 
     if args.log_level:
         try:

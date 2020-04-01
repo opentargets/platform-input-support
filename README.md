@@ -98,6 +98,11 @@ optional arguments:
 
 ```
 
+# Logging.ini
+The directory **"resources"** contains the file logging.ini with a list of default value.
+If the logging.ini is not available or the user removes it than the code sets up a list of default parameters.
+In both case, the log output file is store under **"log"**
+
 
 # Google bucket requirements
 To copy the files in a specific google storage bucket valid credentials must be used.

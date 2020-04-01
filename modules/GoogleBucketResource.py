@@ -132,6 +132,10 @@ class GoogleBucketResource(object):
             find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
             if find_date_file:
                 date_file = datetime.strptime(find_date_file.group(1), '%d-%m-%Y')
+                if date_file == recent_date:
+                    # Raise an error
+                    logger.error("Error TWO files with the same date: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
+                    exit(1)
                 if date_file > recent_date:
                     recent_date = date_file
                     last_recent_file = filename
