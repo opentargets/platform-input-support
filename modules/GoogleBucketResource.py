@@ -125,6 +125,7 @@ class GoogleBucketResource(object):
         return blob.name
 
 
+    # Extract any date in the format dd-mm-yyyy or yyyy-mm-dd. Return None if date are not available.
     def extract_date_from_file(self, filename):
         date_file = None
         find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
@@ -137,6 +138,7 @@ class GoogleBucketResource(object):
 
         return date_file
 
+    # Return the filename with the recent date. Manage collision of dates only for the recent date.
     def extract_latest_file(self, list_blobs):
         last_recent_file = None
         possible_recent_date_collision = False
@@ -152,7 +154,7 @@ class GoogleBucketResource(object):
                     last_recent_file = filename
 
         if possible_recent_date_collision:
-            # Raise an error
+            # Raise an error. No filename is unique in the recent date selected.
             logger.error("Error TWO files with the same date: %s %s", last_recent_file,
                          recent_date.strftime('%d-%m-%Y'))
             exit(1)
