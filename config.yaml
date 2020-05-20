@@ -106,6 +106,14 @@ chemical_probes:
     gid: 349856989
     output_filename: open_science_probes.tsv
     cp_type: osp
+tep:
+  output_filename: tep-{suffix}.json
+  resource: tep
+  gs_output_dir: annotation-files
+  spreadsheets:
+  - gkey: 1pV06MTC-szlJRjlgG9rV6WW67r6Nxd9oAXfqZkrNVAU
+    gid: 0
+    output_filename: tep.tsv
 known_target_safety:
   output_filename: known_target_safety-{suffix}.json
   resource: safety
@@ -337,5 +345,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/20.04/templates/template.mrtarget.data.20.04.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/20.06/templates/template.mrtarget.data.20.06.yml
   output_filename: mrtarget.data.yml

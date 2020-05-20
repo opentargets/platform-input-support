@@ -6,6 +6,7 @@ from EnsemblResource import EnsemblResource
 from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from KnownTargetSafetyResource import KnownTargetSafetyResource
+from TEP import TEP
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
@@ -80,6 +81,17 @@ class RetrieveResource(object):
         ksafety_filename = known_target_safety_resource.generate_known_safety_json(self.yaml.known_target_safety)
         self.list_files_downloaded[ksafety_filename] = {'resource': self.yaml.known_target_safety.resource,
                                                          'gs_output_dir': self.yaml.known_target_safety.gs_output_dir}
+
+    def get_TEP(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
+        # config.yaml tep : download spreadsheets + generate file for ETL
+        tep_output_dir = get_output_dir(None, PIS_OUTPUT_TEP)
+        tep_resource = TEP(output_dir_annotations)
+        tep_resource.download_spreadsheet(self.yaml.tep, tep_output_dir)
+        tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
+        self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
+                                                         'gs_output_dir': self.yaml.tep.gs_output_dir}
+
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
@@ -197,6 +209,7 @@ class RetrieveResource(object):
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
+        if self.has_step("tep"): self.get_TEP()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
