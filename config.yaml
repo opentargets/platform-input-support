@@ -34,15 +34,6 @@ annotations:
     output_filename: normal_tissue-{suffix}.tsv.zip
     unzip_file: true
     resource: hpa-normal-tissue
-  - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.binned_v2.tsv
-    output_filename: expatlas.blueprint2.baseline.binned_v2-{suffix}.tsv
-    resource: hpa-rna-level
-  - uri: https://storage.googleapis.com/atlas_baseline_expression/exp_summary_NormCounts_genes_all_Blueprint2_v2.txt
-    output_filename: exp_summary_NormCounts_genes_all_Blueprint2_v2-{suffix}.txt
-    resource: hpa-rna-value
-  - uri: https://storage.googleapis.com/atlas_baseline_expression/expatlas.blueprint2.baseline.z-score.binned_v2.tsv
-    output_filename: expatlas.blueprint2.baseline.z-score.binned_v2-{suffix}.tsv
-    resource: hpa-rna-zscore
   - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
     output_filename: eco_scores-{suffix}.tsv
     resource: eco-scores
@@ -64,9 +55,19 @@ annotations:
   - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/charite_HP_ORDO_07Oct15.owl?format=raw
     output_filename: charite_HP_ORDO_07Oct15-{suffix}.owl
     resource: disease-phenotype
+
 annotations_from_buckets:
   gs_output_dir: annotation-files
   downloads:
+  - bucket: atlas_baseline_expression/baseline_expression_binned
+    output_filename: baseline_expression_binned-{suffix}.tsv
+    resource: hpa-rna-level
+  - bucket: atlas_baseline_expression/baseline_expression_counts
+    output_filename: baseline_expression_counts-{suffix}.txt
+    resource: hpa-rna-value
+  - bucket: atlas_baseline_expression/baseline_expression_zscore_binned
+    output_filename: baseline_expression_zscore_binned-{suffix}.tsv
+    resource: hpa-rna-zscore
   - bucket: otar007-cosmic
     output_filename: cosmic-hallmarks-{suffix}.tsv.gz
     resource: hallmark
