@@ -63,7 +63,7 @@ annotations_from_buckets:
     output_filename: baseline_expression_binned-{suffix}.tsv
     resource: hpa-rna-level
   - bucket: atlas_baseline_expression/baseline_expression_counts
-    output_filename: baseline_expression_counts-{suffix}.txt
+    output_filename: baseline_expression_counts-{suffix}.tsv
     resource: hpa-rna-value
   - bucket: atlas_baseline_expression/baseline_expression_zscore_binned
     output_filename: baseline_expression_zscore_binned-{suffix}.tsv
