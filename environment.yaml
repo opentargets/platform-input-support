@@ -39,12 +39,14 @@ dependencies:
   - pbr=5.1.2
   - pluggy=0.8.1
   - protobuf=3.6.1
+  - psutil=5.7.0
   - py=1.7.0
   - pyaml=18.11.0
   - pyasn1=0.4.4
   - pyasn1-modules=0.2.3
   - pycparser=2.19
   - pyopenssl=19.0.0
+  - pyspark=2.4.5
   - pysocks=1.6.8
   - pytest=4.2.0
   - pytest-cov=2.6.1

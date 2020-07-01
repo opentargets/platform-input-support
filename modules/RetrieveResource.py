@@ -7,6 +7,7 @@ from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
+from Homology import Homology
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
@@ -92,6 +93,11 @@ class RetrieveResource(object):
         self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
                                                          'gs_output_dir': self.yaml.tep.gs_output_dir}
 
+    def get_homology(self):
+        get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
+        get_output_dir(None, PIS_OUTPUT_HOMOLOGY)
+        homology_resource = Homology(self.yaml.homology)
+        homology_resource.generateHomology()
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
@@ -210,6 +216,7 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
+        if self.has_step("homology"): self.get_homology()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()

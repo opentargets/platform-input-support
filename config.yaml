@@ -148,6 +148,15 @@ ensembl:
   extension_file: _genes.json.gz
   resource: ensembl-filename
   gs_output_dir: annotation-files
+homology:
+  gs_output_dir: annotation-files
+  output_filename: homology-{suffix}.json
+  ensembl_release: 100
+  uri_protein_coding: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/tsv/ensembl-compara/homologies/Compara.{ensembl_release}.protein_default.homologies.tsv.gz
+  uri_ncRNAs: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/tsv/ensembl-compara/homologies/Compara.{ensembl_release}.ncrna_default.homologies.tsv.gz
+  uri_ensembl_species: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/species_EnsemblVertebrates.txt
+  uri_ftp: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/json/
+  whitelisted_species: ["9606","10090","10141","9544","9615","9986","10116","9823","8364","7955","9598","7227","6239"]
 ChEMBL:
   gs_output_dir: annotation-files
   downloads:

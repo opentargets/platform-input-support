@@ -42,6 +42,8 @@ def make_ungzip(file_with_path):
     with gzip.open(file_with_path, 'rb') as f_in:
         with open(filename_unzip, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+    f_in.close()
+    f_out.close()
     return filename_unzip
 
 

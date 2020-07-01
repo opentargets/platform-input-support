@@ -1,7 +1,7 @@
 import datetime
 import urllib
 import threading
-
+from ftplib import FTP
 # Common packages
 from modules.common.TqdmUpTo import TqdmUpTo
 
@@ -45,8 +45,18 @@ class DownloadResource(object):
             print "Error: {msg}".format(msg=e)
             return None
 
+        download.cleanup()
+        download.close()
         return destination_filename
 
     @threaded
     def execute_download_threaded(self, resource_info):
         self.execute_download(resource_info)
+
+    def ftp_download(self, resource_info):
+        print "Start to download\n\t{uri} ".format(uri=resource_info.uri)
+        filename = self.set_filename(resource_info.output_filename)
+        urllib.urlretrieve(resource_info.uri, filename)
+        urllib.urlcleanup()
+
+        return filename
