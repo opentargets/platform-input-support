@@ -184,6 +184,11 @@ ChEMBL:
       uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
       output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
+otnetwork:
+  gs_output_dir: evidence-files
+  intact_info:
+    uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
+    output_filename: interactor_pair_interactions.json
 evidences:
   gs_output_dir: evidence-files
   downloads:

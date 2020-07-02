@@ -7,6 +7,7 @@ from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
+from OTNetwork import OTNetwork
 from Homology import Homology
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
@@ -91,7 +92,17 @@ class RetrieveResource(object):
         tep_resource.download_spreadsheet(self.yaml.tep, tep_output_dir)
         tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
         self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
-                                                         'gs_output_dir': self.yaml.tep.gs_output_dir}
+                                                    'gs_output_dir': self.yaml.tep.gs_output_dir}
+
+
+    def get_OTNetwork(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
+        OTNetwork_output_dir = get_output_dir(None, PIS_OUTPUT_OTNETWORK)
+        OTNetwork_resource = OTNetwork(self.yaml.otnetwork)
+        intact_filename=OTNetwork_resource.download_intact_file()
+        self.list_files_downloaded[intact_filename] = {'resource': None,
+                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
+        # Here add the second file. String.
 
     def get_homology(self):
         get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
@@ -216,7 +227,9 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
+        #Todo complete Homology step. Just prototype. CM
         if self.has_step("homology"): self.get_homology()
+        if self.has_step("otnetwork"): self.get_OTNetwork()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
