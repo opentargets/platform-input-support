@@ -45,6 +45,7 @@ def build_ensembl_genes(pipeline_file_name, enable_platform_mode, ensembl_databa
 
     # SQL to retrieve required fields
     # Note that the single % in the LIKE clause have to be escaped as %%
+    # Note. In order to run a left join the query slightly changed.
     q = """
     SELECT
     et.exon_id,
@@ -61,9 +62,10 @@ def build_ensembl_genes(pipeline_file_name, enable_platform_mode, ensembl_databa
     g.seq_region_end AS end,
     e.seq_region_start AS exon_start,
     e.seq_region_end AS exon_end,
-    t.seq_region_strand AS fwdstrand,
-    g.seq_region_strand AS strand
-    FROM exon_transcript et, exon e, gene g, transcript t, seq_region r, xref x, coord_system cs, analysis a
+    tta.seq_region_strand AS fwdstrand,
+    g.seq_region_strand AS strand,
+    tta.stable_id AS protein_id
+    FROM exon_transcript et, exon e, gene g, (select t.transcript_id, t.seq_region_strand, ta.stable_id from transcript t left join translation ta on ta.transcript_id = t.transcript_id) as tta, seq_region r, xref x, coord_system cs, analysis a
     WHERE
     g.canonical_transcript_id = et.transcript_id AND
     g.seq_region_id = r.seq_region_id AND
@@ -71,7 +73,7 @@ def build_ensembl_genes(pipeline_file_name, enable_platform_mode, ensembl_databa
     r.coord_system_id = cs.coord_system_id AND
     cs.name = 'chromosome' AND cs.attrib LIKE '%%default_version%%' AND
     g.analysis_id = a.analysis_id AND
-    et.transcript_id = t.transcript_id AND
+    et.transcript_id = tta.transcript_id AND
     e.exon_id = et.exon_id
     """
 
