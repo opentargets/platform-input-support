@@ -74,5 +74,7 @@ dependencies:
   - wheel=0.32.3
   - zlib=1.2.11
   - simplejson=3.16.1
-
+  - sqlalchemy
+  - pandas
+  - mysqlclient
 

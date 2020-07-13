@@ -125,6 +125,7 @@ class GoogleBucketResource(object):
         return blob.name
 
 
+
     # Extract any date in the format dd-mm-yyyy or yyyy-mm-dd. Return None if date are not available.
     def extract_date_from_file(self, filename):
         date_file = None
