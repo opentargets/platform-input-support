@@ -3,11 +3,9 @@ from DownloadResource import DownloadResource
 from common import make_ungzip
 from addict import Dict
 import csv
-import shelve
 from opentargets_urlzsource import URLZSource
 import datetime
 import json
-import dumbdbm
 import logging
 
 

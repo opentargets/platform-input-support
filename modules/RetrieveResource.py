@@ -2,11 +2,12 @@ import logging
 from common import get_output_dir
 from DownloadResource import DownloadResource
 from GoogleBucketResource import GoogleBucketResource
-from EnsemblResource import EnsemblResource
+from EnsemblCondaResource import EnsemblCondaResource
 from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
+from OTNetwork import OTNetwork
 from Homology import Homology
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
@@ -59,7 +60,7 @@ class RetrieveResource(object):
                     len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
 
     def get_ensembl(self):
-        ensembl_resource = EnsemblResource(self.yaml.ensembl)
+        ensembl_resource = EnsemblCondaResource(self.yaml.ensembl)
         ensembl_filename = ensembl_resource.create_genes_dictionary()
         self.list_files_downloaded[ensembl_filename] = {'resource': self.yaml.ensembl.resource, 'gs_output_dir': self.yaml.ensembl.gs_output_dir}
 
@@ -91,7 +92,17 @@ class RetrieveResource(object):
         tep_resource.download_spreadsheet(self.yaml.tep, tep_output_dir)
         tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
         self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
-                                                         'gs_output_dir': self.yaml.tep.gs_output_dir}
+                                                    'gs_output_dir': self.yaml.tep.gs_output_dir}
+
+
+    def get_OTNetwork(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
+        OTNetwork_output_dir = get_output_dir(None, PIS_OUTPUT_OTNETWORK_TMP)
+        OTNetwork_resource = OTNetwork(self.yaml.otnetwork)
+        intact_filename=OTNetwork_resource.etl_interaction()
+        self.list_files_downloaded[intact_filename] = {'resource': None, 'is_a_dir': True,
+                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
+        # Here add the second file. String.
 
     def get_homology(self):
         get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
@@ -181,12 +192,15 @@ class RetrieveResource(object):
         params = GoogleBucketResource.get_bucket_and_path(self.args.google_bucket)
         google_resource = GoogleBucketResource(bucket_name=params)
         for original_filename in self.list_files_downloaded:
-            split_filename=original_filename.rsplit('/', 1)
-            dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
-            bucket_filename=google_resource.copy_from(original_filename, dest_filename,
+            if 'is_a_dir' in self.list_files_downloaded[original_filename]:
+                print "TODO"
+            else:
+                split_filename=original_filename.rsplit('/', 1)
+                dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
+                bucket_filename=google_resource.copy_from(original_filename, dest_filename,
                                                       self.list_files_downloaded[original_filename]['gs_output_dir'])
-            bucket_filename = GOOGLE_STORAGE_URI+google_resource.bucket_name+'/'+bucket_filename
-            self.list_google_storage_files[bucket_filename] = self.list_files_downloaded[original_filename]
+                bucket_filename = GOOGLE_STORAGE_URI+google_resource.bucket_name+'/'+bucket_filename
+                self.list_google_storage_files[bucket_filename] = self.list_files_downloaded[original_filename]
 
     def create_yaml_config_file(self):
         data_pipeline_config_file = DataPipelineConfig(self.yaml_data_pipeline_schema)
@@ -216,7 +230,9 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
+        #Todo complete Homology step. Just prototype. CM
         if self.has_step("homology"): self.get_homology()
+        if self.has_step("otnetwork"): self.get_OTNetwork()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()

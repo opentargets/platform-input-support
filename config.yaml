@@ -184,6 +184,17 @@ ChEMBL:
       uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
       output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
+otnetwork:
+  gs_output_dir: annotation-files/otnetwork
+  intact_info:
+    uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
+    output_filename: interactor_pair_interactions.json
+  rna_central:
+    uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
+    output_filename: rna_central_ensembl.tsv
+  uniprot_info:
+    uri : ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
+    output_filename: HUMAN_9606_idmapping.dat.gz
 evidences:
   gs_output_dir: evidence-files
   downloads:
