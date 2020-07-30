@@ -47,19 +47,19 @@ class OTNetwork(object):
     # ETL for intact info.
     def etl_intact_info(self):
         intactInfoDF = self.spark.load_file(self.intact_info_filename,"json")\
-            .withColumn("interactorAId", col("interactorA.id")) \
-            .withColumn("interactorAIdSource", col("interactorA.id_source")) \
-            .withColumn("interactorBId", col("interactorB.id")) \
-            .withColumn("interactorBIdSource", col("interactorB.id_source")) \
-            .withColumn("sourceDatabase", col("source_info.source_database")) \
+            .withColumn("intA_sourceID", col("interactorA.id")) \
+            .withColumn("intA_source", col("interactorA.id_source")) \
+            .withColumn("intB_sourceID", col("interactorB.id")) \
+            .withColumn("intB_source", col("interactorB.id_source")) \
+            .withColumnRenamed("source_info", "interactionResources") \
             .withColumn("interactionScore", col("interaction.interaction_score")) \
             .withColumn("causalInteraction", col("interaction.causal_interaction")) \
-            .withColumn("organismA", col("interactorA.organism")).withColumn("organismB", col("interactorB.organism")) \
-            .withColumn("biologicalRoleA", col("interactorA.biological_role")).withColumn("biologicalRoleB", col("interactorB.biological_role")) \
+            .withColumn("speciesA", col("interactorA.organism")).withColumn("speciesB", col("interactorB.organism")) \
+            .withColumn("intABiologicalRole", col("interactorA.biological_role")).withColumn("intBBiologicalRole", col("interactorB.biological_role")) \
             .withColumn("evidences", explode(col("interaction.evidence"))) \
-            .select("interactorAId", "interactorAIdSource", "organismA","interactorBId", "interactorBIdSource",
-                    "organismB", "sourceDatabase","interactionScore","causalInteraction","evidences","biologicalRoleA",
-                    "biologicalRoleB")
+            .select("intA_sourceID", "intA_source", "speciesA","intB_sourceID", "intB_source",
+                    "speciesB", "interactionResources","interactionScore","causalInteraction","evidences","intABiologicalRole",
+                    "intBBiologicalRole")
 
         # Todo:
         # Remove _ or -
@@ -69,15 +69,15 @@ class OTNetwork(object):
 
         # rnaCentral manipulation. Some ID as _9606 added to the id. Remove them..filter(col("targetA").isNotNull())
         mappingLeftDF = intactInfoDF\
-            .join(self.ensembl_mapping, split(col("interactorAId"), "_").getItem(0) == self.ensembl_mapping.mapped_id,how='left')\
+            .join(self.ensembl_mapping, split(col("intA_source"), "_").getItem(0) == self.ensembl_mapping.mapped_id,how='left')\
             .withColumnRenamed("gene_id", "targetA")
 
         mappingDF = mappingLeftDF\
-            .join(self.ensembl_mapping.alias("mapping"), split(col("interactorBId"), "_").getItem(0) == col("mapping.mapped_id"),how='left')\
-            .withColumnRenamed("gene_id", "targetB")\
-            .select("targetA","targetB","interactorAId", "interactorAIdSource", "interactorBId", "interactorBIdSource",
-                    "organismA", "organismB", "sourceDatabase","interactionScore","causalInteraction","evidences",
-                    "biologicalRoleA","biologicalRoleB")
+            .join(self.ensembl_mapping.alias("mapping"), split(col("intB_source"), "_").getItem(0) == col("mapping.mapped_id"),how='left')\
+            .withColumnRenamed("gene_id", "targetB") \
+            .select("targetA", "intA_sourceID", "intA_source", "speciesA", "targetB", "intB_sourceID", "intB_source",
+             "speciesB", "interactionResources", "interactionScore", "causalInteraction", "evidences",
+             "intABiologicalRole","intBBiologicalRole")
 
 
         return mappingDF
