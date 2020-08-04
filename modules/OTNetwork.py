@@ -69,11 +69,11 @@ class OTNetwork(object):
 
         # rnaCentral manipulation. Some ID as _9606 added to the id. Remove them..filter(col("targetA").isNotNull())
         mappingLeftDF = intactInfoDF\
-            .join(self.ensembl_mapping, split(col("intA_source"), "_").getItem(0) == self.ensembl_mapping.mapped_id,how='left')\
+            .join(self.ensembl_mapping, split(col("intA_sourceID"), "_").getItem(0) == self.ensembl_mapping.mapped_id,how='left')\
             .withColumnRenamed("gene_id", "targetA")
 
         mappingDF = mappingLeftDF\
-            .join(self.ensembl_mapping.alias("mapping"), split(col("intB_source"), "_").getItem(0) == col("mapping.mapped_id"),how='left')\
+            .join(self.ensembl_mapping.alias("mapping"), split(col("intB_sourceID"), "_").getItem(0) == col("mapping.mapped_id"),how='left')\
             .withColumnRenamed("gene_id", "targetB") \
             .select("targetA", "intA_sourceID", "intA_source", "speciesA", "targetB", "intB_sourceID", "intB_source",
              "speciesB", "interactionResources", "interactionScore", "causalInteraction", "evidences",
