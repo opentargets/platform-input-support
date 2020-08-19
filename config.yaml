@@ -185,7 +185,7 @@ ChEMBL:
       output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
 otnetwork:
-  gs_output_dir: annotation-files/otnetwork
+  gs_output_dir: annotation-files/otnetworks
   intact_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
     output_filename: interactor_pair_interactions.json

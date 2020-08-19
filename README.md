@@ -2,7 +2,7 @@
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a specific google storage bucket.
 
-Currently, the application executes 6 steps and finally it generates a Yaml config file that can be used to run the 
+Currently, the application executes 6 steps and finally it generates a Yaml config file that can be used to run the
 the OT pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
@@ -11,8 +11,9 @@ List of available steps:
 - chemical probes
 - known target safety
 - ensembl
-- ChEMBL 
+- ChEMBL
 - evidences
+- otnetworks
 
 The step 'evidences' uploads the last evidences from different providers and it generates a subset of these evidences using the file minimal_ensembl.txt
 
@@ -111,29 +112,29 @@ Eg.
 ```
 python platform-input-support.py -gkey /path/open-targets-gac.json -gb bucket/object_path
 or
-python platform-input-support.py 
-         --google_credential_key /path/open-targets-gac.json 
+python platform-input-support.py
+         --google_credential_key /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
 ```
 
 # More examples
 
 ```
-python platform-input-support.py 
+python platform-input-support.py
          --skip
-         --google_credential_key /path/open-targets-gac.json 
+         --google_credential_key /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
 or  
-python platform-input-support.py 
-         --google_credential_key /path/open-targets-gac.json 
+python platform-input-support.py
+         --google_credential_key /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
          -steps annotations evidences
          -exclude ChEMBL
 or
-python platform-input-support.py 
-         -gkey /path/open-targets-gac.json 
-         -gb bucket/object_path -steps ChEMBL 
-         --log-level DEBUG > log.txt 
+python platform-input-support.py
+         -gkey /path/open-targets-gac.json
+         -gb bucket/object_path -steps ChEMBL
+         --log-level DEBUG > log.txt
 ```
 
 ### Check if the files generated are correpted
@@ -173,8 +174,8 @@ Use nohup to avoid that the process hang up.
 ```nohup python platform-input-support.py [options] &
 
 Eg.
-nohup python platform-input-support.py 
-         -gkey /path/open-targets-gac.json 
-         -gb bucket/object_path -steps ChEMBL 
+nohup python platform-input-support.py
+         -gkey /path/open-targets-gac.json
+         -gb bucket/object_path -steps ChEMBL
          --log-level DEBUG > log.txt &
 ```

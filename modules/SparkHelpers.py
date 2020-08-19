@@ -11,7 +11,8 @@ from pyspark.sql.functions import *
 
 logger = logging.getLogger(__name__)
 
-# This class is just a draft.
+# This class is just a draft. All the compute should be done using:
+# platform-etl-backend
 # Todo: pass the pameters for cores and memory. Provide default.
 class SparkHelpers(object):
 

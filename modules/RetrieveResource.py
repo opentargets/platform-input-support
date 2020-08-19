@@ -95,13 +95,24 @@ class RetrieveResource(object):
                                                     'gs_output_dir': self.yaml.tep.gs_output_dir}
 
 
-    def get_OTNetwork(self):
+    def get_OTNetworks(self):
         output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        OTNetwork_output_dir = get_output_dir(None, PIS_OUTPUT_OTNETWORK_TMP)
+        output_dir_otnetworks = get_output_dir(None, PIS_OUTPUT_OTNETWORK)
         OTNetwork_resource = OTNetwork(self.yaml.otnetwork)
-        intact_filename=OTNetwork_resource.etl_interaction()
-        self.list_files_downloaded[intact_filename] = {'resource': None, 'is_a_dir': True,
-                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
+        ensembl_info_filename = OTNetwork_resource.download_ensembl()
+        self.list_files_downloaded[ensembl_info_filename] = {'resource': None,
+                                                            'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
+        intact_info_filename = OTNetwork_resource.get_intact_info_file()
+        self.list_files_downloaded[intact_info_filename] = {'resource': None,
+                                                            'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
+        list_files_intact=OTNetwork_resource.get_rna_central()
+        for intact_filename in list_files_intact:
+            self.list_files_downloaded[intact_filename] = {'resource': None,
+                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir+'/rna-central'}
+        list_files_human=OTNetwork_resource.get_uniprot_info_file()
+        for human_filename in list_files_human:
+            self.list_files_downloaded[human_filename] = {'resource': None,
+                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir+'/human-mapping'}
         # Here add the second file. String.
 
     def get_homology(self):
@@ -232,13 +243,14 @@ class RetrieveResource(object):
         if self.has_step("tep"): self.get_TEP()
         #Todo complete Homology step. Just prototype. CM
         if self.has_step("homology"): self.get_homology()
-        if self.has_step("otnetwork"): self.get_OTNetwork()
+        if self.has_step("otnetworks"): self.get_OTNetworks()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
         if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
 
         # At this point the auth key is already valid.
+        print self.list_files_downloaded
         if google_opts: self.copy_files_to_google_storage()
 
         self.create_yaml_config_file()
