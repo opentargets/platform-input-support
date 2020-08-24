@@ -144,14 +144,14 @@ ensembl:
   conda_create: bash -c "~/anaconda2/bin/conda env create -f {root_dir}/scripts/ensembl/environment.yaml"
   python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/.
     -e -z -n
-  ensembl_release: homo_sapiens_core_100_38
+  ensembl_release: homo_sapiens_core_101_38
   extension_file: _genes.json.gz
   resource: ensembl-filename
   gs_output_dir: annotation-files
 homology:
   gs_output_dir: annotation-files
   output_filename: homology-{suffix}.json
-  ensembl_release: 100
+  ensembl_release: 101
   uri_protein_coding: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/tsv/ensembl-compara/homologies/Compara.{ensembl_release}.protein_default.homologies.tsv.gz
   uri_ncRNAs: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/tsv/ensembl-compara/homologies/Compara.{ensembl_release}.ncrna_default.homologies.tsv.gz
   uri_ensembl_species: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/species_EnsemblVertebrates.txt
@@ -198,6 +198,12 @@ otnetwork:
 evidences:
   gs_output_dir: evidence-files
   downloads:
+  - bucket: otar000-evidence_input/ClinGen/clingen_2020-08-04.json.gz
+    output_filename: clingen-{suffix}.json.gz
+    resource: input-file
+    subset_key:
+    - target
+    - id
   - bucket: otar000-evidence_input/CRISPR/json
     output_filename: crispr-{suffix}.json.gz
     resource: input-file
@@ -365,5 +371,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/20.06/templates/template.mrtarget.data.20.06.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/20.09/templates/template.mrtarget.data.20.09.yml
   output_filename: mrtarget.data.yml
