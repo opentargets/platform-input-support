@@ -12,7 +12,7 @@ from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
 from AnnotationQC import AnnotationQC
-from common import get_lines, make_gzip, make_unzip_single_file
+from common import get_lines, make_unzip_single_file
 import time
 
 logger = logging.getLogger(__name__)
@@ -116,14 +116,16 @@ class RetrieveResource(object):
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
-        list_files_ChEMBL ={}
-        output_dir_ChEMBL = get_output_dir(None, PIS_OUTPUT_CHEMBL_API)
+        """
+        Retrieves ChEMBL resources from both REST API and Elasticsearch instance as configured in `config.xml` and
+        updates list_files_downloaded with downloaded ChEMBL files.
+        """
         chembl_handler = ChEMBLLookup(self.yaml.ChEMBL)
-        list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_files()
-        for file_with_path in list_files_ChEMBL_unzipped:
-            filename_zip = make_gzip(file_with_path)
-            list_files_ChEMBL[filename_zip] = {'resource': list_files_ChEMBL_unzipped[file_with_path]['resource'],
-                                               'gs_output_dir': self.yaml.ChEMBL.gs_output_dir }
+        # standard files
+        list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_resources()
+        # compressed files (.gz)
+        list_files_ChEMBL = chembl_handler.compress_ChEMBL_files(list_files_ChEMBL_unzipped)
+
         self.list_files_downloaded.update(list_files_ChEMBL)
 
 

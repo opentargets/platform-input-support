@@ -31,6 +31,7 @@ def get_output_dir(output_dir, default_output_dir):
 
 
 def make_gzip(file_with_path):
+    """Compress file_with_path to file_with_path.gz and return file name."""
     r_filename = file_with_path + '.gz'
     with open(file_with_path, 'rb') as f_in, gzip.open(r_filename, 'wb') as f_out:
         f_out.writelines(f_in)

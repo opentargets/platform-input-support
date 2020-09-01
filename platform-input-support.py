@@ -21,7 +21,7 @@ def main():
     args = cfg.get_args()
     yaml = YAMLReader()
     yaml_dict = yaml.read_yaml()
-    get_list_steps_on_request(args.list_steps,yaml.get_list_keys())
+    get_list_steps_on_request(args.list_steps, yaml.get_list_keys())
     cfg.set_up_logging(args)
 
     #--gkey and --google_bucket are mandatory for the google storage access. Both keys must be parameters or none.

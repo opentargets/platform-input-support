@@ -137,7 +137,7 @@ python platform-input-support.py
          --log-level DEBUG > log.txt
 ```
 
-### Check if the files generated are correpted
+### Check if the files generated are corrupted
 The zip files generated might be corrupted. The follow command checks if the files are correct.
 sh check_corrupted_files.sh
 
@@ -179,3 +179,11 @@ nohup python platform-input-support.py
          -gb bucket/object_path -steps ChEMBL
          --log-level DEBUG > log.txt &
 ```
+
+# Application architecture
+
+- `platform-input-support` is the entrypoint to the program; it loads the `config.yaml` which specifies the available
+steps and any necessary configuration which goes with them. This configuration is represented internally as a dictionary. 
+Platform input support configures a `RetrieveResource` object and calls the `run` method triggering the selected steps.
+- `RetrieveResource` will consult the steps selected and trigger a method for each selected step. Most steps will defer
+to a helper object in `Modules` to retrieve the selected resources.  
