@@ -150,6 +150,14 @@ ensembl:
   gs_output_dir: annotation-files
 ChEMBL:
   gs_output_dir: annotation-files
+  datasources:
+    type: elasticsearch
+    url: http://hh-rke-wp-webadmin-04-worker-4.caas.ebi.ac.uk
+    port: 32000
+    indices:
+      index1:
+        name: chembl_27_drug_indication
+        fields: ['molecule_chembl_id', 'efo_id', 'max_phase_for_ind']
   downloads:
     drug:
       uri: https://www.ebi.ac.uk/chembl/api/data/drug_indication.json

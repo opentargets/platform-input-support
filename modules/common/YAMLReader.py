@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class YAMLReader(object):
 
-    def __init__(self, yaml_file=ROOT_DIR+'/'+'config.yaml' ):
+    def __init__(self, yaml_file=ROOT_DIR + '/' + 'config.yaml'):
         self.yaml_file = yaml_file
         self.yaml_dictionary = {}
         self.yaml_data = {}
@@ -27,7 +27,7 @@ class YAMLReader(object):
                 self.yaml_dictionary = Dict(self.yaml_data)
             except yaml.YAMLError as exc:
                 print(exc)
-        yaml_output= self.yaml_dictionary if standard_output == False else self.yaml_data
+        yaml_output = self.yaml_dictionary if standard_output is False else self.yaml_data
         return yaml_output
 
     def get_list_keys(self):
