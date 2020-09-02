@@ -187,3 +187,24 @@ steps and any necessary configuration which goes with them. This configuration i
 Platform input support configures a `RetrieveResource` object and calls the `run` method triggering the selected steps.
 - `RetrieveResource` will consult the steps selected and trigger a method for each selected step. Most steps will defer
 to a helper object in `Modules` to retrieve the selected resources.  
+
+# Troubleshooting
+
+## Installation
+
+### Conda can't find 'opentargets-urlzsource'
+
+The `opentargets-urlzsource` package needs to be build manually. For some reason conda 4.8.4 gives a `PackageNotFoundError   
+when the following command is executed:
+
+```
+conda install -y --use-local opentargets-urlzsource
+```
+
+To solve this problem install the package from the 'base' environment with the following command, updated as necessary for
+the location of you miniconda installation.
+
+```bash
+conda install --name platform-input-support-py2.7 -c file:///[path to miniconda]/envs/platform-input-support-py2.7/conda-bld/linux-64/ opentargets-urlzsource
+```
+
