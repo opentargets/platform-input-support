@@ -148,15 +148,6 @@ ensembl:
   extension_file: _genes.json.gz
   resource: ensembl-filename
   gs_output_dir: annotation-files
-homology:
-  gs_output_dir: annotation-files
-  output_filename: homology-{suffix}.json
-  ensembl_release: 101
-  uri_protein_coding: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/tsv/ensembl-compara/homologies/Compara.{ensembl_release}.protein_default.homologies.tsv.gz
-  uri_ncRNAs: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/tsv/ensembl-compara/homologies/Compara.{ensembl_release}.ncrna_default.homologies.tsv.gz
-  uri_ensembl_species: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/species_EnsemblVertebrates.txt
-  uri_ftp: ftp://ftp.ensembl.org/pub/release-{ensembl_release}/json/
-  whitelisted_species: ["9606","10090","10141","9544","9615","9986","10116","9823","8364","7955","9598","7227","6239"]
 ChEMBL:
   gs_output_dir: annotation-files
   downloads:
@@ -184,8 +175,8 @@ ChEMBL:
       uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
       output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
-otnetwork:
-  gs_output_dir: annotation-files/otnetworks
+network:
+  gs_output_dir: annotation-files/networks
   intact_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
     output_filename: interactor_pair_interactions.json
@@ -198,7 +189,7 @@ otnetwork:
 evidences:
   gs_output_dir: evidence-files
   downloads:
-  - bucket: otar000-evidence_input/ClinGen/clingen_2020-08-04.json.gz
+  - bucket: otar000-evidence_input/ClinGen
     output_filename: clingen-{suffix}.json.gz
     resource: input-file
     subset_key:

@@ -13,7 +13,7 @@ List of available steps:
 - ensembl
 - ChEMBL
 - evidences
-- otnetworks
+- networks
 
 The step 'evidences' uploads the last evidences from different providers and it generates a subset of these evidences using the file minimal_ensembl.txt
 

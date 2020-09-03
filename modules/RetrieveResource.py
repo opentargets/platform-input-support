@@ -7,8 +7,7 @@ from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
-from OTNetwork import OTNetwork
-from Homology import Homology
+from Network import Network
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
@@ -95,31 +94,25 @@ class RetrieveResource(object):
                                                     'gs_output_dir': self.yaml.tep.gs_output_dir}
 
 
-    def get_OTNetworks(self):
+    def get_Networks(self):
         output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        output_dir_otnetworks = get_output_dir(None, PIS_OUTPUT_OTNETWORK)
-        OTNetwork_resource = OTNetwork(self.yaml.otnetwork)
-        ensembl_info_filename = OTNetwork_resource.download_ensembl()
+        output_dir_networks = get_output_dir(None, PIS_OUTPUT_NETWORK)
+        network_resource = Network(self.yaml.network)
+        ensembl_info_filename = network_resource.download_ensembl()
         self.list_files_downloaded[ensembl_info_filename] = {'resource': None,
-                                                            'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
-        intact_info_filename = OTNetwork_resource.get_intact_info_file()
+                                                            'gs_output_dir': self.yaml.network.gs_output_dir}
+        intact_info_filename = network_resource.get_intact_info_file()
         self.list_files_downloaded[intact_info_filename] = {'resource': None,
-                                                            'gs_output_dir': self.yaml.otnetwork.gs_output_dir}
-        list_files_intact=OTNetwork_resource.get_rna_central()
+                                                            'gs_output_dir': self.yaml.network.gs_output_dir}
+        list_files_intact=network_resource.get_rna_central()
         for intact_filename in list_files_intact:
             self.list_files_downloaded[intact_filename] = {'resource': None,
-                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir+'/rna-central'}
-        list_files_human=OTNetwork_resource.get_uniprot_info_file()
+                                                       'gs_output_dir': self.yaml.network.gs_output_dir+'/rna-central'}
+        list_files_human=network_resource.get_uniprot_info_file()
         for human_filename in list_files_human:
             self.list_files_downloaded[human_filename] = {'resource': None,
-                                                       'gs_output_dir': self.yaml.otnetwork.gs_output_dir+'/human-mapping'}
+                                                       'gs_output_dir': self.yaml.etwork.gs_output_dir+'/human-mapping'}
         # Here add the second file. String.
-
-    def get_homology(self):
-        get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        get_output_dir(None, PIS_OUTPUT_HOMOLOGY)
-        homology_resource = Homology(self.yaml.homology)
-        homology_resource.generateHomology()
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
@@ -241,9 +234,7 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
-        #Todo complete Homology step. Just prototype. CM
-        if self.has_step("homology"): self.get_homology()
-        if self.has_step("otnetworks"): self.get_OTNetworks()
+        if self.has_step("networks"): self.get_Networks()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
