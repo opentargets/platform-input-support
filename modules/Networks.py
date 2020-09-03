@@ -8,7 +8,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
-class OTNetwork(object):
+class Networks(object):
 
     def __init__(self, yaml_dict):
         self.intact_info = yaml_dict.intact_info
