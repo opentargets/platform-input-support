@@ -7,7 +7,7 @@ from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
-from Network import Network
+from Networks import Networks
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
@@ -97,7 +97,7 @@ class RetrieveResource(object):
     def get_Networks(self):
         output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         output_dir_networks = get_output_dir(None, PIS_OUTPUT_NETWORK)
-        network_resource = Network(self.yaml.network)
+        network_resource = Networks(self.yaml.network)
         ensembl_info_filename = network_resource.download_ensembl()
         self.list_files_downloaded[ensembl_info_filename] = {'resource': None,
                                                             'gs_output_dir': self.yaml.network.gs_output_dir}
