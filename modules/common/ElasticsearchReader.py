@@ -1,40 +1,23 @@
 import json
 import logging
-import uuid
 import requests
 
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, utils
 from requests import ConnectionError
 
-
 logger = logging.getLogger(__name__)
 
-def write_elasticsearch_docs_as_jsonl(docs, outfile=None):
-    """
-    Write list of elasticsearch objects to file as jsonl format.
-    :param outfile: file to write contents of `doc`. If no file is specified, the current working directory
-    will be used with a randomly generated id as a name.
-    :param docs: List of elasticsearch documents represented as dictionaries. Each document will be written as a
-    standalone json object (jsonl).
-    :return: None
-    """
-    fname = '{}.jsonl'.format(outfile if (outfile is not None) else str(uuid.uuid4()))
-    with open(fname, 'w') as outfile:
-        for doc in docs:
-            json.dump(doc, outfile)
-            outfile.write('\n')
-    logger.info("Wrote {} documents to {}.".format(len(docs), fname))
 
-
-class ChemblElasticsearch:
+class ElasticsearchReader:
     """
     Wrapper over an Elasticsearch instance.
     """
-    def __init__(self, chembl_config):
-        self.PORT = chembl_config['datasources']['port']
-        self.HOST = chembl_config['datasources']['url']
-        logger.info("Creating ChEMBL Elasticsearch reader with url: {}, port: {}".format(self.HOST, self.PORT))
+
+    def __init__(self, host, port):
+        self.PORT = port
+        self.HOST = host
+        logger.info("Creating ElasticsearchReader with url: {}, port: {}".format(self.HOST, self.PORT))
         self.es = Elasticsearch([{'host': self.HOST, 'port': self.PORT}])
 
     def confirm_es_reachable(self):
@@ -79,3 +62,17 @@ class ChemblElasticsearch:
                     logger.error("field \"%s\" not found on document from index: %s", f, index)
             out.append(hit_dict)
         return out
+
+    def write_elasticsearch_docs_as_jsonl(self, docs, fname):
+        """
+        Write list of elasticsearch objects to file as jsonl format.
+        :param fname: file to write contents of `doc`.
+        :param docs: List of elasticsearch documents represented as dictionaries. Each document will be written as a
+        standalone json object (jsonl).
+        :return: None
+        """
+        with open(fname, 'w') as outfile:
+            for doc in docs:
+                json.dump(doc, outfile)
+                outfile.write('\n')
+        logger.info("Wrote {} documents to {}.".format(len(docs), fname))

@@ -53,7 +53,6 @@ class ChEMBLLookup(object):
         super(ChEMBLLookup, self).__init__()
         self._logger = logging.getLogger(__name__)
 
-        # 1173: replace target, mechanism, component, molecule, and drug with ES.
         self.target_cfg = yaml_dict.downloads.target
         self.mechanism_cfg = yaml_dict.downloads.mechanism
         self.component_cfg = yaml_dict.downloads.target_component
@@ -63,8 +62,6 @@ class ChEMBLLookup(object):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.gs_output_dir = yaml_dict.gs_output_dir
 
-
-    # 1173: delete and replace with elasticsearch
     def download_targets(self):
         """download the REST API associated to the uri"""
         self._logger.info('ChEMBL getting targets from ' + self.target_cfg.uri)
@@ -72,7 +69,6 @@ class ChEMBLLookup(object):
 
         return targets_filename
 
-    # 1173: delete and replace with elasticsearch
     def download_mechanisms(self):
         '''download the REST API associated to the uri'''
         self._logger.info('ChEMBL getting mechanism from ' + self.mechanism_cfg.uri)
@@ -96,7 +92,6 @@ class ChEMBLLookup(object):
 
         return protein_classes_filename
 
-    # 1173: delete and replace with elasticsearch
     def download_molecules(self):
         '''download the REST API associated to the uri'''
         self._logger.info('ChEMBL getting molecules from ' + self.molecule_cfg.uri)
@@ -104,22 +99,14 @@ class ChEMBLLookup(object):
 
         return molecules_filename
 
-    # 1173: delete and replace with elasticsearch
-    def download_drugs(self):
-        '''download the REST API associated to the uri'''
-        self._logger.info('ChEMBL getting drugs from ' + self.drug_cfg.uri)
-        drugs_filename = get_chembl_url(self.drug_cfg.uri, self.drug_cfg.output_filename, self.suffix)
 
-        return drugs_filename
-
-
-    # 1173: update to use ES where possible.
     def download_chEMBL_resources(self):
         """
         Downloads ChEMBL files and returns dictionary of filename -> {resource: ..., gs_output_dir: ...}
         """
         list_files_ChEMBL_downloaded = {}
         self._logger.info('chembl downloading drugs/molecules/targets/mechanisms/proteins')
+
         list_files_ChEMBL_downloaded[self.download_drugs()] = {'resource': self.drug_cfg.resource,
                                                                    'gs_output_dir': self.gs_output_dir }
         list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,

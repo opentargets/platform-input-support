@@ -5,6 +5,7 @@ from GoogleBucketResource import GoogleBucketResource
 from EnsemblCondaResource import EnsemblCondaResource
 from ChEMBL import ChEMBLLookup
 from ChemicalProbesResource import ChemicalProbesResource
+from Drug import Drug
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
 from Networks import Networks
@@ -116,10 +117,6 @@ class RetrieveResource(object):
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
-        """
-        Retrieves ChEMBL resources from both REST API and Elasticsearch instance as configured in `config.xml` and
-        updates list_files_downloaded with downloaded ChEMBL files.
-        """
         chembl_handler = ChEMBLLookup(self.yaml.ChEMBL)
         # standard files
         list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_resources()
@@ -128,7 +125,14 @@ class RetrieveResource(object):
 
         self.list_files_downloaded.update(list_files_ChEMBL)
 
-
+    def get_drug(self):
+        """
+        Retrieves all resources specified in the `config.yaml` `drug` section and updates the `list_files_downloaded`
+        with details of retrieved resources.
+        """
+        drug = Drug(self.yaml.drug)
+        files = drug.get_all()
+        self.list_files_downloaded.update(files)
 
     def get_file_from_bucket(self, entry, output, gs_output_dir):
         param = GoogleBucketResource.get_bucket_and_path(entry.bucket)
@@ -241,6 +245,7 @@ class RetrieveResource(object):
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()
         if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
+        if self.has_step("drug"): self.get_drug()
 
         # At this point the auth key is already valid.
         print self.list_files_downloaded
