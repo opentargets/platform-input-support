@@ -29,11 +29,11 @@ class Networks(object):
         ensemblInfo = EnsemblResource()
         ensemblInfo.run()
         ensemblInfo.get_proteinIds().to_json(output_filename, orient='records', lines=True)
-        self.list_files_downloaded.append(output_filename)
+        return output_filename
 
     def get_rna_central(self):
         rna_central_df = self.spark.load_file(self.download.ftp_download(self.rna_central), "csv", "false", "\t")
-        rna_filename = PIS_OUTPUT_ANNOTATIONS+'/otnetworks/rnacentral'
+        rna_filename = PIS_OUTPUT_ANNOTATIONS+'/networks/rnacentral'
         rna_central_df.write.format('json').save(rna_filename)
         return get_output_spark_files(rna_filename, ".json")
 
@@ -44,6 +44,6 @@ class Networks(object):
     def get_uniprot_info_file(self):
         protein_info_filename = make_ungzip(self.download.execute_download(self.uniprot_info))
         protein_info_df = self.spark.load_file(protein_info_filename, "csv", "false", "\t")
-        protein_info_filename = PIS_OUTPUT_ANNOTATIONS+'/otnetworks/human-mapping'
+        protein_info_filename = PIS_OUTPUT_ANNOTATIONS+'/networks/human-mapping'
         protein_info_df.write.format('json').save(protein_info_filename)
         return get_output_spark_files(protein_info_filename, ".json")
