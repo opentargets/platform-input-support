@@ -14,6 +14,9 @@ class Drug(object):
     """
 
     def __init__(self, config_dict):
+        """
+        :param config_dict: 'drug' key in the reference config file.
+        """
         self._logger = logging.getLogger(__name__)
         self.config = config_dict
         self.write_date = datetime.today().strftime('%Y-%m-%d')
@@ -66,7 +69,12 @@ class Drug(object):
             return []
 
     def get_all(self):
-        """Download all resources specified in `config.yaml` and return dictionary of files downloaded."""
+        """
+        Download all resources specified in `config.yaml` and return dictionary of files downloaded.
+
+        The returned dictionary has form k -> {'resource': <filename>, 'gs_output_dir': <output as in config>} so that
+        it matches the structure of other steps and can be uploaded to GCP.
+        """
         downloaded_files = {} # key: source, values: {}
         for source in self.sources.values():
             source_type = source['type']
@@ -74,7 +82,7 @@ class Drug(object):
             if source_type == "elasticsearch":
                 es_files_written = self._handle_elasticsearch(source)
                 for f in es_files_written:
-                    downloaded_files[f] = {'resource': self.config['resource'], 'gs_output_dir': self.config[
+                    downloaded_files[f] = {'resource': "drug-{}".format(f), 'gs_output_dir': self.config[
                         'gs_output_dir']}
             else:
                 logger.warn("Unrecognised drug datasource: %s".format(source_type))

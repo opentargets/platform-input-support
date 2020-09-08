@@ -149,14 +149,13 @@ ensembl:
   resource: ensembl-filename
   gs_output_dir: annotation-files
 drug:
-  resource: drug
   gs_output_dir: annotation-files
   datasources:
     chembl:
       type: elasticsearch
       url: hh-rke-wp-webadmin-04-worker-4.caas.ebi.ac.uk
       port: 32000
-      output_location: /home/jarrod/Desktop
+      output_location: /home/jarrod/Desktop/drugTest
       indices:
         chembl-indication:
           name: chembl_27_drug_indication
@@ -179,7 +178,6 @@ drug:
           fields:
             - 'molecule_chembl_id'
             - 'molecule_hierarchy'
-            - 'internal_compound'
             - 'molecule_type'
             - 'pref_name'
             - 'first_approval'
@@ -193,13 +191,12 @@ drug:
             - 'molecule_synonyms'
             - 'cross_references'
             - 'chebi_par_id'
-            - 'molecule_structure'
-            - 'canonical_smiles'
+            - 'molecule_structures'
         chembl-target:
           name: chembl_27_target
           fields:
             - 'target_chembl_id'
-            - 'target_component'
+            - 'target_components'
             - 'target_type'
             - 'pref_name'
 ChEMBL:
