@@ -2,6 +2,7 @@ import logging
 import os
 import requests
 import python_jsonschema_objects as pjo
+import gzip
 
 
 logger = logging.getLogger(__name__)
@@ -19,8 +20,8 @@ class StringNetwork(object):
         self.string_url = yaml_dict.string_info.uri
         self.score_limit = yaml_dict.string_info.score_threshold
         self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.uri
-        self.network_json_schema = yaml_dict.string_info.additional_resouces.network_json_schema.uri
-        self.output_folder = output_folder
+        self.network_json_schema_url = yaml_dict.string_info.additional_resouces.network_json_schema.uri
+        self.output_file = f'{output_folder}/{yaml_dict.string_info.output_filename}'
 
     
     def fetch_data(self):
@@ -45,7 +46,14 @@ class StringNetwork(object):
     def generate_json(self):
 
         sjg = StringJsonGenerator(self.network_json_schema)
-        self.network_data.apply(sjg.generate_network_object, axis =1)
+
+        # Generate json objects:
+        json_objects = self.network_data.apply(sjg.generate_network_object, axis=1)
+
+        # Save gzipped json file:
+        with gzip.open(self.output_file, "wt") as f:
+            json_objects.apply(lambda x: f.write(str(x)+'\n'))
+        
 
 
 class PrepareStringData(object):
@@ -207,6 +215,9 @@ class PrepareStringData(object):
         mapped_data = mapped_data.merge(self.__ensembl_data__.rename(columns={'gene_id': 'gene_id_B'}), 
                             left_on='interactor_B', right_on='protein_id', how = 'left')
         mapped_data.drop(columns=['protein_id'], inplace = True)
+
+        # Remove any interaction with no Ensembl gene mapping:
+        mapped_data = mapped_data.loc[(~mapped_data.gene_id_B.isna()) & (~mapped_data.gene_id_A.isna())]
         
         # Saving mapped data:
         self.__network_data__ = mapped_data
@@ -291,8 +302,12 @@ class StringJsonGenerator(object):
     }
 
     
-    def __init__(self, schema_json):
-        self.builder = pjo.ObjectBuilder(schema_json)
+    def __init__(self, schema_json_url):
+
+        self.schema_json_url = schema_json_url
+        self.schem_json = self.fetch_schema()
+
+        self.builder = pjo.ObjectBuilder(self.schem_json)
         self.network_builder = self.builder.build_classes()
         
     def generate_network_object(self, row):
@@ -301,6 +316,10 @@ class StringJsonGenerator(object):
         self.__row__ = row
         
         network_object = {}
+        
+        # Validate 1: excluding evidence with no ensembl gene id:
+        if (row['gene_id_A'] is None) or (row['gene_id_B'] is None):
+            return
 
         # Generate target objects:
         interactorA =  self.generate_interactor(
@@ -330,7 +349,7 @@ class StringJsonGenerator(object):
             # logging.warning('Evidence generation failed for row: {}'.format(row.name))
             raise
         
-    def generate_interactor(self, scientific_name, tax_id, common_name, interactor_id, source_db, biological_role=None):
+    def generate_interactor(self, scientific_name, tax_id, common_name, interactor_id, source_db, biological_role="unspecified role"):
         """
         This function generates the interactor object.
         """
@@ -342,7 +361,7 @@ class StringJsonGenerator(object):
             },
             'biological_role': biological_role,
             'id': interactor_id,
-            'source': source_db
+            'id_source': source_db
         }
 
     def generate_source_info(self, source_name, version=None):
@@ -382,6 +401,22 @@ class StringJsonGenerator(object):
         # Add evidence to interaction:
         interaction['evidence'] = evidences
 
-        return interactio
+        return interaction
+
+    def fetch_schema(self):
+
+        # Submit requeset:
+        try:
+            response = requests.get(self.schema_json_url)
+        except Exception as e:
+            e.args = ['[Error] the provided URL ({}) could not be processed.'.format(self.schema_json_url)]
+            raise e
+            
+        # Test output code:
+        if response.status_code != 200:
+            raise ValueError('')
+
+        # Return the processed json:
+        return response.json()
 
 
