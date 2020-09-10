@@ -1,4 +1,3 @@
-from definitions import PIS_OUTPUT_ANNOTATIONS
 import logging
 import os
 import requests
@@ -15,12 +14,13 @@ class StringNetwork(object):
     * Manages the formatting of the resulting data accomodating the json schema
     """
 
-    def __init__(self, yaml_dict):
+    def __init__(self, yaml_dict, output_folder):
 
         self.string_url = yaml_dict.string_info.uri
         self.score_limit = yaml_dict.string_info.score_threshold
         self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.uri
         self.network_json_schema = yaml_dict.string_info.additional_resouces.network_json_schema.uri
+        self.output_folder = output_folder
 
     
     def fetch_data(self):

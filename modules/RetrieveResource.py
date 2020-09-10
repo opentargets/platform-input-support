@@ -14,6 +14,7 @@ from EvidenceSubset import EvidenceSubset
 from AnnotationQC import AnnotationQC
 from common import get_lines, make_gzip, make_unzip_single_file
 import time
+from StringNetwork import StringNetwork
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +113,11 @@ class RetrieveResource(object):
         for human_filename in list_files_human:
             self.list_files_downloaded[human_filename] = {'resource': None,
                                                        'gs_output_dir': self.yaml.etwork.gs_output_dir+'/human-mapping'}
-        # Here add the second file. String.
+        
+        # Fetch string network data and generate evidence json:
+        string_network = StringNetwork(self.yaml.network, PIS_OUTPUT_NETWORK)
+        string_network.fetch_data()
+        string_network.generate_json()
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
