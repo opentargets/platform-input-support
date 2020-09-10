@@ -186,6 +186,10 @@ network:
   uniprot_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
     output_filename: HUMAN_9606_idmapping.dat.gz
+  string_info: 
+    uri: https://stringdb-static.org/download/protein.links.full.v11.0/9606.protein.links.full.v11.0.txt.gz
+    output_filename: 9606.protein.links.full.v11.0.txt.gz
+    score_threshold: 800
 evidences:
   gs_output_dir: evidence-files
   downloads:
