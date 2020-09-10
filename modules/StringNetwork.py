@@ -1,6 +1,8 @@
 from definitions import PIS_OUTPUT_ANNOTATIONS
 import logging
 import os
+import requests
+import python_jsonschema_objects as pjo
 
 
 logger = logging.getLogger(__name__)
@@ -8,11 +10,261 @@ logger = logging.getLogger(__name__)
 
 class StringNetwork(object):
     """
-    This class is used to fetch and process STRING datafile and formats it following the networks schema.
+    main interface of the StringNetwork module. 
+    * Manages the flow of accessing data from various sources + mapping
+    * Manages the formatting of the resulting data accomodating the json schema
     """
 
+    def __init__(self, yaml_dict):
+
+        self.string_url = yaml_dict.string_info.uri
+        self.score_limit = yaml_dict.string_info.score_threshold
+        self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.uri
+        self.network_json_schema = yaml_dict.string_info.additional_resouces.network_json_schema.uri
+
+    
+    def fetch_data(self):
+
+        # Initialize fetch object:
+        string = PrepareStringData(self.string_url, score_limit=self.score_liimt)
+
+        # Fetch network data:
+        string.fetch_network_data()
+
+        # Adding species information:
+        string.map_organism()
+
+        # Map Ensembl protein ids to gene ids:
+        string.fetch_ensembl_mapping(self.ensembl_gtf_url)
+        string.map_ensembl()
+
+        # Extract data:
+        self.network_data = string.get_data()
+
+
+    def generate_json(self):
+
+        sjg = StringJsonGenerator(self.network_json_schema)
+        self.network_data.apply(sjg.generate_network_object, axis =1)
+
+
+class PrepareStringData(object):
+    """
+    This class fetches STRING data enriches with organism data + maps ensembl protein id to gene id
+    """
+    
+    # So far we are only getting ready to handle Homo sapiens:
+    organisms = {
+        '9606': {
+            "taxId": "9606",
+            "scientificName": "Homo sapiens",
+            "commonName": "human",
+        }
+    }
+    
+    def __init__(self, string_url, version = None, score_limit=None):
+        
+        # save network URL:
+        self.__string_url = string_url
+        
+        # Parse data version if not provided:
+        if version:
+            self.__version = version
+        else:
+            self.__version = self.parse_version( )
+            
+        # Provide some feedback to the log:
+        
+            
+        print('String network data initialized.')
+     
+    
+    @staticmethod
+    def __fetch_data__(string_url, usecol=None, separator=" ", names = None):
+        """
+        This function fetches the string datafile and does a first round of formatting. 
+        Sending user agent in request header is required to fetch the data.
+
+        input: URL
+        output: pandas dataframe
+        """
+
+        # Programmatic access to the data is not allowed, we need to do this trick:
+        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0"}
+
+        # Submit requeset:
+        try:
+            response = requests.get(string_url, headers=headers)
+        except Exception as e:
+            e.args = ['[Error] the provided URL ({}) could not be processed.'.format(string_url)]
+            raise e
+            
+        # Test output code:
+        if response.status_code != 200:
+            raise ValueError('')
+
+        # Content piped through byte stream converter:
+        try:
+            if usecol:
+                string_df = pd.read_csv(BytesIO(response.content), compression='gzip',sep=separator, usecols=usecol, names=names)
+            else:
+                string_df = pd.read_csv(BytesIO(response.content), compression='gzip',sep=separator)
+        except Exception as e:
+            raise e
+            
+        return(string_df)
+    
+    
+    def parse_version(self):
+        """
+        Based on the stored string URL, this method parses the version of the data
+        """
+        
+        version_regexp = 'v\d+\.\d+' # matching v11.0
+        parsed_version = None
+
+        m = re.search(version_regexp, self.__string_url)
+        if m:
+            parsed_version = m.group(0)
+    
+        print('Parsed version: {}'.format(parsed_version))
+        return parsed_version
+    
+    
+    def fetch_network_data(self, filename = None):
+        
+        if filename:
+            self.__network_data__ = pd.read_csv(filename, sep = '\t')
+            print(f'[Info] String data with {len(self.__network_data__)} association is loaded')
+            return
+        
+        # Fetch data:
+        string_data = self.__fetch_data__(self.__string_url)
+        print(f'[Info] String data with {len(string_data)} association is downloaded')
+        
+        # Filter data for the score threshold:
+        if self.score_limit:
+            string_data = string_data.loc[string_data.combined_score >= self.score_limit]
+            string_data.reset_index(inplace=True)
+            print(f'[Info] String table filtered for interactions with score >= {self.score_limit}.')
+            print(f'[Info] Number of remaining interactions {len(string_data)}.')
+            
+            
+        # Split organism for proteinA:
+        new = string_data.protein1.str.split('.', expand=True)
+        string_data['organism_A'] = new[0]
+        string_data['interactor_A'] = new[1]
+
+        # Split organism for proteinB:
+        new = string_data.protein2.str.split('.', expand=True)
+        string_data['organism_B'] = new[0]
+        string_data['interactor_B'] = new[1]
+        
+        # Drop original column:
+        string_data.drop(columns =["protein1", "protein2"], inplace = True)
+        
+        # Adding version:
+        string_data['version'] = self.__version
+        
+        # Print out some report:
+        
+        self.__network_data__ = string_data
+
+        
+    
+    def fetch_ensembl_mapping(self, ensembl_gtf_url):
+        """
+        Fetch gtf file from ensembl.
+        """
+
+        # Open gtf as dataframe:
+        target_id_mapping_df = pd.read_csv(ensembl_gtf_url, sep='\t',skiprows=5, header=0,
+                                          usecols=[2,8], names=['type', 'annotation'])
+
+        # Filtering data for CDS:
+        target_id_mapping_df = target_id_mapping_df.loc[ target_id_mapping_df.type == 'CDS']
+        
+        # Parsing GTF annotation to generate protein_id - gene_id lookup table:
+        protein_to_gene_mapper = pd.DataFrame(target_id_mapping_df
+                     .annotation
+                     .apply(lambda row: {k:v for (k,v) in[ (y for y in x.strip().replace('"','').split(' ', 1)) for x in row.split(';')[:-1]]})
+                     .tolist())
+        
+        # Save data:
+        self.__ensembl_data__ =  protein_to_gene_mapper[['gene_id','protein_id']].drop_duplicates()
+
+
+    def map_ensembl(self):
+        """
+        Mapping ensembl protein IDs to Ensembl gene ID.
+        """
+        # Adding uniprot names to interactor A
+        mapped_data = self.__network_data__.merge(self.__ensembl_data__.rename(columns={'gene_id': 'gene_id_A'}), 
+                            left_on='interactor_A', right_on='protein_id', how = 'left')
+        mapped_data.drop(columns=['protein_id'], inplace = True)
+        
+        # Adding uniprot names to interactor B
+        mapped_data = mapped_data.merge(self.__ensembl_data__.rename(columns={'gene_id': 'gene_id_B'}), 
+                            left_on='interactor_B', right_on='protein_id', how = 'left')
+        mapped_data.drop(columns=['protein_id'], inplace = True)
+        
+        # Saving mapped data:
+        self.__network_data__ = mapped_data
+        
+        
+    def map_organism(self):
+        
+        species = self.organisms
+        df = self.__network_data__
+        
+        # Setting type:
+        df.organism_A = df.organism_A.astype(str)
+        df.organism_B = df.organism_B.astype(str)
+        
+        # Looking up all organisms to for interactor A:
+        organism_a = df.organism_A.apply(lambda x:  {'scientific_name_A': species[x]['scientificName'],  'common_name_A':  species[x]['commonName']} if x in species else {'scientific_name_A': None,  'common_name_A':  None})
+        organism_a_df = pd.DataFrame(organism_a.tolist())
+        print(organism_a_df.head())
+        
+        # Adding to table:
+        df = df.merge(organism_a_df, left_index=True, right_index=True)
+
+        # Looking up all organisms for interactor B:
+        organism_b = df.organism_B.apply(lambda x: {'scientific_name_B': species[x]['scientificName'],  'common_name_B':  species[x]['commonName']} if x in species else {'scientific_name_B': None,  'common_name_B':  None})
+        organism_b_df = pd.DataFrame(organism_b.tolist())
+        print(organism_b_df.head())
+        
+        # Adding to table:
+        df = df.merge(organism_b_df, left_index=True, right_index=True)
+        
+        # Update data:
+        self.__network_data__ = df
+
+        
+    def save_tsv(self,output_filename='test.tsv'):
+        # Save file as tsv:
+        self.__network_data__.to_csv(output_filename, sep = '\t', index=False)
+
+   
+    def get_data(self):
+        try:
+            return self.__network_data__
+        except:
+            return None
+   
+
+    def __len__(self):
+        
+        try:
+            return len(self.__network_data__)
+        except Exception as e:
+            return(None)
+
+
+class StringJsonGenerator(object):
+    
     # Source database name:
-    source_db = 'string'
+    sourceDb = 'string'
     
     # The following STRING channels can be mapped to detection methods on MI onotology:
     detection_method_mapping = {
@@ -38,69 +290,98 @@ class StringNetwork(object):
         'textmining_transferred': {'name':'textmining_transferred','mi_id':''},     
     }
 
-
-    def __init__(self, yaml_dict):
-        self.string_info = yaml_dict.string_info
-        self.gs_output_dir = yaml_dict.gs_output_dir
-        self.list_files_downloaded = []
-
-        self.string_db_version = self.parsed_version()
-
-    @staticmethod
-    def __fetch_data__(url, usecol=None, separator=" ", names = None):
-        """
-        This function fetches the string datafile and does a first round of formatting. 
-        Sending user agent in request header is required to fetch the data.
-
-        input: URL
-        output: pandas dataframe
-        """
-
-        # Programmatic access to the data is not allowed, we need to do this trick:
-        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0"}
-
-        # Submit request:
-        try:
-            response = requests.get(url, headers=headers)
-        except Exception as e:
-            e.args = ['[Error] the provided URL ({}) could not be processed.'.format(url)]
-            raise e
-            
-        # Test output code:
-        if response.status_code != 200:
-            raise ValueError('[Error] the provided URL ({}) could not be processed.'.format(url))
-
-        # Content piped through byte stream converter:
-        try:
-            if usecol:
-                df = pd.read_csv(BytesIO(response.content), compression='gzip',sep=separator, usecols=usecol, names=names)
-            else:
-                df = pd.read_csv(BytesIO(response.content), compression='gzip',sep=separator)
-        except Exception as e:
-            raise e
-            
-        return df
-
-
-    def format_string_data(self):
-        return 1
-
-    def save_data(self):
-        return 1
-
-
-    def parse_version(self):
-        """
-        Based on the stored string URL, this method parses the version of the data
-        """
-        
-        version_regexp = 'v\d+\.\d+' # matching v11.0
-        parsed_version = None
-
-        m = re.search(version_regexp, self.self.string_info.url)
-        if m:
-            parsed_version = m.group(0)
     
-        logger.info('String version: {}'.format(parsed_version))
-        return parsed_versio
+    def __init__(self, schema_json):
+        self.builder = pjo.ObjectBuilder(schema_json)
+        self.network_builder = self.builder.build_classes()
+        
+    def generate_network_object(self, row):
+        
+        # Save row:
+        self.__row__ = row
+        
+        network_object = {}
+
+        # Generate target objects:
+        interactorA =  self.generate_interactor(
+            scientific_name=row['scientific_name_A'],
+            tax_id=row['organism_A'], 
+            common_name=row['common_name_A'],
+            interactor_id=row['gene_id_A'], 
+            source_db='ensembl_gene')
+
+        interactorB = self.generate_interactor(
+            scientific_name=row['scientific_name_B'],
+            tax_id=row['organism_B'], 
+            common_name=row['common_name_B'],
+            interactor_id=row['gene_id_B'], 
+            source_db='ensembl_gene')
+
+        # Compiling properties into evidence:
+        try:
+            interaction = self.network_builder.Opentargetsnetwork(
+                interactorA = interactorA,
+                interactorB = interactorB,
+                interaction = self.generate_interaction(row),
+                source_info = self.generate_source_info(self.sourceDb, '11'),
+            )
+            return interaction.serialize()
+        except:
+            # logging.warning('Evidence generation failed for row: {}'.format(row.name))
+            raise
+        
+    def generate_interactor(self, scientific_name, tax_id, common_name, interactor_id, source_db, biological_role=None):
+        """
+        This function generates the interactor object.
+        """
+        return {
+            'organism': {
+                "scientific_name": scientific_name,
+                "taxon_id": int(tax_id),
+                "mnemonic": common_name
+            },
+            'biological_role': biological_role,
+            'id': interactor_id,
+            'source': source_db
+        }
+
+    def generate_source_info(self, source_name, version=None):
+        """
+        This function generates the source info object.
+        """
+        return {"source_database": source_name, "database_version": version}
+
+    def generate_evidence(self, method, score=None):
+        """
+        This function generates 
+        """
+        detection_method_short_name = self.detection_method_mapping[method]['name']
+        detection_method_mi = self.detection_method_mapping[method]['mi_id']
+
+        return {
+            "interaction_identifier": None,
+            "interaction_detection_method_short_name": detection_method_short_name,
+            "interaction_detection_method_mi_identifier": detection_method_mi,
+            "pubmed_id": None,
+            "evidence_score": int(score)
+        }
+
+    def generate_interaction(self, row):
+        # Initializing interaction:
+        interaction = {
+            "interaction_score": int(row['combined_score']),
+            "causal_interaction": False,
+        }
+
+        # Generate list of evidence:
+        evidences = []
+        for method in self.detection_method_mapping.keys():
+            if row[method]:
+                evidences.append(self.generate_evidence(method,row[method]))
+
+        # Add evidence to interaction:
+        interaction['evidence'] = evidences
+
+        return interactio
+
 
