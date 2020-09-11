@@ -180,6 +180,19 @@ nohup python platform-input-support.py
          --log-level DEBUG > log.txt &
 ```
 
+# Step guides
+
+The program is broken into steps such as `ChEMBL`, `Networks`, etc. Each step can be configured as necessary in the 
+config file and run using command line arguments. 
+
+## Drug step
+
+The Drug step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend).
+
+ChEMBL have made an Elasticsearch instance available for querying. To keep data volumes and running times down specify the
+index and fields which are required in the config file. 
+
+
 # Application architecture
 
 - `platform-input-support` is the entrypoint to the program; it loads the `config.yaml` which specifies the available

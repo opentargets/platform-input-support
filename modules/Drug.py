@@ -35,19 +35,24 @@ class Drug(object):
                 outfile = output_dir + '/' + index_name + "-" + self.write_date + ".jsonl"
 
                 logger.info("Downloading Elasticsearch data from index {}".format(index_name))
-
-                docs = elasticsearch_reader.get_fields_on_index(index_name, index['fields'])
-                elasticsearch_reader.write_elasticsearch_docs_as_jsonl(docs, outfile)
+                docs_saved = elasticsearch_reader.get_fields_on_index(index_name, outfile, index['fields'])
+                # docs = elasticsearch_reader.get_fields_on_index(index_name, index['fields'])
+                # elasticsearch_reader.write_elasticsearch_docs_as_jsonl(docs, outfile)
+                if docs_saved > 0:
+                    logger.info("Successfully downloaded {} documents from index {}".format(docs_saved, index_name))
+                else:
+                    logger.warn("Failed to download all records from {}.".format(index_name))
                 results.append(outfile)
-
-                logger.info("{} documents retrieved from {}".format(len(docs), index_name))
         else:
             logger.error("Unable to reach ChEMBL Elasticsearch! Cannot collect necessary data.")
             warnings.warn("ChEMBL Elasticsearch is unreachable: check network settings.")
         return results
 
     def _handle_elasticsearch(self, source):
-        """Helper function to handle datasources which use Elasticsearch and returns list of files downloaded."""
+        """Helper function to handle datasources which use Elasticsearch and returns list of files downloaded.
+        :param source: `datasource` entry from the `config.yaml` file.
+        :return: list of files downloaded.
+        """
         def _validate_host(host):
             logger.debug("Validating elasticsearch host from config.")
             return host is not None and isinstance(host, str)
