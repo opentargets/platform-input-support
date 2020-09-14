@@ -189,6 +189,7 @@ network:
   string_info: 
     uri: https://stringdb-static.org/download/protein.links.full.v11.0/9606.protein.links.full.v11.0.txt.gz
     output_filename: 9606.protein.links.full.v11.0.json.gz
+    output_parquet: 9606.protein.links.full.v11.0.parquet
     score_threshold: 800
     score_limit:
     additional_resouces:

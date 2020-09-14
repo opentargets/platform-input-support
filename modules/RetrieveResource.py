@@ -118,7 +118,7 @@ class RetrieveResource(object):
         # Fetch string network data and generate evidence json:
         string_network = StringNetwork(self.yaml.network, PIS_OUTPUT_NETWORK)
         string_network.fetch_data()
-        string_network.generate_json()
+        # string_network.generate_json()
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):

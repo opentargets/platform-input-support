@@ -23,6 +23,7 @@ class StringNetwork(object):
         self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.url
         self.network_json_schema_url = yaml_dict.string_info.additional_resouces.network_json_schema.url
         self.output_file = yaml_dict.string_info.output_filename
+        self.output_parquet = yaml_dict.string_info.output_parquet
 
     
     def fetch_data(self):
@@ -40,8 +41,12 @@ class StringNetwork(object):
         string.fetch_ensembl_mapping(self.ensembl_gtf_url)
         string.map_ensembl()
 
+        # Save parquet file:
+        print(f'Saving table to: {self.output_parquet}')
+        string.save_table(self.output_parquet)
+
         # Extract data:
-        self.network_data = string.get_data()
+        # self.network_data = string.get_data()
 
 
     def generate_json(self):
@@ -253,10 +258,14 @@ class PrepareStringData(object):
         self.__network_data__ = df
 
         
-    def save_tsv(self,output_filename='test.tsv'):
+    def save_table(self, output_filename='test.tsv'):
         # Save file as tsv:
-        self.__network_data__.to_csv(output_filename, sep = '\t', index=False)
-
+        if output_filename.endswith('.tsv'):
+            self.__network_data__.to_csv(output_filename, sep = '\t', index=False)
+        elif output_filename.endswith('.parquet'):
+            self.__network_data__.to_parquet(output_filename, sep = '\t', index=False)            
+        else:
+            raise ValueError(f'File format: {output_filename.split(".")[-1]} could not be parsed.')
    
     def get_data(self):
         try:
