@@ -79,3 +79,4 @@ dependencies:
   - mysqlclient
   - elasticsearch=7.5
   - elasticsearch-dsl
+

@@ -100,20 +100,21 @@ class RetrieveResource(object):
         output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         output_dir_networks = get_output_dir(None, PIS_OUTPUT_NETWORK)
         network_resource = Networks(self.yaml.network)
-        ensembl_info_filename = network_resource.download_ensembl()
-        self.list_files_downloaded[ensembl_info_filename] = {'resource': None,
-                                                            'gs_output_dir': self.yaml.network.gs_output_dir}
-        intact_info_filename = network_resource.get_intact_info_file()
-        self.list_files_downloaded[intact_info_filename] = {'resource': None,
-                                                            'gs_output_dir': self.yaml.network.gs_output_dir}
-        list_files_intact=network_resource.get_rna_central()
-        for intact_filename in list_files_intact:
-            self.list_files_downloaded[intact_filename] = {'resource': None,
-                                                       'gs_output_dir': self.yaml.network.gs_output_dir+'/rna-central'}
-        list_files_human=network_resource.get_uniprot_info_file()
-        for human_filename in list_files_human:
-            self.list_files_downloaded[human_filename] = {'resource': None,
-                                                       'gs_output_dir': self.yaml.etwork.gs_output_dir+'/human-mapping'}
+        #ensembl_info_filename = network_resource.download_ensembl()
+        #self.list_files_downloaded[ensembl_info_filename] = {'resource': None,
+        #                                                    'gs_output_dir': self.yaml.network.gs_output_dir}
+
+        #intact_info_filename = network_resource.get_intact_info_file()
+        #self.list_files_downloaded[intact_info_filename] = {'resource': None,
+        #                                                    'gs_output_dir': self.yaml.network.gs_output_dir}
+        #list_files_intact=network_resource.get_rna_central()
+        #for intact_filename in list_files_intact:
+        #    self.list_files_downloaded[intact_filename] = {'resource': None,
+        #                                               'gs_output_dir': self.yaml.network.gs_output_dir+'/rna-central'}
+        #list_files_human=network_resource.get_uniprot_info_file()
+        #for human_filename in list_files_human:
+        #    self.list_files_downloaded[human_filename] = {'resource': None,
+        #                                              'gs_output_dir': self.yaml.etwork.gs_output_dir+'/human-mapping'}
         
         # Fetch string network data and generate evidence json:
         string_network = StringNetwork(self.yaml.network, PIS_OUTPUT_NETWORK)
