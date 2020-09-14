@@ -1,9 +1,11 @@
 import logging
 import os
 import requests
-import python_jsonschema_objects as pjo
+#import jsonschema as pjo
 import gzip
-
+import pandas as pd
+import re
+from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
@@ -16,18 +18,17 @@ class StringNetwork(object):
     """
 
     def __init__(self, yaml_dict, output_folder):
-
         self.string_url = yaml_dict.string_info.uri
         self.score_limit = yaml_dict.string_info.score_threshold
-        self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.uri
-        self.network_json_schema_url = yaml_dict.string_info.additional_resouces.network_json_schema.uri
-        self.output_file = f'{output_folder}/{yaml_dict.string_info.output_filename}'
+        self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.url
+        self.network_json_schema_url = yaml_dict.string_info.additional_resouces.network_json_schema.url
+        self.output_file = yaml_dict.string_info.output_filename
 
     
     def fetch_data(self):
 
         # Initialize fetch object:
-        string = PrepareStringData(self.string_url, score_limit=self.score_liimt)
+        string = PrepareStringData(self.string_url, score_limit=self.score_limit)
 
         # Fetch network data:
         string.fetch_network_data()
@@ -45,7 +46,7 @@ class StringNetwork(object):
 
     def generate_json(self):
 
-        sjg = StringJsonGenerator(self.network_json_schema)
+        sjg = StringJsonGenerator(self.network_json_schema_url)
 
         # Generate json objects:
         json_objects = self.network_data.apply(sjg.generate_network_object, axis=1)
@@ -70,7 +71,7 @@ class PrepareStringData(object):
         }
     }
     
-    def __init__(self, string_url, version = None, score_limit=None):
+    def __init__(self, string_url, version = None, score_limit = None):
         
         # save network URL:
         self.__string_url = string_url
@@ -82,9 +83,9 @@ class PrepareStringData(object):
             self.__version = self.parse_version( )
             
         # Provide some feedback to the log:
-        
+        self.score_limit = score_limit
             
-        print('String network data initialized.')
+        print 'String network data initialized.'
      
     
     @staticmethod
@@ -143,19 +144,19 @@ class PrepareStringData(object):
         
         if filename:
             self.__network_data__ = pd.read_csv(filename, sep = '\t')
-            print(f'[Info] String data with {len(self.__network_data__)} association is loaded')
+            print '[Info] String data with network_data association is loaded'
             return
         
         # Fetch data:
         string_data = self.__fetch_data__(self.__string_url)
-        print(f'[Info] String data with {len(string_data)} association is downloaded')
+        print '[Info] String data with string_data association is downloaded'
         
         # Filter data for the score threshold:
         if self.score_limit:
             string_data = string_data.loc[string_data.combined_score >= self.score_limit]
             string_data.reset_index(inplace=True)
-            print(f'[Info] String table filtered for interactions with score >= {self.score_limit}.')
-            print(f'[Info] Number of remaining interactions {len(string_data)}.')
+            print '[Info] String table filtered for interactions with score >= score_limit.'
+            print '[Info] Number of remaining interactions string_data.'
             
             
         # Split organism for proteinA:
@@ -307,7 +308,7 @@ class StringJsonGenerator(object):
         self.schema_json_url = schema_json_url
         self.schem_json = self.fetch_schema()
 
-        self.builder = pjo.ObjectBuilder(self.schem_json)
+        self.builder = pjo.ObjectBuilder(self.schema_json_url)
         self.network_builder = self.builder.build_classes()
         
     def generate_network_object(self, row):

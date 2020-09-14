@@ -77,5 +77,3 @@ dependencies:
   - sqlalchemy
   - pandas
   - mysqlclient
-  - python_jsonschema_objects=0.3.12
-
