@@ -42,7 +42,7 @@ class StringNetwork(object):
         string.map_ensembl()
 
         # Save parquet file:
-        print(f'Saving table to: {self.output_parquet}')
+        print 'Saving table to: output_parquet'
         string.save_table(self.output_parquet)
 
         # Extract data:
@@ -263,9 +263,9 @@ class PrepareStringData(object):
         if output_filename.endswith('.tsv'):
             self.__network_data__.to_csv(output_filename, sep = '\t', index=False)
         elif output_filename.endswith('.parquet'):
-            self.__network_data__.to_parquet(output_filename, sep = '\t', index=False)            
+            self.__network_data__.to_parquet(output_filename, index=False)
         else:
-            raise ValueError(f'File format: {output_filename.split(".")[-1]} could not be parsed.')
+            raise ValueError('File format: {output_filename.split(".")[-1]} could not be parsed.')
    
     def get_data(self):
         try:
