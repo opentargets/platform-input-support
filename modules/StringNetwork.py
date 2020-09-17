@@ -1,7 +1,6 @@
 import logging
 import os
 import requests
-#import jsonschema as pjo
 import gzip
 import pandas as pd
 import re
@@ -255,7 +254,7 @@ class PrepareStringData(object):
         df = df.merge(organism_b_df, left_index=True, right_index=True)
         
         # Update data:
-        self.__network_data__ = df
+        self.__network_data__ = df.astype(unicode)
 
         
     def save_table(self, output_filename='test.tsv'):
@@ -317,9 +316,6 @@ class StringJsonGenerator(object):
         self.schema_json_url = schema_json_url
         self.schem_json = self.fetch_schema()
 
-        self.builder = pjo.ObjectBuilder(self.schema_json_url)
-        self.network_builder = self.builder.build_classes()
-        
     def generate_network_object(self, row):
         
         # Save row:
