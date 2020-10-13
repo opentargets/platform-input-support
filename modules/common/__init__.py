@@ -1,8 +1,12 @@
-import os, sys
+import os
+import sys
 import zipfile
 import gzip
 import shutil
+
+
 GZIP_MAGIC_NUMBER = "1f8b"
+
 
 def is_gzip(filename):
     open_file = open(filename)
@@ -31,6 +35,7 @@ def get_output_dir(output_dir, default_output_dir):
 
 
 def make_gzip(file_with_path):
+    """Compress file_with_path to file_with_path.gz and return file name."""
     r_filename = file_with_path + '.gz'
     with open(file_with_path, 'rb') as f_in, gzip.open(r_filename, 'wb') as f_out:
         f_out.writelines(f_in)
@@ -71,6 +76,7 @@ def make_unzip_single_file(file_with_path):
     filename_unzip_with_path=zipdata.extract(zipinfos[0],output_dir)
 
     return filename_unzip_with_path
+
 
 def get_output_spark_files(directory_info, filter):
     return [directory_info+'/'+file for file in os.listdir(directory_info) if file.endswith(filter)]

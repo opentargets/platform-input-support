@@ -137,7 +137,7 @@ python platform-input-support.py
          --log-level DEBUG > log.txt
 ```
 
-### Check if the files generated are correpted
+### Check if the files generated are corrupted
 The zip files generated might be corrupted. The follow command checks if the files are correct.
 sh check_corrupted_files.sh
 
@@ -179,3 +179,48 @@ nohup python platform-input-support.py
          -gb bucket/object_path -steps ChEMBL
          --log-level DEBUG > log.txt &
 ```
+
+# Step guides
+
+The program is broken into steps such as `ChEMBL`, `Networks`, etc. Each step can be configured as necessary in the 
+config file and run using command line arguments. 
+
+## Drug step
+
+The Drug step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend).
+
+ChEMBL have made an Elasticsearch instance available for querying. To keep data volumes and running times down specify the
+index and fields which are required in the config file.
+
+ChEMBL's ES instance is only available from within the EMBL-EBI VPN. If you need to run this step it is necessary that you
+use a machine that is connected to the VPN network. 
+
+
+# Application architecture
+
+- `platform-input-support` is the entrypoint to the program; it loads the `config.yaml` which specifies the available
+steps and any necessary configuration which goes with them. This configuration is represented internally as a dictionary. 
+Platform input support configures a `RetrieveResource` object and calls the `run` method triggering the selected steps.
+- `RetrieveResource` will consult the steps selected and trigger a method for each selected step. Most steps will defer
+to a helper object in `Modules` to retrieve the selected resources.  
+
+# Troubleshooting
+
+## Installation
+
+### Conda can't find 'opentargets-urlzsource'
+
+The `opentargets-urlzsource` package needs to be build manually. For some reason conda 4.8.4 gives a `PackageNotFoundError   
+when the following command is executed:
+
+```
+conda install -y --use-local opentargets-urlzsource
+```
+
+To solve this problem install the package from the 'base' environment with the following command, updated as necessary for
+the location of you miniconda installation.
+
+```bash
+conda install --name platform-input-support-py2.7 -c file:///[path to miniconda]/envs/platform-input-support-py2.7/conda-bld/linux-64/ opentargets-urlzsource
+```
+

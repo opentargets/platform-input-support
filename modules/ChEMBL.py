@@ -4,6 +4,7 @@ from time import sleep
 from opentargets_urlzsource import URLZSource
 import json
 import datetime
+from common import make_gzip
 
 import logging
 
@@ -61,9 +62,8 @@ class ChEMBLLookup(object):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.gs_output_dir = yaml_dict.gs_output_dir
 
-
     def download_targets(self):
-        '''download the REST API associated to the uri'''
+        """download the REST API associated to the uri"""
         self._logger.info('ChEMBL getting targets from ' + self.target_cfg.uri)
         targets_filename = get_chembl_url(self.target_cfg.uri, self.target_cfg.output_filename, self.suffix)
 
@@ -99,17 +99,14 @@ class ChEMBLLookup(object):
 
         return molecules_filename
 
-    def download_drugs(self):
-        '''download the REST API associated to the uri'''
-        self._logger.info('ChEMBL getting drugs from ' + self.drug_cfg.uri)
-        drugs_filename = get_chembl_url(self.drug_cfg.uri, self.drug_cfg.output_filename, self.suffix)
 
-        return drugs_filename
-
-
-    def download_chEMBL_files(self):
+    def download_chEMBL_resources(self):
+        """
+        Downloads ChEMBL files and returns dictionary of filename -> {resource: ..., gs_output_dir: ...}
+        """
         list_files_ChEMBL_downloaded = {}
         self._logger.info('chembl downloading drugs/molecules/targets/mechanisms/proteins')
+
         list_files_ChEMBL_downloaded[self.download_drugs()] = {'resource': self.drug_cfg.resource,
                                                                    'gs_output_dir': self.gs_output_dir }
         list_files_ChEMBL_downloaded[self.download_molecules()] = {'resource': self.molecule_cfg.resource,
@@ -123,3 +120,15 @@ class ChEMBLLookup(object):
         list_files_ChEMBL_downloaded[self.download_protein_class()] = {'resource': self.protein_cfg.resource,
                                                                        'gs_output_dir': self.gs_output_dir}
         return list_files_ChEMBL_downloaded
+
+    def compress_ChEMBL_files(self, files_unzipped):
+        """
+        Compresses each file in files_unzipped using gzip algorithm and returns dictionary of filename -> {
+        resource: ..., gs_output_dir: ...
+        """
+        zipped_files = {}
+        for file_with_path in files_unzipped:
+            filename_zip = make_gzip(file_with_path)
+            zipped_files[filename_zip] = {'resource': files_unzipped[file_with_path]['resource'],
+                                          'gs_output_dir': self.gs_output_dir}
+        return zipped_files

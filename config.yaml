@@ -148,6 +148,57 @@ ensembl:
   extension_file: _genes.json.gz
   resource: ensembl-filename
   gs_output_dir: annotation-files
+drug:
+  gs_output_dir: annotation-files
+  datasources:
+    chembl:
+      type: elasticsearch
+      url: hh-rke-wp-webadmin-04-worker-4.caas.ebi.ac.uk
+      port: 32000
+      output_location: /home/jarrod/Desktop/drugTest
+      indices:
+        chembl-indication:
+          name: chembl_27_drug_indication
+          fields:
+            - 'molecule_chembl_id'
+            - 'efo_id'
+            - 'max_phase_for_ind'
+        chembl-mechanism:
+          name: chembl_27_mechanism
+          fields:
+            - 'molecule_chembl_id'
+            - 'target_chembl_id'
+            - 'target_components'
+            - 'action_type'
+            - 'mechanism_of_action'
+            - 'mechanism_refs'
+            - 'record_id'
+        chembl-molecule:
+          name: chembl_27_molecule
+          fields:
+            - 'molecule_chembl_id'
+            - 'molecule_hierarchy'
+            - 'molecule_type'
+            - 'pref_name'
+            - 'first_approval'
+            - 'max_phase'
+            - 'withdrawn_flag'
+            - 'withdrawn_reason'
+            - 'withdrawn_year'
+            - 'withdrawn_country'
+            - 'withdrawn_class'
+            - 'black_box_warning'
+            - 'molecule_synonyms'
+            - 'cross_references'
+            - 'chebi_par_id'
+            - 'molecule_structures'
+        chembl-target:
+          name: chembl_27_target
+          fields:
+            - 'target_chembl_id'
+            - 'target_components'
+            - 'target_type'
+            - 'pref_name'
 ChEMBL:
   gs_output_dir: annotation-files
   downloads:
