@@ -190,7 +190,10 @@ config file and run using command line arguments.
 The Drug step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend).
 
 ChEMBL have made an Elasticsearch instance available for querying. To keep data volumes and running times down specify the
-index and fields which are required in the config file. 
+index and fields which are required in the config file.
+
+ChEMBL's ES instance is only available from within the EMBL-EBI VPN. If you need to run this step it is necessary that you
+use a machine that is connected to the VPN network. 
 
 
 # Application architecture
