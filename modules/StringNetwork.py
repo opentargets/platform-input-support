@@ -1,10 +1,12 @@
 import logging
-import os
+import json
 import requests
 import gzip
 import pandas as pd
 import re
 from io import BytesIO
+from DownloadResource import DownloadResource
+import python_jsonschema_objects as pjo
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +19,44 @@ class StringNetwork(object):
     """
 
     def __init__(self, yaml_dict, output_folder):
+        self.download = DownloadResource(output_folder)
+        self.output_folder = output_folder
         self.string_url = yaml_dict.string_info.uri
         self.score_limit = yaml_dict.string_info.score_threshold
-        self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp.url
+        self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp
         self.network_json_schema_url = yaml_dict.string_info.additional_resouces.network_json_schema.url
-        self.output_file = yaml_dict.string_info.output_filename
-        self.output_parquet = yaml_dict.string_info.output_parquet
+        self.output_string = yaml_dict.string_info.output_string
+        self.output_protein_mapping = yaml_dict.string_info.additional_resouces.ensembl_ftp.output_protein_mapping
 
-    
+
+    def fetch_ensembl_mapping(self, ensembl_gtf_url):
+        """
+        Fetch gtf file from ensembl.
+        """
+
+        output_file = self.output_folder+'/'+self.output_protein_mapping
+
+        # Open gtf as dataframe:
+        target_id_mapping_df = pd.read_csv(ensembl_gtf_url, sep='\t', skiprows=5, header=0,
+                                           usecols=[2, 8], names=['type', 'annotation'])
+
+
+        # Filtering data for CDS:
+        target_id_mapping_df = target_id_mapping_df.loc[target_id_mapping_df.type == 'CDS']
+        gene_id_pattern = re.compile(r'ENSG\d+')
+        prot_id_pattern = re.compile(r'ENSP\d+')
+        gene_map_list = target_id_mapping_df.annotation.apply(lambda row: {'gene_id': gene_id_pattern.findall(row)[0],
+                                                                           'protein_id': prot_id_pattern.findall(row)[
+                                                                               0]}).to_list()
+        with gzip.open(output_file, 'wt') as f:
+            json.dump(gene_map_list, f)
+
+        return output_file
+
+    def get_ensembl_protein_mapping(self):
+        ensembl_file = self.download.ftp_download(self.ensembl_gtf_url)
+        return self.fetch_ensembl_mapping(ensembl_file)
+
     def fetch_data(self):
 
         # Initialize fetch object:
@@ -36,16 +68,19 @@ class StringNetwork(object):
         # Adding species information:
         string.map_organism()
 
-        # Map Ensembl protein ids to gene ids:
-        string.fetch_ensembl_mapping(self.ensembl_gtf_url)
-        string.map_ensembl()
+        self.network_data = string.get_data()
+
+        stringEntries = self.generate_json()
 
         # Save parquet file:
-        print 'Saving table to: output_parquet'
-        string.save_table(self.output_parquet)
+        print 'Saving table to: .... '
+        output_file = self.output_folder+'/'+self.output_string
+        #string.save_table(output_file)
+        # Save gzipped json file:
+        with gzip.open(output_file, "wt") as f:
+            stringEntries.apply(lambda x: f.write(str(x)+'\n'))
 
-        # Extract data:
-        # self.network_data = string.get_data()
+        return output_file
 
 
     def generate_json(self):
@@ -55,10 +90,7 @@ class StringNetwork(object):
         # Generate json objects:
         json_objects = self.network_data.apply(sjg.generate_network_object, axis=1)
 
-        # Save gzipped json file:
-        with gzip.open(self.output_file, "wt") as f:
-            json_objects.apply(lambda x: f.write(str(x)+'\n'))
-        
+        return json_objects
 
 
 class PrepareStringData(object):
@@ -124,8 +156,11 @@ class PrepareStringData(object):
                 string_df = pd.read_csv(BytesIO(response.content), compression='gzip',sep=separator)
         except Exception as e:
             raise e
-            
-        return(string_df)
+
+        #output_string = open('/home/cinzia/gitRepositories/platform-input-support/originale.json', "w")
+        #string_df.to_json(output_string, orient="records")
+
+        return (string_df)
     
     
     def parse_version(self):
@@ -162,7 +197,7 @@ class PrepareStringData(object):
             print '[Info] String table filtered for interactions with score >= score_limit.'
             print '[Info] Number of remaining interactions string_data.'
             
-            
+        print string_data
         # Split organism for proteinA:
         new = string_data.protein1.str.split('.', expand=True)
         string_data['organism_A'] = new[0]
@@ -183,51 +218,7 @@ class PrepareStringData(object):
         
         self.__network_data__ = string_data
 
-        
-    
-    def fetch_ensembl_mapping(self, ensembl_gtf_url):
-        """
-        Fetch gtf file from ensembl.
-        """
 
-        # Open gtf as dataframe:
-        target_id_mapping_df = pd.read_csv(ensembl_gtf_url, sep='\t',skiprows=5, header=0,
-                                          usecols=[2,8], names=['type', 'annotation'])
-
-        # Filtering data for CDS:
-        target_id_mapping_df = target_id_mapping_df.loc[ target_id_mapping_df.type == 'CDS']
-        
-        # Parsing GTF annotation to generate protein_id - gene_id lookup table:
-        protein_to_gene_mapper = pd.DataFrame(target_id_mapping_df
-                     .annotation
-                     .apply(lambda row: {k:v for (k,v) in[ (y for y in x.strip().replace('"','').split(' ', 1)) for x in row.split(';')[:-1]]})
-                     .tolist())
-        
-        # Save data:
-        self.__ensembl_data__ =  protein_to_gene_mapper[['gene_id','protein_id']].drop_duplicates()
-
-
-    def map_ensembl(self):
-        """
-        Mapping ensembl protein IDs to Ensembl gene ID.
-        """
-        # Adding uniprot names to interactor A
-        mapped_data = self.__network_data__.merge(self.__ensembl_data__.rename(columns={'gene_id': 'gene_id_A'}), 
-                            left_on='interactor_A', right_on='protein_id', how = 'left')
-        mapped_data.drop(columns=['protein_id'], inplace = True)
-        
-        # Adding uniprot names to interactor B
-        mapped_data = mapped_data.merge(self.__ensembl_data__.rename(columns={'gene_id': 'gene_id_B'}), 
-                            left_on='interactor_B', right_on='protein_id', how = 'left')
-        mapped_data.drop(columns=['protein_id'], inplace = True)
-
-        # Remove any interaction with no Ensembl gene mapping:
-        mapped_data = mapped_data.loc[(~mapped_data.gene_id_B.isna()) & (~mapped_data.gene_id_A.isna())]
-        
-        # Saving mapped data:
-        self.__network_data__ = mapped_data
-        
-        
     def map_organism(self):
         
         species = self.organisms
@@ -261,8 +252,8 @@ class PrepareStringData(object):
         # Save file as tsv:
         if output_filename.endswith('.tsv'):
             self.__network_data__.to_csv(output_filename, sep = '\t', index=False)
-        elif output_filename.endswith('.parquet'):
-            self.__network_data__.to_parquet(output_filename, index=False)
+        elif output_filename.endswith('.json'):
+            self.__network_data__.to_json(output_filename, orient="records")
         else:
             raise ValueError('File format: {output_filename.split(".")[-1]} could not be parsed.')
    
@@ -314,17 +305,22 @@ class StringJsonGenerator(object):
     def __init__(self, schema_json_url):
 
         self.schema_json_url = schema_json_url
-        self.schem_json = self.fetch_schema()
+        self.schema_json = { "description": "Open Targets Network objects",
+          "title": "Open Targets Network","type": "object","schema": "http://json-schema.org/draft-04/schema#"
+        }
+        self.builder = pjo.ObjectBuilder(self.schema_json)
+        self.network_builder = self.builder.build_classes()
 
     def generate_network_object(self, row):
         
         # Save row:
         self.__row__ = row
-        
+
+        logging.info("ENTRY === > ")
         network_object = {}
         
         # Validate 1: excluding evidence with no ensembl gene id:
-        if (row['gene_id_A'] is None) or (row['gene_id_B'] is None):
+        if (row['interactor_A'] is None) or (row['interactor_B'] is None):
             return
 
         # Generate target objects:
@@ -332,28 +328,30 @@ class StringJsonGenerator(object):
             scientific_name=row['scientific_name_A'],
             tax_id=row['organism_A'], 
             common_name=row['common_name_A'],
-            interactor_id=row['gene_id_A'], 
-            source_db='ensembl_gene')
+            interactor_id=row['interactor_A'],
+            source_db='ensembl_protein')
 
         interactorB = self.generate_interactor(
             scientific_name=row['scientific_name_B'],
             tax_id=row['organism_B'], 
             common_name=row['common_name_B'],
-            interactor_id=row['gene_id_B'], 
-            source_db='ensembl_gene')
+            interactor_id=row['interactor_B'],
+            source_db='ensembl_protein')
 
         # Compiling properties into evidence:
         try:
-            interaction = self.network_builder.Opentargetsnetwork(
+            interaction = self.network_builder.OpenTargetsNetwork(
                 interactorA = interactorA,
                 interactorB = interactorB,
                 interaction = self.generate_interaction(row),
                 source_info = self.generate_source_info(self.sourceDb, '11'),
             )
             return interaction.serialize()
-        except:
-            # logging.warning('Evidence generation failed for row: {}'.format(row.name))
-            raise
+        except Exception as inst:
+            print type(inst)  # the exception instance
+            logging.warning('Evidence generation failed for row: {}'.format(row.name))
+
+
         
     def generate_interactor(self, scientific_name, tax_id, common_name, interactor_id, source_db, biological_role="unspecified role"):
         """
@@ -374,7 +372,8 @@ class StringJsonGenerator(object):
         """
         This function generates the source info object.
         """
-        return {"source_database": source_name, "database_version": version}
+        dict1 = {'source_database': source_name, 'database_version': version}
+        return dict1
 
     def generate_evidence(self, method, score=None):
         """

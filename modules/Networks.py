@@ -37,7 +37,6 @@ class Networks(object):
         rna_central_df.write.format('json').save(rna_filename)
         return get_output_spark_files(rna_filename, ".json")
 
-
     def get_intact_info_file(self):
         return self.download.ftp_download(self.intact_info)
 

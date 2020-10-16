@@ -187,14 +187,16 @@ network:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
     output_filename: HUMAN_9606_idmapping.dat.gz
   string_info: 
-    uri: https://stringdb-static.org/download/protein.links.full.v11.0/9606.protein.links.full.v11.0.txt.gz
-    output_filename: 9606.protein.links.full.v11.0.json.gz
-    output_parquet: 9606.protein.links.full.v11.0.parquet
+    #uri: https://stringdb-static.org/download/protein.links.full.v11.0/9606.protein.links.full.v11.0.txt.gz
+    uri: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
+    output_string: 9606.protein.links.full.v11.0.json.gz
     score_threshold: 800
     score_limit:
     additional_resouces:
       ensembl_ftp:
-        url: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
+        uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
+        output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
+        output_protein_mapping: ensembl_protein.json.gz
       network_json_schema:
         url: https://raw.githubusercontent.com/opentargets/json_schema/master/draft4_schemas/OT_network_schema.json
 evidences:
