@@ -226,17 +226,31 @@ ChEMBL:
       uri: https://www.ebi.ac.uk/chembl/api/data/protein_class.json
       output_filename: chembl_protein_class_rest_api-{suffix}.json
       resource: chembl-protein
-network:
-  gs_output_dir: annotation-files/networks
+interactions:
+  gs_output_dir: annotation-files/interactions
   intact_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
-    output_filename: interactor_pair_interactions.json
+    output_filename: intact-interactors-{suffix}.json
   rna_central:
     uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
     output_filename: rna_central_ensembl.tsv
+    output_dir: rna-central
   uniprot_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
     output_filename: HUMAN_9606_idmapping.dat.gz
+    output_dir: human-mapping
+  string_info: 
+    uri: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
+    output_string: string-interactions-{suffix}.json.gz
+    score_threshold: 800
+    score_limit:
+    additional_resouces:
+      ensembl_ftp:
+        uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
+        output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
+        output_protein_mapping: ensembl-protein-{suffix}.json.gz
+      network_json_schema:
+        url: https://raw.githubusercontent.com/opentargets/json_schema/master/draft4_schemas/OT_network_schema.json
 evidences:
   gs_output_dir: evidence-files
   downloads:
@@ -411,6 +425,9 @@ annotations_qc:
       out_type: summary
       out_prefix: QC_biomarkers
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
+spark-config:
+  conf:
+  pyspark_mem:
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
   uri: https://storage.googleapis.com/open-targets-data-releases/20.09/templates/template.mrtarget.data.20.09.yml

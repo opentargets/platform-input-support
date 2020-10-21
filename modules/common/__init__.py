@@ -3,7 +3,7 @@ import sys
 import zipfile
 import gzip
 import shutil
-
+import datetime
 
 GZIP_MAGIC_NUMBER = "1f8b"
 
@@ -80,3 +80,8 @@ def make_unzip_single_file(file_with_path):
 
 def get_output_spark_files(directory_info, filter):
     return [directory_info+'/'+file for file in os.listdir(directory_info) if file.endswith(filter)]
+
+
+def replace_suffix(filename):
+    suffix = datetime.datetime.today().strftime('%Y-%m-%d')
+    return filename.replace('{suffix}', suffix)

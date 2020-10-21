@@ -8,13 +8,15 @@ from ChemicalProbesResource import ChemicalProbesResource
 from Drug import Drug
 from KnownTargetSafetyResource import KnownTargetSafetyResource
 from TEP import TEP
-from Networks import Networks
+from Interactions import Interactions
+from StringInteractions import StringInteractions
 from definitions import *
 from DataPipelineConfig import DataPipelineConfig
 from EvidenceSubset import EvidenceSubset
 from AnnotationQC import AnnotationQC
 from common import get_lines, make_unzip_single_file
 import time
+
 
 logger = logging.getLogger(__name__)
 
@@ -95,25 +97,17 @@ class RetrieveResource(object):
                                                     'gs_output_dir': self.yaml.tep.gs_output_dir}
 
 
-    def get_Networks(self):
+    def get_Interactions(self):
         output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        output_dir_networks = get_output_dir(None, PIS_OUTPUT_NETWORK)
-        network_resource = Networks(self.yaml.network)
-        ensembl_info_filename = network_resource.download_ensembl()
-        self.list_files_downloaded[ensembl_info_filename] = {'resource': None,
-                                                            'gs_output_dir': self.yaml.network.gs_output_dir}
-        intact_info_filename = network_resource.get_intact_info_file()
-        self.list_files_downloaded[intact_info_filename] = {'resource': None,
-                                                            'gs_output_dir': self.yaml.network.gs_output_dir}
-        list_files_intact=network_resource.get_rna_central()
-        for intact_filename in list_files_intact:
-            self.list_files_downloaded[intact_filename] = {'resource': None,
-                                                       'gs_output_dir': self.yaml.network.gs_output_dir+'/rna-central'}
-        list_files_human=network_resource.get_uniprot_info_file()
-        for human_filename in list_files_human:
-            self.list_files_downloaded[human_filename] = {'resource': None,
-                                                       'gs_output_dir': self.yaml.etwork.gs_output_dir+'/human-mapping'}
-        # Here add the second file. String.
+        output_dir_networks = get_output_dir(None, PIS_OUTPUT_INTERACTIONS)
+        # Intact Resource
+        intact_resource = Interactions(self.yaml.interactions)
+        list_files_intact = intact_resource.getIntactResources()
+        self.list_files_downloaded.update(list_files_intact)
+        # String resource
+        string_resource = StringInteractions(self.yaml.interactions)
+        list_files_string = string_resource.getStringResources()
+        self.list_files_downloaded.update(list_files_string)
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
@@ -122,7 +116,6 @@ class RetrieveResource(object):
         list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_resources()
         # compressed files (.gz)
         list_files_ChEMBL = chembl_handler.compress_ChEMBL_files(list_files_ChEMBL_unzipped)
-
         self.list_files_downloaded.update(list_files_ChEMBL)
 
     def get_drug(self):
@@ -240,7 +233,7 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
-        if self.has_step("networks"): self.get_Networks()
+        if self.has_step("interactions"): self.get_Interactions()
         if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("evidences"): self.get_evidences()

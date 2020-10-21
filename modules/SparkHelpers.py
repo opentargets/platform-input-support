@@ -16,13 +16,18 @@ logger = logging.getLogger(__name__)
 # Todo: pass the pameters for cores and memory. Provide default.
 class SparkHelpers(object):
 
-    def __init__(self):
-        self.pyspark_mem=(psutil.virtual_memory().available) >>30
+    def __init__(self, yaml):
+        self.pyspark_mem_available=str((psutil.virtual_memory().available) >>30)+'g'
+        self.pyspark_core_max = str(psutil.cpu_count())
+        self.pyspark_core_executor = str(psutil.cpu_count())
         self.session = None
 
     # Todo: add config parameters for cores and memory.
     def spark_init(self):
-        conf = pyspark.SparkConf().setAll([('spark.executor.memory', str(self.pyspark_mem)+'g'), ('spark.executor.cores', '3'), ('spark.cores.max', '3'),  ('spark.driver.memory', str(self.pyspark_mem)+'g')])
+        conf = pyspark.SparkConf().setAll([('spark.executor.memory', self.pyspark_mem_available),
+                                           ('spark.executor.cores', self.pyspark_core_executor),
+                                           ('spark.cores.max', self.pyspark_core_max),
+                                           ('spark.driver.memory', self.pyspark_mem_available)])
         sc = pyspark.SparkContext(conf=conf)
         #sc.getConf().getAll()
         self.session = SQLContext(sc)
