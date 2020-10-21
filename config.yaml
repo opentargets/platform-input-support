@@ -425,9 +425,6 @@ annotations_qc:
       out_type: summary
       out_prefix: QC_biomarkers
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
-spark-config:
-  conf:
-  pyspark_mem:
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
   uri: https://storage.googleapis.com/open-targets-data-releases/20.09/templates/template.mrtarget.data.20.09.yml

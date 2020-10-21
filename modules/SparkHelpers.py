@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Todo: pass the pameters for cores and memory. Provide default.
 class SparkHelpers(object):
 
-    def __init__(self, yaml):
+    def __init__(self):
         self.pyspark_mem_available=str((psutil.virtual_memory().available) >>30)+'g'
         self.pyspark_core_max = str(psutil.cpu_count())
         self.pyspark_core_executor = str(psutil.cpu_count())
