@@ -99,6 +99,12 @@ class ChEMBLLookup(object):
 
         return molecules_filename
 
+    def download_drugs(self):
+        '''download the REST API associated to the uri'''
+        self._logger.info('ChEMBL getting drugs from ' + self.drug_cfg.uri)
+        drugs_filename = get_chembl_url(self.drug_cfg.uri, self.drug_cfg.output_filename, self.suffix)
+
+        return drugs_filename
 
     def download_chEMBL_resources(self):
         """
