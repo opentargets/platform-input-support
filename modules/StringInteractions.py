@@ -6,9 +6,9 @@ import gzip
 import pandas as pd
 import re
 from io import BytesIO
-from DownloadResource import DownloadResource
+from .DownloadResource import DownloadResource
 import python_jsonschema_objects as pjo
-from common import replace_suffix
+from .common import replace_suffix
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +138,7 @@ class PrepareStringData(object):
         # Provide some feedback to the log:
         self.score_limit = score_limit
             
-        print 'String network data initialized.'
+        print('String network data initialized.')
      
     
     @staticmethod
@@ -189,7 +189,7 @@ class PrepareStringData(object):
         if m:
             parsed_version = m.group(0)
     
-        print('Parsed version: {}'.format(parsed_version))
+        print(('Parsed version: {}'.format(parsed_version)))
         return parsed_version
     
     
@@ -197,21 +197,21 @@ class PrepareStringData(object):
         
         if filename:
             self.__network_data__ = pd.read_csv(filename, sep = '\t')
-            print '[Info] String data with network_data association is loaded'
+            print('[Info] String data with network_data association is loaded')
             return
         
         # Fetch data:
         string_data = self.__fetch_data__(self.__string_url)
-        print '[Info] String data with string_data association is downloaded'
+        print('[Info] String data with string_data association is downloaded')
         
         # Filter data for the score threshold:
         if self.score_limit:
             string_data = string_data.loc[string_data.combined_score >= self.score_limit]
             string_data.reset_index(inplace=True)
-            print '[Info] String table filtered for interactions with score >= score_limit.'
-            print '[Info] Number of remaining interactions string_data.'
+            print('[Info] String table filtered for interactions with score >= score_limit.')
+            print('[Info] Number of remaining interactions string_data.')
             
-        print string_data
+        print(string_data)
         # Split organism for proteinA:
         new = string_data.protein1.str.split('.', expand=True)
         string_data['organism_A'] = new[0]
@@ -244,7 +244,7 @@ class PrepareStringData(object):
         # Looking up all organisms to for interactor A:
         organism_a = df.organism_A.apply(lambda x:  {'scientific_name_A': species[x]['scientificName'],  'common_name_A':  species[x]['commonName']} if x in species else {'scientific_name_A': None,  'common_name_A':  None})
         organism_a_df = pd.DataFrame(organism_a.tolist())
-        print(organism_a_df.head())
+        print((organism_a_df.head()))
         
         # Adding to table:
         df = df.merge(organism_a_df, left_index=True, right_index=True)
@@ -252,13 +252,13 @@ class PrepareStringData(object):
         # Looking up all organisms for interactor B:
         organism_b = df.organism_B.apply(lambda x: {'scientific_name_B': species[x]['scientificName'],  'common_name_B':  species[x]['commonName']} if x in species else {'scientific_name_B': None,  'common_name_B':  None})
         organism_b_df = pd.DataFrame(organism_b.tolist())
-        print(organism_b_df.head())
+        print((organism_b_df.head()))
         
         # Adding to table:
         df = df.merge(organism_b_df, left_index=True, right_index=True)
         
         # Update data:
-        self.__network_data__ = df.astype(unicode)
+        self.__network_data__ = df.astype(str)
 
         
     def save_table(self, output_filename='test.tsv'):
@@ -361,7 +361,7 @@ class StringJsonGenerator(object):
 
             return interaction.serialize()
         except Exception as inst:
-            print type(inst)  # the exception instance
+            print(type(inst))  # the exception instance
             logging.warning('Evidence generation failed for row: {}'.format(row.name))
 
 
@@ -412,7 +412,7 @@ class StringJsonGenerator(object):
 
         # Generate list of evidence:
         evidences = []
-        for method in self.detection_method_mapping.keys():
+        for method in list(self.detection_method_mapping.keys()):
             if method in row:
                 evidences.append(self.generate_evidence(method,row[method]))
 

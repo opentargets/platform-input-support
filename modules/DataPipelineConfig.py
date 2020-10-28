@@ -3,7 +3,7 @@ import os
 import yaml
 
 from definitions import ROOT_DIR, PIS_OUTPUT_DIR
-from DownloadResource import DownloadResource
+from .DownloadResource import DownloadResource
 from modules.common.YAMLReader import YAMLReader
 from addict import Dict
 import collections
@@ -36,14 +36,14 @@ class DataPipelineConfig(object):
         data_pipeline_yaml = YAMLReader(data_pipeline_schema)
         data_pipeline_config=data_pipeline_yaml.read_yaml(True)
         list_resources = {}
-        for k, v in list_files.items():
+        for k, v in list(list_files.items()):
             list_resources.setdefault(v['resource'], []).append(k)
 
-        for k,v in list_resources.items():
+        for k,v in list(list_resources.items()):
             if k in data_pipeline_config:
                 # The template file is the reference for creating a list or a single entry.
                 # String vs. List
-                if (len(v) == 1) and isinstance(data_pipeline_config[k], basestring):
+                if (len(v) == 1) and isinstance(data_pipeline_config[k], str):
                     data_pipeline_config[k] = v[0]
                 else:
                     data_pipeline_config[k] = v
@@ -61,4 +61,4 @@ class DataPipelineConfig(object):
         data_pipeline_yaml = YAMLReader(data_pipeline_schema)
         data_pipeline_config=data_pipeline_yaml.read_yaml(True)
 
-        return data_pipeline_config.keys()
+        return list(data_pipeline_config.keys())

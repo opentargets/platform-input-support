@@ -1,10 +1,12 @@
 language: python
+python:
+  - "3.8"
 before_install:
   # Here we just install Miniconda, which you shouldn't have to change.
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda2/bin:$PATH
+  - export PATH=/home/travis/miniconda3/bin:$PATH
   - conda update --yes conda
 install:
 
@@ -13,7 +15,7 @@ install:
 
   - conda env create --force -f environment.yaml python=$TRAVIS_PYTHON_VERSION
 #  - conda env create -f environment.yaml
-  - source activate platform-input-support-py2.7
+  - source activate pis-py3
 #  - conda skeleton pypi opentargets-urlzsource
 #  - conda build opentargets-urlzsource
 #  - conda build purge

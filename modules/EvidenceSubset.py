@@ -3,7 +3,7 @@ import os
 import yaml
 import datetime
 from opentargets_urlzsource import URLZSource
-from common import make_gzip
+from .common import make_gzip
 import logging
 import time
 
@@ -34,15 +34,17 @@ class EvidenceSubset(object):
         if os.path.exists(uri_to_filename): os.remove(uri_to_filename)
         self.stats[filename_attr]['ensembl'] = {}
         with open(uri_to_filename, "a+") as file_subset:
+            logging.debug("File subset:" + evidence_file)
             with URLZSource(evidence_file).open() as f_obj:
                 for line in f_obj:
                     try:
-                        read_line = json.loads(line)
+                        line_decode = line.decode("utf-8")
+                        read_line = json.loads(line_decode)
                         new_key = self.deref_multi(read_line, evidence_info['subset_key'])
                         new_key = new_key.replace(evidence_info['subset_prefix'],'')
                         count = count + 1
                         if new_key in self.elem_to_search:
-                            file_subset.write(line)
+                            file_subset.write(line_decode)
                             if new_key not in self.stats[filename_attr]['ensembl']:
                                 self.stats[filename_attr]['ensembl'][new_key] = 1
                             else:

@@ -28,11 +28,11 @@ class TEP(object):
         tep_json_file = open(output_filename, 'w')
         fieldnames = ("OT_Target_name", "Ensembl_id","URI")
 
-        with open(self.filename_tep, 'rb') as f:
+        with open(self.filename_tep, 'r') as f:
             reader = csv.DictReader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
             for i, row in enumerate(reader, start=1):
                 tep_entry = dict()
-                for key, value in row.items():
+                for key, value in list(row.items()):
                     if key in fieldnames:
                         tep_entry[key]=value
                 json.dump(tep_entry, tep_json_file)

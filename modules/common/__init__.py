@@ -1,17 +1,15 @@
+from definitions import *
 import os
 import sys
 import zipfile
 import gzip
 import shutil
 import datetime
-
-GZIP_MAGIC_NUMBER = "1f8b"
-
+import binascii
 
 def is_gzip(filename):
-    open_file = open(filename)
-    return open_file.read(2).encode("hex") == GZIP_MAGIC_NUMBER
-
+    with open(filename, 'rb') as test_f:
+        return binascii.hexlify(test_f.read(2)) == b'1f8b'
 
 def get_lines(input_filename):
     i = 0
@@ -33,6 +31,19 @@ def get_output_dir(output_dir, default_output_dir):
 
     return output_dir
 
+# Init output dirs structure. Using defintiion.py vars
+def init_output_dirs():
+    get_output_dir(None, PIS_OUTPUT_DIR)
+    get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
+    get_output_dir(None, PIS_OUTPUT_EVIDENCES)
+    get_output_dir(None, PIS_OUTPUT_SUBSET_EVIDENCES)
+    get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
+    get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
+    get_output_dir(None, PIS_OUTPUT_TEP)
+    get_output_dir(None, PIS_OUTPUT_CHEMBL_API)
+    get_output_dir(None, PIS_OUTPUT_CHEMBL_ES)
+    get_output_dir(None, PIS_OUTPUT_INTERACTIONS)
+    get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
 
 def make_gzip(file_with_path):
     """Compress file_with_path to file_with_path.gz and return file name."""

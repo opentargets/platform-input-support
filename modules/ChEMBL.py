@@ -4,7 +4,7 @@ from time import sleep
 from opentargets_urlzsource import URLZSource
 import json
 import datetime
-from common import make_gzip
+from .common import make_gzip
 
 import logging
 
@@ -14,7 +14,7 @@ def get_chembl_url(uri, filename, suffix):
     '''return to json from uri'''
     def _fmt(**kwargs):
         '''generate uri string params from kwargs dict'''
-        l = ['='.join([k, str(v)]) for k, v in kwargs.iteritems()]
+        l = ['='.join([k, str(v)]) for k, v in kwargs.items()]
         return '?' + '&'.join(l)
 
     next_get = True
@@ -34,7 +34,7 @@ def get_chembl_url(uri, filename, suffix):
 
                 page_meta = chunk.pop('page_meta', None)
 
-                dict_key = chunk.keys()[0]
+                dict_key = list(chunk.keys())[0]
 
                 for el in chunk[dict_key]:
                     file_chembl.write(json.dumps(el) + '\n')

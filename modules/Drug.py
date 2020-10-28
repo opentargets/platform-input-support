@@ -1,5 +1,6 @@
-from common import ElasticsearchReader
-from common.ElasticsearchReader import ElasticsearchReader
+from definitions import PIS_OUTPUT_CHEMBL_API
+from .common import ElasticsearchReader
+from .common.ElasticsearchReader import ElasticsearchReader
 from datetime import datetime
 import logging
 import warnings
@@ -30,7 +31,7 @@ class Drug(object):
         results = []
         elasticsearch_reader = ElasticsearchReader(url, port)
         if elasticsearch_reader.confirm_es_reachable():
-            for index in indices.values():
+            for index in list(indices.values()):
                 index_name = index['name']
                 outfile = output_dir + '/' + index_name + "-" + self.write_date + ".jsonl"
 
@@ -61,7 +62,7 @@ class Drug(object):
             logger.debug("Validating elasticsearch port from config.")
             return port is not None and isinstance(port, int)
         indices = source['indices']
-        output_dir = source['output_location']
+        output_dir = PIS_OUTPUT_CHEMBL_API
         host = source['url']
         port = source['port']
 
@@ -81,7 +82,7 @@ class Drug(object):
         it matches the structure of other steps and can be uploaded to GCP.
         """
         downloaded_files = {} # key: source, values: {}
-        for source in self.sources.values():
+        for source in list(self.sources.values()):
             source_type = source['type']
             logger.info("Processing drug datasource {} of type {}.".format(source, source_type))
             if source_type == "elasticsearch":

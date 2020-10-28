@@ -7,13 +7,17 @@ the OT pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
 - annotations
-- annotations from buckets
-- chemical probes
-- known target safety
-- ensembl
+- annotations_qc
+- annotations_from_buckets
 - ChEMBL
+- chemical_probes
+- drug
+- ensembl
 - evidences
-- networks
+- interactions
+- known_target_safety
+- tep
+
 
 The step 'evidences' uploads the last evidences from different providers and it generates a subset of these evidences using the file minimal_ensembl.txt
 
@@ -24,16 +28,19 @@ Below more details about how to execute the script.
 * git
 
 ## Conda for MAC
-Download Conda for Mac here: <br>
- https://www.anaconda.com/download/#macos. <br>
-[download Version 2.7 Command-Line Installer]
+Download Conda3 for Mac here: <br>
+ https://www.anaconda.com/products/individual <br>
+[download Anaconda3-2020.07-MacOSX-x86_64.sh]
+
+Download Conda3 for Linux x86_84 <br>
+ https://www.anaconda.com/products/individual <br>
+[download Anaconda3-2020.07-Linux-x86_64.sh]
 
 Conda: installation commands
 ```
-bash path_where_downloaded_the_file/Anaconda2-5.3.0-MacOSX-x86_64.sh
+bash path_where_downloaded_the_file/Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 conda update
-conda update --prefix  ~/anaconda2 anaconda
 ```
 
 # Set up application (first time)
@@ -41,11 +48,7 @@ conda update --prefix  ~/anaconda2 anaconda
 git clone https://github.com/opentargets/platform-input-support
 cd platform-input-support
 conda env create -f environment.yaml
-conda activate platform-input-support-py2.7
-conda skeleton pypi opentargets-urlzsource
-conda build opentargets-urlzsource
-conda build purge
-conda install -y --use-local opentargets-urlzsource
+conda activate pis-py3
 
 python platform-input-support.py -h
 ```
@@ -53,7 +56,7 @@ python platform-input-support.py -h
 ## Usage
 
 ```
-conda activate platform-input-support-py2.7
+conda activate pis-py3
 cd your_path_application
 python platform-input-support -h
 usage: platform-input-support.py [-h] [-c CONFIG]
@@ -149,10 +152,10 @@ sudo apt install git
 sudo apt-get install bzip2 wget
 ```
 ```
-wget https://repo.anaconda.com/archive/Anaconda2-2019.10-Linux-x86_64.sh
-bash Anaconda2-2019.10-Linux-x86_64.sh
+wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
+bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
-conda update --prefix ~/anaconda2 anaconda
+
 ```
 
 ```
@@ -161,12 +164,7 @@ cd gitRepo
 git clone https://github.com/opentargets/platform-input-support.git
 cd platform-input-support
 conda env create -f environment.yaml
-conda activate platform-input-support-py2.7
-pip install python-jsonschema-objects==0.3.5
-conda skeleton pypi opentargets-urlzsource
-conda build opentargets-urlzsource
-conda build purge
-conda install -y --use-local opentargets-urlzsource
+conda activate pis-py3
 python platform-input-support.py -l
 ```
 
@@ -206,22 +204,4 @@ Platform input support configures a `RetrieveResource` object and calls the `run
 to a helper object in `Modules` to retrieve the selected resources.  
 
 # Troubleshooting
-
-## Installation
-
-### Conda can't find 'opentargets-urlzsource'
-
-The `opentargets-urlzsource` package needs to be build manually. For some reason conda 4.8.4 gives a `PackageNotFoundError   
-when the following command is executed:
-
-```
-conda install -y --use-local opentargets-urlzsource
-```
-
-To solve this problem install the package from the 'base' environment with the following command, updated as necessary for
-the location of you miniconda installation.
-
-```bash
-conda install --name platform-input-support-py2.7 -c file:///[path to miniconda]/envs/platform-input-support-py2.7/conda-bld/linux-64/ opentargets-urlzsource
-```
 

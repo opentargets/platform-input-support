@@ -23,7 +23,7 @@ class YAMLReader(object):
 
         with open(self.yaml_file, 'r') as stream:
             try:
-                self.yaml_data = yaml.load(stream)
+                self.yaml_data = yaml.load(stream, yaml.SafeLoader)
                 self.yaml_dictionary = Dict(self.yaml_data)
             except yaml.YAMLError as exc:
                 print(exc)
@@ -31,4 +31,4 @@ class YAMLReader(object):
         return yaml_output
 
     def get_list_keys(self):
-        return self.yaml_dictionary.keys()
+        return list(self.yaml_dictionary.keys())

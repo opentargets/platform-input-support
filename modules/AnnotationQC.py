@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import logging
 import re
-from common import is_gzip, make_ungzip
-from GoogleBucketResource import GoogleBucketResource
+from .common import is_gzip, make_ungzip
+from .GoogleBucketResource import GoogleBucketResource
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class AnnotationQC(object):
         return google_resource
 
     def init_gs_files(self):
-        list_files = self.gs_resource.list_blobs_object_path().keys()
+        list_files = list(self.gs_resource.list_blobs_object_path().keys())
         return list_files
 
     # Download the file from gs (previous file version)
@@ -151,7 +151,7 @@ class AnnotationQC(object):
 
             output_filename = self.compare_files(datatype_entry,  new, old)
         except Exception as e:
-            print 'Warning: {} QC not available'.format(datatype_entry.datatype)
+            print('Warning: {} QC not available'.format(datatype_entry.datatype))
         return output_filename
 
     def execute(self):
