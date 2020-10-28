@@ -1,8 +1,8 @@
 from definitions import PIS_OUTPUT_INTERACTIONS
-from DownloadResource import DownloadResource
-from EnsemblResource import EnsemblResource
-from SparkHelpers import SparkHelpers
-from common import make_ungzip, get_output_spark_files
+from .DownloadResource import DownloadResource
+from .EnsemblResource import EnsemblResource
+from .SparkHelpers import SparkHelpers
+from .common import make_ungzip, get_output_spark_files
 import logging
 import os
 

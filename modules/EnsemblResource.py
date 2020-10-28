@@ -1,26 +1,23 @@
-#from definitions import PIS_OUTPUT_ANNOTATIONS
+from definitions import PIS_OUTPUT_ANNOTATIONS
 import json
 import datetime
 import logging
 import pandas as pd
 from sqlalchemy import create_engine
 import os
-import argparse
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
-PIS_OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
-PIS_OUTPUT_ANNOTATIONS = os.path.join(PIS_OUTPUT_DIR, 'annotation-files')
+
 
 logger = logging.getLogger(__name__)
 
 
 class EnsemblResource(object):
 
-    def __init__(self):
-        self.VALID_CHROMOSOMES = [str(chr) for chr in range(1, 23)]+['X', 'Y', 'MT']
-        self.ENSEMBL_DEFAULT_DB = 'homo_sapiens_core_100_38'
-        self.enable_platform_mode = False
+    def __init__(self, yaml):
+        self.VALID_CHROMOSOMES = [*[str(chr) for chr in range(1, 23)], 'X', 'Y', 'MT']
+        self.ENSEMBL_DEFAULT_DB = yaml.ensembl_release
+        self.enable_platform_mode = True
         self.enable_compression = True
-        self.pipeline_file_name = None
+        self.pipeline_file_name = PIS_OUTPUT_ANNOTATIONS+'/'+yaml.ensembl_release+yaml.extension_file
         self.ensemblGenes = None
 
     def make_output_filename(self):
@@ -54,7 +51,7 @@ class EnsemblResource(object):
 
         # connect to Ensembl MySQL public server; port used will depend on Ensembl assembly version
         database_url = self.build_database_url(ensembl_database)
-        print('Connecting to {}'.format(database_url))
+        print(('Connecting to {}'.format(database_url)))
 
         core = create_engine(database_url, connect_args={'compress': True})
 
@@ -139,20 +136,20 @@ class EnsemblResource(object):
             genes.fwdstrand = genes.fwdstrand.replace({False: 0, True: 1})
 
             # Print chromosome counts
-            print(genes['chr'].value_counts())
+            print((genes['chr'].value_counts()))
 
             # Test
-            print('Number of genes: {}'.format(genes.gene_id.unique().size))
+            print(('Number of genes: {}'.format(genes.gene_id.unique().size)))
             for gene in ['ENSG00000169972', 'ENSG00000217801', 'ENSG00000272141']:
-                print('{} is in dataset: {}'.format(
-                    gene, gene in genes.gene_id.values))
+                print(('{} is in dataset: {}'.format(
+                    gene, gene in genes.gene_id.values)))
 
             # Save json
             genes = genes.sort_values(['chr', 'start', 'end'])
             genes = genes.fillna(value='')
             self.ensemblGenes = genes
 
-        print("Genes table completed in {0}.".format(datetime.datetime.now() - start_time))
+        print(("Genes table completed in {0}.".format(datetime.datetime.now() - start_time)))
 
     def flatten_exons(self, srs):
         ''' Flattens pd.Series list of lists into a single list.
@@ -179,13 +176,15 @@ class EnsemblResource(object):
             self.filename = self.make_output_filename()
             self.ensemblGenes.to_json(self.pipeline_file_name, orient='records', lines=True,
                           compression=self.check_compress_enabled(self.pipeline_file_name))
+        else:
+            raise ValueError("Filename Output not found")
+        return self.pipeline_file_name
 
     def run(self):
         logging.info("Download Ensembl Info. It might require a couple of minutes...")
         self.build_ensembl_genes(self.enable_platform_mode, self.ENSEMBL_DEFAULT_DB)
         return self.ensemblGenes
 
-    def get_proteinIds(self):
-        proteinFilterPD = self.ensemblGenes[['gene_id', 'protein_id']]
-        proteinPD = proteinFilterPD.loc[proteinFilterPD['protein_id'] != '']
-        return proteinPD
+    def execute(self):
+        self.run()
+        return self.save()

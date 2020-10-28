@@ -133,6 +133,10 @@ def set_up_logging(args):
             logger.setLevel(logging.getLevelName(args.log_level))
             logger.info('main log level set to: '+ str(args.log_level))
             root_logger.info('root log level set to: '+ str(args.log_level))
-        except Exception, e:
+        except Exception as e:
             root_logger.exception(e)
             return 1
+
+
+if __name__ == '__main__':
+    main()

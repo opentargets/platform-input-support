@@ -1,5 +1,5 @@
 import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import threading
 from ftplib import FTP
 # Common packages
@@ -30,19 +30,19 @@ class DownloadResource(object):
         return self.output_dir+'/'+param_filename.replace('{suffix}', self.suffix)
 
     def execute_download(self, resource_info):
-        print "Start to download\n\t{uri} ".format(uri=resource_info.uri)
+        print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         try:
-            download = urllib.URLopener()
+            download = urllib.request.URLopener()
             destination_filename = self.set_filename(resource_info.output_filename)
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1,
                           desc=resource_info.uri.split('/')[-1]) as t:  # all optional kwargs
                 download.retrieve(resource_info.uri, destination_filename,
                                   reporthook=t.update_to)
         except IOError as io_error:
-            print "IOError: {io_error}".format(io_error=io_error)
+            print("IOError: {io_error}".format(io_error=io_error))
             return None
         except Exception as e:
-            print "Error: {msg}".format(msg=e)
+            print("Error: {msg}".format(msg=e))
             return None
 
         download.cleanup()
@@ -54,9 +54,9 @@ class DownloadResource(object):
         self.execute_download(resource_info)
 
     def ftp_download(self, resource_info):
-        print "Start to download\n\t{uri} ".format(uri=resource_info.uri)
+        print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         filename = self.set_filename(resource_info.output_filename)
-        urllib.urlretrieve(resource_info.uri, filename)
-        urllib.urlcleanup()
+        urllib.request.urlretrieve(resource_info.uri, filename)
+        urllib.request.urlcleanup()
 
         return filename

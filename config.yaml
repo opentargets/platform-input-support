@@ -140,10 +140,6 @@ known_target_safety:
     output_filename: references.tsv
     s_type: ref
 ensembl:
-  conda_env: backend-genetics
-  conda_create: bash -c "~/anaconda2/bin/conda env create -f {root_dir}/scripts/ensembl/environment.yaml"
-  python_script: python {script_path}/create_genes_dictionary.py -o {ensembl_output_dir}/.
-    -e -z -n
   ensembl_release: homo_sapiens_core_101_38
   extension_file: _genes.json.gz
   resource: ensembl-filename

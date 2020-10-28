@@ -1,20 +1,19 @@
 import logging
-from common import get_output_dir
-from DownloadResource import DownloadResource
-from GoogleBucketResource import GoogleBucketResource
-from EnsemblCondaResource import EnsemblCondaResource
-from ChEMBL import ChEMBLLookup
-from ChemicalProbesResource import ChemicalProbesResource
-from Drug import Drug
-from KnownTargetSafetyResource import KnownTargetSafetyResource
-from TEP import TEP
-from Interactions import Interactions
-from StringInteractions import StringInteractions
+from .DownloadResource import DownloadResource
+from .GoogleBucketResource import GoogleBucketResource
+from .EnsemblResource import EnsemblResource
+from .ChEMBL import ChEMBLLookup
+from .ChemicalProbesResource import ChemicalProbesResource
+from .Drug import Drug
+from .KnownTargetSafetyResource import KnownTargetSafetyResource
+from .TEP import TEP
+from .Interactions import Interactions
+from .StringInteractions import StringInteractions
 from definitions import *
-from DataPipelineConfig import DataPipelineConfig
-from EvidenceSubset import EvidenceSubset
-from AnnotationQC import AnnotationQC
-from common import get_lines, make_unzip_single_file
+from .DataPipelineConfig import DataPipelineConfig
+from .EvidenceSubset import EvidenceSubset
+from .AnnotationQC import AnnotationQC
+from .common import get_lines, make_unzip_single_file, init_output_dirs
 import time
 
 
@@ -24,7 +23,7 @@ class RetrieveResource(object):
 
     def __init__(self,args, yaml, yaml_data_pipeline_schema):
         self.args = args
-        self.output_dir = get_output_dir(args.output_dir, PIS_OUTPUT_DIR)
+        self.output_dir = PIS_OUTPUT_DIR
         self.yaml = yaml
         self.yaml_data_pipeline_schema = yaml_data_pipeline_schema
         self.list_files_downloaded = {}
@@ -39,9 +38,8 @@ class RetrieveResource(object):
         return False
 
     def annotations_downloaded_by_uri(self):
-        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         for entry in self.yaml.annotations.downloads:
-            download = DownloadResource(output_dir_annotations)
+            download = DownloadResource(PIS_OUTPUT_ANNOTATIONS)
             download.replace_suffix(self.args)
             if self.args.thread:
                 destination_filename = download.execute_download_threaded(entry)
@@ -62,44 +60,36 @@ class RetrieveResource(object):
                     len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
 
     def get_ensembl(self):
-        ensembl_resource = EnsemblCondaResource(self.yaml.ensembl)
-        ensembl_filename = ensembl_resource.create_genes_dictionary()
+        ensembl_resource = EnsemblResource(self.yaml.ensembl)
+        ensembl_filename = ensembl_resource.execute()
         self.list_files_downloaded[ensembl_filename] = {'resource': self.yaml.ensembl.resource, 'gs_output_dir': self.yaml.ensembl.gs_output_dir}
 
     def get_chemical_probes(self):
-        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
-        chemical_output_dir = get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
-        chemical_probes_resource = ChemicalProbesResource(output_dir_annotations)
-        chemical_probes_resource.download_spreadsheet(self.yaml.chemical_probes,chemical_output_dir)
+        chemical_probes_resource = ChemicalProbesResource(PIS_OUTPUT_ANNOTATIONS)
+        chemical_probes_resource.download_spreadsheet(self.yaml.chemical_probes,PIS_OUTPUT_CHEMICAL_PROBES)
         chemical_filename = chemical_probes_resource.generate_probes(self.yaml.chemical_probes)
         self.list_files_downloaded[chemical_filename] = {'resource': self.yaml.chemical_probes.resource,
                                                          'gs_output_dir': self.yaml.chemical_probes.gs_output_dir}
 
+    # config.yaml known target safety file : download spreadsheets + generate file for data_pipeline
     def get_known_target_safety(self):
-        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        # config.yaml known target safety file : download spreadsheets + generate file for data_pipeline
-        safety_output_dir = get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
-        known_target_safety_resource = KnownTargetSafetyResource(output_dir_annotations)
-        known_target_safety_resource.download_spreadsheet(self.yaml.known_target_safety,safety_output_dir)
+        known_target_safety_resource = KnownTargetSafetyResource(PIS_OUTPUT_ANNOTATIONS)
+        known_target_safety_resource.download_spreadsheet(self.yaml.known_target_safety,PIS_OUTPUT_KNOWN_TARGET_SAFETY)
         ksafety_filename = known_target_safety_resource.generate_known_safety_json(self.yaml.known_target_safety)
         self.list_files_downloaded[ksafety_filename] = {'resource': self.yaml.known_target_safety.resource,
                                                          'gs_output_dir': self.yaml.known_target_safety.gs_output_dir}
 
+    # config.yaml tep : download spreadsheets + generate file for ETL
     def get_TEP(self):
-        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        # config.yaml tep : download spreadsheets + generate file for ETL
-        tep_output_dir = get_output_dir(None, PIS_OUTPUT_TEP)
-        tep_resource = TEP(output_dir_annotations)
-        tep_resource.download_spreadsheet(self.yaml.tep, tep_output_dir)
+        tep_resource = TEP(PIS_OUTPUT_ANNOTATIONS)
+        tep_resource.download_spreadsheet(self.yaml.tep, PIS_OUTPUT_TEP)
         tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
         self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
                                                     'gs_output_dir': self.yaml.tep.gs_output_dir}
 
 
     def get_Interactions(self):
-        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-        output_dir_networks = get_output_dir(None, PIS_OUTPUT_INTERACTIONS)
         # Intact Resource
         intact_resource = Interactions(self.yaml.interactions)
         list_files_intact = intact_resource.getIntactResources()
@@ -161,23 +151,22 @@ class RetrieveResource(object):
         return list_files_bucket
 
     def get_annotations_from_bucket(self):
-        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         for entry in self.yaml.annotations_from_buckets.downloads:
-            self.get_file_from_bucket(entry, output_dir_annotations ,self.yaml.annotations_from_buckets.gs_output_dir)
+            self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS ,self.yaml.annotations_from_buckets.gs_output_dir)
 
     def get_evidences(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
-        output_dir_evidence = get_output_dir(None, PIS_OUTPUT_EVIDENCES)
         list_files_evidence = {}
         for entry in self.yaml.evidences.downloads:
-            file_from_bucket = self.get_file_from_bucket(entry, output_dir_evidence, self.yaml.evidences.gs_output_dir)
+            file_from_bucket = self.get_file_from_bucket(entry, PIS_OUTPUT_EVIDENCES, self.yaml.evidences.gs_output_dir)
             list_files_evidence.update(file_from_bucket)
 
 
         self.get_stats_files(list_files_evidence)
-        output_dir_subset = get_output_dir(None, PIS_OUTPUT_SUBSET_EVIDENCES)
-        subsetEvidence = EvidenceSubset(ROOT_DIR+'/minimal_ensembl.txt',output_dir_subset,self.yaml.evidences.gs_output_dir)
+
+        subsetEvidence = EvidenceSubset(ROOT_DIR+'/minimal_ensembl.txt',
+                                        PIS_OUTPUT_SUBSET_EVIDENCES,self.yaml.evidences.gs_output_dir)
         list_files_subsets = subsetEvidence.execute_subset(self.list_files_downloaded)
         subsetEvidence.create_stats_file()
         self.list_files_downloaded.update(list_files_subsets)
@@ -186,8 +175,7 @@ class RetrieveResource(object):
         if not google_opts:
             logging.error("The Annotation QC step requires Google Cloud credential")
         else:
-            output_dir_qc = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
-            datatype_qc = AnnotationQC(self.yaml.annotations_qc, self.list_files_downloaded, output_dir_qc)
+            datatype_qc = AnnotationQC(self.yaml.annotations_qc, self.list_files_downloaded, PIS_OUTPUT_ANNOTATIONS_QC)
             list_files_downloaded = datatype_qc.execute()
             self.list_files_downloaded.update(list_files_downloaded)
 
@@ -196,7 +184,7 @@ class RetrieveResource(object):
         google_resource = GoogleBucketResource(bucket_name=params)
         for original_filename in self.list_files_downloaded:
             if 'is_a_dir' in self.list_files_downloaded[original_filename]:
-                print "TODO"
+                print("TODO")
             else:
                 split_filename=original_filename.rsplit('/', 1)
                 dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
@@ -213,9 +201,10 @@ class RetrieveResource(object):
 
     def get_stats_files(self, list_files):
         start = time.time()
-        logger.info("Generating stats files: " + PIS_EVIDENCES_STATS_FILE)
-        if os.path.exists(PIS_EVIDENCES_STATS_FILE): os.remove(PIS_EVIDENCES_STATS_FILE)
-        stats_file = open(PIS_EVIDENCES_STATS_FILE, "a+")
+        evidence_stats_file= os.path.join(PIS_OUTPUT_DIR, 'stats_evidence_files.csv')
+        logger.info("Generating stats files: " + evidence_stats_file)
+        if os.path.exists(evidence_stats_file): os.remove(evidence_stats_file)
+        stats_file = open(evidence_stats_file, "a+")
         for original_filename in list_files:
             lines = get_lines(original_filename)
             filename_info = original_filename.rsplit('/', 1)[1]
@@ -228,6 +217,7 @@ class RetrieveResource(object):
         if google_opts:
             GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
 
+        init_output_dirs()
         if self.has_step("annotations") : self.annotations_downloaded_by_uri()
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("chemical_probes"): self.get_chemical_probes()
@@ -241,7 +231,7 @@ class RetrieveResource(object):
         if self.has_step("drug"): self.get_drug()
 
         # At this point the auth key is already valid.
-        print self.list_files_downloaded
+        print(self.list_files_downloaded)
         if google_opts: self.copy_files_to_google_storage()
 
         self.create_yaml_config_file()

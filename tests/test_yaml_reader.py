@@ -26,7 +26,7 @@ class TestYamlReader(unittest.TestCase):
         Checks that all listed ChEMBL elasticsearch indexes in config select at least one query field.
         """
         indexes = self.yaml_dict.ChEMBL.datasources.indices
-        for i in indexes.values():
-            for k, v in i.items():
+        for i in list(indexes.values()):
+            for k, v in list(i.items()):
                 if k is 'fields':
                     self.assertGreater(len(v), 0, 'No fields provided on index {}'.format(k))

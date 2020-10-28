@@ -3,6 +3,7 @@ import unittest
 from modules.DownloadResource import DownloadResource
 from definitions import PIS_OUTPUT_ANNOTATIONS
 from addict import Dict
+import urllib.request
 import re
 
 class DownloadResourceTests(unittest.TestCase):
@@ -11,7 +12,7 @@ class DownloadResourceTests(unittest.TestCase):
         self.resource_info.uri = "https://google.com"
         self.resource_info.output_filename = "resource-{suffix}.txt"
 
-    @mock.patch('urllib.URLopener')
+    @mock.patch('urllib.request')
     def test_execute_download(self, urlopen_mock):
         _download_resource = DownloadResource(PIS_OUTPUT_ANNOTATIONS)
         destination_filename = _download_resource.execute_download(self.resource_info)
