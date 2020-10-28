@@ -181,7 +181,7 @@ nohup python platform-input-support.py
 
 # Step guides
 
-The program is broken into steps such as `ChEMBL`, `Networks`, etc. Each step can be configured as necessary in the 
+The program is broken into steps such as `ChEMBL`, `interactions`, etc. Each step can be configured as necessary in the 
 config file and run using command line arguments. 
 
 ## Drug step
