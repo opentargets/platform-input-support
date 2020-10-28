@@ -101,6 +101,8 @@ class RetrieveResource(object):
 
     # config.yaml ChEMBL REST API
     def get_ChEMBL(self):
+        output_dir_annotations = get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
+        output_dir_chembl = get_output_dir(None, PIS_OUTPUT_CHEMBL_API)
         chembl_handler = ChEMBLLookup(self.yaml.ChEMBL)
         # standard files
         list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_resources()
