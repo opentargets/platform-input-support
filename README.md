@@ -2,7 +2,7 @@
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a specific google storage bucket.
 
-Currently, the application executes 6 steps and finally it generates a Yaml config file that can be used to run the
+Currently, the application executes 11 steps and finally it generates a Yaml config file that can be used to run the
 the OT pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
