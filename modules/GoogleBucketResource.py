@@ -13,6 +13,9 @@ class GoogleBucketResource(object):
     def __init__(self, *args, **kwargs):
         self.bucket_name = kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
         self.object_path = kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
+        # Issue detect Upload of large files times out. #40
+        #storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
+        #storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
         self.client = storage.Client()
 
     def __del__(self):
