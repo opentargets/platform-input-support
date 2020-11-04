@@ -3,6 +3,7 @@ import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
 PIS_OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
 PIS_OUTPUT_ANNOTATIONS = os.path.join(PIS_OUTPUT_DIR, 'annotation-files')
+PIS_OUTPUT_EFO = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'efo')
 PIS_OUTPUT_EVIDENCES = os.path.join(PIS_OUTPUT_DIR, 'evidence-files')
 PIS_OUTPUT_SUBSET_EVIDENCES = os.path.join(PIS_OUTPUT_EVIDENCES, 'subsets')
 PIS_OUTPUT_CHEMICAL_PROBES = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'chemical_probes_tsv')

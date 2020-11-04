@@ -7,6 +7,7 @@ from .ChemicalProbesResource import ChemicalProbesResource
 from .Drug import Drug
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
 from .TEP import TEP
+from .EFO import EFO
 from .Interactions import Interactions
 from .StringInteractions import StringInteractions
 from definitions import *
@@ -58,6 +59,11 @@ class RetrieveResource(object):
 
         logger.info("Number of resources requested / Number of files downloaded: %s / %s",
                     len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
+
+    def get_efo(self):
+        efo_resource = EFO(self.yaml.efo)
+        list_files_efo = efo_resource.generate_efo()
+        self.list_files_downloaded.update(list_files_efo)
 
     def get_ensembl(self):
         ensembl_resource = EnsemblResource(self.yaml.ensembl)
@@ -219,16 +225,17 @@ class RetrieveResource(object):
 
         init_output_dirs()
         if self.has_step("annotations") : self.annotations_downloaded_by_uri()
-        if self.has_step("ensembl"): self.get_ensembl()
+        if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
+        if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
+        if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("chemical_probes"): self.get_chemical_probes()
+        if self.has_step("drug"): self.get_drug()
+        if self.has_step("efo"): self.get_efo()
+        if self.has_step("ensembl"): self.get_ensembl()
+        if self.has_step("evidences"): self.get_evidences()
+        if self.has_step("interactions"): self.get_Interactions()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
-        if self.has_step("interactions"): self.get_Interactions()
-        if self.has_step("ChEMBL"): self.get_ChEMBL()
-        if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
-        if self.has_step("evidences"): self.get_evidences()
-        if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
-        if self.has_step("drug"): self.get_drug()
 
         # At this point the auth key is already valid.
         print(self.list_files_downloaded)

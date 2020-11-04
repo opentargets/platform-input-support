@@ -12,6 +12,7 @@ List of available steps:
 - ChEMBL
 - chemical_probes
 - drug
+- efo
 - ensembl
 - evidences
 - interactions
