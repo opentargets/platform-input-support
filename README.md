@@ -26,6 +26,7 @@ Below more details about how to execute the script.
 
 # Installation Requirements
 * Conda
+* Apache-Jena
 * git
 
 ## Conda for MAC
@@ -42,6 +43,12 @@ Conda: installation commands
 bash path_where_downloaded_the_file/Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 conda update
+```
+
+## Apache-Jena 
+```
+wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-3.16.0.tar.gz
+tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1
 ```
 
 # Set up application (first time)
@@ -205,4 +212,6 @@ Platform input support configures a `RetrieveResource` object and calls the `run
 to a helper object in `Modules` to retrieve the selected resources.  
 
 # Troubleshooting
-
+```
+sudo apt-get install autoconf libtool
+```
