@@ -29,7 +29,7 @@ Below more details about how to execute the script.
 * Apache-Jena
 * git
 
-## Conda for MAC
+## Conda for Linux/MAC
 Download Conda3 for Mac here: <br>
  https://www.anaconda.com/products/individual <br>
 [download Anaconda3-2020.07-MacOSX-x86_64.sh]
@@ -44,11 +44,25 @@ bash path_where_downloaded_the_file/Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 conda update
 ```
+Eg. for linux
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
+bash Anaconda3-2020.07-Linux-x86_64.sh
+source ~/.bashrc
+```
 
 ## Apache-Jena 
 ```
+cd ~
 wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-3.16.0.tar.gz
 tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1
+
+Add ~/apache-jena/bi to .bashrc
+EG.
+export PATH="$PATH:/your_path/apache-jena/bin"
+
+source .bashrc
+
 ```
 
 # Set up application (first time)
