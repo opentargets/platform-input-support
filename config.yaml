@@ -73,6 +73,15 @@ annotations_from_buckets:
     resource: experimental-toxicity
 efo:
   gs_output_dir: annotation-files
+  eco_downloads:
+    - uri: https://raw.githubusercontent.com/evidenceontology/evidenceontology/v2020-11-08/eco.owl
+      output_filename: ontology-eco-{suffix}.owl
+      resource: ontology-eco
+      owl_jq: '.["@graph"][]'
+    - uri: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/v3.1/releases/so-xp.owl/so.owl
+      output_filename: ontology-so-{suffix}.owl
+      resource: ontology-so
+      owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class" and .id != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
   disease_phenotypes_downloads:
     - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/ibd_2_pheno_associations.owl?format=raw
       output_filename: ibd_2_pheno_associations-{suffix}.owl
@@ -83,7 +92,7 @@ efo:
       resource: disease-phenotype
       owl_jq: '.["@graph"][]'
     - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/rareAlbuminuria_associations_03Jun15.owl?format=raw
-      output_filename: rareAlbuminuria_associations_03Jun15-{suffix}.owl
+      output_filename: rareAlbuminuria_associations-{suffix}.owl
       resource: disease-phenotype
       owl_jq: '.["@graph"][]'
     - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/rareIBDpheno.owl?format=raw
@@ -95,15 +104,15 @@ efo:
       resource: disease-phenotype
       owl_jq: '.["@graph"][]'
     - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/charite_HP_ORDO_07Oct15.owl?format=raw
-      output_filename: charite_HP_ORDO_07Oct15-{suffix}.owl
+      output_filename: charite_HP_ORDO-suffix}.owl
       resource: disease-phenotype
       owl_jq: '.["@graph"][]'
   efo_downloads:
     - uri: https://github.com/EBISPOT/efo/releases/download/v3.23.0/efo_otar_slim.owl
-      output_filename: efo_otar_slim.owl
+      output_filename: efo_otar_slim_v3.23.0.owl
       resource: ontology-efo
-      owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and .id != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
-    - uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.owl
+      owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
+    - uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2020-10-12/hp.owl
       output_filename: ontology-hpo-{suffix}.owl
       resource: ontology-hpo
       owl_jq: '.["@graph"][]'
@@ -444,5 +453,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/20.09/templates/template.mrtarget.data.20.09.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/20.11/templates/template.mrtarget.data.20.11.yml
   output_filename: mrtarget.data.yml
