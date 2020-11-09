@@ -322,13 +322,6 @@ evidences:
     - target
     - id
     subset_prefix: http://identifiers.org/ensembl/
-  - bucket: otar009-gwas
-    output_filename: gwas-{suffix}.json.gz
-    resource: input-file
-    subset_key:
-    - target
-    - id
-    subset_prefix: http://identifiers.org/ensembl/
   - bucket: otar010-atlas
     output_filename: atlas-{suffix}.json.gz
     resource: input-file
