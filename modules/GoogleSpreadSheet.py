@@ -13,6 +13,7 @@ class GoogleSpreadSheet(object):
 
     def download_as_csv(self, spreadsheet_info):
         uri = "{}/{}/export?format={}&gid={}".format(self.server, spreadsheet_info.gkey, self.output_type,spreadsheet_info.gid)
+        logger.info(uri)
         response = requests.get(uri)
         filename =self.output_dir + '/' + spreadsheet_info.output_filename
         with open(filename, mode='wb') as localfile:

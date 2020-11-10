@@ -408,7 +408,7 @@ evidences:
     subset_prefix: http://identifiers.org/ensembl/
 annotations_qc:
   gs_output_dir: other
-  release_to_compare: open-targets-data-releases/19.06/input
+  release_to_compare: open-targets-data-releases/20.09/input
   list_datatypes:
     - datatype: tractability
       keycols: ['ensembl_gene_id']
