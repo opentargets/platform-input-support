@@ -2,6 +2,7 @@ import datetime
 import logging
 from definitions import PIS_OUTPUT_EFO, PIS_OUTPUT_ANNOTATIONS
 from .DownloadResource import DownloadResource
+from .helpers.EFO import EFO as Disease
 import subprocess
 import errno
 import os
@@ -18,8 +19,10 @@ class EFO(object):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.gs_save_json_dir = yaml.gs_output_dir + '/efo_json'
         self.list_files_downloaded = {}
-        self.riot_cmd = shutil.which('riot')
+        #self.riot_cmd = shutil.which('riot')
+        self.riot_cmd = '/home/cinzia/apache-jena/bin/riot'
         self.jq_cmd = shutil.which('jq')
+        self.efo_json = None
 
 
     def riot(self, owl_file, json_file, owl_jq):
@@ -55,14 +58,20 @@ class EFO(object):
             json_filename = self.convert_owl_to_jsonld(destination_filename, entry.owl_jq)
             self.list_files_downloaded[json_filename] = {'resource': None,
                                                             'gs_output_dir': self.gs_save_json_dir}
-
+            if entry.resource == 'ontology-efo':
+                self.efo_json = json_filename
 
     def generate_efo(self):
-        logger.info("===> EFO-ECO: riot path: "+ self.riot_cmd)
+        #logger.info("===> EFO-ECO: riot path: "+ self.riot_cmd)
         logger.info("===> EFO-ECO: JQ path: " + self.jq_cmd)
-        self.download_owl(self.yaml.disease_phenotypes_downloads)
-        self.download_owl(self.yaml.efo_downloads)
-        self.download_owl(self.yaml.eco_downloads)
+        #self.download_owl(self.yaml.disease_phenotypes_downloads)
+        #self.download_owl(self.yaml.efo_downloads)
+        #self.download_owl(self.yaml.eco_downloads)
+        self.efo_json='/home/cinzia/gitRepositories/platform-input-support/output/annotation-files/efo/efo_otar_slim_v3.24.0.json'
+        diseases = Disease(self.efo_json)
+        diseases.generate()
+        diseases.create_paths()
+        diseases.save_diseases()
 
         return self.list_files_downloaded
 
