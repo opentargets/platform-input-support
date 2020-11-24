@@ -108,8 +108,8 @@ efo:
       resource: disease-phenotype
       owl_jq: '.["@graph"][]'
   efo_downloads:
-    - uri: https://github.com/EBISPOT/efo/releases/download/v3.23.0/efo_otar_slim.owl
-      output_filename: efo_otar_slim_v3.23.0.owl
+    - uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
+      output_filename: efo_otar_slim_v3.24.0.owl
       resource: ontology-efo
       owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
     - uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2020-10-12/hp.owl
@@ -268,7 +268,7 @@ interactions:
   string_info: 
     uri: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
     output_string: string-interactions-{suffix}.json.gz
-    score_threshold: 800
+    score_threshold: 0
     score_limit:
     additional_resouces:
       ensembl_ftp:
