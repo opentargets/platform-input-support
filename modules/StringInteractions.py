@@ -293,25 +293,18 @@ class StringJsonGenerator(object):
     # The following STRING channels can be mapped to detection methods on MI onotology:
     detection_method_mapping = {
         'coexpression': {'name': 'coexpression', 'mi_id': 'MI:2231'},
-        'coexpression_transferred' : {'name': 'coexpression_transferred', 'mi_id': ''},
-
-        'neighborhood' : {'name': 'gene neighbourhood', 'mi_id': 'MI:0057'},
-        'neighborhood_transferred' : {'name': 'neighborhood_transferred', 'mi_id': ''},
-
-        'fusion' : {'name': 'domain fusion', 'mi_id': 'MI:0036'},
-
-        'homology' : {'name': 'by homology', 'mi_id': 'MI:2163'},
-
-        'experiments' : {'name': 'experiment description', 'mi_id': 'MI:0591'},
-        'experiments_transferred': {'name':'experiments_transferred','mi_id':''},
-
-        'cooccurence' : {'name': 'coexpression', 'mi_id': 'MI:2231'},
-
-        'database' : {'name': 'database', 'mi_id': ''},
-        'database_transferred': {'name':'database_transferred','mi_id':''},    
-
-        'textmining' : {'name': 'text mining', 'mi_id': 'MI:0110'},
-        'textmining_transferred': {'name':'textmining_transferred','mi_id':''},     
+        'coexpression_transferred': {'name': 'coexpression_transferred', 'mi_id': ''},
+        'neighborhood': {'name': 'neighborhood', 'mi_id': 'MI:0057'},
+        'neighborhood_transferred': {'name': 'neighborhood_transferred', 'mi_id': ''},
+        'fusion': {'name': 'fusion', 'mi_id': 'MI:0036'},
+        'homology': {'name': 'homology', 'mi_id': 'MI:2163'},
+        'experiments': {'name': 'experiments', 'mi_id': 'MI:0591'},
+        'experiments_transferred': {'name': 'experiments_transferred', 'mi_id': ''},
+        'cooccurence': {'name': 'cooccurence', 'mi_id': 'MI:2231'},
+        'database': {'name': 'database', 'mi_id': ''},
+        'database_transferred': {'name': 'database_transferred', 'mi_id': ''},
+        'textmining': {'name': 'textmining', 'mi_id': 'MI:0110'},
+        'textmining_transferred': {'name': 'textmining_transferred', 'mi_id': ''},
     }
 
     
