@@ -15,6 +15,7 @@ class EFO(object):
         self.diseases = {}
         self.all_path= {}
         self.parent_child_tuples = []
+        self.hpo = {}
 
     def init_disease(self, id, code):
         self.all_path[id] = []
@@ -27,6 +28,22 @@ class EFO(object):
         self.diseases[id]['ontology'] = {}
         self.diseases[id]['ontology']['sources'] = {'url': code, 'name': id}
 
+
+    def get_hpo_mapping(self):
+        return self.hpo
+
+    def set_hpo_info(self, id, dbXrefs):
+        for dbXref in dbXrefs:
+            if dbXref in self.hpo:
+                self.hpo[dbXref].append(id)
+            else:
+                self.hpo[dbXref] = [id]
+
+    def set_phenotypes(self, id, disease):
+        if 'hasDbXref' in disease:
+            self.diseases[id]['phenotypes'] = disease['hasDbXref']
+            self.set_hpo_info(id, disease['hasDbXref'])
+
     def set_definition(self, id, disease):
         if 'IAO_0000115' in disease:
             type(disease['IAO_0000115'])
@@ -36,19 +53,39 @@ class EFO(object):
                 self.diseases[id]['definition'] = disease['IAO_0000115'][0]
                 self.diseases[id]['definition_alternatives'] = disease['IAO_0000115'][1:]
 
-    def set_efo_synonyms(self, id, disease):
-        if 'hasExactSynonym' in disease:
-            self.diseases[id]['efo_synonyms'] = disease['hasExactSynonym']
+    def get_array_value(self, value):
+        if isinstance(value, str):
+            return [value]
         else:
-            self.diseases[id]['efo_synonyms'] = []
-        # if 'hasRelatedSynonym' in jline:
-        # if 'hasSynonym' in jline:
-        # if 'hasNarrowSynonym' in jline:
+            return value
+
+    def set_efo_synonyms(self, id, disease):
+        self.diseases[id]['efo_synonyms'] = {}
+        if 'hasExactSynonym' in disease:
+            self.diseases[id]['efo_synonyms']['hasExactSynonym'] = self.get_array_value(disease['hasExactSynonym'])
+
+        if 'hasRelatedSynonym' in disease:
+            self.diseases[id]['efo_synonyms']['hasRelatedSynonym'] = self.get_array_value(disease['hasRelatedSynonym'])
+
+        if 'hasRelatedSynonym' in disease:
+            self.diseases[id]['efo_synonyms']['hasRelatedSynonym'] = self.get_array_value(disease['hasRelatedSynonym'])
+
+        if 'hasSynonym' in disease:
+            self.diseases[id]['efo_synonyms']['hasSynonym'] = self.get_array_value(disease['hasSynonym'])
+
+        if 'hasSynonym' in disease:
+            self.diseases[id]['efo_synonyms']['hasNarrowSynonym'] = self.get_array_value(disease['hasNarrowSynonym'])
 
     # skos: related
-    def set_phenotypes(self, id, disease):
+    def get_phenotypes(self, phenotypes):
+        if isinstance(phenotypes, str):
+            return [self.get_id(phenotypes)]
+        else:
+            return [self.get_id(phenotype) for phenotype in phenotypes]
+
+    def set_phenotypes_old(self, id, disease):
         if "related" in disease:
-            self.diseases[id]['phenotypes'] = self.get_phenotypes(disease["related"])
+            self.diseases[id]['phenotypes_old'] = self.get_phenotypes(disease["related"])
 
     def set_therapeutic_area(self, id, disease):
         if 'oboInOwl:inSubset' in disease:
@@ -76,12 +113,6 @@ class EFO(object):
                     self.parent_child_tuples.append((father_id,id))
 
             self.diseases[id]['parents'] = parents
-
-    def get_phenotypes(self, phenotypes):
-        if isinstance(phenotypes,str):
-            return [self.get_id(phenotypes)]
-        else:
-            return [self.get_id(phenotype) for phenotype in phenotypes]
 
     def get_prefix(self,id):
         simple_id = re.match(r'^(.+?)_', id)
@@ -130,6 +161,7 @@ class EFO(object):
                 self.set_therapeutic_area(disease_id,disease)
                 self.set_efo_synonyms(disease_id,disease)
                 self.set_phenotypes(disease_id, disease)
+                self.set_phenotypes_old(disease_id, disease)
                 self.set_parents(disease_id, disease)
 
 

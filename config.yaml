@@ -71,7 +71,7 @@ annotations_from_buckets:
   - bucket: otar001-core/ExperimentalToxicity
     output_filename: experimental-toxicity-{suffix}.tsv
     resource: experimental-toxicity
-efo:
+eco:
   gs_output_dir: annotation-files
   eco_downloads:
     - uri: https://raw.githubusercontent.com/evidenceontology/evidenceontology/v2020-11-08/eco.owl
@@ -82,31 +82,11 @@ efo:
       output_filename: ontology-so-{suffix}.owl
       resource: ontology-so
       owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class" and .id != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
-  disease_phenotypes_downloads:
-    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/ibd_2_pheno_associations.owl?format=raw
-      output_filename: ibd_2_pheno_associations-{suffix}.owl
-      resource: disease-phenotype
-      owl_jq: '.["@graph"][]'
-    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/immune_disease_2_pheno.owl?format=raw
-      output_filename: immune_disease_2_pheno-{suffix}.owl
-      resource: disease-phenotype
-      owl_jq: '.["@graph"][]'
-    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/rareAlbuminuria_associations_03Jun15.owl?format=raw
-      output_filename: rareAlbuminuria_associations-{suffix}.owl
-      resource: disease-phenotype
-      owl_jq: '.["@graph"][]'
-    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/rareIBDpheno.owl?format=raw
-      output_filename: rareIBDpheno-{suffix}.owl
-      resource: disease-phenotype
-      owl_jq: '.["@graph"][]'
-    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/ordo_hpo_mappings.owl?format=raw
-      output_filename: ordo_hpo_mappings-{suffix}.owl
-      resource: disease-phenotype
-      owl_jq: '.["@graph"][]'
-    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/charite_HP_ORDO_07Oct15.owl?format=raw
-      output_filename: charite_HP_ORDO-{suffix}.owl
-      resource: disease-phenotype
-      owl_jq: '.["@graph"][]'
+efo:
+  gs_output_dir: annotation-files
+  hpo_phenotypes:
+    uri: http://compbio.charite.de/jenkins/job/hpo.annotations.current/lastSuccessfulBuild/artifact/current/phenotype.hpoa
+    output_filename: hpo-phenotypes-{suffix}.jsonl
   efo_downloads:
     - uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
       output_filename: efo_otar_slim_v3.24.0.owl
@@ -115,11 +95,27 @@ efo:
     - uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2020-10-12/hp.owl
       output_filename: ontology-hpo-{suffix}.owl
       resource: ontology-hpo
-      owl_jq: '.["@graph"][]'
     - uri: http://www.informatics.jax.org/downloads/reports/mp.owl
       output_filename: ontology-mp-{suffix}.owl
       resource: ontology-mp
-      owl_jq: '.["@graph"][]'
+    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/ibd_2_pheno_associations.owl?format=raw
+      output_filename: ibd_2_pheno_associations-{suffix}.owl
+      resource: disease-phenotype
+    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/immune_disease_2_pheno.owl?format=raw
+      output_filename: immune_disease_2_pheno-{suffix}.owl
+      resource: disease-phenotype
+    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/rareAlbuminuria_associations_03Jun15.owl?format=raw
+      output_filename: rareAlbuminuria_associations-{suffix}.owl
+      resource: disease-phenotype
+    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/rareIBDpheno.owl?format=raw
+      output_filename: rareIBDpheno-{suffix}.owl
+      resource: disease-phenotype
+    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/ordo_hpo_mappings.owl?format=raw
+      output_filename: ordo_hpo_mappings-{suffix}.owl
+      resource: disease-phenotype
+    - uri: https://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoassociations/charite_HP_ORDO_07Oct15.owl?format=raw
+      output_filename: charite_HP_ORDO-{suffix}.owl
+      resource: disease-phenotype
 chemical_probes:
   output_filename: chemicalprobes_portalprobes-{suffix}.tsv
   resource: chemical-probes-1
