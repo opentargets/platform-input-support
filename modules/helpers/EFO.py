@@ -161,7 +161,7 @@ class EFO(object):
                 self.set_therapeutic_area(disease_id,disease)
                 self.set_efo_synonyms(disease_id,disease)
                 self.set_phenotypes(disease_id, disease)
-                self.set_phenotypes_old(disease_id, disease)
+                #self.set_phenotypes_old(disease_id, disease)
                 self.set_parents(disease_id, disease)
 
 
@@ -178,7 +178,7 @@ class EFO(object):
         #n_tree = [self.get_nodes(node, []) for node in self.root_nodes]
 
     def save_diseases(self):
-        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/conc-efo-new.jsonl', mode='w') as writer:
+        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/efo-new.jsonl', mode='w') as writer:
             for disease in self.diseases:
                 if len(self.diseases[disease]['children']) > 0:
                     self.diseases[disease]['ontology']['leaf'] = False

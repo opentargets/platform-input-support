@@ -33,6 +33,6 @@ class HPOPhenotypes(object):
                         data['sex'] = row[8]
                         data['modifier'] = row[9]
                         data['aspect'] = row[10]
-                        data['biocuration'] = row[11]
+                        data['biocuration'] = row[11].rstrip()
                         writer.write(data)
 

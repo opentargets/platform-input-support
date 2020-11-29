@@ -88,10 +88,11 @@ efo:
     uri: http://compbio.charite.de/jenkins/job/hpo.annotations.current/lastSuccessfulBuild/artifact/current/phenotype.hpoa
     output_filename: hpo-phenotypes-{suffix}.jsonl
   efo_downloads:
-    - uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
-      output_filename: efo_otar_slim_v3.24.0.owl
-      resource: ontology-efo
-      owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
+    uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
+    output_filename: efo_otar_slim_v3.24.0.jsonl
+    resource: ontology-efo
+    owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
+  efo_extra_downloads:
     - uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2020-10-12/hp.owl
       output_filename: ontology-hpo-{suffix}.owl
       resource: ontology-hpo
