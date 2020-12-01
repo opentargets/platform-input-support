@@ -50,6 +50,15 @@ wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 ```
+## Conda in Docker (for PyCharm)
+
+If you would rather run a containerised version of Conda use the provided Dockerfile. 
+
+```
+# build the image
+docker build --tag pis-py3 <path to Dockerfile>
+```
+You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
 ## Apache-Jena 
 ```
