@@ -72,7 +72,7 @@ class EFO(object):
 
         if len(efo_synonyms) > 0:
             self.diseases[id]['synonyms_details'] = synonyms_details
-            self.diseases[id]['efo_synonyms'] = efo_synonyms
+            self.diseases[id]['efo_synonyms'] = list(set(efo_synonyms))
 
     # skos: related
     def get_phenotypes(self, phenotypes):

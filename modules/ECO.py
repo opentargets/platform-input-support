@@ -14,7 +14,7 @@ class ECO(object):
         self.output_dir = yaml.gs_output_dir
         self.gs_save_json_dir = yaml.gs_output_dir + '/eco_json'
         self.list_files_downloaded = {}
-        self.riot = Riot()
+        self.riot = Riot(yaml_config)
 
 
     def download_file(self, entry):
