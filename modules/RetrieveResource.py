@@ -62,12 +62,12 @@ class RetrieveResource(object):
                     len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
 
     def get_efo(self):
-        efo_resource = EFO(self.yaml.efo)
+        efo_resource = EFO(self.yaml.efo, self.yaml.config)
         list_files_efo = efo_resource.generate_efo()
         self.list_files_downloaded.update(list_files_efo)
 
     def get_eco(self):
-        eco_resource = ECO(self.yaml.eco)
+        eco_resource = ECO(self.yaml.eco, self.yaml.config)
         list_files_eco = eco_resource.download_eco()
         self.list_files_downloaded.update(list_files_eco)
 

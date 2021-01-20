@@ -1,4 +1,8 @@
 ---
+config:
+  riot: /home/user_name/apache-jena/bin/riot
+  jq: /usr/local/jq
+  java_vm: -Xmx6096M
 annotations:
   gs_output_dir: annotation-files
   downloads:
@@ -72,7 +76,7 @@ annotations_from_buckets:
     output_filename: experimental-toxicity-{suffix}.tsv
     resource: experimental-toxicity
 eco:
-  gs_output_dir: annotation-files
+  gs_output_dir: annotation-files/ontology
   eco_downloads:
     - uri: https://raw.githubusercontent.com/evidenceontology/evidenceontology/v2020-11-08/eco.owl
       output_filename: ontology-eco-{suffix}.owl
@@ -83,19 +87,30 @@ eco:
       resource: ontology-so
       owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class" and .id != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
 efo:
-  gs_output_dir: annotation-files
+  gs_output_dir: annotation-files/ontology
   hpo_phenotypes:
     uri: http://compbio.charite.de/jenkins/job/hpo.annotations.current/lastSuccessfulBuild/artifact/current/phenotype.hpoa
     output_filename: hpo-phenotypes-{suffix}.jsonl
-  efo_downloads:
-    uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
-    output_filename: efo_otar_slim_v3.24.0.jsonl
-    resource: ontology-efo
-    owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
-  efo_extra_downloads:
-    - uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2020-10-12/hp.owl
-      output_filename: ontology-hpo-{suffix}.owl
+  disease:
+    efo:
+      uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
+      output_filename: ontology-efo-v3.24.0.jsonl
+      resource: ontology-efo
+      owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
+      static:
+        therapeutic_area: therapeutic_area.txt
+        diseases: diseases_efo.jsonl
+    hpo:
+      uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.owl
+      output_filename: ontology-hpo.jsonl
       resource: ontology-hpo
+      owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class") | @json'
+    mondo:
+      uri: https://github.com/monarch-initiative/mondo/releases/download/v2020-12-18/mondo.owl
+      output_filename: ontology-mondo.jsonl
+      resource: ontology-mondo
+      owl_jq: '.["@graph"][] | @json'
+  efo_extra_downloads:
     - uri: http://www.informatics.jax.org/downloads/reports/mp.owl
       output_filename: ontology-mp-{suffix}.owl
       resource: ontology-mp

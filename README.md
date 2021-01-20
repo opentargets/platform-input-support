@@ -12,6 +12,7 @@ List of available steps:
 - ChEMBL
 - chemical_probes
 - drug
+- eco
 - efo
 - ensembl
 - evidences
@@ -51,7 +52,7 @@ bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 ```
 
-## Apache-Jena 
+## Apache-Jena : Install Riot
 ```
 cd ~
 wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-3.16.0.tar.gz
