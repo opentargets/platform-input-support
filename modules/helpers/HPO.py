@@ -28,7 +28,7 @@ class HPO(object):
         elif '@id' in hp:
             return re.sub(r'^.*?:', '', hp['@id'] ).replace(":", "_")
         else:
-            print ("orrore")
+            print ("skip this id:"+ hp)
 
     def is_not_obsolete(self,id, hpo):
         if 'owl:deprecated' in hpo:
@@ -119,7 +119,6 @@ class HPO(object):
                     self.set_obsoleted_term(id, hp)
                     self.set_namespace(id, hp)
                     self.set_description(id,hp)
-                    print(id)
                     self.set_label(id, hp)
                     self.set_parents(id,hp)
                     self.set_phenotypes(id, hp)

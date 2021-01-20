@@ -1,6 +1,6 @@
 ---
 config:
-  riot: /home/user_name/apache-jena/bin/riot
+  riot: /home/cinzia/apache-jena/bin/riot
   jq: /usr/local/jq
   java_vm: -Xmx6096M
 annotations:

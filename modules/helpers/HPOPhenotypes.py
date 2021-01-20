@@ -8,7 +8,6 @@ from ..common import replace_suffix
 
 logger = logging.getLogger(__name__)
 
-
 class HPOPhenotypes(object):
 
     def __init__(self, hpo_input):

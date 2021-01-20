@@ -60,33 +60,33 @@ class EFO(object):
     def generate_efo(self):
         logger.info("Running EFO step ")
         #Potentially obsolete soon!
-        #self.download_extra_files(self.yaml.efo_extra_downloads)
+        self.download_extra_files(self.yaml.efo_extra_downloads)
 
-        #hpo_pheno_filename = self.download_file_original(self.yaml.hpo_phenotypes.uri)
-        #self.list_files_downloaded[hpo_pheno_filename] = {'resource': None,
-        #                                                 'gs_output_dir': self.output_dir}
+        hpo_pheno_filename = self.download_file_original(self.yaml.hpo_phenotypes.uri)
+        self.list_files_downloaded[hpo_pheno_filename] = {'resource': None,
+                                                         'gs_output_dir': self.output_dir}
 
-        #hpo_phenotypes = HPOPhenotypes(hpo_pheno_filename)
-        #hpo_phenotypes.run(self.yaml.hpo_phenotypes.output_filename)
+        hpo_phenotypes = HPOPhenotypes(hpo_pheno_filename)
+        hpo_phenotypes.run(self.yaml.hpo_phenotypes.output_filename)
 
         mondo_filename = self.download_owl_and_json(self.yaml.disease.mondo)
         mondo = MONDO(mondo_filename)
         mondo.generate()
         mondo.save_mondo(self.yaml.disease.mondo.output_filename)
 
-        #efo_filename = self.download_owl_and_json(self.yaml.disease.efo)
-        #diseases = Disease(efo_filename)
-        #diseases.generate()
-        #diseases.create_paths()
-        #diseases.save_static_therapeuticarea_file(self.yaml.disease.efo.static.therapeutic_area)
-        #diseases.save_static_disease_file(self.yaml.disease.efo.static.diseases)
-        #diseases.save_diseases(self.yaml.disease.efo.output_filename)
+        efo_filename = self.download_owl_and_json(self.yaml.disease.efo)
+        diseases = Disease(efo_filename)
+        diseases.generate()
+        diseases.create_paths()
+        diseases.save_static_therapeuticarea_file(self.yaml.disease.efo.static.therapeutic_area)
+        diseases.save_static_disease_file(self.yaml.disease.efo.static.diseases)
+        diseases.save_diseases(self.yaml.disease.efo.output_filename)
 
 
-        #hpo_filename = self.download_owl_and_json(self.yaml.disease.hpo)
-        #hpo = HPO(hpo_filename)
-        #hpo.generate()
-        #hpo.save_hpo(self.yaml.disease.hpo.output_filename)
+        hpo_filename = self.download_owl_and_json(self.yaml.disease.hpo)
+        hpo = HPO(hpo_filename)
+        hpo.generate()
+        hpo.save_hpo(self.yaml.disease.hpo.output_filename)
 
         return self.list_files_downloaded
 

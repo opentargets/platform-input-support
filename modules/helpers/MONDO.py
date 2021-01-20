@@ -92,7 +92,6 @@ class MONDO(object):
                 for elem in self.mondo[mondo_id]['subClassOf']:
                     if elem in self.mondo:
                         if 'mapping' in self.mondo[elem]:
-                            print(self.mondo[elem]['mapping'])
                             phenotypes.append(self.mondo[elem]['mapping'])
                         else:
                             phenotypes.append(elem)
