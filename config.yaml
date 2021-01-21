@@ -288,7 +288,7 @@ interactions:
         output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
         output_protein_mapping: ensembl-protein-{suffix}.json.gz
       network_json_schema:
-        url: https://raw.githubusercontent.com/opentargets/json_schema/master/draft4_schemas/OT_network_schema.json
+        url: https://raw.githubusercontent.com/opentargets/json_schema/master/OT_network_schema.json
 evidences:
   gs_output_dir: evidence-files
   downloads:
