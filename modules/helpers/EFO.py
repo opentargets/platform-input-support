@@ -60,9 +60,9 @@ class EFO(object):
             synonyms_details['hasRelatedSynonym'] = synonyms
             efo_synonyms = efo_synonyms + synonyms
 
-        if 'hasSynonym' in disease:
-            synonyms =  self.get_array_value(disease['hasSynonym'])
-            synonyms_details['hasSynonym'] = synonyms
+        if 'hasBroadSynonym' in disease:
+            synonyms =  self.get_array_value(disease['hasBroadSynonym'])
+            synonyms_details['hasBroadSynonym'] = synonyms
             efo_synonyms = efo_synonyms + synonyms
 
         if 'hasNarrowSynonym' in disease:
