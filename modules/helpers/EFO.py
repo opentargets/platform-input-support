@@ -49,30 +49,29 @@ class EFO(object):
 
     def set_efo_synonyms(self, id, disease):
         synonyms_details = {}
-        efo_synonyms = []
         if 'hasExactSynonym' in disease:
-            synonyms = self.get_array_value(disease['hasExactSynonym'])
-            synonyms_details['hasExactSynonym'] = synonyms
-            efo_synonyms = efo_synonyms + synonyms
+            if len(disease['hasExactSynonym']) >0:
+                synonyms = self.get_array_value(disease['hasExactSynonym'])
+                synonyms_details['hasExactSynonym'] = synonyms
 
         if 'hasRelatedSynonym' in disease:
-            synonyms = self.get_array_value(disease['hasRelatedSynonym'])
-            synonyms_details['hasRelatedSynonym'] = synonyms
-            efo_synonyms = efo_synonyms + synonyms
+            if len(disease['hasRelatedSynonym']) >0:
+                synonyms = self.get_array_value(disease['hasRelatedSynonym'])
+                synonyms_details['hasRelatedSynonym'] = synonyms
 
         if 'hasBroadSynonym' in disease:
-            synonyms =  self.get_array_value(disease['hasBroadSynonym'])
-            synonyms_details['hasBroadSynonym'] = synonyms
-            efo_synonyms = efo_synonyms + synonyms
+            if len(disease['hasBroadSynonym']) >0:
+                synonyms =  self.get_array_value(disease['hasBroadSynonym'])
+                synonyms_details['hasBroadSynonym'] = synonyms
 
         if 'hasNarrowSynonym' in disease:
-            synonyms = self.get_array_value(disease['hasNarrowSynonym'])
-            synonyms_details['hasNarrowSynonym'] = synonyms
-            efo_synonyms = efo_synonyms + synonyms
+            if len(disease['hasNarrowSynonym']) >0:
+                synonyms = self.get_array_value(disease['hasNarrowSynonym'])
+                synonyms_details['hasNarrowSynonym'] = synonyms
 
-        if len(efo_synonyms) > 0:
-            self.diseases[id]['synonyms_details'] = synonyms_details
-            self.diseases[id]['efo_synonyms'] = list(set(efo_synonyms))
+        if len(synonyms_details.keys()) > 0:
+            self.diseases[id]['synonyms'] = synonyms_details
+
 
     # skos: related
     def get_phenotypes(self, phenotypes):
