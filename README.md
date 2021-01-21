@@ -2,7 +2,7 @@
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a specific google storage bucket.
 
-Currently, the application executes 11 steps and finally it generates a Yaml config file that can be used to run the
+Currently, the application executes 13 steps and finally it generates a Yaml config file that can be used to run the
 the OT pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
@@ -65,6 +65,14 @@ export PATH="$PATH:/your_path/apache-jena/bin"
 source .bashrc
 
 ```
+# Overview of config.yaml
+The *config.yaml* file contains several sections.
+Most of the sections are used by the steps in order to download, to extract and to manipulate 
+the input and generate the proper output.
+
+The section **config** can be used for specify where are installed riot or jq if the command shutil.which fails.
+
+_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command _riot_
 
 # Set up application (first time)
 ```
@@ -206,6 +214,18 @@ nohup python platform-input-support.py
 
 The program is broken into steps such as `ChEMBL`, `interactions`, etc. Each step can be configured as necessary in the 
 config file and run using command line arguments. 
+
+## EFO step (disease)
+
+The EFO step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend).
+
+The scope of EFO is to support the annotation, analysis and visualization of data handled by the core ontology for Open Targets. 
+
+This step downloads and manipulates the input files and it generates the following output:
+* ontology-efo-v3.xx.yy.jsonl : list of EFO terms
+* ontology-mondo.jsonl : list of MONDO terms
+* ontology-hpo.jsonl : list of HPO terms
+* hpo-phenotypes-_yyyy-mm-dd_.jsonl : mapping between CrossReference databaseId
 
 ## Drug step
 
