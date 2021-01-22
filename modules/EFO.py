@@ -17,9 +17,11 @@ class EFO(object):
         self.yaml = yaml
         self.local_output_dir = PIS_OUTPUT_ANNOTATIONS
         self.output_dir = yaml.gs_output_dir
+        # Legacy between data_pipeline and ETL. TODO: remove legacy datapipeline
         self.gs_save_json_dir = yaml.gs_output_dir + '/efo_json'
         self.list_files_downloaded = {}
         self.riot = Riot(yaml_config)
+
 
     def download_file(self, entry):
         download = DownloadResource(self.local_output_dir)
@@ -28,7 +30,7 @@ class EFO(object):
                                                             'gs_output_dir': self.output_dir}
         return destination_filename
 
-    # as_original
+    # Download with the same original name
     def download_file_original(self, uri):
         entry = Dict()
         entry.uri = uri
@@ -38,6 +40,7 @@ class EFO(object):
 
         return destination_filename
 
+    # This method will be soon obsolete. Legacy with data_pipeline
     def download_extra_files(self,yaml):
         for entry in yaml:
             download = DownloadResource(self.local_output_dir)
@@ -46,6 +49,8 @@ class EFO(object):
                                                                 'gs_output_dir': self.output_dir}
         return destination_filename
 
+    # This method download and convert the owl file into JSON using riot.
+    # More details in the README
     def download_owl_and_json(self, yaml_info):
         downloaded_file= self.download_file_original(yaml_info.uri)
         self.list_files_downloaded[downloaded_file] = {'resource': yaml_info.resource,
@@ -57,11 +62,8 @@ class EFO(object):
 
         return json_filename
 
-    def generate_efo(self):
-        logger.info("Running EFO step ")
-        #Potentially obsolete soon!
-        self.download_extra_files(self.yaml.efo_extra_downloads)
-
+    # Download phenotype.hpoa and create a JSON output with a subset of info.
+    def get_hpo_phenotype(self):
         hpo_pheno_filename = self.download_file_original(self.yaml.hpo_phenotypes.uri)
         self.list_files_downloaded[hpo_pheno_filename] = {'resource': None,
                                                          'gs_output_dir': self.output_dir}
@@ -69,24 +71,42 @@ class EFO(object):
         hpo_phenotypes = HPOPhenotypes(hpo_pheno_filename)
         hpo_phenotypes.run(self.yaml.hpo_phenotypes.output_filename)
 
+
+    # Download hp.owl and create a JSON output with a subset of info.
+    def get_ontology_hpo(self):
+        hpo_filename = self.download_owl_and_json(self.yaml.disease.hpo)
+        hpo = HPO(hpo_filename)
+        hpo.generate()
+        hpo.save_hpo(self.yaml.disease.hpo.output_filename)
+
+    # Download mondo.owl and create a JSON output with a subset of info.
+    def get_ontology_mondo(self):
         mondo_filename = self.download_owl_and_json(self.yaml.disease.mondo)
         mondo = MONDO(mondo_filename)
         mondo.generate()
         mondo.save_mondo(self.yaml.disease.mondo.output_filename)
 
+    # Download efo_otar_slim.owl and create a JSON output with a subset of info.
+    def get_ontology_EFO(self):
         efo_filename = self.download_owl_and_json(self.yaml.disease.efo)
         diseases = Disease(efo_filename)
         diseases.generate()
         diseases.create_paths()
-        diseases.save_static_therapeuticarea_file(self.yaml.disease.efo.static.therapeutic_area)
         diseases.save_static_disease_file(self.yaml.disease.efo.static.diseases)
         diseases.save_diseases(self.yaml.disease.efo.output_filename)
 
 
-        hpo_filename = self.download_owl_and_json(self.yaml.disease.hpo)
-        hpo = HPO(hpo_filename)
-        hpo.generate()
-        hpo.save_hpo(self.yaml.disease.hpo.output_filename)
+
+    def generate_efo(self):
+        logger.info("Running EFO step ")
+        #Potentially obsolete soon! Legacy data_pipeline : TODO remove legacy
+        self.download_extra_files(self.yaml.efo_extra_downloads)
+
+        # Generate the ontologies and the phenotype mapping file.
+        self.get_hpo_phenotype()
+        self.get_ontology_mondo()
+        self.get_ontology_hpo()
+        self.get_ontology_EFO()
 
         return self.list_files_downloaded
 
