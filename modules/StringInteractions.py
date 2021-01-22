@@ -289,7 +289,7 @@ class StringJsonGenerator(object):
     
     # Source database name:
     sourceDb = 'string'
-    
+
     # The following STRING channels can be mapped to detection methods on MI onotology:
     detection_method_mapping = {
         'coexpression': {'name': 'coexpression', 'mi_id': 'MI:2231'},
@@ -298,8 +298,7 @@ class StringJsonGenerator(object):
         'neighborhood_transferred': {'name': 'neighborhood_transferred', 'mi_id': ''},
         'fusion': {'name': 'fusion', 'mi_id': 'MI:0036'},
         'homology': {'name': 'homology', 'mi_id': 'MI:2163'},
-        'experiments': {'name': 'experiments', 'mi_id': 'MI:0591'},
-        'experiments_transferred': {'name': 'experiments_transferred', 'mi_id': ''},
+        'experimental': {'name': 'experimental', 'mi_id': 'MI:0591'},
         'cooccurence': {'name': 'cooccurence', 'mi_id': 'MI:2231'},
         'database': {'name': 'database', 'mi_id': ''},
         'database_transferred': {'name': 'database_transferred', 'mi_id': ''},
@@ -312,7 +311,7 @@ class StringJsonGenerator(object):
 
         self.schema_json_url = schema_json_url
         self.schema_json = { "description": "Open Targets Network objects",
-          "title": "Open Targets Network","type": "object","schema": "http://json-schema.org/draft-04/schema#"
+          "title": "Open Targets Network","type": "object","schema": "http://json-schema.org/draft-07/schema#"
         }
         self.builder = pjo.ObjectBuilder(self.schema_json)
         self.network_builder = self.builder.build_classes()
