@@ -8,6 +8,7 @@ from .Drug import Drug
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
 from .TEP import TEP
 from .EFO import EFO
+from .ECO import ECO
 from .Interactions import Interactions
 from .StringInteractions import StringInteractions
 from definitions import *
@@ -61,9 +62,14 @@ class RetrieveResource(object):
                     len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
 
     def get_efo(self):
-        efo_resource = EFO(self.yaml.efo)
+        efo_resource = EFO(self.yaml.efo, self.yaml.config)
         list_files_efo = efo_resource.generate_efo()
         self.list_files_downloaded.update(list_files_efo)
+
+    def get_eco(self):
+        eco_resource = ECO(self.yaml.eco, self.yaml.config)
+        list_files_eco = eco_resource.download_eco()
+        self.list_files_downloaded.update(list_files_eco)
 
     def get_ensembl(self):
         ensembl_resource = EnsemblResource(self.yaml.ensembl)
@@ -231,6 +237,7 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("drug"): self.get_drug()
         if self.has_step("efo"): self.get_efo()
+        if self.has_step("eco"): self.get_eco()
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("evidences"): self.get_evidences()
         if self.has_step("interactions"): self.get_Interactions()

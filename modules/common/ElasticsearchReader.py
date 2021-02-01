@@ -85,7 +85,7 @@ class ElasticsearchReader:
         standalone json object (jsonl).
         :return: None
         """
-        with open(fname, 'a') as outfile:
+        with open(fname, 'a+') as outfile:
             for doc in docs:
                 json.dump(doc, outfile)
                 outfile.write('\n')
