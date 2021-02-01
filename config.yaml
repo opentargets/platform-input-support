@@ -206,11 +206,12 @@ drug:
           fields:
             - 'molecule_chembl_id'
             - 'target_chembl_id'
-            - 'target_components'
             - 'action_type'
             - 'mechanism_of_action'
             - 'mechanism_refs'
             - 'record_id'
+            - 'parent_molecule_chembl_id'
+            - '_metadata'
         chembl-molecule:
           name: chembl_27_molecule
           fields:
