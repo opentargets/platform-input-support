@@ -27,13 +27,13 @@ dependencies:
   - elasticsearch=6.3.1=py_0
   - elasticsearch-dsl=7.3.0=py38_0
   - gflags=2.2.2=he6710b0_0
-  - google-api-core
-  - google-auth
-  - google-cloud-core
-  - google-cloud-storage
-  - google-crc32c
-  - google-resumable-media
-  - googleapis-common-protos
+  - google-api-core=1.17.0=py38h32f6830_0
+  - google-auth=1.24.0=pyhd3deb0d_0
+  - google-cloud-core=1.4.0=pyh9f0ad1d_0
+  - google-cloud-storage=1.30.0=pyh9f0ad1d_0
+  - google-crc32c=1.0.0=py38h6d3b9ce_1
+  - google-resumable-media=1.2.0=pyhd3deb0d_0
+  - googleapis-common-protos=1.52.0=py38h578d9bd_1
   - grpc-cpp=1.26.0=hf8bcb03_0
   - icu=58.2=he6710b0_3
   - idna=2.10=py_0
@@ -67,12 +67,12 @@ dependencies:
   - pyarrow=0.15.1=py38h0573a6f_0
   - pyasn1=0.4.8=py_0
   - pyasn1-modules=0.2.8=py_0
-  - pytest-cov
+  - pytest-cov=2.11.1
   - pycparser=2.20=py_2
   - pyopenssl=19.1.0=py_1
   - pysocks=1.7.1=py38_0
   - pyspark=3.0.0=py_0
-  - pytest
+  - pytest=6.2.2
   - python=3.8.5=h7579374_1
   - python-dateutil=2.8.1=py_0
   - python_abi=3.8=1_cp38
