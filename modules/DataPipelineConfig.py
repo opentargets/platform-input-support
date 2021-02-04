@@ -1,6 +1,7 @@
 import logging
 import os
 import yaml
+import json
 
 from definitions import ROOT_DIR, PIS_OUTPUT_DIR
 from .DownloadResource import DownloadResource
@@ -54,6 +55,25 @@ class DataPipelineConfig(object):
             yaml.safe_dump(data_pipeline_config, outfile,default_flow_style=False, allow_unicode=True)
 
         logging.info("Data Pipeline YAML file created.")
+
+
+    def create_config_file_etl(self, list_files, prefix_file = None):
+        logging.info("Creating ETL config file.")
+        list_resources_gs = {}
+        for k, v in list(list_files.items()):
+            list_resources_gs.setdefault(v['resource'],[]).append(k.replace("https://storage.googleapis.com/","gs://"))
+
+        config = {}
+        for k,v in list(list_resources_gs.items()):
+            if len(v) == 1:
+                config[k] = v[0]
+            else:
+                config[k] = v
+
+        with self.open_config_file(prefix_file) as outfile:
+                json.dump(config, outfile, indent=2)
+
+        logging.info("ETL YAML file created.")
 
     def get_keys_config_file(self):
         logging.info("List of keys config file")
