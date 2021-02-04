@@ -91,6 +91,7 @@ efo:
   hpo_phenotypes:
     uri: http://compbio.charite.de/jenkins/job/hpo.annotations.current/lastSuccessfulBuild/artifact/current/phenotype.hpoa
     output_filename: hpo-phenotypes-{suffix}.jsonl
+    resource: hpo-phenotype
   disease:
     efo:
       uri: https://github.com/EBISPOT/efo/releases/download/v3.24.0/efo_otar_slim.owl
@@ -270,17 +271,21 @@ interactions:
   intact_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
     output_filename: intact-interactors-{suffix}.json
+    resource: intact
   rna_central:
     uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
     output_filename: rna_central_ensembl.tsv
     output_dir: rna-central
+    resource: rna-central-interaction
   uniprot_info:
     uri : ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
     output_filename: HUMAN_9606_idmapping.dat.gz
     output_dir: human-mapping
+    resource: uniprot-interaction
   string_info: 
     uri: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
     output_string: string-interactions-{suffix}.json.gz
+    resource: string-interaction
     score_threshold: 0
     score_limit:
     additional_resouces:
@@ -421,7 +426,7 @@ evidences:
     subset_prefix: http://identifiers.org/ensembl/
 annotations_qc:
   gs_output_dir: other
-  release_to_compare: open-targets-data-releases/20.09/input
+  release_to_compare: open-targets-data-releases/20.11/input
   list_datatypes:
     - datatype: tractability
       keycols: ['ensembl_gene_id']

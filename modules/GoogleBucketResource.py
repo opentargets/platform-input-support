@@ -124,6 +124,11 @@ class GoogleBucketResource(object):
 
         blob = bucket_link.blob(object_path + '/' + dest_filename)
         logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
+        if ".gz" in original_filename:
+            blob.content_type = "application/x-gzip"
+        else:
+            blob.content_type = "text/plain"
+
         blob.upload_from_filename(filename=original_filename)
         return blob.name
 

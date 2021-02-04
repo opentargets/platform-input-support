@@ -208,6 +208,7 @@ class RetrieveResource(object):
     def create_yaml_config_file(self):
         data_pipeline_config_file = DataPipelineConfig(self.yaml_data_pipeline_schema)
         if len(self.list_files_downloaded) > 0:
+            data_pipeline_config_file.create_config_file_etl(self.list_google_storage_files,'etl.')
             data_pipeline_config_file.create_config_file(self.list_google_storage_files, 'gs.')
             data_pipeline_config_file.create_config_file(self.list_files_downloaded, 'local.')
 
