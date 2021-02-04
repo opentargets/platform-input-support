@@ -67,12 +67,12 @@ dependencies:
   - pyarrow=0.15.1=py38h0573a6f_0
   - pyasn1=0.4.8=py_0
   - pyasn1-modules=0.2.8=py_0
-  - pytest-cov=2.10.1=py_0
+  - pytest-cov
   - pycparser=2.20=py_2
   - pyopenssl=19.1.0=py_1
   - pysocks=1.7.1=py38_0
   - pyspark=3.0.0=py_0
-  - pytest=6.1.1=py38_0
+  - pytest
   - python=3.8.5=h7579374_1
   - python-dateutil=2.8.1=py_0
   - python_abi=3.8=1_cp38
