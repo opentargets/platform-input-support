@@ -1,6 +1,7 @@
 import logging
 import os
 import yaml
+import json
 
 from definitions import ROOT_DIR, PIS_OUTPUT_DIR
 from .DownloadResource import DownloadResource
@@ -70,7 +71,7 @@ class DataPipelineConfig(object):
                 config[k] = v
 
         with self.open_config_file(prefix_file) as outfile:
-            yaml.safe_dump(config, outfile,default_flow_style=False, allow_unicode=True)
+                json.dump(config, outfile, indent=2)
 
         logging.info("ETL YAML file created.")
 
