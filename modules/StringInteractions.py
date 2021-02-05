@@ -24,6 +24,7 @@ class StringInteractions(object):
         self.download = DownloadResource(PIS_OUTPUT_INTERACTIONS)
         self.gs_output_dir = yaml_dict.gs_output_dir
         self.output_folder = PIS_OUTPUT_INTERACTIONS
+        self.yaml = yaml_dict
         self.string_url = yaml_dict.string_info.uri
         self.score_limit = yaml_dict.string_info.score_threshold
         self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp
@@ -36,10 +37,10 @@ class StringInteractions(object):
     def getStringResources(self):
         # Fetch string network data and generate evidence json:
         ensembl_protein_mapping = self.get_ensembl_protein_mapping()
-        self.list_files_downloaded[ensembl_protein_mapping] = {'resource': None,
+        self.list_files_downloaded[ensembl_protein_mapping] = {'resource': self.string_info.additional_resouces.ensembl_ftp.resource,
                                                       'gs_output_dir': self.gs_output_dir }
         string_file = self.fetch_data()
-        self.list_files_downloaded[string_file] = {'resource': None,
+        self.list_files_downloaded[string_file] = {'resource': self.yaml.string_info.resource,
                                                   'gs_output_dir': self.gs_output_dir }
 
         return self.list_files_downloaded
