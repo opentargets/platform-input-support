@@ -7,7 +7,6 @@ import shutil
 import datetime
 import binascii
 import re
-from datetime import datetime
 
 def is_gzip(filename):
     with open(filename, 'rb') as test_f:
@@ -29,7 +28,7 @@ def date_reg_expr(filename, regexpr, format):
     find_date_file = re.search(regexpr, filename)
     if find_date_file:
         try:
-            date_file = datetime.strptime(find_date_file.group(1), format)
+            date_file = datetime.datetime.strptime(find_date_file.group(1), format)
             if date_file.year < 2000:
                 date_file = None
         except ValueError :
