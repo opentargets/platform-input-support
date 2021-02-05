@@ -40,7 +40,7 @@ class StringInteractions(object):
         self.list_files_downloaded[ensembl_protein_mapping] = {'resource': self.string_info.additional_resouces.ensembl_ftp.resource,
                                                       'gs_output_dir': self.gs_output_dir }
         string_file = self.fetch_data()
-        self.list_files_downloaded[string_file] = {'resource': self.yaml.string_info.resource,
+        self.list_files_downloaded[string_file] = {'resource': self.string_info.resource,
                                                   'gs_output_dir': self.gs_output_dir }
 
         return self.list_files_downloaded
