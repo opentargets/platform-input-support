@@ -4,6 +4,7 @@ import google.auth
 import logging
 import re
 from datetime import datetime
+from modules.common import extract_date_from_file
 
 logger = logging.getLogger(__name__)
 
@@ -133,27 +134,13 @@ class GoogleBucketResource(object):
         return blob.name
 
 
-
-    # Extract any date in the format dd-mm-yyyy or yyyy-mm-dd. Return None if date are not available.
-    def extract_date_from_file(self, filename):
-        date_file = None
-        find_date_file = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", filename)
-        if find_date_file:
-            date_file = datetime.strptime(find_date_file.group(1), '%d-%m-%Y')
-        else:
-            find_date_file = re.search("([0-9]{4}\-[0-9]{2}\-[0-9]{2})", filename)
-            if find_date_file:
-                date_file = datetime.strptime(find_date_file.group(1), '%Y-%m-%d')
-
-        return date_file
-
-    # Return the filename with the recent date. Manage collision of dates only for the recent date.
+    # Return the filename with the latest date. Manage collision of dates only for the latest date.
     def extract_latest_file(self, list_blobs):
         last_recent_file = None
         possible_recent_date_collision = False
         recent_date = datetime.strptime('01-01-1900', '%d-%m-%Y')
         for filename in list_blobs:
-            date_file = self.extract_date_from_file(filename)
+            date_file = extract_date_from_file(filename)
             if date_file:
                 if date_file == recent_date:
                     possible_recent_date_collision = True

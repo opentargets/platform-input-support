@@ -6,6 +6,8 @@ import gzip
 import shutil
 import datetime
 import binascii
+import re
+from datetime import datetime
 
 def is_gzip(filename):
     with open(filename, 'rb') as test_f:
@@ -19,6 +21,50 @@ def get_lines(input_filename):
                 pass
     return i+1
 
+
+
+# Regular expression for date and format
+def date_reg_expr(filename, regexpr, format):
+    date_file = None
+    find_date_file = re.search(regexpr, filename)
+    if find_date_file:
+        try:
+            date_file = datetime.strptime(find_date_file.group(1), format)
+            if date_file.year < 2000:
+                date_file = None
+        except ValueError :
+            # Date does not match format. No valid date found.
+            date_file = None
+
+    return date_file
+
+# Extract any date in the format dd-mm-yyyy or yyyy-mm-dd and other sub cases.
+# Return None if date are not available.
+def extract_date_from_file(filename):
+    valid_date=[]
+    valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{2}\-[0-9]{2})", '%Y-%m-%d'))
+    valid_date.append(date_reg_expr(filename, "([0-9]{2}\-[0-9]{2}\-[0-9]{4})", '%d-%m-%Y'))
+    if valid_date.count(None) == len(valid_date):
+        #Case d-mm-yyyy or dd-m-yyyy
+        valid_date.append(date_reg_expr(filename, "([0-9]{1}\-[0-9]{2}\-[0-9]{4})", '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{2}\-[0-9]{1}\-[0-9]{4})", '%d-%m-%Y'))
+    if valid_date.count(None) == len(valid_date):
+        #Case yyyy-m-dd or yyyy-mm-d
+        valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{1}\-[0-9]{2})", '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{2}\-[0-9]{1})", '%Y-%m-%d'))
+    # So no double dd or mm present.
+    if valid_date.count(None) == len(valid_date):
+        valid_date.append(date_reg_expr(filename, "([0-9]{1}\-[0-9]{1}\-[0-9]{4})", '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{1}\-[0-9]{1})", '%Y-%m-%d'))
+
+    if valid_date.count(None) == len(valid_date):
+        return None
+    else:
+        final_date = list(filter(None, valid_date))
+        if len(final_date) == 1:
+            return(final_date[0])
+        else:
+            raise("Unexpected error !!!")
 
 def get_output_dir(output_dir, default_output_dir):
     if output_dir is None:
