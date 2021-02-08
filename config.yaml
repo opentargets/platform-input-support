@@ -298,6 +298,7 @@ interactions:
         url: https://raw.githubusercontent.com/opentargets/json_schema/master/OT_network_schema.json
 evidences:
   gs_output_dir: evidence-files
+  gs_output_dir_sub: evidence-files-subsets
   downloads:
   - bucket: otar000-evidence_input/ClinGen
     output_filename: clingen-{suffix}.json.gz
@@ -465,5 +466,5 @@ annotations_qc:
       filename_regular_expression: .*cancerbiomarkers-.*.tsv
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
-  uri: https://storage.googleapis.com/open-targets-data-releases/20.11/templates/template.mrtarget.data.20.11.yml
+  uri: https://storage.googleapis.com/open-targets-data-releases/21.02/templates/template.mrtarget.data.21.02.yml
   output_filename: mrtarget.data.yml

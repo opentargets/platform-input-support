@@ -57,19 +57,16 @@ class EFO(object):
                                                        'gs_output_dir': self.output_dir}
 
         json_filename = self.riot.convert_owl_to_jsonld(downloaded_file, self.local_output_dir, yaml_info.owl_jq)
-        self.list_files_downloaded[json_filename] = {'resource': None,
-                                                     'gs_output_dir': self.gs_save_json_dir}
 
         return json_filename
 
     # Download phenotype.hpoa and create a JSON output with a subset of info.
     def get_hpo_phenotype(self):
         hpo_pheno_filename = self.download_file_original(self.yaml.hpo_phenotypes.uri)
-        self.list_files_downloaded[hpo_pheno_filename] = {'resource': None,
-                                                         'gs_output_dir': self.output_dir}
-
         hpo_phenotypes = HPOPhenotypes(hpo_pheno_filename)
-        hpo_phenotypes.run(self.yaml.hpo_phenotypes.output_filename)
+        hpo_filename = hpo_phenotypes.run(self.yaml.hpo_phenotypes.output_filename)
+        self.list_files_downloaded[hpo_filename] = {'resource': 'ontology-hpoa',
+                                                    'gs_output_dir': self.gs_save_json_dir}
 
 
     # Download hp.owl and create a JSON output with a subset of info.
@@ -77,14 +74,19 @@ class EFO(object):
         hpo_filename = self.download_owl_and_json(self.yaml.disease.hpo)
         hpo = HPO(hpo_filename)
         hpo.generate()
-        hpo.save_hpo(self.yaml.disease.hpo.output_filename)
+        hpo_filename = hpo.save_hpo(self.yaml.disease.hpo.output_filename)
+        self.list_files_downloaded[hpo_filename] = {'resource': self.yaml.disease.hpo.resource+"-etl",
+                                                    'gs_output_dir': self.gs_save_json_dir}
+
 
     # Download mondo.owl and create a JSON output with a subset of info.
     def get_ontology_mondo(self):
         mondo_filename = self.download_owl_and_json(self.yaml.disease.mondo)
         mondo = MONDO(mondo_filename)
         mondo.generate()
-        mondo.save_mondo(self.yaml.disease.mondo.output_filename)
+        filename=mondo.save_mondo(self.yaml.disease.mondo.output_filename)
+        self.list_files_downloaded[filename] = {'resource': self.yaml.disease.mondo.resource+"-etl",
+                                                    'gs_output_dir': self.gs_save_json_dir}
 
     # Download efo_otar_slim.owl and create a JSON output with a subset of info.
     def get_ontology_EFO(self):
@@ -93,8 +95,9 @@ class EFO(object):
         diseases.generate()
         diseases.create_paths()
         diseases.save_static_disease_file(self.yaml.disease.efo.static.diseases)
-        diseases.save_diseases(self.yaml.disease.efo.output_filename)
-
+        disease_filename = diseases.save_diseases(self.yaml.disease.efo.output_filename)
+        self.list_files_downloaded[disease_filename] = {'resource': self.yaml.disease.efo.resource+"-etl",
+                                                        'gs_output_dir': self.gs_save_json_dir}
 
 
     def generate_efo(self):

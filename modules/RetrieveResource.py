@@ -178,7 +178,7 @@ class RetrieveResource(object):
         self.get_stats_files(list_files_evidence)
 
         subsetEvidence = EvidenceSubset(ROOT_DIR+'/minimal_ensembl.txt',
-                                        PIS_OUTPUT_SUBSET_EVIDENCES,self.yaml.evidences.gs_output_dir)
+                                        PIS_OUTPUT_SUBSET_EVIDENCES,self.yaml.evidences.gs_output_dir_sub)
         list_files_subsets = subsetEvidence.execute_subset(self.list_files_downloaded)
         subsetEvidence.create_stats_file()
         self.list_files_downloaded.update(list_files_subsets)

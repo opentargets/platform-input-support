@@ -125,6 +125,8 @@ class HPO(object):
 
 
     def save_hpo(self, output_filename):
+        hpo_filename = PIS_OUTPUT_ANNOTATIONS+'/'+output_filename
         with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/'+output_filename, mode='w') as writer:
             for hp in self.hpo:
                 writer.write(self.hpo[hp])
+        return hpo_filename
