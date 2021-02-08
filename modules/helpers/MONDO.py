@@ -115,6 +115,8 @@ class MONDO(object):
 
 
     def save_mondo(self, output_filename):
-        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/'+output_filename, mode='w') as writer:
+        mondo_filename = PIS_OUTPUT_ANNOTATIONS+'/'+output_filename
+        with jsonlines.open(mondo_filename, mode='w') as writer:
             for elem in self.mondo:
                 writer.write(self.mondo[elem])
+        return mondo_filename

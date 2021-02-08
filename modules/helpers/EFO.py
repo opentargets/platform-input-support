@@ -225,7 +225,8 @@ class EFO(object):
                 writer.write(entry)
 
     def save_diseases(self, output_filename):
-        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/'+output_filename, mode='w') as writer:
+        disease_filename = PIS_OUTPUT_ANNOTATIONS+'/'+output_filename
+        with jsonlines.open(disease_filename, mode='w') as writer:
             for disease in self.diseases:
                 if len(self.diseases[disease]['children']) > 0:
                     self.diseases[disease]['ontology']['leaf'] = False
@@ -237,3 +238,5 @@ class EFO(object):
                     self.diseases[disease]['therapeutic_codes'] = list(set(item for sublist in self.all_path[disease] for item in sublist).intersection(self.root_nodes))
 
                 writer.write(self.diseases[disease])
+
+        return disease_filename

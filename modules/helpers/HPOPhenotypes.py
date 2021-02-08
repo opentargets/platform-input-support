@@ -44,7 +44,8 @@ class HPOPhenotypes(object):
             return None
 
     def run(self, filename):
-        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS + "/" + replace_suffix(filename), mode='w') as writer:
+        hpo_filename=PIS_OUTPUT_ANNOTATIONS + "/" + replace_suffix(filename)
+        with jsonlines.open(hpo_filename, mode='w') as writer:
             with open(self.hpo_phenotypes_input) as input:
                 for line in input:
                     if line[0] != '#':
@@ -64,3 +65,5 @@ class HPOPhenotypes(object):
                         data['biocuration'] = row[11].rstrip()
                         data['resource'] = 'HPO'
                         writer.write(data)
+
+        return hpo_filename
