@@ -43,15 +43,15 @@ class Interactions(object):
 
     def getIntactResources(self):
         intact_info_filename = self.get_intact_info_file()
-        self.list_files_downloaded[intact_info_filename] = {'resource': None,
+        self.list_files_downloaded[intact_info_filename] = {'resource': self.yaml.intact_info.resource,
                                                             'gs_output_dir': self.gs_output_dir}
         list_files_rna=self.get_rna_central()
         for rna_file in list_files_rna:
-            self.list_files_downloaded[rna_file] = {'resource': None,
+            self.list_files_downloaded[rna_file] = {'resource': self.yaml.rna_central.resource,
                                                           'gs_output_dir': self.gs_output_dir + '/' + self.yaml.rna_central.output_dir}
         list_files_human=self.get_uniprot_info_file()
         for human_filename in list_files_human:
-            self.list_files_downloaded[human_filename] = {'resource': None,
+            self.list_files_downloaded[human_filename] = {'resource': self.yaml.uniprot_info.resource,
                                                           'gs_output_dir': self.gs_output_dir +'/' + self.yaml.uniprot_info.output_dir}
 
         return self.list_files_downloaded
