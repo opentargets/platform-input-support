@@ -6,8 +6,8 @@ config:
 annotations:
   gs_output_dir: annotation-files
   downloads:
-  - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
-    output_filename: uniprot-{suffix}.xml.gz
+  - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=txt
+    output_filename: uniprot-{suffix}.txt.gz
     resource: uniprot-uri
   - uri: https://reactome.org/download/current/ReactomePathways.txt
     output_filename: ReactomePathways-{suffix}.txt
