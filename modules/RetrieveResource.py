@@ -101,7 +101,7 @@ class RetrieveResource(object):
                                                     'gs_output_dir': self.yaml.tep.gs_output_dir}
 
 
-    def get_Interactions(self):
+    def get_interactions(self):
         # Intact Resource
         intact_resource = Interactions(self.yaml.interactions)
         list_files_intact = intact_resource.getIntactResources()
@@ -241,7 +241,7 @@ class RetrieveResource(object):
         if self.has_step("eco"): self.get_eco()
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("evidences"): self.get_evidences()
-        if self.has_step("interactions"): self.get_Interactions()
+        if self.has_step("interactions"): self.get_interactions()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
 
