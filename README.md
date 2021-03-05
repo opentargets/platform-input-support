@@ -53,8 +53,11 @@ source ~/.bashrc
 ```
 
 ## Docker image
+
 ```bash
    docker pull quay.io/opentargets/platform-input-support:master
+   mkdir /__path__/out
+   docker run --rm -v /__path__/out:/usr/src/app/output   --entrypoint -steps tep
 
 ```
 
