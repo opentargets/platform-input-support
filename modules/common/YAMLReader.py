@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 class YAMLReader(object):
 
-    def __init__(self, yaml_file=ROOT_DIR + '/' + 'config.yaml'):
-        self.yaml_file = yaml_file
+    def __init__(self, yaml_file):
+        self.yaml_file = yaml_file if yaml_file is not None else ROOT_DIR + '/' + 'config.yaml'
         self.yaml_dictionary = {}
         self.yaml_data = {}
 

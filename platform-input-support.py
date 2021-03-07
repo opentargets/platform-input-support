@@ -19,7 +19,7 @@ def get_list_steps_on_request(list_steps_requested, keys_list):
 def main():
     cfg.setup_parser()
     args = cfg.get_args()
-    yaml = YAMLReader()
+    yaml = YAMLReader(args.config)
     yaml_dict = yaml.read_yaml()
     get_list_steps_on_request(args.list_steps, yaml.get_list_keys())
     cfg.set_up_logging(args)
