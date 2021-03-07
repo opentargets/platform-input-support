@@ -13,7 +13,7 @@ class TestDrugStep(unittest.TestCase):
 
     def setUp(self):
         default_conf_file = ROOT_DIR + '/' + 'config.yaml'
-        self.yaml_reader = YAMLReader()
+        self.yaml_reader = YAMLReader(default_conf_file)
         self.config = self.yaml_reader.read_yaml()
 
     @patch('modules.Drug.Drug._download_elasticsearch_data')
