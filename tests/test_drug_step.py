@@ -1,5 +1,6 @@
 import unittest
 from mock import patch
+from definitions import ROOT_DIR
 
 import modules.Drug as Drug
 from modules.common.YAMLReader import YAMLReader
@@ -11,6 +12,7 @@ class TestDrugStep(unittest.TestCase):
     """
 
     def setUp(self):
+        default_conf_file = ROOT_DIR + '/' + 'config.yaml'
         self.yaml_reader = YAMLReader()
         self.config = self.yaml_reader.read_yaml()
 

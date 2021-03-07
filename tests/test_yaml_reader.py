@@ -1,4 +1,5 @@
 import unittest
+from definitions import ROOT_DIR
 from modules.common.YAMLReader import YAMLReader
 
 
@@ -11,7 +12,9 @@ class TestYamlReader(unittest.TestCase):
     """
 
     def setUp(self):
-        self.yaml_reader = YAMLReader()
+        default_conf_file = ROOT_DIR + '/' + 'config.yaml'
+        print(default_conf_file)
+        self.yaml_reader = YAMLReader(default_conf_file)
         self.yaml_dict = self.yaml_reader.read_yaml()
 
     def test_config_parses(self):
@@ -28,5 +31,6 @@ class TestYamlReader(unittest.TestCase):
         indexes = self.yaml_dict.ChEMBL.datasources.indices
         for i in list(indexes.values()):
             for k, v in list(i.items()):
+                print(k)
                 if k is 'fields':
                     self.assertGreater(len(v), 0, 'No fields provided on index {}'.format(k))
