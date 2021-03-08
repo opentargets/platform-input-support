@@ -54,16 +54,15 @@ source ~/.bashrc
 
 ## Docker image
 
-```bash
+```shell
 cd _path_/platform_input_support
 mkdir out
 
-time docker run \
-  --rm \
-  --name platform_input_support \
-  -v _path_/platform_input_support/out:/usr/src/app/output \
+time docker run --rm \
   -v _path_/platform-input-support:/usr/src/app \
-  -e PIS_CONFIG==/usr/src/app/test.conf \
+  -e PIS_CONFIG=/usr/src/app/cm-latest.conf \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/svn-account.json
+  -e GOOGLE_BUCKET=open-targets-data-releases/21.04-test/
   quay.io/opentargets/platform-input-support:master \
   -steps tep
 
