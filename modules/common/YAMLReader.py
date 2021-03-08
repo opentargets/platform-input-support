@@ -20,7 +20,7 @@ class YAMLReader(object):
         return self.yaml_dictionary
 
     def read_yaml(self, standard_output=False):
-
+        # print("Config file: " + self.yaml_file )
         with open(self.yaml_file, 'r') as stream:
             try:
                 self.yaml_data = yaml.load(stream, yaml.SafeLoader)

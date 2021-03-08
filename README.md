@@ -55,9 +55,17 @@ source ~/.bashrc
 ## Docker image
 
 ```bash
-   docker pull quay.io/opentargets/platform-input-support:master
-   mkdir /__path__/out
-   docker run --rm -v /__path__/out:/usr/src/app/output   --entrypoint -steps tep
+cd _path_/platform_input_support
+mkdir out
+
+time docker run \
+  --rm \
+  --name platform_input_support \
+  -v _path_/platform_input_support/out:/usr/src/app/output \
+  -v _path_/platform-input-support:/usr/src/app \
+  -e PIS_CONFIG==/usr/src/app/test.conf \
+  quay.io/opentargets/platform-input-support:master \
+  -steps tep
 
 ```
 
