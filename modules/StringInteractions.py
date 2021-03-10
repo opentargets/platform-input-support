@@ -46,34 +46,9 @@ class StringInteractions(object):
         return self.list_files_downloaded
 
 
-
-    def fetch_ensembl_mapping(self, ensembl_gtf_url):
-        """
-        Fetch gtf file from ensembl.
-        """
-
-        output_file = self.output_folder+'/'+ replace_suffix(self.output_protein_mapping)
-
-        # Open gtf as dataframe:
-        target_id_mapping_df = pd.read_csv(ensembl_gtf_url, sep='\t', skiprows=5, header=0,
-                                           usecols=[2, 8], names=['type', 'annotation'])
-
-
-        # Filtering data for CDS:
-        target_id_mapping_df = target_id_mapping_df.loc[target_id_mapping_df.type == 'CDS']
-        gene_id_pattern = re.compile(r'ENSG\d+')
-        prot_id_pattern = re.compile(r'ENSP\d+')
-        gene_map_list = target_id_mapping_df.annotation.apply(lambda row: {'gene_id': gene_id_pattern.findall(row)[0],
-                                                                           'protein_id': prot_id_pattern.findall(row)[
-                                                                               0]}).to_list()
-        with gzip.open(output_file, 'wt') as f:
-            json.dump(gene_map_list, f)
-
-        return output_file
-
     def get_ensembl_protein_mapping(self):
         ensembl_file = self.download.ftp_download(self.ensembl_gtf_url)
-        return self.fetch_ensembl_mapping(ensembl_file)
+        return ensembl_file
 
     def fetch_data(self):
 

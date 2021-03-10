@@ -290,7 +290,7 @@ interactions:
     score_limit:
     additional_resouces:
       ensembl_ftp:
-        uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.102.chr.gtf.gz
+        uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.103.chr.gtf.gz
         output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
         output_protein_mapping: ensembl-protein-{suffix}.json.gz
         resource: string-interaction-ensembl-protein
