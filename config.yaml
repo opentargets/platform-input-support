@@ -233,12 +233,13 @@ drug:
             - 'chebi_par_id'
             - 'molecule_structures'
         chembl-target:
-          name: chembl_27_target
+          name: chembl_28_target
           fields:
             - 'target_chembl_id'
             - 'target_components'
             - 'target_type'
             - 'pref_name'
+            - '_metadata'
 ChEMBL:
   gs_output_dir: annotation-files
   downloads:

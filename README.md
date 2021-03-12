@@ -1,9 +1,10 @@
 # Open Targets: Platform-input-support overview
+
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a specific google storage bucket.
 
 Currently, the application executes 13 steps and finally it generates a Yaml config file that can be used to run the
-the OT pipeline (https://github.com/opentargets/data_pipeline)
+OT pipeline (https://github.com/opentargets/data_pipeline). Many of the inputs are also used for the OT [ETL](https://github.com/opentargets/platform-etl-backend)
 
 List of available steps:
 - annotations
@@ -21,16 +22,19 @@ List of available steps:
 - tep
 
 
-The step 'evidences' uploads the last evidences from different providers and it generates a subset of these evidences using the file minimal_ensembl.txt
+The step 'evidences' uploads the last evidences from different providers and 
+generates a subset of these evidences using the file `minimal_ensembl.txt`
 
 Below more details about how to execute the script.
 
 # Installation Requirements
+
 * Conda
 * Apache-Jena
 * git
 
 ## Conda for Linux/MAC
+
 Download Conda3 for Mac here: <br>
  https://www.anaconda.com/products/individual <br>
 [download Anaconda3-2020.07-MacOSX-x86_64.sh]
@@ -51,6 +55,7 @@ wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 ```
+
 ## Conda in Docker (for PyCharm)
 
 If you would rather run a containerised version of Conda use the provided Dockerfile. 
@@ -62,6 +67,7 @@ docker build --tag pis-py3 <path to Dockerfile>
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
 ## Apache-Jena : Install Riot
+
 ```
 cd ~
 wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-3.16.0.tar.gz
@@ -72,16 +78,37 @@ EG.
 export PATH="$PATH:/your_path/apache-jena/bin"
 
 source .bashrc
-
 ```
+
 # Overview of config.yaml
-The *config.yaml* file contains several sections.
-Most of the sections are used by the steps in order to download, to extract and to manipulate 
-the input and generate the proper output.
 
-The section **config** can be used for specify where are installed riot or jq if the command shutil.which fails.
+The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download, 
+to extract and to manipulate the input and generate the proper output.
 
-_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command _riot_
+## Overview of configuration file sections:
+
+### Config
+
+The section **config** can be used for specify where utility programs `riot` and `jq` are installed on the system. 
+If the command shutil.which fails during PIS execution double check these configurations. 
+
+_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command `riot`.
+
+### Data sources
+
+The majority of the configuration file is specifying metadata for the execution
+of individual steps, eg `tep`, `ensembl` or `drug`. These can be recognised as they
+all have a `gs_output_dir` key which indicates where the files will be saved in GCP. 
+
+There is inconsistency between keys in different steps, as they accommodate very different
+input types and required levels of configuration. See [step guides](#step-guides) for 
+configuration requirements for specific steps.
+
+### Data pipeline schema
+
+`data_pipeline_schema` is a kind of summary output which lists where outputs were saved 
+and in some cases which inputs were used. This is to assist in generating configuration
+files for client programs like the data pipeline or ETL.
 
 # Set up application (first time)
 ```
