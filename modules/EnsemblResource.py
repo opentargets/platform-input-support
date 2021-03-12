@@ -99,7 +99,7 @@ class EnsemblResource(object):
 
             # Create a new data frame with only unique gene_ids, and remove columns we don't need in the output
             df_pipeline = df.drop_duplicates(subset='gene_id')  # only store one of each gene
-            df_pipeline = df_pipeline.drop(columns=['exon_start', 'exon_end', 'fwdstrand', 'transcript_id'])
+            df_pipeline = df_pipeline.drop(columns=['exon_start', 'exon_end', 'fwdstrand'])
 
             # Rename certain columns to those required by the pipeline
             df_pipeline = df_pipeline.rename(index=str, columns={"gene_id": "id", "chr": "seq_region_name",

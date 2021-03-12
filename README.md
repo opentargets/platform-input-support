@@ -1,4 +1,5 @@
 # Open Targets: Platform-input-support overview
+
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a specific google storage bucket.
 
@@ -21,16 +22,19 @@ List of available steps:
 - tep
 
 
-The step 'evidence' uploads the last evidence from different providers.
+The step 'evidences' uploads the last evidences from different providers and 
+generates a subset of these evidences using the file `minimal_ensembl.txt`
 
 Below more details about how to execute the script.
 
 # Installation Requirements
+
 * Conda
 * Apache-Jena
 * git
 
 ## Conda for Linux/MAC
+
 Download Conda3 for Mac here: <br>
  https://www.anaconda.com/products/individual <br>
 [download Anaconda3-2020.07-MacOSX-x86_64.sh]
@@ -51,23 +55,6 @@ wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 ```
-
-## Docker image
-
-```shell
-cd _path_/platform_input_support
-mkdir out
-
-time docker run --rm \
-  -v _path_/platform-input-support:/usr/src/app \
-  -e PIS_CONFIG=/usr/src/app/cm-latest.conf \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/svn-account.json
-  -e GOOGLE_BUCKET=open-targets-data-releases/21.04-test/
-  quay.io/opentargets/platform-input-support:master \
-  -steps tep
-
-```
-
 ## Conda in Docker (for PyCharm)
 
 If you would rather run a containerised version of Conda use the provided Dockerfile. 
@@ -137,12 +124,34 @@ source .bashrc
 ```
 # Overview of config.yaml
 
-The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download, to extract and to manipulate 
-the input and generate the proper output.
+The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download, 
+to extract and to manipulate the input and generate the proper output.
 
+## Overview of configuration file sections:
+
+### Config
+
+The section **config** can be used for specify where utility programs `riot` and `jq` are installed on the system. 
+If the command shutil.which fails during PIS execution double check these configurations. 
+
+_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command `riot`.
+
+### Data sources
+
+The majority of the configuration file is specifying metadata for the execution
+of individual steps, eg `tep`, `ensembl` or `drug`. These can be recognised as they
+all have a `gs_output_dir` key which indicates where the files will be saved in GCP. 
+
+There is inconsistency between keys in different steps, as they accommodate very different
+input types and required levels of configuration. See [step guides](#step-guides) for 
+configuration requirements for specific steps.
 The section **config** can be used for specify where `riot` or `jq` are installed. 
 
-_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command _riot_
+### Data pipeline schema
+
+`data_pipeline_schema` is a kind of summary output which lists where outputs were saved 
+and in some cases which inputs were used. This is to assist in generating configuration
+files for client programs like the data pipeline or ETL.
 
 ## A note on zip files
 
