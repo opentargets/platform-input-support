@@ -197,13 +197,13 @@ drug:
       port: 32000
       indices:
         chembl-indication:
-          name: chembl_27_drug_indication
+          name: chembl_28_drug_indication
           fields:
             - 'molecule_chembl_id'
             - 'efo_id'
             - 'max_phase_for_ind'
         chembl-mechanism:
-          name: chembl_27_mechanism
+          name: chembl_28_mechanism
           fields:
             - 'molecule_chembl_id'
             - 'target_chembl_id'
@@ -214,7 +214,7 @@ drug:
             - 'parent_molecule_chembl_id'
             - '_metadata'
         chembl-molecule:
-          name: chembl_27_molecule
+          name: chembl_28_molecule
           fields:
             - 'molecule_chembl_id'
             - 'molecule_hierarchy'
@@ -233,12 +233,25 @@ drug:
             - 'chebi_par_id'
             - 'molecule_structures'
         chembl-target:
-          name: chembl_27_target
+          name: chembl_28_target
           fields:
             - 'target_chembl_id'
             - 'target_components'
             - 'target_type'
             - 'pref_name'
+        chembl-drug-warning:
+          name: chembl_28_drug_warning
+          fields:
+            - '_metadata'
+            - 'molecule_chembl_id'
+            - 'parent_molecule_chembl_id'
+            - 'warning_class'
+            - 'warning_country'
+            - 'warning_description'
+            - 'warning_id'
+            - 'warning_refs'
+            - 'warning_type'
+            - 'warning_year'
 ChEMBL:
   gs_output_dir: annotation-files
   downloads:
