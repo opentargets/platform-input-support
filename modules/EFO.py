@@ -56,8 +56,9 @@ class EFO(object):
         self.list_files_downloaded[downloaded_file] = {'resource': yaml_info.resource,
                                                        'gs_output_dir': self.output_dir}
 
+        #downloaded_file="/Users/cinzia/gitRepositories/platform-input-support/output/annotation-files/efo/efo_otar_slim.owl"
         json_filename = self.riot.convert_owl_to_jsonld(downloaded_file, self.local_output_dir, yaml_info.owl_jq)
-
+        #json_filename = "/Users/cinzia/data/final.json"
         return json_filename
 
     # Download phenotype.hpoa and create a JSON output with a subset of info.
@@ -103,14 +104,12 @@ class EFO(object):
     def generate_efo(self):
         logger.info("Running EFO step ")
         #Potentially obsolete soon! Legacy data_pipeline : TODO remove legacy
-        self.download_extra_files(self.yaml.efo_extra_downloads)
+        #self.download_extra_files(self.yaml.efo_extra_downloads)
 
         # Generate the ontologies and the phenotype mapping file.
-        self.get_hpo_phenotype()
-        self.get_ontology_mondo()
-        self.get_ontology_hpo()
+        #self.get_hpo_phenotype()
+        #self.get_ontology_mondo()
+        #self.get_ontology_hpo()
         self.get_ontology_EFO()
 
         return self.list_files_downloaded
-
-

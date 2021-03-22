@@ -89,15 +89,15 @@ eco:
 efo:
   gs_output_dir: annotation-files/ontology
   hpo_phenotypes:
-    uri: http://compbio.charite.de/jenkins/job/hpo.annotations.current/lastSuccessfulBuild/artifact/current/phenotype.hpoa
+    uri: http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa
     output_filename: hpo-phenotypes-{suffix}.jsonl
     resource: hpo-phenotype
   disease:
     efo:
-      uri: https://github.com/EBISPOT/efo/releases/download/v3.26.0/efo_otar_slim.owl
-      output_filename: ontology-efo-v3.26.0.jsonl
+      uri: https://github.com/EBISPOT/efo/releases/download/v3.28.0/efo_otar_slim.owl
+      output_filename: ontology-efo-v3.28.0.jsonl
       resource: ontology-efo
-      owl_jq: '.["@graph"][] | select (.["@type"] == "Class" and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
+      owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
       static:
         therapeutic_area: therapeutic_area.txt
         diseases: diseases_efo.jsonl
