@@ -211,8 +211,6 @@ class EFO(object):
 
     def load_type_class(self, disease, disease_id):
         if not disease["@id"].startswith('_:'):
-            if disease_id == "EFO_0001422":
-                print("gh")
             code = self.get_prefix(disease_id) + disease_id
             self.init_disease(disease_id, code)
             self.set_label(disease_id, disease)
