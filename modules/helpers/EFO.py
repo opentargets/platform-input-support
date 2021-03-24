@@ -7,6 +7,11 @@ from definitions import PIS_OUTPUT_EFO, PIS_OUTPUT_ANNOTATIONS
 
 logger = logging.getLogger(__name__)
 
+# EFO
+# The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
+# The structure restriction and class_restriction are used to retrieve location info.
+# The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
+# term and obsolete terms.
 
 class EFO(object):
 
@@ -38,6 +43,7 @@ class EFO(object):
         if 'hasDbXref' in disease:
             self.diseases[id]['dbXRefs'] = disease['hasDbXref']
 
+    # Retrieve the definition info
     def set_definition(self, id, disease):
         if 'IAO_0000115' in disease:
             if isinstance(disease['IAO_0000115'], str):
@@ -54,7 +60,7 @@ class EFO(object):
         else:
             return [x.strip() for x in value if isinstance(x,str)]
 
-    # Return the synonyms
+    # Return the synonyms. Complex structure. Clean and flatten.
     def set_efo_synonyms(self, id, disease):
         synonyms_details = {}
         if 'hasExactSynonym' in disease:
@@ -81,7 +87,7 @@ class EFO(object):
             self.diseases[id]['synonyms'] = synonyms_details
 
 
-    # Extract skos: related
+    # Extract skos: related: used for check phenotype info.
     def get_phenotypes(self, phenotypes):
         if isinstance(phenotypes, str):
             return [self.get_id(phenotypes)]
@@ -150,7 +156,7 @@ class EFO(object):
         elif isinstance(uri,list):
             uris_to_extract = self.get_array_value(uri)
         else:
-            print("dict?")
+            #todo: investigate to this case.
             uris_to_extract = []
 
         for uri_i in uris_to_extract:
@@ -189,6 +195,7 @@ class EFO(object):
     def get_children(self, node):
         return [x[1] for x in self.parent_child_tuples if x[0] == node]
 
+    # Check if the efo term is valid. term obsolete goes to a dedicated structure
     def is_obsolete(self,disease, disease_id):
         if 'owl:deprecated' in disease:
             if 'IAO_0100001' in disease:
@@ -198,16 +205,14 @@ class EFO(object):
                         self.diseases_obsolete[term].append(disease_id)
                     else:
                         self.diseases_obsolete[term] = [disease_id]
-
-            else:
-                print("Specific case to report to DATA team")
-                print(disease)
             return True
         else:
             return False
 
     def load_type_class(self, disease, disease_id):
         if not disease["@id"].startswith('_:'):
+            if disease_id == "EFO_0001422":
+                print("gh")
             code = self.get_prefix(disease_id) + disease_id
             self.init_disease(disease_id, code)
             self.set_label(disease_id, disease)
@@ -221,10 +226,12 @@ class EFO(object):
             if "unionOf" in disease:
                 self.class_restriction[disease["@id"]] = disease["unionOf"]["@list"]
             else:
-                print("To investigate")
+                # Todo: check this case
+                self.class_restriction[disease["@id"]] = disease["intersectionOf"]["@list"]
                 print(disease)
 
 
+    #
     def get_obsolete_info(self):
         for k, v in self.diseases_obsolete.items():
             if k in self.diseases:
@@ -236,7 +243,7 @@ class EFO(object):
                 self.diseases[v]["locationIds"] = set()
                 value = self.restriction[k]
                 if value.startswith("_:"):
-                    match = self.class_restrifction[value]
+                    match = self.class_restriction[value]
                     for item in match:
                         if item.startswith("_:"):
                             if item in self.restriction:
