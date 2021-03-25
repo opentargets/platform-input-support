@@ -9,7 +9,7 @@ class TestDiseaseStep(unittest.TestCase):
     """
 
     def setUp(self):
-        self.hpo_filename = "resources/hp.jsonl"
+        self.hpo_filename = ROOT_DIR+"/tests/resources/hp.jsonl"
 
     # exclude obsolete term
     def testHPO(self):
