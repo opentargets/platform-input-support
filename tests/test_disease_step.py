@@ -1,6 +1,7 @@
 import unittest
 from definitions import ROOT_DIR
 import subprocess
+import os
 
 from modules.helpers.HPO import HPO
 from modules.helpers.EFO import EFO
@@ -44,9 +45,9 @@ class TestDiseaseStep(unittest.TestCase):
                                    shell=True,
                                    stdout=subprocess.PIPE,
                                    )
-        num_valid_HP = int(process.communicate()[0].decode("utf-8").replace("\n", ""))
         outfile = HPModule.run('test_phenotype.jsonl')
-        assert True == True
+        assert (os.stat(outfile).st_size > 0) == True
+
 
 
 
