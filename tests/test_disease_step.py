@@ -6,6 +6,7 @@ import os
 from modules.helpers.HPO import HPO
 from modules.helpers.EFO import EFO
 from modules.helpers.HPOPhenotypes import HPOPhenotypes
+from modules.helpers.MONDO import MONDO
 
 class TestDiseaseStep(unittest.TestCase):
     """
@@ -16,6 +17,7 @@ class TestDiseaseStep(unittest.TestCase):
         self.hpo_filename = ROOT_DIR+"/tests/resources/hp.jsonl"
         self.efo_filename = ROOT_DIR+"/tests/resources/efo.jsonl"
         self.phenotype_filename = ROOT_DIR+"/tests/resources/phenotype.hpoa"
+        self.mondo_filename = ROOT_DIR + "/tests/resources/mondo.jsonl"
 
 
     def testDisease(self):
@@ -41,13 +43,12 @@ class TestDiseaseStep(unittest.TestCase):
 
     def testHPOPhenotypes(self):
         HPModule = HPOPhenotypes(self.phenotype_filename)
-        process = subprocess.Popen("cat "+ self.phenotype_filename +"| grep -v '#' | wc -l",
-                                   shell=True,
-                                   stdout=subprocess.PIPE,
-                                   )
         outfile = HPModule.run('test_phenotype.jsonl')
         assert (os.stat(outfile).st_size > 0) == True
 
-
+    def testMONDO(self):
+        MondoModule = MONDO(self.mondo_filename)
+        MondoModule.generate()
+        assert True == True
 
 
