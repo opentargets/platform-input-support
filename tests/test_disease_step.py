@@ -31,24 +31,24 @@ class TestDiseaseStep(unittest.TestCase):
         assert len(EFOModule.diseases) == num_valid_EFO
 
     # exclude obsolete term
-    def testHPO(self):
-        HPOModule = HPO(self.hpo_filename)
-        process = subprocess.Popen("cat "+ self.hpo_filename +"| grep -v deprecated | wc -l",
-                                   shell=True,
-                                   stdout=subprocess.PIPE,
-                                   )
-        num_valid_HPO = int(process.communicate()[0].decode("utf-8").replace("\n", ""))
-        HPOModule.generate()
-        assert len(HPOModule.hpo) == num_valid_HPO
+    #def testHPO(self):
+    #    HPOModule = HPO(self.hpo_filename)
+    #    process = subprocess.Popen("cat "+ self.hpo_filename +"| grep -v deprecated | wc -l",
+    #                               shell=True,
+    #                               stdout=subprocess.PIPE,
+    #                               )
+    #    num_valid_HPO = int(process.communicate()[0].decode("utf-8").replace("\n", ""))
+    #    HPOModule.generate()
+    #    assert len(HPOModule.hpo) == num_valid_HPO
 
-    def testHPOPhenotypes(self):
-        HPModule = HPOPhenotypes(self.phenotype_filename)
-        outfile = HPModule.run('test_phenotype.jsonl')
-        assert (os.stat(outfile).st_size > 0) == True
+    #def testHPOPhenotypes(self):
+    #    HPModule = HPOPhenotypes(self.phenotype_filename)
+    #    outfile = HPModule.run('test_phenotype.jsonl')
+    #    assert (os.stat(outfile).st_size > 0) == True
 
-    def testMONDO(self):
-        MondoModule = MONDO(self.mondo_filename)
-        MondoModule.generate()
-        assert True == True
+    #def testMONDO(self):
+    #    MondoModule = MONDO(self.mondo_filename)
+    #    MondoModule.generate()
+    #    assert True == True
 
 
