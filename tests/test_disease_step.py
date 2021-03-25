@@ -46,9 +46,14 @@ class TestDiseaseStep(unittest.TestCase):
     #    outfile = HPModule.run('test_phenotype.jsonl')
     #    assert (os.stat(outfile).st_size > 0) == True
 
-    #def testMONDO(self):
-    #    MondoModule = MONDO(self.mondo_filename)
-    #    MondoModule.generate()
-    #    assert True == True
+    def testMONDO(self):
+        MondoModule = MONDO(self.mondo_filename)
+        process = subprocess.Popen("cat "+ self.mondo_filename +"| grep -v deprecated | wc -l",
+                                   shell=True,
+                                   stdout=subprocess.PIPE,
+                                   )
+        num_valid_MONDO = int(process.communicate()[0].decode("utf-8").replace("\n", ""))
+        MondoModule.generate()
+        assert len(MondoModule.mondo) == num_valid_MONDO
 
 
