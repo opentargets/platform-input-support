@@ -12,7 +12,6 @@ class HPOPhenotypes(object):
 
     def __init__(self, hpo_input):
         self.hpo_phenotypes_input = hpo_input
-        self.hpo_phenotypes = []
 
     def replace_HP_id(self, value):
         return value.replace("HP:", "HP_")
