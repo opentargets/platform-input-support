@@ -7,10 +7,15 @@ import shutil
 import datetime
 import binascii
 import re
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def is_gzip(filename):
     with open(filename, 'rb') as test_f:
         return binascii.hexlify(test_f.read(2)) == b'1f8b'
+
 
 def get_lines(input_filename):
     i = 0
@@ -19,7 +24,6 @@ def get_lines(input_filename):
             for i, l in enumerate(f):
                 pass
     return i+1
-
 
 
 # Regular expression for date and format
@@ -31,24 +35,25 @@ def date_reg_expr(filename, regexpr, format):
             date_file = datetime.datetime.strptime(find_date_file.group(1), format)
             if date_file.year < 2000:
                 date_file = None
-        except ValueError :
+        except ValueError:
             # Date does not match format. No valid date found.
             date_file = None
 
     return date_file
 
+
 # Extract any date in the format dd-mm-yyyy or yyyy-mm-dd and other sub cases.
 # Return None if date are not available.
 def extract_date_from_file(filename):
-    valid_date=[]
+    valid_date = []
     valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{2}\-[0-9]{2})", '%Y-%m-%d'))
     valid_date.append(date_reg_expr(filename, "([0-9]{2}\-[0-9]{2}\-[0-9]{4})", '%d-%m-%Y'))
     if valid_date.count(None) == len(valid_date):
-        #Case d-mm-yyyy or dd-m-yyyy
+        # Case d-mm-yyyy or dd-m-yyyy
         valid_date.append(date_reg_expr(filename, "([0-9]{1}\-[0-9]{2}\-[0-9]{4})", '%d-%m-%Y'))
         valid_date.append(date_reg_expr(filename, "([0-9]{2}\-[0-9]{1}\-[0-9]{4})", '%d-%m-%Y'))
     if valid_date.count(None) == len(valid_date):
-        #Case yyyy-m-dd or yyyy-mm-d
+        # Case yyyy-m-dd or yyyy-mm-d
         valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{1}\-[0-9]{2})", '%Y-%m-%d'))
         valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{2}\-[0-9]{1})", '%Y-%m-%d'))
     # So no double dd or mm present.
@@ -61,9 +66,10 @@ def extract_date_from_file(filename):
     else:
         final_date = list(filter(None, valid_date))
         if len(final_date) == 1:
-            return(final_date[0])
+            return (final_date[0])
         else:
-            raise("Unexpected error !!!")
+            raise ("Unexpected error !!!")
+
 
 def get_output_dir(output_dir, default_output_dir):
     if output_dir is None:
@@ -76,7 +82,8 @@ def get_output_dir(output_dir, default_output_dir):
 
     return output_dir
 
-# Init output dirs structure. Using defintiion.py vars
+
+# Init output dirs structure. Using definition.py vars
 def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_DIR)
     get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
@@ -90,6 +97,8 @@ def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
     get_output_dir(None, PIS_OUTPUT_HOMOLOGY)
     get_output_dir(None, PIS_OUTPUT_DRUG)
+    get_output_dir(None, PIS_OUTPUT_TARGET)
+
 
 def make_gzip(file_with_path):
     """Compress file_with_path to file_with_path.gz and return file name."""
@@ -98,6 +107,7 @@ def make_gzip(file_with_path):
         f_out.writelines(f_in)
 
     return r_filename
+
 
 def make_ungzip(file_with_path):
     filename_unzip = file_with_path.replace('.gz', '').replace('.gzip', '').replace('.zip', '')
@@ -110,14 +120,26 @@ def make_ungzip(file_with_path):
 
 
 def make_zip(file_with_path):
-    filename_zip = file_with_path+".zip"
-    zf = zipfile.ZipFile(filename_zip, "w",zipfile.ZIP_DEFLATED, allowZip64 = True)
+    filename_zip = file_with_path + ".zip"
+    zf = zipfile.ZipFile(filename_zip, "w", zipfile.ZIP_DEFLATED, allowZip64=True)
     zf.write(file_with_path)
     zf.close()
     return filename_zip
 
 
-#The procedure raises an error if the zip file contains more than a file.
+def extract_file_from_zip(file_to_extract: str, zip_file: str, output_dir: str) -> None:
+    """
+    Opens `zip_file` and saves `file_to_extract` to `output_dir`.
+    """
+    with zipfile.ZipFile(zip_file) as zf:
+        if file_to_extract in zf.namelist():
+            _, tail = os.path.split(file_to_extract)
+            with open(os.path.join(output_dir, tail), "wb") as f:
+                logger.info(f"Extracting {file_to_extract} from {zip_file} to {f.name}")
+                f.write(zf.read(file_to_extract))
+
+
+# The procedure raises an error if the zip file contains more than a file.
 def make_unzip_single_file(file_with_path):
     split_filename = file_with_path.rsplit('/', 1)
     dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
@@ -130,13 +152,13 @@ def make_unzip_single_file(file_with_path):
     if len(zipinfos) != 1:
         raise ValueError('Zip File contains more than a single file %s.' % file_with_path)
     zipinfos[0].filename = filename_unzip
-    filename_unzip_with_path=zipdata.extract(zipinfos[0],output_dir)
+    filename_unzip_with_path = zipdata.extract(zipinfos[0], output_dir)
 
     return filename_unzip_with_path
 
 
 def get_output_spark_files(directory_info, filter):
-    return [directory_info+'/'+file for file in os.listdir(directory_info) if file.endswith(filter)]
+    return [directory_info + '/' + file for file in os.listdir(directory_info) if file.endswith(filter)]
 
 
 def replace_suffix(filename):
