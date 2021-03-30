@@ -4,6 +4,7 @@ from ftplib import FTP
 from typing import Dict, List
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
+from modules.common import extract_file_from_zip
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +40,25 @@ class Target(object):
                 return out_file_name
 
     def download_hpa(self) -> str:
+        logger.info("Downloading HPA target files")
         download = DownloadResource(self.output_dir + "/hpa")
         downloaded_file = download.execute_download(self.config.hpa)
         return downloaded_file
+
+    def download_project_scores(self) -> List[str]:
+        logger.info("Downloading project scores target files")
+        output_dir = os.path.join(self.output_dir, 'projectScores')
+        download = DownloadResource(output_dir)
+        downloaded_files = []
+        for i in self.config.project_scores:
+            f = download.execute_download(i)
+            if f.endswith('.zip'):
+                downloaded_files.append(extract_file_from_zip('EssentialityMatrices/04_binaryDepScores.tsv', f, output_dir))
+                if os.path.exists(f):
+                    os.remove(f)
+            else:
+                downloaded_files.append(f)
+        return downloaded_files
 
     def download_go(self) -> List[str]:
         logger.info("Downloading gene ontology files.")
@@ -111,6 +128,7 @@ class Target(object):
                               self.download_hpa()]
         sources = sources + self.download_ortholog()
         sources = sources + self.download_go()
+        sources = sources + self.download_project_scores()
         downloaded_files = {}
         for f in sources:
             downloaded_files[f] = {'resource': "{}".format(f), 'gs_output_dir': self.config[
