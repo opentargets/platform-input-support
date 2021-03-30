@@ -229,6 +229,10 @@ target:
     - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
       output_filename: essentiality_matrices.zip
       resource: target-ps
+  gnomad:
+    uri: https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz
+    output_filename: gnomad_lof_by_gene.csv.bgz
+    resource: target-gnomad
 #  ncbi:
 
 ensembl:
