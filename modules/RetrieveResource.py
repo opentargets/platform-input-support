@@ -15,6 +15,7 @@ from definitions import *
 from .DataPipelineConfig import DataPipelineConfig
 from .EvidenceSubset import EvidenceSubset
 from .AnnotationQC import AnnotationQC
+from .Target import Target
 from .common import get_lines, make_unzip_single_file, init_output_dirs
 import time
 
@@ -127,6 +128,15 @@ class RetrieveResource(object):
         """
         drug = Drug(self.yaml.drug)
         files = drug.get_all()
+        self.list_files_downloaded.update(files)
+
+    def get_target(self):
+        """
+        Retrieves all resources specified in the `config.yaml` `target` section and updates the
+        `list_files_downloaded` with details of retrieved resources.
+        """
+        target = Target(self.yaml.target)
+        files = target.execute()
         self.list_files_downloaded.update(files)
 
     def get_file_from_bucket(self, entry, output, gs_output_dir):
@@ -243,6 +253,7 @@ class RetrieveResource(object):
         if self.has_step("evidences"): self.get_evidences()
         if self.has_step("interactions"): self.get_Interactions()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
+        if self.has_step("target"): self.get_target()
         if self.has_step("tep"): self.get_TEP()
 
         # At this point the auth key is already valid.

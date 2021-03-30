@@ -183,6 +183,35 @@ known_target_safety:
     gid: 1223815020
     output_filename: references.tsv
     s_type: ref
+target:
+  gs_output_dir: annotation-files
+  ensembl:
+    release: 103
+    url: ftp.ensembl.org
+    path: /pub/release-{suffix}
+    homo_sapiens:
+      path: /json/homo_sapiens/
+      filename: homo_sapiens.json
+    orthologs:
+      path: /tsv/ensembl-compara/homologies/homo_sapiens/
+      files:
+      - Compara.{suffix}.protein_default.homologies.tsv.gz
+      - Compara.{suffix}.ncrna_default.homologies.tsv.gz
+    species: species_EnsemblVertebrates.txt
+  go:
+    goa_human:
+      uri : ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz
+      output_filename: goa_human.gaf.gz
+    goa_human_rna:
+      uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz
+      output_filename: goa_human_rna.gaf.gz
+    goa_ensembl:
+        uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
+        output_filename: go_ensembl.tsv
+  hpa:
+#  ncbi:
+#  project_scores:
+
 ensembl:
   ensembl_release: homo_sapiens_core_102_38
   extension_file: _genes.json.gz
