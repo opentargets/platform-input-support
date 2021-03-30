@@ -15,6 +15,8 @@ from .StringInteractions import StringInteractions
 from definitions import *
 from .DataPipelineConfig import DataPipelineConfig
 from .common import get_lines, make_unzip_single_file, init_output_dirs, get_output_dir
+from .Target import Target
+from .common import get_lines, make_unzip_single_file, init_output_dirs
 import time
 
 
@@ -245,6 +247,7 @@ class RetrieveResource(object):
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("homologues"): self.get_homologues()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
+        if self.has_step("target"): self.get_target()
         if self.has_step("tep"): self.get_TEP()
 
         # At this point the auth key is already valid.
