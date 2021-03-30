@@ -1,11 +1,11 @@
 import datetime
 import urllib.request, urllib.parse, urllib.error
-from http import cookiejar
-import requests
+import logging
 import threading
-from ftplib import FTP
+
 # Common packages
 from modules.common.TqdmUpTo import TqdmUpTo
+
 
 # Decorator for the threading parameter.
 def threaded(fn):
@@ -13,7 +13,11 @@ def threaded(fn):
         thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
         thread.start()
         return thread
+
     return wrapper
+
+
+logger = logging.getLogger(__name__)
 
 
 # Generic class to download a specific URI
@@ -29,10 +33,10 @@ class DownloadResource(object):
             self.suffix = args.suffix
 
     def set_filename(self, param_filename):
-        return self.output_dir+'/'+param_filename.replace('{suffix}', self.suffix)
+        return self.output_dir + '/' + param_filename.replace('{suffix}', self.suffix)
 
-    def execute_download(self, resource_info, retry_count=1):
-        print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
+    def execute_download(self, resource_info, retry_count=1) -> str:
+        logger.debug("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         try:
             opener = urllib.request.build_opener()
             opener.addheaders = [('User-agent', 'Mozilla/5.0')]
@@ -41,22 +45,20 @@ class DownloadResource(object):
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1,
                           desc=resource_info.uri.split('/')[-1]) as t:  # all optional kwargs
                 urllib.request.urlretrieve(resource_info.uri, destination_filename,
-                                  reporthook=t.update_to, data=None)
-        except IOError as io_error:
-            print("IOError: {io_error}".format(io_error=io_error))
-            return None
+                                           reporthook=t.update_to, data=None)
+            return destination_filename
         except urllib.error.URLError as e:
-            print('Download error:', e.reason)
+            logger.error('Download error:', e.reason)
             content = None
             if retry_count > 0:
                 if hasattr(e, 'code') and 500 <= e.code < 600:
-                    return self.execute_download(resource_info, retry_count-1)
-        except Exception as e:
-            print("Error: {msg}".format(msg=e))
+                    return self.execute_download(resource_info, retry_count - 1)
+        except IOError as io_error:
+            logger.error("IOError: {io_error}".format(io_error=io_error))
             return None
-
-
-        return destination_filename
+        except Exception as e:
+            logger.error("Error: {msg}".format(msg=e))
+            return None
 
     @threaded
     def execute_download_threaded(self, resource_info):
@@ -91,6 +93,6 @@ class DownloadResource(object):
             content = None
             if retry_count > 0:
                 if hasattr(e, 'code') and 500 <= e.code < 600:
-                    return self.download(resource_info.uri, retry_count-1, headers, proxy, data)
+                    return self.download(resource_info.uri, retry_count - 1, headers, proxy, data)
 
         return content

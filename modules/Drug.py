@@ -91,6 +91,6 @@ class Drug(object):
                     downloaded_files[f] = {'resource': "drug-{}".format(f), 'gs_output_dir': self.config[
                         'gs_output_dir']}
             else:
-                logger.warn("Unrecognised drug datasource: %s".format(source_type))
+                logger.warning("Unrecognised drug datasource: %s".format(source_type))
         return downloaded_files
 
