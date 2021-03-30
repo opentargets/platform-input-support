@@ -4,7 +4,7 @@ from ftplib import FTP
 from typing import Dict, List
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
-from modules.common import extract_file_from_zip
+from modules.common import extract_file_from_zip, make_ungzip
 
 logger = logging.getLogger(__name__)
 
@@ -48,16 +48,22 @@ class Target(object):
     def download_project_scores(self) -> List[str]:
         logger.info("Downloading project scores target files")
         output_dir = os.path.join(self.output_dir, 'projectScores')
+        # we only want one file from a zipped archive
+        file_of_interest = 'EssentialityMatrices/04_binaryDepScores.tsv'
+        _, fname = os.path.split(file_of_interest)
         download = DownloadResource(output_dir)
         downloaded_files = []
         for i in self.config.project_scores:
-            f = download.execute_download(i)
-            if f.endswith('.zip'):
-                downloaded_files.append(extract_file_from_zip('EssentialityMatrices/04_binaryDepScores.tsv', f, output_dir))
-                if os.path.exists(f):
-                    os.remove(f)
+            if not os.path.exists(os.path.join(output_dir, fname)):
+                f = download.execute_download(i)
+                if f.endswith('.zip'):
+                    downloaded_files.append(extract_file_from_zip(file_of_interest, f, output_dir))
+                    if os.path.exists(f):
+                        os.remove(f)
+                else:
+                    downloaded_files.append(f)
             else:
-                downloaded_files.append(f)
+                logger.debug(f"Found {fname} in {output_dir}: will not download again.")
         return downloaded_files
 
     def download_go(self) -> List[str]:
@@ -105,6 +111,15 @@ class Target(object):
             downloaded.append(self.download_ftp(self.ensembl_ftp_url, ftp_path, fn, output_location))
         return downloaded
 
+    def download_gnomad(self):
+        logger.info("Downloading gnomad files for target")
+        download = DownloadResource(os.path.join(self.output_dir, "gnomad"))
+        downloaded_file = download.execute_download(self.config.gnomad)
+        unzipped = make_ungzip(downloaded_file)
+        if os.path.exists(downloaded_file):
+            os.remove(downloaded_file)
+        return unzipped
+
     def create_output_dirs(self):
         directories = ["ensembl", "go", "hpa", "projectScores", "gnomad", "ncbi"]
         for d in directories:
@@ -125,7 +140,8 @@ class Target(object):
         # Download files
         sources: List[str] = [self.download_species(),
                               self.download_homo_sapiens(),
-                              self.download_hpa()]
+                              self.download_hpa(),
+                              self.download_gnomad()]
         sources = sources + self.download_ortholog()
         sources = sources + self.download_go()
         sources = sources + self.download_project_scores()
@@ -134,3 +150,5 @@ class Target(object):
             downloaded_files[f] = {'resource': "{}".format(f), 'gs_output_dir': self.config[
                 'gs_output_dir']}
         return downloaded_files
+
+
