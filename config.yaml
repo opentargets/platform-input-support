@@ -209,6 +209,9 @@ target:
       path: /pub/databases/RNAcentral/current_release/id_mapping/database_mappings/
       filename: ensembl.tsv
   hpa:
+    uri: https://www.proteinatlas.org/download/subcellular_location.tsv.zip
+    output_filename: subcellular_location.tsv.zip
+    resource: target-hpa
 #  ncbi:
 #  project_scores:
 
