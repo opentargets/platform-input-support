@@ -212,8 +212,14 @@ target:
     uri: https://www.proteinatlas.org/download/subcellular_location.tsv.zip
     output_filename: subcellular_location.tsv.zip
     resource: target-hpa
+  project_scores:
+    - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
+      output_filename: gene_identifiers_latest.csv.gz
+      resource: target-ps
+    - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
+      output_filename: essentiality_matrices.zip
+      resource: target-ps
 #  ncbi:
-#  project_scores:
 
 ensembl:
   ensembl_release: homo_sapiens_core_102_38
