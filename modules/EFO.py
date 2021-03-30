@@ -112,5 +112,3 @@ class EFO(object):
         self.get_ontology_EFO()
 
         return self.list_files_downloaded
-
-
