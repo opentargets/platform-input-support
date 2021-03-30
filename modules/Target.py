@@ -3,6 +3,7 @@ import os
 from ftplib import FTP
 from typing import Dict, List
 from definitions import PIS_OUTPUT_TARGET
+from modules.DownloadResource import DownloadResource
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,11 @@ class Target(object):
                 logger.debug(f"Downloading {file} from {ftp_path} as {outfile.name}")
                 ftp.retrbinary('RETR ' + file, outfile.write)
                 return out_file_name
+
+    def download_hpa(self) -> str:
+        download = DownloadResource(self.output_dir + "/hpa")
+        downloaded_file = download.execute_download(self.config.hpa)
+        return downloaded_file
 
     def download_go(self) -> List[str]:
         logger.info("Downloading gene ontology files.")
@@ -101,7 +107,8 @@ class Target(object):
         self.create_output_dirs()
         # Download files
         sources: List[str] = [self.download_species(),
-                              self.download_homo_sapiens()]
+                              self.download_homo_sapiens(),
+                              self.download_hpa()]
         sources = sources + self.download_ortholog()
         sources = sources + self.download_go()
         downloaded_files = {}
