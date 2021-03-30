@@ -209,15 +209,15 @@ target:
       - Compara.{suffix}.ncrna_default.homologies.tsv.gz
     species: species_EnsemblVertebrates.txt
   go:
+    url: ftp.ebi.ac.uk
     goa_human:
-      uri : ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz
-      output_filename: goa_human.gaf.gz
-    goa_human_rna:
-      uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz
-      output_filename: goa_human_rna.gaf.gz
+      path: /pub/databases/GO/goa/HUMAN/
+      files:
+      - goa_human.gaf.gz
+      - goa_human_rna.gaf.gz
     goa_ensembl:
-        uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
-        output_filename: go_ensembl.tsv
+      path: /pub/databases/RNAcentral/current_release/id_mapping/database_mappings/
+      filename: ensembl.tsv
   hpa:
 #  ncbi:
 #  project_scores:
