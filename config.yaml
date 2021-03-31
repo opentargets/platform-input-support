@@ -233,8 +233,10 @@ target:
     uri: https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz
     output_filename: gnomad_lof_by_gene.csv.bgz
     resource: target-gnomad
-#  ncbi:
-
+  ncbi:
+    uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
+    output_filename: Homo_sapiens.gene_info.gz
+    resource: target-ncbi
 ensembl:
   ensembl_release: homo_sapiens_core_104_38
   extension_file: _genes.json.gz
