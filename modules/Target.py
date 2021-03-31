@@ -120,6 +120,12 @@ class Target(object):
             os.remove(downloaded_file)
         return unzipped
 
+    def download_ncbi(self):
+        logger.info("Downloading ncbi files for target.")
+        download = DownloadResource(os.path.join(self.output_dir, "ncbi"))
+        downloaded_file = download.ftp_download(self.config.ncbi)
+        return downloaded_file
+
     def create_output_dirs(self):
         directories = ["ensembl", "go", "hpa", "projectScores", "gnomad", "ncbi"]
         for d in directories:
@@ -141,7 +147,8 @@ class Target(object):
         sources: List[str] = [self.download_species(),
                               self.download_homo_sapiens(),
                               self.download_hpa(),
-                              self.download_gnomad()]
+                              self.download_gnomad(),
+                              self.download_ncbi()]
         sources = sources + self.download_ortholog()
         sources = sources + self.download_go()
         sources = sources + self.download_project_scores()
