@@ -21,7 +21,7 @@ List of available steps:
 - tep
 
 
-The step 'evidence' uploads the last evidence from different providers and it generates a subset of these evidence using the file minimal_ensembl.txt
+The step 'evidence' uploads the last evidence from different providers.
 
 Below more details about how to execute the script.
 
