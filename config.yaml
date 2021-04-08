@@ -312,7 +312,10 @@ interactions:
 evidences:
   gs_output_dir: evidence-files
   downloads:
-  - bucket: otar000-evidence_input/ClinGen
+  - bucket: otar000-evidence_input/Genetics_portal/json/
+    output_filename: genetics-portal-evidences-{suffix}.json.gz
+    resource: input-file
+  - bucket: otar000-evidence_input/ClinGen/json
     output_filename: clingen-{suffix}.json.gz
     resource: input-file
   - bucket: otar000-evidence_input/CRISPR/json
@@ -327,9 +330,6 @@ evidences:
     resource: input-file
   - bucket: otar008-chembl
     output_filename: chembl-{suffix}.json.gz
-    resource: input-file
-  - bucket: otar000-evidence_input/Genetics_portal/json/
-    output_filename: genetics-portal-evidences-{suffix}.json.gz
     resource: input-file
   - bucket: otar010-atlas
     output_filename: atlas-{suffix}.json.gz
