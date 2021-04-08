@@ -311,7 +311,6 @@ interactions:
         url: https://raw.githubusercontent.com/opentargets/json_schema/master/OT_network_schema.json
 evidences:
   gs_output_dir: evidence-files
-  gs_output_dir_sub: evidence-files-subsets
   downloads:
   - bucket: otar000-evidence_input/ClinGen
     output_filename: clingen-{suffix}.json.gz
