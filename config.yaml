@@ -313,60 +313,78 @@ interactions:
 evidences:
   gs_output_dir: evidence-files
   downloads:
+  - bucket: otar000-evidence_input/EPMC
+    output_filename: epmc-{suffix}.json.gz
+    output_spark_dir: epmc-{suffix}
+    resource: input-file
   - bucket: otar000-evidence_input/Genetics_portal/json/
     output_filename: genetics-portal-evidences-{suffix}.json.gz
+    output_spark_dir: genetics-portal-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/ClinGen/json
     output_filename: clingen-{suffix}.json.gz
+    output_spark_dir: clingen-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/CRISPR/json
     output_filename: crispr-{suffix}.json.gz
+    output_spark_dir: crispr-{suffix}
     resource: input-file
   - bucket: otar006-reactome
     output_filename: reactome-{suffix}.json.gz
+    output_spark_dir: reactome-{suffix}
     resource: input-file
   - bucket: otar007-cosmic
     output_filename: cosmic-{suffix}.json.gz
+    output_spark_dir: cosmic-{suffix}
     excludes: hallmarks
     resource: input-file
   - bucket: otar008-chembl
     output_filename: chembl-{suffix}.json.gz
+    output_spark_dir: chembl-{suffix}
     resource: input-file
   - bucket: otar010-atlas
     output_filename: atlas-{suffix}.json.gz
+    output_spark_dir: atlas-{suffix}
     resource: input-file
   - bucket: otar011-uniprot
     output_filename: uniprot-{suffix}.json.gz
+    output_spark_dir: uniprot-{suffix}
     resource: input-file
   - bucket: otar012-eva
     output_filename: eva-{suffix}.json.gz
-    resource: input-file
-  - bucket: otar025-epmc
-    output_filename: epmc-{suffix}.json.gz
+    output_spark_dir: eva-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/Gene2Phenotype/json
     output_filename: gene2phenotype-{suffix}.json.gz
+    output_spark_dir: gene2phenotype-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/GenomicsEngland/json
     output_filename: genomics_england-{suffix}.json.gz
+    output_spark_dir: genomics-england-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/IntOgen/json
     output_filename: intogen-{suffix}.json.gz
+    output_spark_dir: intogen-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/PhenoDigm/json
     output_filename: phenodigm-{suffix}.json.gz
+    output_spark_dir: phenodigm-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/PheWAS/json
     output_filename: phewas_catalog-{suffix}.json.gz
+    output_spark_dir: phewas-catalog-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/PROGENy/json
     output_filename: progeny-{suffix}.json.gz
+    output_spark_dir: progeny-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/SLAPEnrich/json
     output_filename: slapenrich-{suffix}.json.gz
+    output_spark_dir: slapenrich-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/SysBio/json
     output_filename: sysbio-{suffix}.json.gz
+    output_spark_dir: sysbio-{suffix}
     resource: input-file
 annotations_qc:
   gs_output_dir: other

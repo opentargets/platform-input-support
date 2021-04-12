@@ -103,12 +103,12 @@ class EFO(object):
     def generate_efo(self):
         logger.info("Running EFO step ")
         #Potentially obsolete soon! Legacy data_pipeline : TODO remove legacy
-        self.download_extra_files(self.yaml.efo_extra_downloads)
+        #self.download_extra_files(self.yaml.efo_extra_downloads)
 
         # Generate the ontologies and the phenotype mapping file.
-        self.get_hpo_phenotype()
-        self.get_ontology_mondo()
-        self.get_ontology_hpo()
+        #self.get_hpo_phenotype()
+        #self.get_ontology_mondo()
+        #self.get_ontology_hpo()
         self.get_ontology_EFO()
 
         return self.list_files_downloaded

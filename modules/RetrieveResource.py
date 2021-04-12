@@ -13,9 +13,8 @@ from .Interactions import Interactions
 from .StringInteractions import StringInteractions
 from definitions import *
 from .DataPipelineConfig import DataPipelineConfig
-from .EvidenceSubset import EvidenceSubset
 from .AnnotationQC import AnnotationQC
-from .common import get_lines, make_unzip_single_file, init_output_dirs
+from .common import get_lines, make_unzip_single_file, init_output_dirs, get_output_dir
 import time
 
 
@@ -134,25 +133,34 @@ class RetrieveResource(object):
         google_resource = GoogleBucketResource(bucket_name=param)
         bucket = google_resource.get_bucket()
         list_files_bucket = {}
-        subset_field = None if 'subset_key' not in entry else entry.subset_key
-        subset_prefix = None if 'subset_prefix' not in entry else entry.subset_prefix
         if bucket is not None:
             latest_filename_info = google_resource.get_latest_file(entry)
-            if latest_filename_info["latest_filename"] is not None:
-                final_filename = google_resource.download_file_helper(output, entry.output_filename,
-                                                               latest_filename_info)
-                self.list_files_downloaded[final_filename] = {'resource': entry.resource,
-                                                              'gs_output_dir': gs_output_dir,
-                                                              'subset_key': subset_field,
-                                                              'subset_prefix': subset_prefix}
-                # fill in a specific variable for just evidence step.
-                list_files_bucket[final_filename] = entry.resource
+            print(latest_filename_info)
+            if not latest_filename_info["spark"]:
+                if latest_filename_info["latest_filename"] is not None:
+                    final_filename = google_resource.download_file_helper(output, entry.output_filename,
+                                                                    latest_filename_info)
+                    self.list_files_downloaded[final_filename] = {'resource': entry.resource,
+                                                                  'gs_output_dir': gs_output_dir}
+                    # fill in a specific variable for just evidence step.
+                    list_files_bucket[final_filename] = entry.resource
+                else:
+                    logger.info(
+                        "ERROR: The path={} does not contain any recent file".format(google_resource.get_bucket_name()))
+                    if not self.args.skip:
+                       raise ValueError("ERROR: The path={} does not contain any recent file".format(
+                           google_resource.get_bucket_name()))
             else:
-                logger.info(
-                    "ERROR: The path={} does not contain any recent file".format(google_resource.get_bucket_name()))
-                if not self.args.skip:
-                    raise ValueError("ERROR: The path={} does not contain any recent file".format(
-                        google_resource.get_bucket_name()))
+                #spark:
+                print("SPARK!")
+                dir_name = entry.output_spark_dir.replace('{suffix}', latest_filename_info["suffix"])
+                output_dir = PIS_OUTPUT_EVIDENCES+'/'+ dir_name
+                get_output_dir(None, output_dir)
+                list_files_dir = google_resource.download_dir(latest_filename_info["latest_filename"],output_dir)
+                for spark_filename in list_files_dir:
+                    self.list_files_downloaded[spark_filename] = {'resource': entry.resource,
+                                                                  'gs_output_dir': gs_output_dir+'/'+dir_name}
+                    list_files_bucket[spark_filename] = entry.resource
         else:
             self.list_files_downladed_failed[google_resource.get_bucket_name()] = entry.resource
             logger.info("ERROR: Google Cloud Storage, path={}".format(google_resource.get_bucket_name()))
@@ -177,11 +185,6 @@ class RetrieveResource(object):
 
         self.get_stats_files(list_files_evidence)
 
-        subsetEvidence = EvidenceSubset(ROOT_DIR+'/minimal_ensembl.txt',
-                                        PIS_OUTPUT_SUBSET_EVIDENCES,self.yaml.evidences.gs_output_dir_sub)
-        list_files_subsets = subsetEvidence.execute_subset(self.list_files_downloaded)
-        subsetEvidence.create_stats_file()
-        self.list_files_downloaded.update(list_files_subsets)
 
     def annotations_qc(self, google_opts):
         if not google_opts:
@@ -240,7 +243,7 @@ class RetrieveResource(object):
         if self.has_step("efo"): self.get_efo()
         if self.has_step("eco"): self.get_eco()
         if self.has_step("ensembl"): self.get_ensembl()
-        if self.has_step("evidences"): self.get_evidences()
+        if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
