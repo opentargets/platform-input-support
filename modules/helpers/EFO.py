@@ -17,25 +17,18 @@ class EFO(object):
 
     def __init__(self, efo_input):
         self.efo_input = efo_input
-        self.root_nodes = None
-        self.therapeutic_area =[]
         self.diseases = {}
         self.diseases_obsolete = {}
         self.restriction = {}
         self.class_restriction = {}
         self.has_location_ids = {}
         self.all_path= {}
-        self.parent_child_tuples = []
 
     def init_disease(self, id, code):
         self.all_path[id] = []
         self.diseases[id] = {}
         self.diseases[id]['id'] = id
         self.diseases[id]['code'] = code
-        self.diseases[id]['path_codes'] = []
-        self.diseases[id]['children'] = []
-        self.diseases[id]['ontology'] = {}
-        self.diseases[id]['ontology']['sources'] = {'url': code, 'name': id}
 
     # return the cross reference for the phenotype.
     # ETL uses it with hpo-phenotypes-_yyyy-mm-dd_.jsonl
@@ -103,10 +96,9 @@ class EFO(object):
     # Return if the term is a TherapeuticArea
     def set_therapeutic_area(self, id, disease):
         if 'oboInOwl:inSubset' in disease:
-            self.diseases[id]['ontology']['isTherapeuticArea'] = True
-            self.therapeutic_area.append(id)
+            self.diseases[id]['isTherapeuticArea'] = True
         else:
-            self.diseases[id]['ontology']['isTherapeuticArea'] = False
+            self.diseases[id]['isTherapeuticArea'] = False
 
     # Return the label of the term
     def set_label(self,id, disease):
@@ -131,7 +123,6 @@ class EFO(object):
                     else:
                         father_id = self.get_id(father)
                         parents.append(father_id)
-                        self.parent_child_tuples.append((father_id,id))
 
             self.diseases[id]['parents'] = parents
 
@@ -171,29 +162,6 @@ class EFO(object):
         new_id = re.sub(r'^.*?:', '', ordo)
         return new_id
 
-    # Build the children list for the node.
-    def get_nodes(self, node, path):
-        data = {}
-        data['name'] = node
-        path.append(node)
-        children = self.get_children(node)
-        if children:
-            self.diseases[node]['children'] = list(set(children) | set(self.diseases[node]['children']))
-            lista = []
-            for child in children:
-                lista.append(self.get_nodes(child, path))
-            data["children"] = lista
-        if node in self.all_path:
-            self.all_path[node].append(path.copy())
-        else:
-            self.all_path[node] = [path.copy()]
-        path.remove(node)
-        return data
-
-    # parent_child_tuples contains (father, child) relationship.
-    # This function retrienve all the children for the node requested.
-    def get_children(self, node):
-        return [x[1] for x in self.parent_child_tuples if x[0] == node]
 
     # Check if the efo term is valid. term obsolete goes to a dedicated structure
     def is_obsolete(self,disease, disease_id):
@@ -226,8 +194,6 @@ class EFO(object):
             else:
                 # Todo: check this case
                 self.class_restriction[disease["@id"]] = disease["intersectionOf"]["@list"]
-                print(disease)
-
 
     #
     def get_obsolete_info(self):
@@ -269,17 +235,6 @@ class EFO(object):
         self.get_obsolete_info()
         self.get_locationIds()
 
-        parents, children = zip(*self.parent_child_tuples)
-        self.root_nodes = {x for x in parents if x not in children}
-
-    def create_paths(self):
-        logging.info("==> Create paths for disease")
-        #tree = []
-        #for node in self.root_nodes:
-        #    print("Therapeutic Area: " + node)
-        #    c = self.get_nodes(node, [])
-        #    tree.append(c)
-        tree = [self.get_nodes(node, []) for node in self.root_nodes]
 
     # Static file for alpha and production
     def save_static_disease_file(self, output_filename):
@@ -300,15 +255,6 @@ class EFO(object):
                 if 'locationIds' in self.diseases[disease]:
                     listValues = list(self.diseases[disease]['locationIds'])
                     self.diseases[disease]['locationIds'] = listValues
-
-                if len(self.diseases[disease]['children']) > 0:
-                    self.diseases[disease]['ontology']['leaf'] = False
-                else:
-                    self.diseases[disease]['ontology']['leaf'] = True
-
-                if disease in self.all_path:
-                    self.diseases[disease]['path_codes'] = self.all_path[disease]
-                    self.diseases[disease]['therapeutic_codes'] = list(set(item for sublist in self.all_path[disease] for item in sublist).intersection(self.root_nodes))
 
                 writer.write(self.diseases[disease])
 

@@ -15,13 +15,13 @@ List of available steps:
 - eco
 - efo
 - ensembl
-- evidences
+- evidence
 - interactions
 - known_target_safety
 - tep
 
 
-The step 'evidences' uploads the last evidences from different providers and it generates a subset of these evidences using the file minimal_ensembl.txt
+The step 'evidence' uploads the last evidence from different providers.
 
 Below more details about how to execute the script.
 
@@ -188,7 +188,7 @@ or
 python platform-input-support.py
          --google_credential_key /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
-         -steps annotations evidences
+         -steps annotations evidence
          -exclude ChEMBL
 or
 python platform-input-support.py
