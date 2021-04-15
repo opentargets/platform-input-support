@@ -152,7 +152,6 @@ class RetrieveResource(object):
                            google_resource.get_bucket_name()))
             else:
                 #spark:
-                print("SPARK!")
                 dir_name = entry.output_spark_dir.replace('{suffix}', latest_filename_info["suffix"])
                 output_dir = PIS_OUTPUT_EVIDENCES+'/'+ dir_name
                 get_output_dir(None, output_dir)
