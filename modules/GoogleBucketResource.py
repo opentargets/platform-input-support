@@ -134,8 +134,16 @@ class GoogleBucketResource(object):
         return blob.name
 
 
+    def is_a_spark_directory(self, filename):
+        if (filename.find("/_SUCCESS") > 0) or (filename.find("/part-0") > 0):
+            return True
+        else:
+            return False
+
+
     # Return the filename with the latest date. Manage collision of dates only for the latest date.
     def extract_latest_file(self, list_blobs):
+
         last_recent_file = None
         possible_recent_date_collision = False
         recent_date = datetime.strptime('01-01-1900', '%d-%m-%Y')
@@ -143,7 +151,8 @@ class GoogleBucketResource(object):
             date_file = extract_date_from_file(filename)
             if date_file:
                 if date_file == recent_date:
-                    possible_recent_date_collision = True
+                    if not self.is_a_spark_directory(filename):
+                        possible_recent_date_collision = True
                 if date_file > recent_date:
                     possible_recent_date_collision = False
                     recent_date = date_file
@@ -154,8 +163,10 @@ class GoogleBucketResource(object):
             logger.error("Error TWO files with the same date: %s %s", last_recent_file,
                          recent_date.strftime('%d-%m-%Y'))
             exit(1)
+
         logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
-        return {"latest_filename": last_recent_file, "suffix": recent_date.strftime('%Y-%m-%d')}
+        return {"latest_filename": last_recent_file,
+                "suffix": recent_date.strftime('%Y-%m-%d'), "spark": self.is_a_spark_directory(last_recent_file)}
 
     def get_latest_file(self,resource_info):
         if 'excludes' in resource_info:
@@ -166,6 +177,20 @@ class GoogleBucketResource(object):
             list_blobs = self.list_blobs_object_path()
         latest_filename_info = self.extract_latest_file(list_blobs)
         return latest_filename_info
+
+    def download_dir(self, dir_to_download, local_dir):
+        list_files = []
+        dir_name = dir_to_download.rsplit("/",1)[0]
+        bucket = self.get_bucket()
+        blobs = bucket.list_blobs(prefix = dir_name)  # Get list of files
+        for blob in blobs:
+            haed, tail = os.path.split(blob.name)
+            filename_destination = local_dir +'/'+tail
+            blob.download_to_filename(filename_destination)
+            list_files.append(filename_destination)
+
+        return list_files
+
 
     def download_file(self, filename_to_download, filename_destination):
         bucket = self.get_bucket()

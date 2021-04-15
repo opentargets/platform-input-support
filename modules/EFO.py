@@ -93,7 +93,6 @@ class EFO(object):
         efo_filename = self.download_owl_and_json(self.yaml.disease.efo)
         diseases = Disease(efo_filename)
         diseases.generate()
-        diseases.create_paths()
         diseases.save_static_disease_file(self.yaml.disease.efo.static.diseases)
         disease_filename = diseases.save_diseases(self.yaml.disease.efo.output_filename)
         self.list_files_downloaded[disease_filename] = {'resource': self.yaml.disease.efo.resource+"-etl",
