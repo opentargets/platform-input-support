@@ -3,6 +3,7 @@ config:
   riot: /home/cinzia/apache-jena/bin/riot
   jq: /usr/local/jq
   java_vm: -Xmx6096M
+  test: test
 annotations:
   gs_output_dir: annotation-files
   downloads:
