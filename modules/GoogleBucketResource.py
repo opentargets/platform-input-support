@@ -141,6 +141,7 @@ class GoogleBucketResource(object):
             return False
 
 
+
     # Return the filename with the latest date. Manage collision of dates only for the latest date.
     def extract_latest_file(self, list_blobs):
 
@@ -153,6 +154,11 @@ class GoogleBucketResource(object):
                 if date_file == recent_date:
                     if not self.is_a_spark_directory(filename):
                         possible_recent_date_collision = True
+                    else:
+                        # it is spark dir. Check if it is the same dir
+                        if os.path.dirname(filename) != os.path.dirname(last_recent_file):
+                            logger.info(filename + " vs " + last_recent_file)
+                            possible_recent_date_collision = True
                 if date_file > recent_date:
                     possible_recent_date_collision = False
                     recent_date = date_file
