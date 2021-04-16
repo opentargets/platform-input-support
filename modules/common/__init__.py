@@ -81,7 +81,6 @@ def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_DIR)
     get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
     get_output_dir(None, PIS_OUTPUT_EVIDENCES)
-    get_output_dir(None, PIS_OUTPUT_SUBSET_EVIDENCES)
     get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
     get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
     get_output_dir(None, PIS_OUTPUT_TEP)
