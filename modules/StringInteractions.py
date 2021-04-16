@@ -26,6 +26,7 @@ class StringInteractions(object):
         self.output_folder = PIS_OUTPUT_INTERACTIONS
         self.yaml = yaml_dict
         self.string_url = yaml_dict.string_info.uri
+        self.string_info = yaml_dict.string_info
         self.score_limit = yaml_dict.string_info.score_threshold
         self.ensembl_gtf_url = yaml_dict.string_info.additional_resouces.ensembl_ftp
         self.network_json_schema_url = yaml_dict.string_info.additional_resouces.network_json_schema.url
@@ -39,7 +40,10 @@ class StringInteractions(object):
         ensembl_protein_mapping = self.get_ensembl_protein_mapping()
         self.list_files_downloaded[ensembl_protein_mapping] = {'resource': self.ensembl_gtf_url.resource,
                                                       'gs_output_dir': self.gs_output_dir }
-        string_file = self.fetch_data()
+
+        # Old implementation - ToDo: remove it after check with DS.
+        #string_file = self.fetch_data()
+        string_file = self.download.execute_download(self.string_info)
         self.list_files_downloaded[string_file] = {'resource': self.yaml.string_info.resource,
                                                   'gs_output_dir': self.gs_output_dir }
 

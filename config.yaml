@@ -298,6 +298,7 @@ interactions:
     resource: uniprot-interaction
   string_info: 
     uri: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
+    output_filename: string-interactions.json.gz
     output_string: string-interactions-{suffix}.json.gz
     resource: string-interaction
     score_threshold: 0
