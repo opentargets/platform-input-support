@@ -94,8 +94,8 @@ efo:
     resource: hpo-phenotype
   disease:
     efo:
-      uri: https://github.com/EBISPOT/efo/releases/download/v3.29.0/efo_otar_slim.owl
-      output_filename: ontology-efo-v3.29.0.jsonl
+      uri: https://github.com/EBISPOT/efo/releases/download/v3.28.0/efo_otar_slim.owl
+      output_filename: ontology-efo-v3.28.0.jsonl
       resource: ontology-efo
       owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
       static:
