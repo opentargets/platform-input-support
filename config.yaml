@@ -353,6 +353,7 @@ evidences:
     resource: input-file
   - bucket: otar000-evidence_input/EPMC/json
     output_filename: epmc-{suffix}.json.gz
+    output_spark_dir: epmc-{suffix}
     resource: input-file
   - bucket: otar000-evidence_input/Gene2Phenotype/json
     output_filename: gene2phenotype-{suffix}.json.gz
