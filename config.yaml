@@ -94,8 +94,8 @@ efo:
     resource: hpo-phenotype
   disease:
     efo:
-      uri: https://github.com/EBISPOT/efo/releases/download/v3.28.0/efo_otar_slim.owl
-      output_filename: ontology-efo-v3.28.0.jsonl
+      uri: https://github.com/EBISPOT/efo/releases/download/v3.29.0/efo_otar_slim.owl
+      output_filename: ontology-efo-v3.29.0.jsonl
       resource: ontology-efo
       owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
       static:
@@ -107,7 +107,7 @@ efo:
       resource: ontology-hpo
       owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class") | @json'
     mondo:
-      uri: https://github.com/monarch-initiative/mondo/releases/download/v2021-01-29/mondo.owl
+      uri: https://github.com/monarch-initiative/mondo/releases/download/v2021-04-07/mondo.owl
       output_filename: ontology-mondo.jsonl
       resource: ontology-mondo
       owl_jq: '.["@graph"][] | @json'
@@ -184,12 +184,12 @@ known_target_safety:
     output_filename: references.tsv
     s_type: ref
 ensembl:
-  ensembl_release: homo_sapiens_core_102_38
+  ensembl_release: homo_sapiens_core_103_38
   extension_file: _genes.json.gz
   resource: ensembl-filename
   gs_output_dir: annotation-files
 drug:
-  gs_output_dir: annotation-files
+  gs_output_dir: annotation-files/chembl
   datasources:
     chembl:
       type: elasticsearch
@@ -254,7 +254,7 @@ drug:
             - 'warning_type'
             - 'warning_year'
 ChEMBL:
-  gs_output_dir: annotation-files
+  gs_output_dir: annotation-files/chembl
   downloads:
     drug:
       uri: https://www.ebi.ac.uk/chembl/api/data/drug_indication.json
