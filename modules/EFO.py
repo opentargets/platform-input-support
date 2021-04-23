@@ -40,14 +40,6 @@ class EFO(object):
 
         return destination_filename
 
-    # This method will be soon obsolete. Legacy with data_pipeline
-    def download_extra_files(self,yaml):
-        for entry in yaml:
-            download = DownloadResource(self.local_output_dir)
-            destination_filename = download.execute_download(entry)
-            self.list_files_downloaded[destination_filename] = {'resource': entry.resource,
-                                                                'gs_output_dir': self.output_dir}
-        return destination_filename
 
     # This method download and convert the owl file into JSON using riot.
     # More details in the README
@@ -101,8 +93,6 @@ class EFO(object):
 
     def generate_efo(self):
         logger.info("Running EFO step ")
-        #Potentially obsolete soon! Legacy data_pipeline : TODO remove legacy
-        self.download_extra_files(self.yaml.efo_extra_downloads)
 
         # Generate the ontologies and the phenotype mapping file.
         self.get_hpo_phenotype()
