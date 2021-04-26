@@ -7,9 +7,7 @@ the OT pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
 - annotations
-- annotations_qc
 - annotations_from_buckets
-- ChEMBL
 - chemical_probes
 - drug
 - eco
@@ -189,11 +187,11 @@ python platform-input-support.py
          --google_credential_key /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
          -steps annotations evidence
-         -exclude ChEMBL
+         -exclude drug
 or
 python platform-input-support.py
          -gkey /path/open-targets-gac.json
-         -gb bucket/object_path -steps ChEMBL
+         -gb bucket/object_path -steps drug
          --log-level DEBUG > log.txt
 ```
 
@@ -232,13 +230,13 @@ Use nohup to avoid that the process hang up.
 Eg.
 nohup python platform-input-support.py
          -gkey /path/open-targets-gac.json
-         -gb bucket/object_path -steps ChEMBL
+         -gb bucket/object_path -steps drug
          --log-level DEBUG > log.txt &
 ```
 
 # Step guides
 
-The program is broken into steps such as `ChEMBL`, `interactions`, etc. Each step can be configured as necessary in the 
+The program is broken into steps such as `drug`, `interactions`, etc. Each step can be configured as necessary in the 
 config file and run using command line arguments. 
 
 ## EFO step (disease)
