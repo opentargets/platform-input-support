@@ -2,7 +2,6 @@ import logging
 from .DownloadResource import DownloadResource
 from .GoogleBucketResource import GoogleBucketResource
 from .EnsemblResource import EnsemblResource
-from .ChEMBL import ChEMBLLookup
 from .ChemicalProbesResource import ChemicalProbesResource
 from .Drug import Drug
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
@@ -13,7 +12,6 @@ from .Interactions import Interactions
 from .StringInteractions import StringInteractions
 from definitions import *
 from .DataPipelineConfig import DataPipelineConfig
-from .AnnotationQC import AnnotationQC
 from .common import get_lines, make_unzip_single_file, init_output_dirs, get_output_dir
 import time
 
@@ -110,15 +108,6 @@ class RetrieveResource(object):
         list_files_string = string_resource.getStringResources()
         self.list_files_downloaded.update(list_files_string)
 
-    # config.yaml ChEMBL REST API
-    def get_ChEMBL(self):
-        chembl_handler = ChEMBLLookup(self.yaml.ChEMBL)
-        # standard files
-        list_files_ChEMBL_unzipped = chembl_handler.download_chEMBL_resources()
-        # compressed files (.gz)
-        list_files_ChEMBL = chembl_handler.compress_ChEMBL_files(list_files_ChEMBL_unzipped)
-        self.list_files_downloaded.update(list_files_ChEMBL)
-
     def get_drug(self):
         """
         Retrieves all resources specified in the `config.yaml` `drug` section and updates the `list_files_downloaded`
@@ -184,15 +173,6 @@ class RetrieveResource(object):
 
         self.get_stats_files(list_files_evidence)
 
-
-    def annotations_qc(self, google_opts):
-        if not google_opts:
-            logging.error("The Annotation QC step requires Google Cloud credential")
-        else:
-            datatype_qc = AnnotationQC(self.yaml.annotations_qc, self.list_files_downloaded, PIS_OUTPUT_ANNOTATIONS_QC)
-            list_files_downloaded = datatype_qc.execute()
-            self.list_files_downloaded.update(list_files_downloaded)
-
     def copy_files_to_google_storage(self):
         params = GoogleBucketResource.get_bucket_and_path(self.args.google_bucket)
         google_resource = GoogleBucketResource(bucket_name=params)
@@ -235,8 +215,6 @@ class RetrieveResource(object):
         init_output_dirs()
         if self.has_step("annotations") : self.annotations_downloaded_by_uri()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
-        if self.has_step("annotations_qc"): self.annotations_qc(google_opts)
-        if self.has_step("ChEMBL"): self.get_ChEMBL()
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("drug"): self.get_drug()
         if self.has_step("efo"): self.get_efo()
