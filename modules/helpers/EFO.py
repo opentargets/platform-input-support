@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 
 # EFO
 # The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
-# The structure restriction and class_restriction are used to retrieve location info.
 # The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
 # term and obsolete terms.
+# The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
 
 class EFO(object):
 
@@ -19,13 +19,11 @@ class EFO(object):
         self.efo_input = efo_input
         self.diseases = {}
         self.diseases_obsolete = {}
-        self.restriction = {}
-        self.class_restriction = {}
         self.has_location_ids = {}
         self.all_path= {}
+        self.parent_child_tuples = []
 
     def init_disease(self, id, code):
-        self.all_path[id] = []
         self.diseases[id] = {}
         self.diseases[id]['id'] = id
         self.diseases[id]['code'] = code
@@ -177,6 +175,19 @@ class EFO(object):
         else:
             return False
 
+    # LocationIds: This procedure fills in the structure parent,child
+    def set_locationIds_structure(self, disease_id, disease):
+        collection = None
+        if "unionOf" in disease:
+            collection = disease["unionOf"]["@list"]
+        elif "intersectionOf" in disease:
+            collection = disease["intersectionOf"]["@list"]
+
+        if collection is not None:
+            for elem in collection:
+                if elem.startswith('_:'):
+                    self.parent_child_tuples.append((disease["@id"], elem))
+
     def load_type_class(self, disease, disease_id):
         if not disease["@id"].startswith('_:'):
             code = self.get_prefix(disease_id) + disease_id
@@ -189,11 +200,8 @@ class EFO(object):
             self.set_phenotypes_old(disease_id, disease)
             self.set_parents(disease_id, disease)
         else:
-            if "unionOf" in disease:
-                self.class_restriction[disease["@id"]] = disease["unionOf"]["@list"]
-            else:
-                # Todo: check this case
-                self.class_restriction[disease["@id"]] = disease["intersectionOf"]["@list"]
+            self.set_locationIds_structure(disease_id, disease)
+
 
     #
     def get_obsolete_info(self):
@@ -201,21 +209,43 @@ class EFO(object):
             if k in self.diseases:
                 self.diseases[k]['obsoleteTerms'] = list(self.diseases_obsolete[k])
 
-    def get_locationIds(self):
-        for k,v in self.has_location_ids.items():
-            if k in self.restriction:
-                self.diseases[v]["locationIds"] = set()
-                value = self.restriction[k]
-                if value.startswith("_:"):
-                    match = self.class_restriction[value]
-                    for item in match:
-                        if item.startswith("_:"):
-                            if item in self.restriction:
-                                self.diseases[v]["locationIds"].add(re.sub(r'^.*?:', '', self.restriction[item]))
-                        else:
-                            self.diseases[v]["locationIds"].add(re.sub(r'^.*?:', '', item))
+
+    # LocationIds: This is part of the structure to retrieve the info about locationIds
+    def get_children(self, node):
+        return [x[1] for x in self.parent_child_tuples if x[0] == node]
+
+    # LocationIds: This is part of the structure to retrieve the info about locationIds.
+    # Recursively retrieve the location.
+    def get_nodes(self, node, path):
+        data= set()
+        data.add(node)
+        path.add(node)
+        children = self.get_children(node)
+        if children:
+            lista = set()
+            for child in children:
+                if not child.startswith("obo:"):
+                    lista.update(self.get_nodes(child, path))
                 else:
-                    self.diseases[v]["locationIds"].add(re.sub(r'^.*?:', '', value))
+                    child_clean_code = re.sub(r'^.*?:', '', child)
+                    lista.add(child_clean_code)
+            data.update(lista)
+        return data
+
+    # LocationIds are stored in the restriction tag.
+    # The info are stored inside a structure json parent-child
+    def get_locationIds(self):
+        parents, children = zip(*self.parent_child_tuples)
+        self.root_nodes = {x for x in parents if x not in children}
+        for node in self.root_nodes:
+            result = self.get_nodes(node, set())
+            self.all_path[node] = [x for x in list(result) if not x.startswith('_:')]
+
+        for k,v in self.has_location_ids.items():
+            if k in self.all_path:
+                if not "locationIds" in self.diseases[v]:
+                    self.diseases[v]["locationIds"] = set()
+                self.diseases[v]["locationIds"].update(self.all_path[k])
 
 
     # For any term it generates the dict id info.
@@ -230,7 +260,7 @@ class EFO(object):
                     else:
                         # @Type: Restriction
                         if 'someValuesFrom' in disease:
-                            self.restriction[disease["@id"]] = disease["someValuesFrom"]
+                            self.parent_child_tuples.append((disease["@id"], disease["someValuesFrom"]))
 
         self.get_obsolete_info()
         self.get_locationIds()
