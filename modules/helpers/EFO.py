@@ -274,6 +274,8 @@ class EFO(object):
                 entry = {k: v for k, v in self.diseases[id].items() if k in valid_keys}
                 entry["parentIds"] = entry["parents"]
                 del(entry["parents"])
+                entry["name"] = entry["label"]
+                del (entry["label"])
 
                 writer.write(entry)
 
