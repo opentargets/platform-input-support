@@ -22,7 +22,7 @@ class TestDiseaseStep(unittest.TestCase):
 
     def testDisease(self):
         EFOModule = EFO(self.efo_filename)
-        process = subprocess.Popen("cat "+ self.efo_filename +"| grep -v deprecated | wc -l",
+        process = subprocess.Popen("cat "+ self.efo_filename +"| grep -v deprecated | grep -v 'Restric' | grep -v 'intersectionOf' | wc -l",
                                    shell=True,
                                    stdout=subprocess.PIPE,
                                    )
