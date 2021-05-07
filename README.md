@@ -76,6 +76,16 @@ docker build --tag pis-py3 <path to Dockerfile>
 ```
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
+
+## Singularity 
+``` shell
+singularity exec \
+   -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
+   docker://quay.io/opentargets/platform-input-support:cm_singularity \
+   conda run --no-capture-output -n pis-py3 python3 /usr/src/app/platform-input-support.py -steps drug
+  
+```
+
 ## Apache-Jena : Install Riot
 ```
 cd ~

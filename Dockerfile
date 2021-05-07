@@ -15,4 +15,6 @@ ENV PATH /opt/conda/envs/$conda_env/bin:$PATH
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
+#RUN echo "PWD is: $PWD"
+
 ENTRYPOINT [ "docker-script/entrypoint.sh" ]
