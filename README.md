@@ -90,13 +90,17 @@ singularity exec \
 ## Run PIS inside EBI infrastructure
 In order to run PIS inside the current EBI infrastructure the best praticse is to use Singularity and LSF.
 
-First of all check the google cloud account rights.
+First of all check the google cloud account rights for the proper project.
 ```shell
 ls -la /homes/$USER/.config/gcloud/application_default_credentials.json
 ```
 
 Eventually run the following command to generate the file above:
 ```shell
+gcloud config set project open-targets-eu-dev
+or
+gcloud config set project open-targets-prod
+
 gcloud auth application-default login
 ```
 You can use `singularity/ebi.sh` to run PIS inside the EBI infrastructure.
