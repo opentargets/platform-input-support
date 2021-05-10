@@ -1,4 +1,4 @@
-from definitions import PIS_OUTPUT_CHEMBL_API
+from definitions import PIS_OUTPUT_CHEMBL_ES
 from .common import ElasticsearchReader
 from .common.ElasticsearchReader import ElasticsearchReader
 from datetime import datetime
@@ -62,7 +62,7 @@ class Drug(object):
             logger.debug("Validating elasticsearch port from config.")
             return port is not None and isinstance(port, int)
         indices = source['indices']
-        output_dir = PIS_OUTPUT_CHEMBL_API
+        output_dir = PIS_OUTPUT_CHEMBL_ES
         host = source['url']
         port = source['port']
 

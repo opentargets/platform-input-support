@@ -76,6 +76,50 @@ docker build --tag pis-py3 <path to Dockerfile>
 ```
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
+
+## Singularity 
+This is an example how to run singularity using the docker image.
+``` shell
+singularity exec \
+   -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
+   docker://quay.io/opentargets/platform-input-support:cm_singularity \
+   conda run --no-capture-output -n pis-py3 python3 /usr/src/app/platform-input-support.py -steps drug
+  
+```
+
+## Run PIS inside EBI infrastructure
+In order to run PIS inside the current EBI infrastructure the best praticse is to use Singularity and LSF.
+
+First of all check the google cloud account rights for the proper project.
+```shell
+ls -la /homes/$USER/.config/gcloud/application_default_credentials.json
+```
+
+Eventually run the following command to generate the file above:
+```shell
+gcloud config set project open-targets-eu-dev
+or
+gcloud config set project open-targets-prod
+
+gcloud auth application-default login
+```
+You can use `singularity/ebi.sh` to run PIS inside the EBI infrastructure.
+```
+ ./singularity docker_tag_image step google_storage_path 
+```
+where 
+* docker_tag_image: docker image tag (quay.io)
+* step : Eg. drug 
+* google_storage_path: gs bucket [not mandatory]
+
+```shell
+ ./singularity/ebi.sh 21.04 drug 
+ 
+ ./singularity/ebi.sh 21.04 drug ot-snapshots/21.04/input
+
+```
+
+
 ## Apache-Jena : Install Riot
 ```
 cd ~
