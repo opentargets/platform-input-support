@@ -162,7 +162,7 @@ known_target_safety:
     output_filename: references.tsv
     s_type: ref
 ensembl:
-  ensembl_release: homo_sapiens_core_103_38
+  ensembl_release: homo_sapiens_core_104_38
   extension_file: _genes.json.gz
   resource: ensembl-filename
   gs_output_dir: annotation-files
