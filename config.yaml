@@ -73,6 +73,9 @@ annotations_from_buckets:
     output_filename: drugbank-{suffix}.csv.gz
     resource: drugbank
   - bucket: otar001-core/ExperimentalToxicity
+    output_filename: ToxCast_2021-{suffix}.tsv
+    resource: experimental-toxicity
+  - bucket: otar001-core/ExperimentalToxicity
     output_filename: experimental-toxicity-{suffix}.tsv
     resource: experimental-toxicity
 eco:
@@ -227,6 +230,16 @@ target:
     uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
     output_filename: Homo_sapiens.gene_info.gz
     resource: target-ncbi
+  safety:
+    - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
+      output_filename: gene_identifiers_latest.csv.gz
+      resource: target-ps
+    - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
+      output_filename: essentiality_matrices.zip
+      resource: target-ps
+    - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
+      output_filename: essentiality_matrices.zip
+      resource: target-ps
 ensembl:
   ensembl_release: homo_sapiens_core_102_38
   extension_file: _genes.json.gz
