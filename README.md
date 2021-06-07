@@ -2,7 +2,7 @@
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a specific google storage bucket.
 
-Currently, the application executes 13 steps and finally it generates a Yaml config file that can be used to run the
+Currently, the application executes the below steps and finally it generates a Yaml config file that can be used to run the
 the OT pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
@@ -16,6 +16,7 @@ List of available steps:
 - evidence
 - interactions
 - known_target_safety
+- mouse_phenotypes
 - tep
 
 
@@ -305,6 +306,11 @@ index and fields which are required in the config file.
 ChEMBL's ES instance is only available from within the EMBL-EBI VPN. If you need to run this step it is necessary that you
 use a machine that is connected to the VPN network. 
 
+## Mouse Phenotypes
+
+There is some logic in `MousePhenotypes.py` as it relies on a separate Python project to traverse OWL documents and 
+extract information about mouse phenotypes. This work was previously done in the data pipeline but has been migrated 
+here in anticipation of its deprecation. 
 
 # Application architecture
 

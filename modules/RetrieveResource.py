@@ -4,6 +4,7 @@ from .GoogleBucketResource import GoogleBucketResource
 from .EnsemblResource import EnsemblResource
 from .ChemicalProbesResource import ChemicalProbesResource
 from .Drug import Drug
+from .MousePhenotypes import MousePhenotypes
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
 from .TEP import TEP
 from .EFO import EFO
@@ -17,6 +18,7 @@ import time
 
 
 logger = logging.getLogger(__name__)
+
 
 class RetrieveResource(object):
 
@@ -117,6 +119,16 @@ class RetrieveResource(object):
         files = drug.get_all()
         self.list_files_downloaded.update(files)
 
+    def get_mouse_phenotypes(self):
+        """
+        Saves JSON representation of mouse phenotype ontology as required by the ETL. Ported from the Data Pipeline.
+        """
+        mp = MousePhenotypes(self.yaml.mouse_phenotypes)
+        mp_file = mp.run()
+        self.list_files_downloaded[mp_file] = {'resource': self.yaml.mouse_phenotypes.resource,
+                                                    'gs_output_dir': self.yaml.mouse_phenotypes.gs_output_dir}
+
+
     def get_file_from_bucket(self, entry, output, gs_output_dir):
         param = GoogleBucketResource.get_bucket_and_path(entry.bucket)
         google_resource = GoogleBucketResource(bucket_name=param)
@@ -190,7 +202,7 @@ class RetrieveResource(object):
     def create_yaml_config_file(self):
         data_pipeline_config_file = DataPipelineConfig(self.yaml_data_pipeline_schema)
         if len(self.list_files_downloaded) > 0:
-            data_pipeline_config_file.create_config_file_etl(self.list_google_storage_files,'etl.')
+            data_pipeline_config_file.create_config_file_etl(self.list_google_storage_files, 'etl.')
             data_pipeline_config_file.create_config_file(self.list_google_storage_files, 'gs.')
             data_pipeline_config_file.create_config_file(self.list_files_downloaded, 'local.')
 
@@ -223,6 +235,7 @@ class RetrieveResource(object):
         if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
+        if self.has_step("mouse_phenotype"): self.get_mouse_phenotypes()
         if self.has_step("tep"): self.get_TEP()
 
         # At this point the auth key is already valid.

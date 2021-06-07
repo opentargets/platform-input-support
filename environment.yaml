@@ -115,6 +115,7 @@ dependencies:
     - inflection==0.5.1
     - jsonschema==3.2.0
     - markdown==3.3.3
+    - opentargets-ontologyutils==1.2.4
     - opentargets-urlzsource==1.0.0
     - pyrsistent==0.17.3
     - python-jsonschema-objects==0.3.13
