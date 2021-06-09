@@ -53,16 +53,23 @@ class Target(object):
                 logger.debug(f"Found {fname} in {output_dir}: will not download again.")
         return downloaded_files
 
-    def download_and_process_ensembl(self, config: Dict, output_dir: str) -> str:
+    def download_and_process_ensembl(self, config: Dict, output_dir: str, jq_binary='/usr/bin/jq') -> str:
         """
         Downloads raw ensembl file, converts to jsonl and filters using jq filter before uploading.
         Return: downloaded file name.
         """
-        download = DownloadResource("/tmp")
-        downloaded_file = download.ftp_download(config)
-        with open(output_dir + '/' + config.output_filename, "wb") as jsonwrite:
-            jqp = subprocess.Popen([self.config.jq_cmd, "-c", config.jq, downloaded_file], stdout=subprocess.PIPE)
-            jsonwrite.write(jqp.stdout.read())
+        jsonl_filename = os.path.join(output_dir, config.jq_filename)
+
+        if file_already_downloaded(jsonl_filename):
+            logger.debug("Ensembl jsonl exists, will not recompute.")
+        else:
+            logger.info("Converting Ensembl json file into jsonl.")
+            raw_json = os.path.join(output_dir, config.output_filename)
+            with open(jsonl_filename, "wb") as jsonwrite:
+                jqp = subprocess.Popen([jq_binary, "-c", config.jq, raw_json], stdout=subprocess.PIPE)
+                jsonwrite.write(jqp.stdout.read())
+
+        return jsonl_filename
 
     def download_ftp_files(self, name: str, config: Dict, output_dir: str) -> List[str]:
         logger.info(f"Downloading {name} files.")
@@ -70,12 +77,12 @@ class Target(object):
         downloaded_files = []
         for f in config:
             if not file_already_downloaded(os.path.join(output_dir, f.output_filename)):
-                if f.filename != "homo_sapiens.json":
-                    downloaded_files.append(download.ftp_download(f))
-                else:
-                    downloaded_files.append(self.download_and_process_ensembl(f))
+                downloaded_files.append(self.download_and_process_ensembl(f, output_dir))
             else:
                 logger.debug(f"{f.output_filename} already exists: will not download again.")
+
+            if f.output_filename == "homo_sapiens.json" :
+                self.download_and_process_ensembl(f, output_dir)
         return downloaded_files
 
     def download_gnomad(self):
