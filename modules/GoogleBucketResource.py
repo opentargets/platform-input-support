@@ -135,7 +135,7 @@ class GoogleBucketResource(object):
 
 
     def is_a_spark_directory(self, filename):
-        if (filename.find("/_SUCCESS") > 0) or (filename.find("/part-0") > 0):
+        if (filename.find("/_SUCCESS") > 0) or (filename.find("/part-0") > 0) or (filename.find("/.part-0") > 0) or (filename.find("/._")>0):
             return True
         else:
             return False
