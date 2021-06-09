@@ -1,5 +1,6 @@
 import logging
 import os
+import subprocess
 from typing import Dict, List
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
@@ -52,13 +53,27 @@ class Target(object):
                 logger.debug(f"Found {fname} in {output_dir}: will not download again.")
         return downloaded_files
 
+    def download_and_process_ensembl(self, config: Dict, output_dir: str) -> str:
+        """
+        Downloads raw ensembl file, converts to jsonl and filters using jq filter before uploading.
+        Return: downloaded file name.
+        """
+        download = DownloadResource("/tmp")
+        downloaded_file = download.ftp_download(config)
+        with open(output_dir + '/' + config.output_filename, "wb") as jsonwrite:
+            jqp = subprocess.Popen([self.config.jq_cmd, "-c", config.jq, downloaded_file], stdout=subprocess.PIPE)
+            jsonwrite.write(jqp.stdout.read())
+
     def download_ftp_files(self, name: str, config: Dict, output_dir: str) -> List[str]:
         logger.info(f"Downloading {name} files.")
         download = DownloadResource(output_dir)
         downloaded_files = []
         for f in config:
             if not file_already_downloaded(os.path.join(output_dir, f.output_filename)):
-                downloaded_files.append(download.ftp_download(f))
+                if f.filename != "homo_sapiens.json":
+                    downloaded_files.append(download.ftp_download(f))
+                else:
+                    downloaded_files.append(self.download_and_process_ensembl(f))
             else:
                 logger.debug(f"{f.output_filename} already exists: will not download again.")
         return downloaded_files
@@ -103,7 +118,8 @@ class Target(object):
         sources: List[str] = [self.download_hpa(),
                               self.download_gnomad(),
                               self.download_ncbi()]
-        sources = sources + self.download_ftp_files("gene ontology", self.config.go, os.path.join(self.output_dir, "go"))
+        sources = sources + self.download_ftp_files("gene ontology", self.config.go,
+                                                    os.path.join(self.output_dir, "go"))
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
                                                                                                  "ensembl"))
         sources = sources + self.download_project_scores()
@@ -112,5 +128,3 @@ class Target(object):
             downloaded_files[f] = {'resource': "{}".format(f), 'gs_output_dir': self.config[
                 'gs_output_dir']}
         return downloaded_files
-
-
