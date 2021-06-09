@@ -77,11 +77,11 @@ class Target(object):
         downloaded_files = []
         for f in config:
             if not file_already_downloaded(os.path.join(output_dir, f.output_filename)):
-                downloaded_files.append(self.download_and_process_ensembl(f, output_dir))
+                downloaded_files.append(download.ftp_download(f))
             else:
                 logger.debug(f"{f.output_filename} already exists: will not download again.")
 
-            if f.output_filename == "homo_sapiens.json" :
+            if f.output_filename == "homo_sapiens.json":
                 self.download_and_process_ensembl(f, output_dir)
         return downloaded_files
 
