@@ -8,4 +8,6 @@ RUN conda update -n base -c defaults conda
 RUN conda env create --file environment.yaml
 ENV PATH /opt/conda/envs/$conda_env/bin:$PATH
 
+RUN apt install -y jq
+
 ENTRYPOINT [ "/bin/bash" ]
