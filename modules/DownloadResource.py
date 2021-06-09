@@ -4,6 +4,8 @@ import logging
 import threading
 
 # Common packages
+from typing import Dict
+
 from modules.common.TqdmUpTo import TqdmUpTo
 
 
@@ -66,10 +68,10 @@ class DownloadResource(object):
     def execute_download_threaded(self, resource_info):
         self.execute_download(resource_info)
 
-    def ftp_download(self, resource_info) -> str:
-        print("Start to download\n\t{uri} ".format(uri=resource_info['uri']))
-        filename = self.set_filename(resource_info['output_filename'])
-        urllib.request.urlretrieve(resource_info['uri'], filename)
+    def ftp_download(self, resource_info: Dict) -> str:
+        print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
+        filename = self.set_filename(resource_info.output_filename)
+        urllib.request.urlretrieve(resource_info.uri, filename)
         urllib.request.urlcleanup()
 
         return filename
