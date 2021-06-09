@@ -228,6 +228,24 @@ optional arguments:
 
 ```
 
+## Using Docker to run PIS during development
+
+If you want to run PIS in a Docker container follow these steps:
+
+1. Get the code
+   `git clone https://github.com/opentargets/platform-input-support` 
+1. create container
+   `docker build --tag <image tag> <path to Dockerfile>`
+2. start container mounting the cloned code as a volume (here I assume you cloned the code into your home directory)
+  `docker run -v ~/platform-input-support:/usr/src/app --rm -it --entrypoint bash <image tag>`
+   This command will drop you into a bash shell inside the container, where you can execute the code.
+   
+3 activate environment
+  `conda activate pis-py3`
+
+4. execute code
+  `python platform-input-support.py -steps <step> --log-level=DEBUG`
+   
 # Logging.ini
 The directory **"resources"** contains the file logging.ini with a list of default value.
 If the logging.ini is not available or the user removes it than the code sets up a list of default parameters.
