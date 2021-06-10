@@ -177,6 +177,7 @@ drug:
         chembl-indication:
           name: chembl_28_drug_indication
           fields:
+            - '_metadata'
             - 'molecule_chembl_id'
             - 'efo_id'
             - 'max_phase_for_ind'
