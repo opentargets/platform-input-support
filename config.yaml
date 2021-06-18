@@ -78,7 +78,7 @@ annotations_from_buckets:
 eco:
   gs_output_dir: annotation-files/ontology
   eco_downloads:
-    - uri: https://raw.githubusercontent.com/evidenceontology/evidenceontology/v2021-01-08/eco.owl
+    - uri: https://raw.githubusercontent.com/evidenceontology/evidenceontology/v2021-06-04/eco.owl
       output_filename: ontology-eco-{suffix}.owl
       resource: ontology-eco
       owl_jq: '.["@graph"][]'
@@ -94,8 +94,8 @@ efo:
     resource: hpo-phenotype
   disease:
     efo:
-      uri: https://github.com/EBISPOT/efo/releases/download/v3.28.0/efo_otar_slim.owl
-      output_filename: ontology-efo-v3.28.0.jsonl
+      uri: https://github.com/EBISPOT/efo/releases/download/v3.31.0/efo_otar_slim.owl
+      output_filename: ontology-efo-v3.31.0.jsonl
       resource: ontology-efo
       owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
       static:
@@ -107,7 +107,7 @@ efo:
       resource: ontology-hpo
       owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class") | @json'
     mondo:
-      uri: https://github.com/monarch-initiative/mondo/releases/download/v2021-04-07/mondo.owl
+      uri: https://github.com/monarch-initiative/mondo/releases/download/v2021-06-01/mondo.owl
       output_filename: ontology-mondo.jsonl
       resource: ontology-mondo
       owl_jq: '.["@graph"][] | @json'
