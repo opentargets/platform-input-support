@@ -257,7 +257,7 @@ interactions:
     score_limit:
     additional_resouces:
       ensembl_ftp:
-        uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.103.chr.gtf.gz
+        uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.104.chr.gtf.gz
         output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
         output_protein_mapping: ensembl-protein-{suffix}.json.gz
         resource: string-interaction-ensembl-protein
@@ -266,6 +266,10 @@ interactions:
 evidences:
   gs_output_dir: evidence-files
   downloads:
+  - bucket: otar000-evidence_input/Orphanet/json
+    output_filename: orphanet-{suffix}.json.gz
+    output_spark_dir: orphanet-{suffix}
+    resource: input-file
   - bucket: otar000-evidence_input/ClinGen/json
     output_filename: clingen-{suffix}.json.gz
     output_spark_dir: clingen-{suffix}
