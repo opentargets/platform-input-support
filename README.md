@@ -134,13 +134,29 @@ source .bashrc
 
 ```
 # Overview of config.yaml
-The *config.yaml* file contains several sections.
-Most of the sections are used by the steps in order to download, to extract and to manipulate 
+
+The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download, to extract and to manipulate 
 the input and generate the proper output.
 
-The section **config** can be used for specify where are installed riot or jq if the command shutil.which fails.
+The section **config** can be used for specify where `riot` or `jq` are installed. 
 
 _**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command _riot_
+
+## A note on zip files
+
+We are only building the functionality which we need which introduces some limitations. At present if a zip file is downloaded 
+we only extract _1_ file from the archive. To configure a zip file create an entry in the config such as:
+
+```yaml
+  - uri: https://probeminer.icr.ac.uk/probeminer_datadump.zip
+    output_filename: probeminer-datadump-{suffix}.tsv.zip
+    unzip_file: true
+    resource: probeminer
+```
+The _unzip\_file_ flag tells `RetrieveResource.py` to treat the file as an archive.
+
+The `uri` field indicates from where to download the data. The archive will be saved under `output_filename`. The first
+element of the archive will be extracted under `output_filename` with the suffix '[gz|zip]' removed, so in this case, _probeminer-datadump-{suffix}.tsv_.
 
 # Set up application (first time)
 ```
