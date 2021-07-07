@@ -67,9 +67,6 @@ annotations_from_buckets:
   - bucket: otar001-core/CancerBiomarkers/annotation
     output_filename: cancerbiomarkers-{suffix}.tsv
     resource: biomarker
-  - bucket: otar001-core/ProbeMiner/annotation
-    output_filename: chemicalprobes_probeminer-{suffix}.tsv
-    resource: chemical-probes-2
   - bucket: otar001-core/AdverseEvents/annotation
     output_filename: adverse-events-{suffix}.csv.gz
     resource: adverse-events
