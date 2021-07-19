@@ -36,6 +36,8 @@ class DownloadResource(object):
         try:
             opener = urllib.request.build_opener()
             opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+            if resource_info.accept:
+                opener.addheaders = [('User-agent', 'Mozilla/5.0'), ('Accept', resource_info.accept)]
             urllib.request.install_opener(opener)
             destination_filename = self.set_filename(resource_info.output_filename)
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1,
@@ -62,10 +64,10 @@ class DownloadResource(object):
     def execute_download_threaded(self, resource_info):
         self.execute_download(resource_info)
 
-    def ftp_download(self, resource_info):
-        print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
-        filename = self.set_filename(resource_info.output_filename)
-        urllib.request.urlretrieve(resource_info.uri, filename)
+    def ftp_download(self, resource_info) -> str:
+        print("Start to download\n\t{uri} ".format(uri=resource_info['uri']))
+        filename = self.set_filename(resource_info['output_filename'])
+        urllib.request.urlretrieve(resource_info['uri'], filename)
         urllib.request.urlcleanup()
 
         return filename

@@ -236,6 +236,28 @@ drug:
             - 'warning_refs'
             - 'warning_type'
             - 'warning_year'
+homologies:
+  gs_output_dir: annotation-files/homology
+  release: 104
+  resources:
+      - 'caenorhabditis_elegans'
+     # - 'caenorhabditis_elegans_N2'
+     # - 'canis_familiaris' // check this exists
+      - 'canis_lupus_familiaris'
+      - 'cavia_porcellus'
+      - 'danio_rerio'
+      - 'drosophila_melanogaster'
+      - 'homo_sapiens'
+      - 'macaca_mulatta'
+      - 'mus_musculus'
+    #  - 'mus_musculus_reference' // check this exists
+    #  - 'mus_musculus_reference_(CL57BL6)' // check this exists
+      - 'oryctolagus_cuniculus'
+      - 'pan_troglodytes'
+      - 'rattus_norvegicus'
+      - 'sus_scrofa'
+      - 'sus_scrofa_usmarc'
+      - 'xenopus_tropicalis'
 interactions:
   gs_output_dir: annotation-files/interactions
   intact_info:
