@@ -1,4 +1,8 @@
-from definitions import PIS_OUTPUT_CHEMBL_ES
+import os
+import zipfile
+
+from definitions import PIS_OUTPUT_CHEMBL_ES, PIS_OUTPUT_DRUG
+from .DownloadResource import DownloadResource
 from .common import ElasticsearchReader
 from .common.ElasticsearchReader import ElasticsearchReader
 from datetime import datetime
@@ -54,6 +58,7 @@ class Drug(object):
         :param source: `datasource` entry from the `config.yaml` file.
         :return: list of files downloaded.
         """
+
         def _validate_host(host):
             logger.debug("Validating elasticsearch host from config.")
             return host is not None and isinstance(host, str)
@@ -61,6 +66,7 @@ class Drug(object):
         def _validate_port(port):
             logger.debug("Validating elasticsearch port from config.")
             return port is not None and isinstance(port, int)
+
         indices = source['indices']
         output_dir = PIS_OUTPUT_CHEMBL_ES
         host = source['url']
@@ -81,16 +87,27 @@ class Drug(object):
         The returned dictionary has form k -> {'resource': <filename>, 'gs_output_dir': <output as in config>} so that
         it matches the structure of other steps and can be uploaded to GCP.
         """
-        downloaded_files = {} # key: source, values: {}
-        for source in list(self.sources.values()):
-            source_type = source['type']
-            logger.info("Processing drug datasource {} of type {}.".format(source, source_type))
-            if source_type == "elasticsearch":
-                es_files_written = self._handle_elasticsearch(source)
+        downloaded_files = {}  # key: source, values: {}
+        for sourceKey in list(self.sources.keys()):
+            if sourceKey == "chembl":
+                es_files_written = self._handle_elasticsearch(self.sources[sourceKey])
                 for f in es_files_written:
                     downloaded_files[f] = {'resource': "drug-{}".format(f), 'gs_output_dir': self.config[
                         'gs_output_dir']}
+            elif sourceKey == "downloads":
+                download = DownloadResource(PIS_OUTPUT_DRUG)
+                for entry in self.sources[sourceKey]:
+                    if entry.unzip_file:
+                        destination_filename = download.execute_download(entry)
+                        with zipfile.ZipFile(destination_filename, 'r') as zip_ref:
+                            file = zip_ref.filelist[0].filename
+                            zip_ref.extract(file, PIS_OUTPUT_DRUG)
+                            os.rename(os.path.join(PIS_OUTPUT_DRUG, file), os.path.join(PIS_OUTPUT_DRUG,
+                                                                                        entry.output_filename))
+                            downloaded_files[destination_filename] = {'resource': entry.resource,
+                                                                      'gs_output_dir': os.path.join(PIS_OUTPUT_DRUG,
+                                                                                                    entry.output_filename)}
+                        logger.info("Files downloaded: %s", destination_filename)
             else:
-                logger.warn("Unrecognised drug datasource: %s".format(source_type))
+                logger.warn("Unrecognised drug datasource: %s".format(sourceKey))
         return downloaded_files
-
