@@ -26,8 +26,11 @@ class TestDrugStep(unittest.TestCase):
         # file names 'saved' by step
         es_return_values = ['f1', 'f2', 'f3']
         mock1.return_value = es_return_values
+        # We only want to test the results of ES configuration at this point.
+        es_config = self.config['drug']
+        es_config.datasources.pop('downloads', None)
         # When
-        drugStep = Drug.Drug(self.config['drug'])
+        drugStep = Drug.Drug(es_config)
         results = drugStep.get_all()
         # Then
             # Each file saved should be in returned dictionary
