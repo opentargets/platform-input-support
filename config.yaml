@@ -41,6 +41,10 @@ annotations:
   - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
     output_filename: eco_scores-{suffix}.tsv
     resource: eco-scores
+  - uri: https://www.ebi.ac.uk/QuickGO/services/annotation/downloadSearch?includeFields=name,goName,taxonName&selectedFields=geneProductId,goId,goName,goaspect&downloadLimit=2000000&taxonId=9606&taxonUsage=descendants
+    output_filename: go-{suffix}.tsv
+    accept: 'text/tsv'
+    resource: gene-ontology
 annotations_from_buckets:
   gs_output_dir: annotation-files
   downloads:
