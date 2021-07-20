@@ -110,7 +110,7 @@ class RetrieveResource(object):
         self.list_files_downloaded.update(list_files_string)
 
     def get_homologues(self):
-        homologues = Homologues(self.yaml.homologies)
+        homologues = Homologues(self.yaml.homologies, self.yaml.config.jq)
 
         homology_files = homologues.download_resources()
 

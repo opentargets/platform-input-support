@@ -12,4 +12,7 @@ ENV PATH /opt/conda/envs/$conda_env/bin:$PATH
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
+# install helper utilities
+RUN apt install -y jq
+
 ENTRYPOINT [ "docker-script/entrypoint.sh" ]

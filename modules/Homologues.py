@@ -1,5 +1,8 @@
 import os
+import errno
 from typing import Dict
+
+import subprocess
 
 from definitions import PIS_OUTPUT_HOMOLOGY
 from .DownloadResource import DownloadResource
@@ -31,82 +34,80 @@ class Homologues(object):
 
     """
 
-    def __init__(self, yaml_dict):
+    def __init__(self, yaml_dict, jq_cmd):
         self.config: Dict = yaml_dict
         self.gs_output_dir = yaml_dict.gs_output_dir
         self.list_files_downloaded = {}
         self.download = DownloadResource(PIS_OUTPUT_HOMOLOGY)
+        self.jq = jq_cmd
 
         self.release = self.config.release
-        self.uri = 'ftp://ftp.ensembl.org/pub/release-{release}/tsv/ensembl-compara/homologies/'.format(release=
-                                                                                                        self.release)
+        self.uri = 'ftp://ftp.ensembl.org/pub/release-{release}/json/'.format(release=self.release)
+        self.jq_output = f"{PIS_OUTPUT_HOMOLOGY}_{self.release}_id_name.tsv"
 
     def _download_if_not_present(self, resource: Dict):
         """
         Download requested file if it does not already exist.
         """
-        if not os.path.isfile(os.path.join(self.download.output_dir, resource['output_filename'])):
+        path = os.path.join(self.download.output_dir, resource['output_filename'])
+        if not os.path.isfile(path):
             return self.download.ftp_download(resource)
         else:
             logger.info(f"{resource['output_filename']} already downloaded, will not download again.")
+            return path
 
-    def get_protein(self, species: str, ensembl_suffix="default"):
+    def download_species(self, species: str):
         """
         Download protein homology for species and suffix if file does not already exist.
 
         Most entries do not require suffix to be provided, but some such as sus_scrofa_usmarc have no standard ftp
         entries requiring a custom suffix.
         """
-        protein_uri = self.uri + "{species}/Compara.{release}.protein_{suffix}.homologies.tsv.gz".format(
-            species=species,
-            release=self.release,
-            suffix=ensembl_suffix)
+        protein_uri = self.uri + f"{species}/{species}.json"
         resource = {
             'uri': protein_uri,
-            'output_filename': f'{self.release}-{species}-protein.tsv.gz',
+            'output_filename': f'{self.release}-{species}.json',
             'output_dir': 'homologue',
             'resource': f'ensembl-homologue-{species}'
         }
         return self._download_if_not_present(resource)
 
-    def get_rna(self, species: str, ensembl_suffix="default"):
-        """
-        Download rna homology for species and suffix if file does not already exist.
+    def extract_fields_from_json(self, input_file) -> None:
 
-        Most entries do not require suffix to be provided, but some such as sus_scrofa_usmarc have no standard ftp
-        entries requiring a custom suffix.
-        """
-        protein_uri = self.uri + "{species}/Compara.{release}.ncrna_{suffix}.homologies.tsv.gz".format(species=species,
-                                                                                                       release=self.release,
-                                                                                                       suffix=ensembl_suffix)
-        resource = {
-            'uri': protein_uri,
-            'output_filename': f'{self.release}-{species}-rna.tsv.gz',
-            'output_dir': 'homologue',
-            'resource': f'ensembl-homologue-{species}'
-        }
-        return self._download_if_not_present(resource)
+        logger.info(f"Extracting id and name from: {input_file}")
+
+        with open(self.jq_output, "ba+") as tsv:
+            try:
+                jqp = subprocess.Popen(f"{self.jq} '{self.config['jq']}' {input_file}",
+                                       stdout=subprocess.PIPE,
+                                       shell=True)
+                tsv.write(jqp.stdout.read())
+
+            except OSError as e:
+                if e.errno == errno.ENOENT:
+                    # handle file not found error.
+                    logger.error(e)
+                else:
+                    # Something else went wrong
+                    raise
 
     def download_resources(self):
-        custom_suffix_species = {
-            'sus_scrofa_usmarc': "pig_breeds"
-        }
+
         for species in self.config.resources:
             logger.debug(f'Downloading files for {species}')
-            if species not in custom_suffix_species:
-                protein = self.get_protein(species)
-                rna = self.get_rna(species)
-            else:
-                protein = self.get_protein(species, custom_suffix_species[species])
-                rna = self.get_rna(species, custom_suffix_species[species])
+
+            filename = self.download_species(species)
+
+            self.extract_fields_from_json(filename)
 
             self.list_files_downloaded[f'{species}-protein'] = {
-                'resource': protein,
+                'resource': filename,
                 'gs_output_dir': self.gs_output_dir
             }
-            self.list_files_downloaded[f'{species}-rna'] = {
-                'resource': rna,
-                'gs_output_dir': self.gs_output_dir
-            }
+
+        self.list_files_downloaded["name_and_id"] = {
+            'resource': self.jq_output,
+            'gs_output_dir': self.gs_output_dir
+        }
 
         return self.list_files_downloaded

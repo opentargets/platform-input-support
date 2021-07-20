@@ -239,19 +239,15 @@ drug:
 homologies:
   gs_output_dir: annotation-files/homology
   release: 104
+  jq: ".genes[] | [.id, .name] | @tsv"
   resources:
       - 'caenorhabditis_elegans'
-     # - 'caenorhabditis_elegans_N2'
-     # - 'canis_familiaris' // check this exists
       - 'canis_lupus_familiaris'
       - 'cavia_porcellus'
       - 'danio_rerio'
       - 'drosophila_melanogaster'
-      - 'homo_sapiens'
       - 'macaca_mulatta'
       - 'mus_musculus'
-    #  - 'mus_musculus_reference' // check this exists
-    #  - 'mus_musculus_reference_(CL57BL6)' // check this exists
       - 'oryctolagus_cuniculus'
       - 'pan_troglodytes'
       - 'rattus_norvegicus'
