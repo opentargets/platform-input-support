@@ -72,42 +72,46 @@ class Homologues(object):
         }
         return self._download_if_not_present(resource)
 
-    def extract_fields_from_json(self, input_file) -> None:
+    def extract_fields_from_json(self, input_file: str) -> str:
 
-        logger.info(f"Extracting id and name from: {input_file}")
+        output_file: str = input_file.replace('json', 'tsv')
+        if not os.path.isfile(output_file):
+            logger.info(f"Extracting id and name from: {input_file}")
+            with open(output_file, "ba+") as tsv:
+                try:
+                    jqp = subprocess.Popen(f"{self.jq} '{self.config['jq']}' {input_file}",
+                                                             stdout=subprocess.PIPE,
+                                                             shell=True)
+                    tsv.write(jqp.stdout.read())
+                    return output_file
 
-        with open(self.jq_output, "ba+") as tsv:
-            try:
-                jqp = subprocess.Popen(f"{self.jq} '{self.config['jq']}' {input_file}",
-                                       stdout=subprocess.PIPE,
-                                       shell=True)
-                tsv.write(jqp.stdout.read())
-
-            except OSError as e:
-                if e.errno == errno.ENOENT:
-                    # handle file not found error.
-                    logger.error(e)
-                else:
-                    # Something else went wrong
-                    raise
+                except OSError as e:
+                    if e.errno == errno.ENOENT:
+                        # handle file not found error.
+                        logger.error(e)
+                    else:
+                        # Something else went wrong
+                        raise
+        else:
+            logger.info(f"{output_file} already processed into tsv, will not process again.")
+            return output_file
 
     def download_resources(self):
 
         for species in self.config.resources:
             logger.debug(f'Downloading files for {species}')
 
-            filename = self.download_species(species)
+            filename_json = self.download_species(species)
 
-            self.extract_fields_from_json(filename)
+            filename_tsv = self.extract_fields_from_json(filename_json)
 
-            self.list_files_downloaded[f'{species}-protein'] = {
-                'resource': filename,
+            self.list_files_downloaded[f'{species}-json'] = {
+                'resource': filename_json,
                 'gs_output_dir': self.gs_output_dir
             }
-
-        self.list_files_downloaded["name_and_id"] = {
-            'resource': self.jq_output,
-            'gs_output_dir': self.gs_output_dir
-        }
+            self.list_files_downloaded[f'{species}-tsv'] = {
+                'resource': filename_tsv,
+                'gs_output_dir': self.gs_output_dir
+            }
 
         return self.list_files_downloaded

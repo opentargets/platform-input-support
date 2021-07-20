@@ -14,6 +14,7 @@ List of available steps:
 - efo
 - ensembl
 - evidence
+- homologues
 - interactions
 - known_target_safety
 - tep
@@ -305,6 +306,12 @@ index and fields which are required in the config file.
 ChEMBL's ES instance is only available from within the EMBL-EBI VPN. If you need to run this step it is necessary that you
 use a machine that is connected to the VPN network. 
 
+## Homology Step
+
+This step is used to download raw json data from the ENSEMBL [ftp server](https://ftp.ensembl.org/pub/current_json/) for 
+specified species. These inputs are then processed with `jq` to extract the id and name fields which are required by the 
+ETL. The downloaded json files approach 30GB in size, and we only extract ~10MB from them. It is worth considering if we
+want to retain these files long-term. 
 
 # Application architecture
 
