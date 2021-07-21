@@ -4,6 +4,7 @@ from .GoogleBucketResource import GoogleBucketResource
 from .EnsemblResource import EnsemblResource
 from .ChemicalProbesResource import ChemicalProbesResource
 from .Drug import Drug
+from .Homologues import Homologues
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
 from .TEP import TEP
 from .EFO import EFO
@@ -107,6 +108,13 @@ class RetrieveResource(object):
         string_resource = StringInteractions(self.yaml.interactions)
         list_files_string = string_resource.getStringResources()
         self.list_files_downloaded.update(list_files_string)
+
+    def get_homologues(self):
+        homologues = Homologues(self.yaml.homologies, self.yaml.config.jq)
+
+        homology_files = homologues.download_resources()
+
+        self.list_files_downloaded.update(homology_files)
 
     def get_drug(self):
         """
@@ -222,6 +230,7 @@ class RetrieveResource(object):
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
+        if self.has_step("homologues"): self.get_homologues()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
 
