@@ -41,6 +41,10 @@ annotations:
   - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
     output_filename: eco_scores-{suffix}.tsv
     resource: eco-scores
+  - uri: https://probeminer.icr.ac.uk/probeminer_datadump.zip
+    output_filename: probeminer-datadump-{suffix}.tsv.zip
+    unzip_file: true
+    resource: probeminer
   - uri: https://www.ebi.ac.uk/QuickGO/services/annotation/downloadSearch?includeFields=name,goName,taxonName&selectedFields=geneProductId,goId,goName,goaspect&downloadLimit=2000000&taxonId=9606&taxonUsage=descendants
     output_filename: go-{suffix}.tsv
     accept: 'text/tsv'
@@ -67,9 +71,6 @@ annotations_from_buckets:
   - bucket: otar001-core/CancerBiomarkers/annotation
     output_filename: cancerbiomarkers-{suffix}.tsv
     resource: biomarker
-  - bucket: otar001-core/ProbeMiner/annotation
-    output_filename: chemicalprobes_probeminer-{suffix}.tsv
-    resource: chemical-probes-2
   - bucket: otar001-core/AdverseEvents/annotation
     output_filename: adverse-events-{suffix}.csv.gz
     resource: adverse-events
@@ -173,6 +174,11 @@ ensembl:
 drug:
   gs_output_dir: annotation-files/chembl
   datasources:
+    downloads:
+      - uri: https://go.drugbank.com/releases/5-1-8/downloads/all-drugbank-vocabulary
+        unzip_file: true
+        resource: drugbank
+        output_filename: 'drugbank_vocabulary.csv'
     chembl:
       type: elasticsearch
       url: hh-rke-wp-webadmin-04-worker-4.caas.ebi.ac.uk
@@ -236,24 +242,6 @@ drug:
             - 'warning_refs'
             - 'warning_type'
             - 'warning_year'
-homologies:
-  gs_output_dir: annotation-files/homology
-  release: 104
-  jq: ".genes[] | [.id, .name] | @tsv"
-  resources:
-      - 'caenorhabditis_elegans'
-      - 'canis_lupus_familiaris'
-      - 'cavia_porcellus'
-      - 'danio_rerio'
-      - 'drosophila_melanogaster'
-      - 'macaca_mulatta'
-      - 'mus_musculus'
-      - 'oryctolagus_cuniculus'
-      - 'pan_troglodytes'
-      - 'rattus_norvegicus'
-      - 'sus_scrofa'
-      - 'sus_scrofa_usmarc'
-      - 'xenopus_tropicalis'
 interactions:
   gs_output_dir: annotation-files/interactions
   intact_info:
