@@ -210,6 +210,9 @@ target:
     - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz
       output_filename: goa_human_rna.gaf.gz
       resource: target-go
+    - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
+      output_filename: goa_human_eco.gpa.gz
+      resource: target-go
     - uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
       output_filename: ensembl.tsv
       resource: target-go
