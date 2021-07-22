@@ -223,8 +223,8 @@ target:
     - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
       output_filename: goa_human_eco.gpa.gz
       resource: target-go
-    - uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
-      output_filename: ensembl.tsv
+    - uri: http://purl.obolibrary.org/obo/go.obo
+      output_filename: go.obo
       resource: target-go
   hpa:
     uri: https://www.proteinatlas.org/download/subcellular_location.tsv.zip
