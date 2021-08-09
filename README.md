@@ -15,6 +15,7 @@ List of available steps:
 - ensembl
 - evidence
 - homologues
+- hpa  
 - interactions
 - known_target_safety
 - tep

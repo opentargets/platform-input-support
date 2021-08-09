@@ -9,6 +9,7 @@ from .KnownTargetSafetyResource import KnownTargetSafetyResource
 from .TEP import TEP
 from .EFO import EFO
 from .ECO import ECO
+from .HPA import HPA
 from .Interactions import Interactions
 from .StringInteractions import StringInteractions
 from definitions import *
@@ -166,10 +167,21 @@ class RetrieveResource(object):
         del google_resource
         return list_files_bucket
 
+
     def get_annotations_from_bucket(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         for entry in self.yaml.annotations_from_buckets.downloads:
             self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS ,self.yaml.annotations_from_buckets.gs_output_dir)
+
+    def get_hpa_expressions(self):
+        # Retrieve info from google cloud bucket
+        GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
+        for entry in self.yaml.hpa_from_buckets.downloads:
+            self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS ,self.yaml.hpa_from_buckets.gs_output_dir)
+        # Retrieve info from external resources
+        hpa_resource = HPA(self.yaml.hpa, self.args)
+        list_hpa_annotations = hpa_resource.get_hpa_annonations()
+        self.list_files_downloaded.update(list_hpa_annotations)
 
     def get_evidences(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
@@ -223,6 +235,7 @@ class RetrieveResource(object):
         init_output_dirs()
         if self.has_step("annotations") : self.annotations_downloaded_by_uri()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
+        if self.has_step("hpa"): self.get_hpa_expressions()
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("drug"): self.get_drug()
         if self.has_step("efo"): self.get_efo()
