@@ -43,6 +43,8 @@ class HPA(object):
             destination_filename = download.execute_download(entry)
 
             if destination_filename is not None:
+                if 'unzip_file' in entry:
+                    destination_filename = make_unzip_single_file(destination_filename)
 
                 if entry.resource == "tissue-translation-map":
                     # manipulate file with weird format

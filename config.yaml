@@ -49,6 +49,7 @@ hpa:
     resource: tissue-curation-map
   - uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
     output_filename: normal_tissue-{suffix}.tsv.zip
+    unzip_file: true
     resource: hpa-normal-tissue
 hpa_from_buckets:
   gs_output_dir: annotation-files/hpa
