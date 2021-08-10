@@ -95,9 +95,10 @@ annotations_from_buckets:
   - bucket: otar001-core/CancerBiomarkers/annotation
     output_filename: cancerbiomarkers-{suffix}.tsv
     resource: biomarker
+    # Todo: the chemical probes file should go somewhere more intuitive.
   - bucket: otar001-core/ProbeMiner/annotation
-    output_filename: chemicalprobes_probeminer-{suffix}.tsv
-    resource: chemical-probes-2
+    output_filename: chemicalprobes-{suffix}.tsv
+    resource: chemical-probes-processed
   - bucket: otar001-core/AdverseEvents/annotation
     output_filename: adverse-events-{suffix}.csv.gz
     resource: adverse-events
