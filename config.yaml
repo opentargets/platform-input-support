@@ -27,17 +27,6 @@ annotations:
   - uri: http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt
     output_filename: MGI_PhenoGenoMP-{suffix}.rpt
     resource: mouse-phenotypes-report
-  - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
-    output_filename: map_with_efos-{suffix}.json
-    resource: tissue-translation-map
-  - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
-    output_filename: expression_hierarchy_curation-{suffix}.tsv
-    resource: tissue-curation-map
-  - uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
-    #This file will saved normal_tissue-{suffix}.tsv
-    output_filename: normal_tissue-{suffix}.tsv.zip
-    unzip_file: true
-    resource: hpa-normal-tissue
   - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
     output_filename: eco_scores-{suffix}.tsv
     resource: eco-scores
@@ -49,8 +38,21 @@ annotations:
     output_filename: go-{suffix}.tsv
     accept: 'text/tsv'
     resource: gene-ontology
-annotations_from_buckets:
-  gs_output_dir: annotation-files
+hpa:
+  gs_output_dir: annotation-files/hpa
+  downloads:
+  - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
+    output_filename: map_with_efos-{suffix}.tmp.json
+    resource: tissue-translation-map
+  - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
+    output_filename: expression_hierarchy_curation-{suffix}.tsv
+    resource: tissue-curation-map
+  - uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
+    output_filename: normal_tissue-{suffix}.tsv.zip
+    unzip_file: true
+    resource: hpa-normal-tissue
+hpa_from_buckets:
+  gs_output_dir: annotation-files/hpa
   downloads:
   - bucket: atlas_baseline_expression/baseline_expression_binned
     output_filename: baseline_expression_binned-{suffix}.tsv
@@ -61,6 +63,9 @@ annotations_from_buckets:
   - bucket: atlas_baseline_expression/baseline_expression_zscore_binned
     output_filename: baseline_expression_zscore_binned-{suffix}.tsv
     resource: hpa-rna-zscore
+annotations_from_buckets:
+  gs_output_dir: annotation-files
+  downloads:
   - bucket: otar007-cosmic
     output_filename: cosmic-hallmarks-{suffix}.tsv.gz
     resource: hallmark

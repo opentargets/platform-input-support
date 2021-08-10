@@ -15,6 +15,7 @@ List of available steps:
 - ensembl
 - evidence
 - homologues
+- hpa  
 - interactions
 - known_target_safety
 - tep
@@ -328,6 +329,14 @@ This step is used to download raw json data from the ENSEMBL [ftp server](https:
 specified species. These inputs are then processed with `jq` to extract the id and name fields which are required by the 
 ETL. The downloaded json files approach 30GB in size, and we only extract ~10MB from them. It is worth considering if we
 want to retain these files long-term. 
+
+## Hpa Expression Step
+
+This step is used to download data from the internal OT resources and proteinatlas information.
+The tissue translation map requires some manipulations due the weird JSON format.
+All the files generated are required by the ETL.
+
+
 
 # Application architecture
 

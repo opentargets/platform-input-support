@@ -89,6 +89,7 @@ def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_INTERACTIONS)
     get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
     get_output_dir(None, PIS_OUTPUT_HOMOLOGY)
+    get_output_dir(None, PIS_OUTPUT_DRUG)
 
 def make_gzip(file_with_path):
     """Compress file_with_path to file_with_path.gz and return file name."""
