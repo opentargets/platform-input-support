@@ -330,6 +330,14 @@ specified species. These inputs are then processed with `jq` to extract the id a
 ETL. The downloaded json files approach 30GB in size, and we only extract ~10MB from them. It is worth considering if we
 want to retain these files long-term. 
 
+## Hpa Expression Step
+
+This step is used to download data from the internal OT resources and proteinatlas information.
+The tissue translation map requires some manipulations due the weird JSON format.
+All the files generated are required by the ETL.
+
+
+
 # Application architecture
 
 - `platform-input-support` is the entrypoint to the program; it loads the `config.yaml` which specifies the available
