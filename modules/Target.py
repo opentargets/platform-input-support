@@ -104,6 +104,14 @@ class Target(object):
         if not file_already_downloaded(os.path.join(path, self.config.ncbi.output_filename)):
             return download.ftp_download(self.config.ncbi)
 
+    def download_reactome(self):
+        logger.info("Downloading reactome files for target.")
+
+        path = os.path.join(self.output_dir, "reactome")
+        download = DownloadResource(path)
+        if not file_already_downloaded(os.path.join(path, self.config.reactome.output_filename)):
+            return download.execute_download(self.config.reactome)
+
     def create_output_dirs(self):
         directories = ["ensembl", "go", "hpa", "projectScores", "gnomad", "ncbi"]
         for d in directories:
@@ -124,7 +132,8 @@ class Target(object):
         # Download files
         sources: List[str] = [self.download_hpa(),
                               self.download_gnomad(),
-                              self.download_ncbi()]
+                              self.download_ncbi(),
+                              self.download_reactome()]
         sources = sources + self.download_ftp_files("gene ontology", self.config.go,
                                                     os.path.join(self.output_dir, "go"))
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
