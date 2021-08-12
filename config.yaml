@@ -256,6 +256,10 @@ target:
     - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
       output_filename: essentiality_matrices.zip
       resource: target-ps
+  reactome:
+    - uri: https://reactome.org/download/current/Ensembl2Reactome.txt
+      output_filename: Ensembl2Reactome.txt
+      resource: target-reactome
 ensembl:
   ensembl_release: homo_sapiens_core_104_38
   extension_file: _genes.json.gz
