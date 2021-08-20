@@ -246,6 +246,7 @@ class RetrieveResource(object):
         if self.has_step("homologues"): self.get_homologues()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
+        # TODO - OpenFDA Step
 
         # At this point the auth key is already valid.
         print(self.list_files_downloaded)
