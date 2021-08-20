@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class RetrieveResource(object):
 
-    def __init__(self,args, yaml, yaml_data_pipeline_schema):
+    def __init__(self, args, yaml, yaml_data_pipeline_schema):
         self.args = args
         self.output_dir = PIS_OUTPUT_DIR
         self.yaml = yaml
