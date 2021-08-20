@@ -13,5 +13,6 @@ PIS_OUTPUT_CHEMBL_ES = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'ChEMBL_ES')
 PIS_OUTPUT_INTERACTIONS = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'interactions')
 PIS_OUTPUT_HOMOLOGY = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'homology')
 PIS_OUTPUT_ANNOTATIONS_QC = os.path.join(PIS_OUTPUT_DIR, 'qc')
+PIS_OUTPUT_OPENFDA = os.path.join(PIS_OUTPUT_DIR, 'openfda')
 GOOGLE_STORAGE_URI = 'https://storage.googleapis.com/'
 # CONFIG = os.path.join(ROOT_DIR, 'config.yaml')  # Add later for default config file
