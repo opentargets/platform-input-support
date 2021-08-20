@@ -359,6 +359,8 @@ evidences:
     output_spark_dir: sysbio-{suffix}
     resource: input-file
 #The uri of data_pipeline_schema should point to the latest config data file.
+openfda:
+  gs_output_dir: openfda
 data_pipeline_schema:
   uri: https://storage.googleapis.com/open-targets-data-releases/21.02/templates/template.mrtarget.data.21.02.yml
   output_filename: mrtarget.data.yml
