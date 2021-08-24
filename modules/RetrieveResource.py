@@ -3,6 +3,7 @@ from .DownloadResource import DownloadResource
 from .GoogleBucketResource import GoogleBucketResource
 from .EnsemblResource import EnsemblResource
 from .ChemicalProbesResource import ChemicalProbesResource
+from .GoogleSpreadSheet import GoogleSpreadSheet
 from .Drug import Drug
 from .Homologues import Homologues
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
@@ -183,6 +184,12 @@ class RetrieveResource(object):
         list_hpa_annotations = hpa_resource.get_hpa_annonations()
         self.list_files_downloaded.update(list_hpa_annotations)
 
+
+    def get_otar_projects(self):
+        google_spreadsheet = GoogleSpreadSheet(PIS_OUTPUT_ANNOTATIONS)
+        google_spreadsheet.download_as_csv(self.yaml.otar_projects)
+        #self.set_filename_type(spreadsheet_info)
+
     def get_evidences(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         list_files_evidence = {}
@@ -246,6 +253,7 @@ class RetrieveResource(object):
         if self.has_step("homologues"): self.get_homologues()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
+        if self.has_step("otar"): self.get_otar_projects()
 
         # At this point the auth key is already valid.
         print(self.list_files_downloaded)

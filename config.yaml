@@ -358,6 +358,12 @@ evidences:
     output_filename: sysbio-{suffix}.json.gz
     output_spark_dir: sysbio-{suffix}
     resource: input-file
+otar_projects:
+  output_filename: otar_projects.tsv
+  resource: otarproject
+  gs_output_dir: annotation-files/otar
+  gkey: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
+  gid: 1496263064
 #The uri of data_pipeline_schema should point to the latest config data file.
 data_pipeline_schema:
   uri: https://storage.googleapis.com/open-targets-data-releases/21.02/templates/template.mrtarget.data.21.02.yml
