@@ -209,7 +209,7 @@ drug:
       port: 32000
       indices:
         chembl-indication:
-          name: chembl_28_drug_indication
+          name: chembl_29_drug_indication
           fields:
             - '_metadata'
             - 'molecule_chembl_id'
@@ -217,7 +217,7 @@ drug:
             - 'max_phase_for_ind'
             - 'indication_refs'
         chembl-mechanism:
-          name: chembl_28_mechanism
+          name: chembl_29_mechanism
           fields:
             - 'molecule_chembl_id'
             - 'target_chembl_id'
@@ -228,7 +228,7 @@ drug:
             - 'parent_molecule_chembl_id'
             - '_metadata'
         chembl-molecule:
-          name: chembl_28_molecule
+          name: chembl_29_molecule
           fields:
             - 'molecule_chembl_id'
             - 'molecule_hierarchy'
@@ -247,14 +247,14 @@ drug:
             - 'chebi_par_id'
             - 'molecule_structures'
         chembl-target:
-          name: chembl_28_target
+          name: chembl_29_target
           fields:
             - 'target_chembl_id'
             - 'target_components'
             - 'target_type'
             - 'pref_name'
         chembl-drug-warning:
-          name: chembl_28_drug_warning
+          name: chembl_29_drug_warning
           fields:
             - '_metadata'
             - 'molecule_chembl_id'
