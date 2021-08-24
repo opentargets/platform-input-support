@@ -63,6 +63,25 @@ hpa_from_buckets:
   - bucket: atlas_baseline_expression/baseline_expression_zscore_binned
     output_filename: baseline_expression_zscore_binned-{suffix}.tsv
     resource: hpa-rna-zscore
+homologies:
+  gs_output_dir: annotation-files/homology
+  release: 104
+  jq: ".genes[] | [.id, .name] | @tsv"
+  resources:
+      - 'caenorhabditis_elegans'
+      - 'canis_lupus_familiaris'
+      - 'cavia_porcellus'
+      - 'danio_rerio'
+      - 'drosophila_melanogaster'
+      - 'macaca_mulatta'
+      - 'mus_musculus'
+      - 'oryctolagus_cuniculus'
+      - 'pan_troglodytes'
+      - 'rattus_norvegicus'
+      - 'sus_scrofa'
+      - 'sus_scrofa_usmarc'
+      - 'xenopus_tropicalis'
+      - 'homo_sapiens'
 annotations_from_buckets:
   gs_output_dir: annotation-files
   downloads:
