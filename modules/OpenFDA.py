@@ -15,3 +15,19 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+class OpenFDA(object):
+    """
+    This class implements the strategy for collection of OpenFDA FAERS drug event data and related information
+    """
+
+    def __init__(self, config) -> None:
+        self.config = config
+        self.write_date = datetime.today().strftime('%Y-%m-%d')
+
+    # TODO
+    def _download_openfda_faers(self, resource):
+        pass
+    
+    # TODO
+    def _download_blacklist(self, resource):
+        pass
