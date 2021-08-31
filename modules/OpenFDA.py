@@ -13,3 +13,5 @@ from definitions import PIS_OUTPUT_OPENFDA
 from .DownloadResource import DownloadResource
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
+
