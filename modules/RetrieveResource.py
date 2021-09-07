@@ -6,7 +6,6 @@ from .ChemicalProbesResource import ChemicalProbesResource
 from .Drug import Drug
 from .Homologues import Homologues
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
-from .TEP import TEP
 from .EFO import EFO
 from .ECO import ECO
 from .HPA import HPA
@@ -92,14 +91,6 @@ class RetrieveResource(object):
         ksafety_filename = known_target_safety_resource.generate_known_safety_json(self.yaml.known_target_safety)
         self.list_files_downloaded[ksafety_filename] = {'resource': self.yaml.known_target_safety.resource,
                                                          'gs_output_dir': self.yaml.known_target_safety.gs_output_dir}
-
-    # config.yaml tep : download spreadsheets + generate file for ETL
-    def get_TEP(self):
-        tep_resource = TEP(PIS_OUTPUT_ANNOTATIONS)
-        tep_resource.download_spreadsheet(self.yaml.tep, PIS_OUTPUT_TEP)
-        tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
-        self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
-                                                    'gs_output_dir': self.yaml.tep.gs_output_dir}
 
 
     def get_interactions(self):
@@ -248,7 +239,6 @@ class RetrieveResource(object):
         if self.has_step("homologues"): self.get_homologues()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("target"): self.get_target()
-        if self.has_step("tep"): self.get_TEP()
 
         # At this point the auth key is already valid.
         print(self.list_files_downloaded)

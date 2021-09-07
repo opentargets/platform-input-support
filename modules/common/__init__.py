@@ -90,7 +90,6 @@ def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_EVIDENCES)
     get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
     get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
-    get_output_dir(None, PIS_OUTPUT_TEP)
     get_output_dir(None, PIS_OUTPUT_EFO)
     get_output_dir(None, PIS_OUTPUT_CHEMBL_ES)
     get_output_dir(None, PIS_OUTPUT_INTERACTIONS)

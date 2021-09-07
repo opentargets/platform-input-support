@@ -95,6 +95,9 @@ annotations_from_buckets:
   - bucket: otar001-core/CancerBiomarkers/annotation
     output_filename: cancerbiomarkers-{suffix}.tsv
     resource: biomarker
+  - bucket: otar001-core/TEPs/data_files
+    output_filename: tep-{suffix}.json.gz
+    resource: tep
     # Todo: the chemical probes file should go somewhere more intuitive.
   - bucket: otar001-core/ProbeMiner/annotation
     output_filename: chemicalprobes-{suffix}.tsv
@@ -164,14 +167,6 @@ chemical_probes:
     gid: 349856989
     output_filename: open_science_probes.tsv
     cp_type: osp
-tep:
-  output_filename: tep-{suffix}.json
-  resource: tep
-  gs_output_dir: annotation-files
-  spreadsheets:
-  - gkey: 1pV06MTC-szlJRjlgG9rV6WW67r6Nxd9oAXfqZkrNVAU
-    gid: 0
-    output_filename: tep.tsv
 known_target_safety:
   output_filename: known_target_safety-{suffix}.json
   resource: safety
