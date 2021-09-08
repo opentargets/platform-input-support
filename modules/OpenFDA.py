@@ -106,7 +106,7 @@ class OpenFDA(object):
                 }
         return downloaded_files
 
-    # TODO - Step body
+    # Step main body
     def run(self):
         logger.info("OpenFDA ETL --- START ---")
         downloaded_files = dict()
