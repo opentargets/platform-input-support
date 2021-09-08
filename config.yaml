@@ -365,7 +365,7 @@ openfda:
     downloads:
       - uri: 'https://api.fda.gov/download.json'
         unzip_file: false
-        resource: openfda
+        resource: openfda-available
         output_filename: 'openfda_file_listing.json'
       - uri: 'https://raw.githubusercontent.com/opentargets/platform-etl-backend/master/src/main/resources/blacklisted_events.txt'
         unzip_file: false
