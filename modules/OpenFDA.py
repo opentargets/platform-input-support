@@ -34,4 +34,4 @@ class OpenFDA(object):
 
     # TODO - Step body
     def run(self):
-        pass
+        logger.info("OpenFDA ETL --- START ---")
