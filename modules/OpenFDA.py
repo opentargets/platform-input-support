@@ -31,3 +31,7 @@ class OpenFDA(object):
     # TODO
     def _download_blacklist(self, resource):
         pass
+
+    # TODO - Step body
+    def run(self):
+        pass
