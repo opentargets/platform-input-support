@@ -26,12 +26,33 @@ class OpenFDA(object):
 
     # TODO
     def _download_openfda_faers(self, resource):
-        pass
+        logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
     
     # TODO
     def _download_blacklist(self, resource):
-        pass
+        logger.info("OpenFDA blacklisted events download, URI '{}' --- START ---".format(resource.uri))
+        downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
+        download = downloader.execute_download(resource)
+        downloaded_files = dict()
+        if resource.unzip_file:
+            logger.error("UNSUPPORTED file format (ZIP) - URI '{}'".format(resource.uri))
+        else:
+            if download:
+                downloaded_files[download] = {
+                    'resource': resource.resource,
+                    'gs_output_dir': os.path.join(PIS_OUTPUT_OPENFDA, resource.output_filename)
+                }
+        return downloaded_files
 
     # TODO - Step body
     def run(self):
         logger.info("OpenFDA ETL --- START ---")
+        downloaded_files = dict()
+        for download_entry in self.config["datasources"]["downloads"]:
+            if "blacklisted" in download_entry.resource:
+                downloaded_files.update(self._download_blacklist(download_entry))
+            elif "available" in download_entry.resource:
+                downloaded_files.update(self._download_openfda_faers(download_entry))
+            else:
+                logger.warning("UNSUPPORTED OpenFDA download resource '{}', URI '{}'".format(download_entry.resource, download_entry.uri))
+        return downloaded_files
