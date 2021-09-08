@@ -69,7 +69,6 @@ class OpenFDA(object):
                 break
         return downloaded_files
 
-    # TODO
     def _download_openfda_faers(self, resource):
         logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
         downloaded_files = dict()
