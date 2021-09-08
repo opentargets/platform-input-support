@@ -59,7 +59,7 @@ class OpenFDA(object):
                     for event_file in zipf.filelist:
                         unzip_filename = event_file.filename
                         unzip_initial_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_filename)
-                        unzip_dest_filename = "{}".format(uuid.uuid4())
+                        unzip_dest_filename = "{}.jsonl".format(uuid.uuid4())
                         unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_dest_filename)
                         logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
                         zipf.extract(unzip_filename, PIS_OUTPUT_OPENFDA)
