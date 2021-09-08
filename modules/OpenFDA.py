@@ -66,7 +66,6 @@ class OpenFDA(object):
                             'gs_output_dir': unzip_dest_path
                         }
                 downloaded_files.update(iteration_download_filelist)
-                break
         return downloaded_files
 
     def _download_openfda_faers(self, resource):
