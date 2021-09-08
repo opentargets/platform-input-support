@@ -1,4 +1,5 @@
 import logging
+from modules.OpenFDA import OpenFDA
 from .DownloadResource import DownloadResource
 from .GoogleBucketResource import GoogleBucketResource
 from .EnsemblResource import EnsemblResource
@@ -226,6 +227,11 @@ class RetrieveResource(object):
             stats_file.write(filename_info + ',' + str(lines) + '\n')
         end=time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
+
+    def get_openfda(self):
+        etlStep = OpenFDA(self.yaml.openfda)
+        files = etlStep.run()
+        # self.list_files_downloaded.update(files)
 
     def run(self):
         google_opts = GoogleBucketResource.has_google_parameters(self.args.google_credential_key, self.args.google_bucket)
