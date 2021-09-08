@@ -33,20 +33,40 @@ class OpenFDA(object):
         if repo_metadata:
             downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
             for download_entry in repo_metadata['results']['drug']['event']['partitions']:
+                iteration_download_filelist = dict()
                 download_url = download_entry['file']
                 download_description = download_entry['display_name']
                 download_dest_filename = os.path.basename(urlparse(download_url).path)
                 download_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, download_dest_filename)
                 download_resource_key = "openfda-event-{}".format(download_dest_filename)
                 logger.info("Download OpenFDA FAERs '{}', from '{}', destination file name '{}'".format(download_description, download_url, download_dest_filename))
-                download_resource = {
+                download_resource = type('download_resource', (object,), {
                     'uri': download_url,
-                    'unzip_file': False,
+                    'unzip_file': True,
                     'resource': download_resource_key,
-                    'output_filename': download_dest_filename
+                    'output_filename': download_dest_filename,
+                    'accept': 'application/zip'
+                })
+                # Download the file
+                download = downloader.execute_download(download_resource)
+                iteration_download_filelist[download] = {
+                    'resource': download_resource_key,
+                    'gs_output_dir': download_dest_path
                 }
-                # TODO - Download the file
-                # TODO - Expand the ZIP
+                # Expand the ZIP file
+                with zipfile.ZipFile(download_dest_path) as zipf:
+                    for event_file in zipf.filelist:
+                        unzip_filename = event_file.filename
+                        unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_filename)
+                        logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
+                        zipf.extract(unzip_filename, PIS_OUTPUT_OPENFDA)
+                        unzip_resource_key = "{}-{}".format(download_resource_key, unzip_filename)
+                        iteration_download_filelist[unzip_filename] = {
+                            'resource': unzip_resource_key,
+                            'gs_output_dir': unzip_dest_path
+                        }
+                downloaded_files.update(iteration_download_filelist)
+                break
         return downloaded_files
 
     # TODO
@@ -72,7 +92,6 @@ class OpenFDA(object):
         downloaded_files.update(downloaded_event_files)
         return downloaded_files
     
-    # TODO
     def _download_blacklist(self, resource):
         logger.info("OpenFDA blacklisted events download, URI '{}' --- START ---".format(resource.uri))
         downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
