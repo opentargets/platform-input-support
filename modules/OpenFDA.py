@@ -5,6 +5,7 @@ In addition, a collection of blacklisted events is downloaded for later use in t
 """
 
 import os
+import uuid
 import json
 import zipfile
 import logging
@@ -57,11 +58,14 @@ class OpenFDA(object):
                 with zipfile.ZipFile(download_dest_path) as zipf:
                     for event_file in zipf.filelist:
                         unzip_filename = event_file.filename
-                        unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_filename)
+                        unzip_initial_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_filename)
+                        unzip_dest_filename = "{}".format(uuid.uuid4())
+                        unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_dest_filename)
                         logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
                         zipf.extract(unzip_filename, PIS_OUTPUT_OPENFDA)
-                        unzip_resource_key = "{}-{}".format(download_resource_key, unzip_filename)
-                        iteration_download_filelist[unzip_filename] = {
+                        os.rename(unzip_initial_path, unzip_dest_path)
+                        unzip_resource_key = "{}-{}".format(download_resource_key, unzip_dest_filename)
+                        iteration_download_filelist[unzip_dest_filename] = {
                             'resource': unzip_resource_key,
                             'gs_output_dir': unzip_dest_path
                         }
