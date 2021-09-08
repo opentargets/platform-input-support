@@ -49,10 +49,10 @@ class OpenFDA(object):
                 })
                 # Download the file
                 download = downloader.execute_download(download_resource)
-                iteration_download_filelist[download] = {
-                    'resource': download_resource_key,
-                    'gs_output_dir': download_dest_path
-                }
+                #iteration_download_filelist[download] = {
+                #    'resource': download_resource_key,
+                #    'gs_output_dir': download_dest_path
+                #}
                 # Expand the ZIP file
                 with zipfile.ZipFile(download_dest_path) as zipf:
                     for event_file in zipf.filelist:
@@ -66,6 +66,9 @@ class OpenFDA(object):
                             'gs_output_dir': unzip_dest_path
                         }
                 downloaded_files.update(iteration_download_filelist)
+                # Remove downloaded zip file
+                logger.warning("Removing downloaded ZIP file at '{}'".format(download_dest_path))
+                os.remove(download_dest_path)
         return downloaded_files
 
     def _download_openfda_faers(self, resource):
