@@ -5,13 +5,15 @@ In addition, a collection of blacklisted events is downloaded for later use in t
 """
 
 import os
+import json
 import zipfile
 import logging
 import warnings
 
+from datetime import datetime
+from urllib.parse import urlparse
 from definitions import PIS_OUTPUT_OPENFDA
 from .DownloadResource import DownloadResource
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +25,52 @@ class OpenFDA(object):
     def __init__(self, config) -> None:
         self.config = config
         self.write_date = datetime.today().strftime('%Y-%m-%d')
+        #logger.info("OpenFDA received configuration: '{}'".format(self.config))
+
+    def _download_selected_event_files(self, repo_metadata):
+        downloaded_files = dict()
+        # TODO - Body
+        if repo_metadata:
+            downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
+            for download_entry in repo_metadata['results']['drug']['event']['partitions']:
+                download_url = download_entry['file']
+                download_description = download_entry['display_name']
+                download_dest_filename = os.path.basename(urlparse(download_url).path)
+                download_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, download_dest_filename)
+                download_resource_key = "openfda-event-{}".format(download_dest_filename)
+                logger.info("Download OpenFDA FAERs '{}', from '{}', destination file name '{}'".format(download_description, download_url, download_dest_filename))
+                download_resource = {
+                    'uri': download_url,
+                    'unzip_file': False,
+                    'resource': download_resource_key,
+                    'output_filename': download_dest_filename
+                }
+                # TODO - Download the file
+                # TODO - Expand the ZIP
+        return downloaded_files
 
     # TODO
     def _download_openfda_faers(self, resource):
         logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
+        downloaded_files = dict()
+        # TODO - body
+        logger.info("Download OpenFDA FAERS repository metadata")
+        downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
+        download = downloader.execute_download(resource)
+        if resource.unzip_file:
+            logger.error("UNSUPPORTED file format (ZIP) - URI '{}'".format(resource.uri))
+        else:
+            if download:
+                downloaded_files[download] = {
+                    'resource': resource.resource,
+                    'gs_output_dir': os.path.join(PIS_OUTPUT_OPENFDA, resource.output_filename)
+                }
+        repo_metadata = {}
+        with open(downloaded_files[download]['gs_output_dir'], 'r') as f:
+            repo_metadata = json.load(f)
+        downloaded_event_files = self._download_selected_event_files(repo_metadata)
+        downloaded_files.update(downloaded_event_files)
+        return downloaded_files
     
     # TODO
     def _download_blacklist(self, resource):
@@ -48,7 +92,7 @@ class OpenFDA(object):
     def run(self):
         logger.info("OpenFDA ETL --- START ---")
         downloaded_files = dict()
-        for download_entry in self.config["datasources"]["downloads"]:
+        for download_entry in self.config.datasources.downloads:
             if "blacklisted" in download_entry.resource:
                 downloaded_files.update(self._download_blacklist(download_entry))
             elif "available" in download_entry.resource:
