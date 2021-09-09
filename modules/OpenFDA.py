@@ -10,6 +10,7 @@ import json
 import zipfile
 import logging
 import warnings
+import multiprocessing as mp
 
 from datetime import datetime
 from urllib.parse import urlparse
@@ -20,7 +21,42 @@ logger = logging.getLogger(__name__)
 
 # Parallel kernel
 def _do_download_openfda_event_file(download_entry):
-    pass
+    download_url = download_entry['file']
+    download_description = download_entry['display_name']
+    download_src_filename = os.path.basename(urlparse(download_url).path)
+    download_dest_filename = "{}.zip".format(uuid.uuid4())
+    download_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, download_dest_filename)
+    download_resource_key = "openfda-event-{}".format(download_dest_filename)
+    logger.info("Download OpenFDA FAERs '{}', from '{}', destination file name '{}'".format(download_description, download_url, download_src_filename))
+    download_resource = type('download_resource', (object,), {
+        'uri': download_url,
+        'unzip_file': True,
+        'resource': download_resource_key,
+        'output_filename': download_dest_filename,
+        'accept': 'application/zip'
+    })
+    # Download the file
+    downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
+    downloader.execute_download(download_resource)
+    # Expand the ZIP file
+    extracted_filelist = dict()
+    with zipfile.ZipFile(download_dest_path, 'r') as zipf:
+        for event_file in zipf.filelist:
+            unzip_filename = event_file.filename
+            unzip_dest_filename = "{}.jsonl".format(uuid.uuid4())
+            unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_dest_filename)
+            logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
+            with zipf.open(unzip_filename, 'r') as compressedf:
+                with open(unzip_dest_path, 'wb') as inflatedf:
+                    inflatedf.write(compressedf.read())
+            unzip_resource_key = "{}-{}".format(download_resource_key, unzip_dest_filename)
+            extracted_filelist[unzip_dest_filename] = {
+                'resource': unzip_resource_key,
+                'gs_output_dir': unzip_dest_path
+            }
+    logger.warning("Removing processed ZIP file '{}'".format(download_dest_path))
+    os.remove(download_dest_path)
+    return extracted_filelist
 
 class OpenFDA(object):
     """
@@ -34,50 +70,15 @@ class OpenFDA(object):
 
     def _download_selected_event_files(self, repo_metadata):
         downloaded_files = dict()
-        # TODO - Body
+        # Body
         if repo_metadata:
-            downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
-            # TODO - Parallel data gathering
-            for download_entry in repo_metadata['results']['drug']['event']['partitions']:
-                iteration_download_filelist = dict()
-                download_url = download_entry['file']
-                download_description = download_entry['display_name']
-                download_dest_filename = os.path.basename(urlparse(download_url).path)
-                download_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, download_dest_filename)
-                download_resource_key = "openfda-event-{}".format(download_dest_filename)
-                logger.info("Download OpenFDA FAERs '{}', from '{}', destination file name '{}'".format(download_description, download_url, download_dest_filename))
-                download_resource = type('download_resource', (object,), {
-                    'uri': download_url,
-                    'unzip_file': True,
-                    'resource': download_resource_key,
-                    'output_filename': download_dest_filename,
-                    'accept': 'application/zip'
-                })
-                # Download the file
-                download = downloader.execute_download(download_resource)
-                #iteration_download_filelist[download] = {
-                #    'resource': download_resource_key,
-                #    'gs_output_dir': download_dest_path
-                #}
-                # Expand the ZIP file
-                with zipfile.ZipFile(download_dest_path, 'r') as zipf:
-                    for event_file in zipf.filelist:
-                        unzip_filename = event_file.filename
-                        unzip_initial_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_filename)
-                        unzip_dest_filename = "{}.jsonl".format(uuid.uuid4())
-                        unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_dest_filename)
-                        logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
-                        zipf.extract(unzip_filename, PIS_OUTPUT_OPENFDA)
-                        os.rename(unzip_initial_path, unzip_dest_path)
-                        unzip_resource_key = "{}-{}".format(download_resource_key, unzip_dest_filename)
-                        iteration_download_filelist[unzip_dest_filename] = {
-                            'resource': unzip_resource_key,
-                            'gs_output_dir': unzip_dest_path
-                        }
-                downloaded_files.update(iteration_download_filelist)
-                # Remove downloaded zip file
-                logger.warning("Removing downloaded ZIP file at '{}'".format(download_dest_path))
-                os.remove(download_dest_path)
+            logger.info("OpenFDA FAERs metadata received")
+            # Parallel data gathering
+            logger.info("Prepare download pool of {} processes".format(mp.cpu_count()))
+            download_pool = mp.Pool(mp.cpu_count())
+            pool_results = download_pool.map(_do_download_openfda_event_file, repo_metadata['results']['drug']['event']['partitions'])
+            for result in pool_results:
+                downloaded_files.update(result)
         return downloaded_files
 
     def _download_openfda_faers(self, resource):
