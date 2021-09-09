@@ -55,7 +55,7 @@ class OpenFDA(object):
                 #    'gs_output_dir': download_dest_path
                 #}
                 # Expand the ZIP file
-                with zipfile.ZipFile(download_dest_path) as zipf:
+                with zipfile.ZipFile(download_dest_path, 'r') as zipf:
                     for event_file in zipf.filelist:
                         unzip_filename = event_file.filename
                         unzip_initial_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_filename)
