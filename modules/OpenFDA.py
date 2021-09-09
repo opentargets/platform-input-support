@@ -18,6 +18,10 @@ from .DownloadResource import DownloadResource
 
 logger = logging.getLogger(__name__)
 
+# Parallel kernel
+def _do_download_openfda_event_file(download_entry):
+    pass
+
 class OpenFDA(object):
     """
     This class implements the strategy for collection of OpenFDA FAERS drug event data and related information
@@ -33,6 +37,7 @@ class OpenFDA(object):
         # TODO - Body
         if repo_metadata:
             downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
+            # TODO - Parallel data gathering
             for download_entry in repo_metadata['results']['drug']['event']['partitions']:
                 iteration_download_filelist = dict()
                 download_url = download_entry['file']
