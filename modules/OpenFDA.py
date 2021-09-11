@@ -47,8 +47,14 @@ def _do_download_openfda_event_file(download_entry):
             unzip_dest_path = os.path.join(PIS_OUTPUT_OPENFDA, unzip_dest_filename)
             logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
             with zipf.open(unzip_filename, 'r') as compressedf:
-                with open(unzip_dest_path, 'wb') as inflatedf:
-                    inflatedf.write(compressedf.read())
+                with open(unzip_dest_path, 'w') as inflatedf:
+                    logger.info("Extracting event file results")
+                    event_data = json.load(compressedf)
+                    if event_data['results']:
+                        for result in event_data['results']:
+                            inflatedf.write(json.dumps(result))
+                    else:
+                        logger.warning("NO EVENT DATA RESULTS for event file '{}', source URL '{}', description '{}'".format(unzip_filename, download_url, download_description))
             unzip_resource_key = "{}-{}".format(download_resource_key, unzip_dest_filename)
             extracted_filelist[unzip_dest_filename] = {
                 'resource': unzip_resource_key,
