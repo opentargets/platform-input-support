@@ -6,8 +6,8 @@ config:
 annotations:
   gs_output_dir: annotation-files
   downloads:
-  - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=xml
-    output_filename: uniprot-{suffix}.xml.gz
+  - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=txt
+    output_filename: uniprot-{suffix}.txt.gz
     resource: uniprot-uri
   - uri: https://reactome.org/download/current/ReactomePathways.txt
     output_filename: ReactomePathways-{suffix}.txt
@@ -95,12 +95,22 @@ annotations_from_buckets:
   - bucket: otar001-core/CancerBiomarkers/annotation
     output_filename: cancerbiomarkers-{suffix}.tsv
     resource: biomarker
+  - bucket: otar001-core/TEPs/data_files
+    output_filename: tep-{suffix}.json.gz
+    resource: tep
+    # Todo: the chemical probes file should go somewhere more intuitive.
+  - bucket: otar001-core/ProbeMiner/annotation
+    output_filename: chemicalprobes-{suffix}.tsv
+    resource: chemical-probes-processed
   - bucket: otar001-core/AdverseEvents/annotation
     output_filename: adverse-events-{suffix}.csv.gz
     resource: adverse-events
   - bucket: otar001-core/DrugBank/annotation
     output_filename: drugbank-{suffix}.csv.gz
     resource: drugbank
+  - bucket: otar001-core/ExperimentalToxicity
+    output_filename: ToxCast_2021-{suffix}.tsv
+    resource: experimental-toxicity
   - bucket: otar001-core/ExperimentalToxicity
     output_filename: experimental-toxicity-{suffix}.tsv
     resource: experimental-toxicity
@@ -157,14 +167,6 @@ chemical_probes:
     gid: 349856989
     output_filename: open_science_probes.tsv
     cp_type: osp
-tep:
-  output_filename: tep-{suffix}.json
-  resource: tep
-  gs_output_dir: annotation-files
-  spreadsheets:
-  - gkey: 1pV06MTC-szlJRjlgG9rV6WW67r6Nxd9oAXfqZkrNVAU
-    gid: 0
-    output_filename: tep.tsv
 known_target_safety:
   output_filename: known_target_safety-{suffix}.json
   resource: safety
@@ -190,6 +192,71 @@ known_target_safety:
     gid: 1223815020
     output_filename: references.tsv
     s_type: ref
+target:
+  gs_output_dir: annotation-files
+  ensembl:
+    - uri: ftp://ftp.ensembl.org/pub/release-104/json/homo_sapiens/homo_sapiens.json
+      output_filename: homo_sapiens.json
+      resource: target-ensembl
+      jq: '.genes[] | {id: .id, biotype: .biotype, description: .description, end: .end, start: .start, strand: .strand, chromosome: .seq_region_name, approvedSymbol: .name, transcripts: .transcripts, signalP: .signalP, uniprot_trembl: ."Uniprot/SPTREMBL", uniprot_swissprot: ."Uniprot/SWISSPROT"}'
+      jq_filename: homo_sapiens.jsonl
+    - uri: ftp://ftp.ensembl.org/pub/release-104/tsv/ensembl-compara/homologies/homo_sapiens/Compara.104.protein_default.homologies.tsv.gz
+      output_filename: compara.104.protein_default.homologies.tsv.gz
+      resource: target-ensembl
+    - uri: ftp://ftp.ensembl.org/pub/release-104/tsv/ensembl-compara/homologies/homo_sapiens/Compara.104.ncrna_default.homologies.tsv.gz
+      output_filename: Compara.104.ncrna_default.homologies.tsv.gz
+      resource: target-ensembl
+    - uri: ftp://ftp.ensembl.org/pub/release-104/species_EnsemblVertebrates.txt
+      output_filename: species_EnsemblVertebrates.txt
+      resource: target-ensembl
+  go:
+    - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz
+      output_filename: goa_human.gaf.gz
+      resource: target-go
+    - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz
+      output_filename: goa_human_rna.gaf.gz
+      resource: target-go
+    - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
+      output_filename: goa_human_eco.gpa.gz
+      resource: target-go
+      # fixme: go.obo is the input to the GO step of the ETL and should have it's own section.
+    - uri: http://purl.obolibrary.org/obo/go.obo
+      output_filename: go.obo
+      resource: target-go
+  hpa:
+    uri: https://www.proteinatlas.org/download/subcellular_location.tsv.zip
+    output_filename: subcellular_location.tsv.zip
+    resource: target-hpa
+  project_scores:
+    - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
+      output_filename: gene_identifiers_latest.csv.gz
+      resource: target-ps
+    - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
+      output_filename: essentiality_matrices.zip
+      resource: target-ps
+  gnomad:
+    uri: https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz
+    output_filename: gnomad_lof_by_gene.csv.bgz
+    resource: target-gnomad
+  ncbi:
+    uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
+    output_filename: Homo_sapiens.gene_info.gz
+    resource: target-ncbi
+    # The safety section needs logic to handle moving multiple parquet files.
+  safety:
+    - uri: https://storage.googleapis.com/otar001-core/TargetSafety/data_files/ae_safety/*parquet
+      output_filename: adverse_event_safety
+      resource: target-safety
+    - uri: https://storage.googleapis.com/otar001-core/TargetSafety/data_files/sr_safety/*parquet
+      output_filename: risk_safety
+      resource: target-safety
+    - uri: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
+      output_filename: essentiality_matrices.zip
+      resource: target-safety
+  reactome:
+    - uri: https://reactome.org/download/current/Ensembl2Reactome.txt
+      output_filename: Ensembl2Reactome.txt
+      resource: target-reactome
 ensembl:
   ensembl_release: homo_sapiens_core_104_38
   extension_file: _genes.json.gz
@@ -249,6 +316,7 @@ drug:
         chembl-target:
           name: chembl_29_target
           fields:
+            - '_metadata'
             - 'target_chembl_id'
             - 'target_components'
             - 'target_type'
