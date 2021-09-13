@@ -1,4 +1,5 @@
 import logging
+from modules.OpenFDA import OpenFDA
 from .DownloadResource import DownloadResource
 from .GoogleBucketResource import GoogleBucketResource
 from .EnsemblResource import EnsemblResource
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class RetrieveResource(object):
 
-    def __init__(self,args, yaml, yaml_data_pipeline_schema):
+    def __init__(self, args, yaml, yaml_data_pipeline_schema):
         self.args = args
         self.output_dir = PIS_OUTPUT_DIR
         self.yaml = yaml
@@ -220,6 +221,11 @@ class RetrieveResource(object):
         end=time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
+    def get_openfda(self):
+        etlStep = OpenFDA(self.yaml.openfda)
+        files = etlStep.run()
+        # self.list_files_downloaded.update(files)
+
     def run(self):
         google_opts = GoogleBucketResource.has_google_parameters(self.args.google_credential_key, self.args.google_bucket)
         if google_opts:
@@ -238,7 +244,10 @@ class RetrieveResource(object):
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("homologues"): self.get_homologues()
         if self.has_step("known_target_safety"): self.get_known_target_safety()
+        if self.has_step("tep"): self.get_TEP()
+        if self.has_step("openfda"): self.get_openfda()
         if self.has_step("target"): self.get_target()
+
 
         # At this point the auth key is already valid.
         print(self.list_files_downloaded)

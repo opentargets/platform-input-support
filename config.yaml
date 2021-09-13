@@ -446,6 +446,18 @@ evidences:
     output_spark_dir: sysbio-{suffix}
     resource: input-file
 #The uri of data_pipeline_schema should point to the latest config data file.
+openfda:
+  gs_output_dir: openfda
+  datasources:
+    downloads:
+      - uri: 'https://api.fda.gov/download.json'
+        unzip_file: false
+        resource: openfda-available
+        output_filename: 'openfda_file_listing.json'
+      - uri: 'https://raw.githubusercontent.com/opentargets/platform-etl-backend/master/src/main/resources/blacklisted_events.txt'
+        unzip_file: false
+        resource: openfda-blacklisted
+        output_filename: 'blacklisted_events.txt'
 data_pipeline_schema:
   uri: https://storage.googleapis.com/open-targets-data-releases/21.02/templates/template.mrtarget.data.21.02.yml
   output_filename: mrtarget.data.yml

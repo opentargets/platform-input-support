@@ -363,6 +363,13 @@ This step is used to download data from the internal OT resources and proteinatl
 The tissue translation map requires some manipulations due the weird JSON format.
 All the files generated are required by the ETL.
 
+## OpenFDA FAERs
+
+This step collects adversed events of interest from [OpenFDA FAERS](https://open.fda.gov/data/faers/).
+It requires two input parameters via the configuation file:
+- URL of the events black list.
+- URL where to find OpenFDA FAERS repository metadata in JSON format.
+
 
 
 # Application architecture

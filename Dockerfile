@@ -1,5 +1,8 @@
 FROM continuumio/miniconda3
 
+# Update sources
+RUN apt update
+
 ARG conda_env=pis-py3
 
 COPY environment.yaml .

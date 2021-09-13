@@ -82,7 +82,6 @@ def get_output_dir(output_dir, default_output_dir):
 
     return output_dir
 
-
 # Init output dirs structure. Using definition.py vars
 def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_DIR)
@@ -96,8 +95,8 @@ def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
     get_output_dir(None, PIS_OUTPUT_HOMOLOGY)
     get_output_dir(None, PIS_OUTPUT_DRUG)
+    get_output_dir(None, PIS_OUTPUT_OPENFDA)
     get_output_dir(None, PIS_OUTPUT_TARGET)
-
 
 def make_gzip(file_with_path):
     """Compress file_with_path to file_with_path.gz and return file name."""
