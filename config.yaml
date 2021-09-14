@@ -364,6 +364,10 @@ interactions:
 evidences:
   gs_output_dir: evidence-files
   downloads:
+  - bucket: otar000-evidence_input/CancerBiomarkers/json
+    output_filename: cancerbiomarkers-{suffix}.json.gz
+    output_spark_dir: cancerbiomarkers-{suffix}
+    resource: input-file
   - bucket: otar000-evidence_input/Orphanet/json
     output_filename: orphanet-{suffix}.json.gz
     output_spark_dir: orphanet-{suffix}
