@@ -6,13 +6,13 @@ from .common.Riot import Riot
 logger = logging.getLogger(__name__)
 
 
-class ECO(object):
+class SO(object):
 
     def __init__(self, yaml, yaml_config):
         self.yaml = yaml
         self.local_output_dir = PIS_OUTPUT_ANNOTATIONS
         self.output_dir = yaml.gs_output_dir
-        self.gs_save_json_dir = yaml.gs_output_dir + '/eco_json'
+        self.gs_save_json_dir = yaml.gs_output_dir + '/so_json'
         self.list_files_downloaded = {}
         self.riot = Riot(yaml_config)
 
@@ -24,8 +24,8 @@ class ECO(object):
                                                             'gs_output_dir': self.output_dir}
         return destination_filename
 
-    def download_eco(self):
-        for entry in self.yaml.eco_downloads:
+    def download_so(self):
+        for entry in self.yaml.so_downloads:
             download = DownloadResource(self.local_output_dir)
             destination_filename = download.execute_download(entry)
             self.list_files_downloaded[destination_filename] = {'resource': entry.resource,

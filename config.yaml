@@ -114,13 +114,9 @@ annotations_from_buckets:
   - bucket: otar001-core/ExperimentalToxicity
     output_filename: experimental-toxicity-{suffix}.tsv
     resource: experimental-toxicity
-eco:
+so:
   gs_output_dir: annotation-files/ontology
-  eco_downloads:
-    - uri: https://raw.githubusercontent.com/evidenceontology/evidenceontology/v2021-06-04/eco.owl
-      output_filename: ontology-eco-{suffix}.owl
-      resource: ontology-eco
-      owl_jq: '.["@graph"][]'
+  so_downloads:
     - uri: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/v3.1/releases/so-xp.owl/so.owl
       output_filename: ontology-so-{suffix}.owl
       resource: ontology-so
