@@ -106,9 +106,7 @@ class RetrieveResource(object):
 
     def get_homologues(self):
         homologues = Homologues(self.yaml.homologies, self.yaml.config.jq)
-
         homology_files = homologues.download_resources()
-
         self.list_files_downloaded.update(homology_files)
 
     def get_drug(self):

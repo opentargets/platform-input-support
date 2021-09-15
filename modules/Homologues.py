@@ -1,6 +1,6 @@
 import os
 import errno
-from typing import Dict
+from addict import Dict
 
 import subprocess
 
@@ -64,12 +64,12 @@ class Homologues(object):
         entries requiring a custom suffix.
         """
         protein_uri = self.uri + f"{species}/{species}.json"
-        resource = {
-            'uri': protein_uri,
-            'output_filename': f'{self.release}-{species}.json',
-            'output_dir': 'homologue',
-            'resource': f'ensembl-homologue-{species}'
-        }
+        resource = Dict()
+        resource.uri = protein_uri
+        resource.output_filename=  f'{self.release}-{species}.json'
+        resource.output_dir = 'homologue'
+        resource.resource= f'ensembl-homologue-{species}'
+
         return self._download_if_not_present(resource)
 
     def extract_fields_from_json(self, input_file: str) -> str:
