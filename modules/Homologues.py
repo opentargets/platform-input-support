@@ -119,6 +119,7 @@ class Homologues(object):
 
             filename_tsv = self.extract_fields_from_json(filename_json)
 
+            print(f'{species}-json')
             self.list_files_downloaded[f'{species}-json'] = {
                 'resource': filename_json,
                 'gs_output_dir': self.gs_output_dir
