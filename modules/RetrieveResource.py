@@ -221,6 +221,13 @@ class RetrieveResource(object):
         end=time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
+
+    def get_target(self):
+        targetStep = Target(self.yaml)
+        list_files_downloded = targetStep.execute()
+        self.list_files_downloaded.update(list_files_downloded)
+
+
     def get_openfda(self):
         etlStep = OpenFDA(self.yaml.openfda)
         files = etlStep.run()
