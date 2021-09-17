@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import shutil
 from typing import Dict, List
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
@@ -22,7 +23,8 @@ class Target(object):
     """
 
     def __init__(self, yaml):
-        self.config = yaml
+        self.config = yaml.target
+        self.common = yaml.config
         self.output_dir = PIS_OUTPUT_TARGET
 
     def download_hpa(self) -> str:
@@ -53,11 +55,26 @@ class Target(object):
                 logger.debug(f"Found {fname} in {output_dir}: will not download again.")
         return downloaded_files
 
+
+    def check_jq_path_command(self, cmd, yaml_cmd):
+        """
+        Check if the path for jq is available otherwise it uses the path provided in the config file.
+        Return: jq path
+        TODO: Duplication of the function in the Riot Module. Fix it.
+        """
+        cmd_result = shutil.which(cmd)
+        if cmd_result == None:
+            print(cmd+" not found. Using the path from config.yaml")
+            cmd_result = yaml_cmd
+        return cmd_result
+
     def download_and_process_ensembl(self, config: Dict, output_dir: str, jq_binary='/usr/bin/jq') -> str:
         """
         Downloads raw ensembl file, converts to jsonl and filters using jq filter before uploading.
         Return: downloaded file name.
         """
+        jq_binary_x = self.check_jq_path_command(jq_binary,self.common.jq)
+
         jsonl_filename = os.path.join(output_dir, config.jq_filename)
 
         if file_already_downloaded(jsonl_filename):
@@ -66,7 +83,7 @@ class Target(object):
             logger.info("Converting Ensembl json file into jsonl.")
             raw_json = os.path.join(output_dir, config.output_filename)
             with open(jsonl_filename, "wb") as jsonwrite:
-                jqp = subprocess.Popen([jq_binary, "-c", config.jq, raw_json], stdout=subprocess.PIPE)
+                jqp = subprocess.Popen([jq_binary_x, "-c", config.jq, raw_json], stdout=subprocess.PIPE)
                 jsonwrite.write(jqp.stdout.read())
 
         return jsonl_filename
@@ -113,7 +130,7 @@ class Target(object):
             return download.execute_download(self.config.reactome)
 
     def create_output_dirs(self):
-        directories = ["ensembl", "go", "hpa", "projectScores", "gnomad", "ncbi"]
+        directories = ["ensembl", "go", "hpa", "reactome","projectScores", "gnomad", "ncbi"]
         for d in directories:
             path = self.output_dir + "/" + d
             if not os.path.exists(path):

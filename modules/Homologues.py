@@ -1,7 +1,7 @@
 import os
 import errno
-from typing import Dict
-
+from addict import Dict
+import shutil
 import subprocess
 
 from definitions import PIS_OUTPUT_HOMOLOGY
@@ -39,11 +39,25 @@ class Homologues(object):
         self.gs_output_dir = yaml_dict.gs_output_dir
         self.list_files_downloaded = {}
         self.download = DownloadResource(PIS_OUTPUT_HOMOLOGY)
-        self.jq = jq_cmd
+        self.jq = self.check_jq_path_command('jq',jq_cmd)
 
         self.release = self.config.release
         self.uri = 'ftp://ftp.ensembl.org/pub/release-{release}/json/'.format(release=self.release)
         self.jq_output = f"{PIS_OUTPUT_HOMOLOGY}_{self.release}_id_name.tsv"
+
+
+    def check_jq_path_command(self, cmd, yaml_cmd):
+        """
+        Check if the path for jq is available otherwise it uses the path provided in the config file.
+        Return: jq path
+        TODO: Duplication of the function in the Riot and Target Module. Fix it.
+        """
+        cmd_result = shutil.which(cmd)
+        if cmd_result == None:
+            print(cmd+" not found. Using the path from config.yaml")
+            cmd_result = yaml_cmd
+        return cmd_result
+
 
     def _download_if_not_present(self, resource: Dict):
         """
@@ -64,12 +78,12 @@ class Homologues(object):
         entries requiring a custom suffix.
         """
         protein_uri = self.uri + f"{species}/{species}.json"
-        resource = {
-            'uri': protein_uri,
-            'output_filename': f'{self.release}-{species}.json',
-            'output_dir': 'homologue',
-            'resource': f'ensembl-homologue-{species}'
-        }
+        resource = Dict()
+        resource.uri = protein_uri
+        resource.output_filename=  f'{self.release}-{species}.json'
+        resource.output_dir = 'homologue'
+        resource.resource= f'ensembl-homologue-{species}'
+
         return self._download_if_not_present(resource)
 
     def extract_fields_from_json(self, input_file: str) -> str:
@@ -105,11 +119,11 @@ class Homologues(object):
 
             filename_tsv = self.extract_fields_from_json(filename_json)
 
-            self.list_files_downloaded[f'{species}-json'] = {
+            self.list_files_downloaded[filename_json] = {
                 'resource': filename_json,
                 'gs_output_dir': self.gs_output_dir
             }
-            self.list_files_downloaded[f'{species}-tsv'] = {
+            self.list_files_downloaded[filename_tsv] = {
                 'resource': filename_tsv,
                 'gs_output_dir': self.gs_output_dir
             }
