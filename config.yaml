@@ -64,7 +64,7 @@ hpa_from_buckets:
     output_filename: baseline_expression_zscore_binned-{suffix}.tsv
     resource: hpa-rna-zscore
 homologies:
-  gs_output_dir: target-inputs/homologue
+  gs_output_dir: annotation-files/target-inputs/homologue
   release: 104
   jq: ".genes[] | [.id, .name] | @tsv"
   resources:
