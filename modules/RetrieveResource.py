@@ -229,7 +229,7 @@ class RetrieveResource(object):
     def get_openfda(self):
         etlStep = OpenFDA(self.yaml.openfda)
         files = etlStep.run()
-        # self.list_files_downloaded.update(files)
+        self.list_files_downloaded.update(files)
 
     def run(self):
         google_opts = GoogleBucketResource.has_google_parameters(self.args.google_credential_key, self.args.google_bucket)
