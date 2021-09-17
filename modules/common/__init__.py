@@ -123,16 +123,20 @@ def make_zip(file_with_path):
     return filename_zip
 
 
-def extract_file_from_zip(file_to_extract: str, zip_file: str, output_dir: str) -> None:
+def extract_file_from_zip(file_to_extract: str, zip_file: str, output_dir: str) -> str:
     """
     Opens `zip_file` and saves `file_to_extract` to `output_dir`.
     """
+    file_to_extract_name = None
     with zipfile.ZipFile(zip_file) as zf:
         if file_to_extract in zf.namelist():
             _, tail = os.path.split(file_to_extract)
             with open(os.path.join(output_dir, tail), "wb") as f:
                 logger.info(f"Extracting {file_to_extract} from {zip_file} to {f.name}")
                 f.write(zf.read(file_to_extract))
+            file_to_extract_name = f.name
+    return file_to_extract_name
+
 
 
 # The procedure raises an error if the zip file contains more than a file.

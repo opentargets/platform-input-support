@@ -46,7 +46,9 @@ class Target(object):
             if not os.path.exists(os.path.join(output_dir, fname)):
                 f = download.execute_download(i)
                 if f.endswith('.zip'):
-                    downloaded_files.append(extract_file_from_zip(file_of_interest, f, output_dir))
+                    f_extract = extract_file_from_zip(file_of_interest, f, output_dir)
+                    if f_extract is not None:
+                        downloaded_files.append(f_extract)
                     if os.path.exists(f):
                         os.remove(f)
                 else:
@@ -151,10 +153,12 @@ class Target(object):
                               self.download_gnomad(),
                               self.download_ncbi(),
                               self.download_reactome()]
+
         sources = sources + self.download_ftp_files("gene ontology", self.config.go,
                                                     os.path.join(self.output_dir, "go"))
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
-                                                                                                 "ensembl"))
+                                                                                                "ensembl"))
+
         sources = sources + self.download_project_scores()
         downloaded_files = {}
         for f in sources:
