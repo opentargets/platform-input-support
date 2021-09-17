@@ -11,6 +11,7 @@ RUN conda update -n base -c defaults conda
 RUN conda env create --file environment.yaml
 ENV PATH /opt/conda/envs/$conda_env/bin:$PATH
 
+ENTRYPOINT [ "/bin/bash" ]
 #put the application in the right place
 WORKDIR /usr/src/app
 COPY . /usr/src/app
