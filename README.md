@@ -11,7 +11,6 @@ List of available steps:
 - annotations_from_buckets
 - chemical_probes
 - drug
-- eco
 - efo
 - ensembl
 - evidence
@@ -20,6 +19,7 @@ List of available steps:
 - interactions
 - known_target_safety
 - tep
+- so
 
 
 The step 'evidences' uploads the last evidences from different providers and 

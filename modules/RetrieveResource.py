@@ -8,7 +8,7 @@ from .Drug import Drug
 from .Homologues import Homologues
 from .KnownTargetSafetyResource import KnownTargetSafetyResource
 from .EFO import EFO
-from .ECO import ECO
+from .SO import SO
 from .HPA import HPA
 from .Interactions import Interactions
 from .StringInteractions import StringInteractions
@@ -67,10 +67,10 @@ class RetrieveResource(object):
         list_files_efo = efo_resource.generate_efo()
         self.list_files_downloaded.update(list_files_efo)
 
-    def get_eco(self):
-        eco_resource = ECO(self.yaml.eco, self.yaml.config)
-        list_files_eco = eco_resource.download_eco()
-        self.list_files_downloaded.update(list_files_eco)
+    def get_so(self):
+        so_resource = SO(self.yaml.so, self.yaml.config)
+        list_files = so_resource.download_so()
+        self.list_files_downloaded.update(list_files)
 
     def get_ensembl(self):
         ensembl_resource = EnsemblResource(self.yaml.ensembl)
@@ -106,9 +106,7 @@ class RetrieveResource(object):
 
     def get_homologues(self):
         homologues = Homologues(self.yaml.homologies, self.yaml.config.jq)
-
         homology_files = homologues.download_resources()
-
         self.list_files_downloaded.update(homology_files)
 
     def get_drug(self):
@@ -221,6 +219,13 @@ class RetrieveResource(object):
         end=time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
+
+    def get_target(self):
+        targetStep = Target(self.yaml)
+        list_files_downloded = targetStep.execute()
+        self.list_files_downloaded.update(list_files_downloded)
+
+
     def get_openfda(self):
         etlStep = OpenFDA(self.yaml.openfda)
         files = etlStep.run()
@@ -238,7 +243,7 @@ class RetrieveResource(object):
         if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("drug"): self.get_drug()
         if self.has_step("efo"): self.get_efo()
-        if self.has_step("eco"): self.get_eco()
+        if self.has_step("so"): self.get_so()
         if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
@@ -253,7 +258,7 @@ class RetrieveResource(object):
         print(self.list_files_downloaded)
         if google_opts: self.copy_files_to_google_storage()
 
-        self.create_yaml_config_file()
+        #self.create_yaml_config_file()
 
         logging.info("Done.")
         return True
