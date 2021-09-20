@@ -37,7 +37,7 @@ def _do_download_openfda_event_file(download_entry):
     })
     # Download the file
     downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
-    downloader.execute_download(download_resource)
+    downloader.execute_download(download_resource, 7)
     # Expand the ZIP file
     extracted_filelist = dict()
     with zipfile.ZipFile(download_dest_path, 'r') as zipf:
@@ -93,7 +93,7 @@ class OpenFDA(object):
         # TODO - body
         logger.info("Download OpenFDA FAERS repository metadata")
         downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
-        download = downloader.execute_download(resource)
+        download = downloader.execute_download(resource, 3)
         if resource.unzip_file:
             logger.error("UNSUPPORTED file format (ZIP) - URI '{}'".format(resource.uri))
         else:
@@ -112,7 +112,7 @@ class OpenFDA(object):
     def _download_blacklist(self, resource):
         logger.info("OpenFDA blacklisted events download, URI '{}' --- START ---".format(resource.uri))
         downloader = DownloadResource(PIS_OUTPUT_OPENFDA)
-        download = downloader.execute_download(resource)
+        download = downloader.execute_download(resource, 3)
         downloaded_files = dict()
         if resource.unzip_file:
             logger.error("UNSUPPORTED file format (ZIP) - URI '{}'".format(resource.uri))
