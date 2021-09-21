@@ -6,9 +6,6 @@ config:
 annotations:
   gs_output_dir: annotation-files
   downloads:
-  - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=txt
-    output_filename: uniprot-{suffix}.txt.gz
-    resource: uniprot-uri
   - uri: https://reactome.org/download/current/ReactomePathways.txt
     output_filename: ReactomePathways-{suffix}.txt
     resource: reactome-pathway-data
@@ -21,23 +18,6 @@ annotations:
   - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
     output_filename: human_all_hcop_sixteen_column-{suffix}.txt.gz
     resource: hgnc-orthologs
-  - uri: http://www.informatics.jax.org/downloads/reports/HMD_HumanPhenotype.rpt
-    output_filename: HMD_HumanPhenotype-{suffix}.rpt
-    resource: mouse-phenotypes-orthology
-  - uri: http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt
-    output_filename: MGI_PhenoGenoMP-{suffix}.rpt
-    resource: mouse-phenotypes-report
-  - uri: https://raw.githubusercontent.com/opentargets/data_pipeline/master/mrtarget/resources/eco_scores.tsv
-    output_filename: eco_scores-{suffix}.tsv
-    resource: eco-scores
-  - uri: https://probeminer.icr.ac.uk/probeminer_datadump.zip
-    output_filename: probeminer-datadump-{suffix}.tsv.zip
-    unzip_file: true
-    resource: probeminer
-  - uri: https://www.ebi.ac.uk/QuickGO/services/annotation/downloadSearch?includeFields=name,goName,taxonName&selectedFields=geneProductId,goId,goName,goaspect&downloadLimit=2000000&taxonId=9606&taxonUsage=descendants
-    output_filename: go-{suffix}.tsv
-    accept: 'text/tsv'
-    resource: gene-ontology
 hpa:
   gs_output_dir: annotation-files/hpa
   downloads:
@@ -89,9 +69,6 @@ annotations_from_buckets:
     output_filename: cosmic-hallmarks-{suffix}.tsv.gz
     resource: hallmark
     includes: hallmarks
-  - bucket: otar001-core/Tractability
-    output_filename: tractability_buckets-{suffix}.tsv
-    resource: tractability
   - bucket: otar001-core/CancerBiomarkers/annotation
     output_filename: cancerbiomarkers-{suffix}.tsv
     resource: biomarker
@@ -110,9 +87,6 @@ annotations_from_buckets:
     resource: drugbank
   - bucket: otar001-core/ExperimentalToxicity
     output_filename: ToxCast_2021-{suffix}.tsv
-    resource: experimental-toxicity
-  - bucket: otar001-core/ExperimentalToxicity
-    output_filename: experimental-toxicity-{suffix}.tsv
     resource: experimental-toxicity
 so:
   gs_output_dir: annotation-files/ontology
@@ -146,48 +120,6 @@ efo:
       output_filename: ontology-mondo.jsonl
       resource: ontology-mondo
       owl_jq: '.["@graph"][] | @json'
-chemical_probes:
-  output_filename: chemicalprobes_portalprobes-{suffix}.tsv
-  resource: chemical-probes-1
-  gs_output_dir: annotation-files
-  spreadsheets:
-  - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-    gid: 1686598114
-    output_filename: chemical_probes_SGC.tsv
-    cp_type: sgc
-  - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-    gid: 1636863333
-    output_filename: chemical_probes_portal.tsv
-    cp_type: cpp
-  - gkey: 1VL3eHGpvJMaQ7LYp0Kp1plEo-NueP3CT7FUCrW0p2dg
-    gid: 349856989
-    output_filename: open_science_probes.tsv
-    cp_type: osp
-known_target_safety:
-  output_filename: known_target_safety-{suffix}.json
-  resource: safety
-  gs_output_dir: annotation-files
-  spreadsheets:
-  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
-    gid: 1760619926
-    output_filename: adverse_effects.tsv
-    s_type: adr
-  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
-    gid: 650742396
-    output_filename: safety_risk_information.tsv
-    s_type: sri
-  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
-    gid: 1774810192
-    output_filename: UBERON_mapping.tsv
-    s_type: ubr
-  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
-    gid: 1717378859
-    output_filename: EFO_mapping.tsv
-    s_type: efo
-  - gkey: 1EvpcnUkDASUNoBU5PzQPGD5YtZxh7cgotr2MqClJ7t0
-    gid: 1223815020
-    output_filename: references.tsv
-    s_type: ref
 target:
   gs_output_dir: annotation-files/target
   ensembl:
