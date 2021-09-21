@@ -1,26 +1,25 @@
 import logging
-from modules.OpenFDA import OpenFDA
-from .DownloadResource import DownloadResource
-from .GoogleBucketResource import GoogleBucketResource
-from .EnsemblResource import EnsemblResource
-from .ChemicalProbesResource import ChemicalProbesResource
-from .Drug import Drug
-from .Homologues import Homologues
-from .KnownTargetSafetyResource import KnownTargetSafetyResource
-from .EFO import EFO
-from .SO import SO
-from .HPA import HPA
-from .Interactions import Interactions
-from .StringInteractions import StringInteractions
-from definitions import *
-from .DataPipelineConfig import DataPipelineConfig
-from .common import get_lines, make_unzip_single_file, init_output_dirs, get_output_dir
-from .Target import Target
-from .common import get_lines, make_unzip_single_file, init_output_dirs
 import time
 
+from definitions import *
+from modules.OpenFDA import OpenFDA
+from .DataPipelineConfig import DataPipelineConfig
+from .DownloadResource import DownloadResource
+from .Drug import Drug
+from .EFO import EFO
+from .EnsemblResource import EnsemblResource
+from .GoogleBucketResource import GoogleBucketResource
+from .HPA import HPA
+from .Homologues import Homologues
+from .Interactions import Interactions
+from .SO import SO
+from .StringInteractions import StringInteractions
+from .Target import Target
+from .common import get_lines, make_unzip_single_file, init_output_dirs
+from .common import get_output_dir
 
 logger = logging.getLogger(__name__)
+
 
 class RetrieveResource(object):
 
@@ -53,11 +52,11 @@ class RetrieveResource(object):
                 if 'unzip_file' in entry:
                     destination_filename = make_unzip_single_file(destination_filename)
 
-                self.list_files_downloaded[destination_filename] = { 'resource' : entry.resource,
-                                                                      'gs_output_dir': self.yaml.annotations_from_buckets.gs_output_dir }
+                self.list_files_downloaded[destination_filename] = {'resource': entry.resource,
+                                                                    'gs_output_dir': self.yaml.annotations_from_buckets.gs_output_dir}
                 logger.info("Files downloaded: %s", destination_filename)
             elif not self.args.skip:
-                 raise ValueError("Error during downloading: {}", entry.uri)
+                raise ValueError("Error during downloading: {}", entry.uri)
 
         logger.info("Number of resources requested / Number of files downloaded: %s / %s",
                     len(self.yaml.annotations.downloads), len(self.list_files_downloaded))
@@ -75,24 +74,8 @@ class RetrieveResource(object):
     def get_ensembl(self):
         ensembl_resource = EnsemblResource(self.yaml.ensembl)
         ensembl_filename = ensembl_resource.execute()
-        self.list_files_downloaded[ensembl_filename] = {'resource': self.yaml.ensembl.resource, 'gs_output_dir': self.yaml.ensembl.gs_output_dir}
-
-    def get_chemical_probes(self):
-        # config.yaml chemical probes file : downnload spreadsheets + generate file for data_pipeline
-        chemical_probes_resource = ChemicalProbesResource(PIS_OUTPUT_ANNOTATIONS)
-        chemical_probes_resource.download_spreadsheet(self.yaml.chemical_probes,PIS_OUTPUT_CHEMICAL_PROBES)
-        chemical_filename = chemical_probes_resource.generate_probes(self.yaml.chemical_probes)
-        self.list_files_downloaded[chemical_filename] = {'resource': self.yaml.chemical_probes.resource,
-                                                         'gs_output_dir': self.yaml.chemical_probes.gs_output_dir}
-
-    # config.yaml known target safety file : download spreadsheets + generate file for data_pipeline
-    def get_known_target_safety(self):
-        known_target_safety_resource = KnownTargetSafetyResource(PIS_OUTPUT_ANNOTATIONS)
-        known_target_safety_resource.download_spreadsheet(self.yaml.known_target_safety,PIS_OUTPUT_KNOWN_TARGET_SAFETY)
-        ksafety_filename = known_target_safety_resource.generate_known_safety_json(self.yaml.known_target_safety)
-        self.list_files_downloaded[ksafety_filename] = {'resource': self.yaml.known_target_safety.resource,
-                                                         'gs_output_dir': self.yaml.known_target_safety.gs_output_dir}
-
+        self.list_files_downloaded[ensembl_filename] = {'resource': self.yaml.ensembl.resource,
+                                                        'gs_output_dir': self.yaml.ensembl.gs_output_dir}
 
     def get_interactions(self):
         # Intact Resource
@@ -129,7 +112,7 @@ class RetrieveResource(object):
             if not latest_filename_info["spark"]:
                 if latest_filename_info["latest_filename"] is not None:
                     final_filename = google_resource.download_file_helper(output, entry.output_filename,
-                                                                    latest_filename_info)
+                                                                          latest_filename_info)
                     self.list_files_downloaded[final_filename] = {'resource': entry.resource,
                                                                   'gs_output_dir': gs_output_dir}
                     # fill in a specific variable for just evidence step.
@@ -138,17 +121,17 @@ class RetrieveResource(object):
                     logger.info(
                         "ERROR: The path={} does not contain any recent file".format(google_resource.get_bucket_name()))
                     if not self.args.skip:
-                       raise ValueError("ERROR: The path={} does not contain any recent file".format(
-                           google_resource.get_bucket_name()))
+                        raise ValueError("ERROR: The path={} does not contain any recent file".format(
+                            google_resource.get_bucket_name()))
             else:
-                #spark:
+                # spark:
                 dir_name = entry.output_spark_dir.replace('{suffix}', latest_filename_info["suffix"])
-                output_dir = PIS_OUTPUT_EVIDENCES+'/'+ dir_name
+                output_dir = PIS_OUTPUT_EVIDENCES + '/' + dir_name
                 get_output_dir(None, output_dir)
-                list_files_dir = google_resource.download_dir(latest_filename_info["latest_filename"],output_dir)
+                list_files_dir = google_resource.download_dir(latest_filename_info["latest_filename"], output_dir)
                 for spark_filename in list_files_dir:
                     self.list_files_downloaded[spark_filename] = {'resource': entry.resource,
-                                                                  'gs_output_dir': gs_output_dir+'/'+dir_name}
+                                                                  'gs_output_dir': gs_output_dir + '/' + dir_name}
                     list_files_bucket[spark_filename] = entry.resource
         else:
             self.list_files_downladed_failed[google_resource.get_bucket_name()] = entry.resource
@@ -159,17 +142,16 @@ class RetrieveResource(object):
         del google_resource
         return list_files_bucket
 
-
     def get_annotations_from_bucket(self):
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         for entry in self.yaml.annotations_from_buckets.downloads:
-            self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS ,self.yaml.annotations_from_buckets.gs_output_dir)
+            self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS, self.yaml.annotations_from_buckets.gs_output_dir)
 
     def get_hpa_expressions(self):
         # Retrieve info from google cloud bucket
         GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
         for entry in self.yaml.hpa_from_buckets.downloads:
-            self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS ,self.yaml.hpa_from_buckets.gs_output_dir)
+            self.get_file_from_bucket(entry, PIS_OUTPUT_ANNOTATIONS, self.yaml.hpa_from_buckets.gs_output_dir)
         # Retrieve info from external resources
         hpa_resource = HPA(self.yaml.hpa, self.args)
         list_hpa_annotations = hpa_resource.get_hpa_annonations()
@@ -182,7 +164,6 @@ class RetrieveResource(object):
             file_from_bucket = self.get_file_from_bucket(entry, PIS_OUTPUT_EVIDENCES, self.yaml.evidences.gs_output_dir)
             list_files_evidence.update(file_from_bucket)
 
-
         self.get_stats_files(list_files_evidence)
 
     def copy_files_to_google_storage(self):
@@ -192,23 +173,24 @@ class RetrieveResource(object):
             if 'is_a_dir' in self.list_files_downloaded[original_filename]:
                 print("TODO")
             else:
-                split_filename=original_filename.rsplit('/', 1)
+                split_filename = original_filename.rsplit('/', 1)
                 dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
-                bucket_filename=google_resource.copy_from(original_filename, dest_filename,
-                                                      self.list_files_downloaded[original_filename]['gs_output_dir'])
-                bucket_filename = GOOGLE_STORAGE_URI+google_resource.bucket_name+'/'+bucket_filename
+                bucket_filename = google_resource.copy_from(original_filename, dest_filename,
+                                                            self.list_files_downloaded[original_filename][
+                                                                'gs_output_dir'])
+                bucket_filename = GOOGLE_STORAGE_URI + google_resource.bucket_name + '/' + bucket_filename
                 self.list_google_storage_files[bucket_filename] = self.list_files_downloaded[original_filename]
 
     def create_yaml_config_file(self):
         data_pipeline_config_file = DataPipelineConfig(self.yaml_data_pipeline_schema)
         if len(self.list_files_downloaded) > 0:
-            data_pipeline_config_file.create_config_file_etl(self.list_google_storage_files,'etl.')
+            data_pipeline_config_file.create_config_file_etl(self.list_google_storage_files, 'etl.')
             data_pipeline_config_file.create_config_file(self.list_google_storage_files, 'gs.')
             data_pipeline_config_file.create_config_file(self.list_files_downloaded, 'local.')
 
     def get_stats_files(self, list_files):
         start = time.time()
-        evidence_stats_file= os.path.join(PIS_OUTPUT_DIR, 'stats_evidence_files.csv')
+        evidence_stats_file = os.path.join(PIS_OUTPUT_DIR, 'stats_evidence_files.csv')
         logger.info("Generating stats files: " + evidence_stats_file)
         if os.path.exists(evidence_stats_file): os.remove(evidence_stats_file)
         stats_file = open(evidence_stats_file, "a+")
@@ -216,15 +198,13 @@ class RetrieveResource(object):
             lines = get_lines(original_filename)
             filename_info = original_filename.rsplit('/', 1)[1]
             stats_file.write(filename_info + ',' + str(lines) + '\n')
-        end=time.time()
+        end = time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
-
 
     def get_target(self):
         targetStep = Target(self.yaml)
         list_files_downloded = targetStep.execute()
         self.list_files_downloaded.update(list_files_downloded)
-
 
     def get_openfda(self):
         etlStep = OpenFDA(self.yaml.openfda)
@@ -232,15 +212,15 @@ class RetrieveResource(object):
         self.list_files_downloaded.update(files)
 
     def run(self):
-        google_opts = GoogleBucketResource.has_google_parameters(self.args.google_credential_key, self.args.google_bucket)
+        google_opts = GoogleBucketResource.has_google_parameters(self.args.google_credential_key,
+                                                                 self.args.google_bucket)
         if google_opts:
             GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
 
         init_output_dirs()
-        if self.has_step("annotations") : self.annotations_downloaded_by_uri()
+        if self.has_step("annotations"): self.annotations_downloaded_by_uri()
         if self.has_step("annotations_from_buckets"): self.get_annotations_from_bucket()
         if self.has_step("hpa"): self.get_hpa_expressions()
-        if self.has_step("chemical_probes"): self.get_chemical_probes()
         if self.has_step("drug"): self.get_drug()
         if self.has_step("efo"): self.get_efo()
         if self.has_step("so"): self.get_so()
@@ -248,17 +228,15 @@ class RetrieveResource(object):
         if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("homologues"): self.get_homologues()
-        if self.has_step("known_target_safety"): self.get_known_target_safety()
         if self.has_step("tep"): self.get_TEP()
         if self.has_step("openfda"): self.get_openfda()
         if self.has_step("target"): self.get_target()
-
 
         # At this point the auth key is already valid.
         print(self.list_files_downloaded)
         if google_opts: self.copy_files_to_google_storage()
 
-        #self.create_yaml_config_file()
+        # self.create_yaml_config_file()
 
         logging.info("Done.")
         return True
