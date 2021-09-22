@@ -16,4 +16,5 @@ PIS_OUTPUT_INTERACTIONS= os.path.join(PIS_OUTPUT_ANNOTATIONS, 'interactions')
 PIS_OUTPUT_ANNOTATIONS_QC = os.path.join(PIS_OUTPUT_DIR, 'qc')
 PIS_OUTPUT_OPENFDA = os.path.join(PIS_OUTPUT_DIR, 'openfda')
 GOOGLE_STORAGE_URI = 'https://storage.googleapis.com/'
+PIS_OUTPUT_TEP = os.path.join(PIS_OUTPUT_ANNOTATIONS, 'tep')
 # CONFIG = os.path.join(ROOT_DIR, 'config.yaml')  # Add later for default config file
