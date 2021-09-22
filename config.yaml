@@ -85,9 +85,6 @@ annotations_from_buckets:
   - bucket: otar001-core/DrugBank/annotation
     output_filename: drugbank-{suffix}.csv.gz
     resource: drugbank
-  - bucket: otar001-core/ExperimentalToxicity
-    output_filename: ToxCast_2021-{suffix}.tsv
-    resource: experimental-toxicity
 so:
   gs_output_dir: annotation-files/ontology
   so_downloads:
