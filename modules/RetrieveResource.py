@@ -202,12 +202,12 @@ class RetrieveResource(object):
         end = time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
-    # config.yaml tep : download spreadsheets + generate file for ETL
     def get_TEP(self):
         tep_resource = TEP(PIS_OUTPUT_ANNOTATIONS)
         tep_resource.download_spreadsheet(self.yaml.tep, PIS_OUTPUT_TEP)
         tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
         self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
+                                                    'gs_output_dir': self.yaml.tep.gs_output_dir}
 
     def get_target(self):
         targetStep = Target(self.yaml)
