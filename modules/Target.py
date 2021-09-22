@@ -1,8 +1,8 @@
 import logging
 import os
 import subprocess
-import shutil
-from typing import Dict, List
+from typing import Dict as slibDict, List
+from addict import Dict
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
 from modules.common import extract_file_from_zip, make_ungzip
@@ -57,25 +57,14 @@ class Target(object):
                 logger.debug(f"Found {fname} in {output_dir}: will not download again.")
         return downloaded_files
 
-
-    def check_jq_path_command(self, cmd, yaml_cmd):
-        """
-        Check if the path for jq is available otherwise it uses the path provided in the config file.
-        Return: jq path
-        TODO: Duplication of the function in the Riot Module. Fix it.
-        """
-        cmd_result = shutil.which(cmd)
-        if cmd_result == None:
-            print(cmd+" not found. Using the path from config.yaml")
-            cmd_result = yaml_cmd
-        return cmd_result
-
     def download_and_process_ensembl(self, config: Dict, output_dir: str, jq_binary='/usr/bin/jq') -> str:
         """
         Downloads raw ensembl file, converts to jsonl and filters using jq filter before uploading.
         Return: downloaded file name.
         """
-        jq_binary_x = self.check_jq_path_command(jq_binary,self.common.jq)
+        from common.Riot import Riot
+        riot = Riot(config)
+        jq_binary_x = riot.check_path_command(jq_binary, self.common.jq)
 
         jsonl_filename = os.path.join(output_dir, config.jq_filename)
 
@@ -123,7 +112,7 @@ class Target(object):
         if not file_already_downloaded(os.path.join(path, self.config.ncbi.output_filename)):
             return download.ftp_download(self.config.ncbi)
 
-    def download_reactome(self):
+    def download_reactome(self) -> str:
         logger.info("Downloading reactome files for target.")
 
         path = os.path.join(self.output_dir, "reactome")
@@ -131,8 +120,16 @@ class Target(object):
         if not file_already_downloaded(os.path.join(path, self.config.reactome.output_filename)):
             return download.execute_download(self.config.reactome)
 
-    def create_output_dirs(self):
-        directories = ["ensembl", "go", "hpa", "reactome","projectScores", "gnomad", "ncbi"]
+    def download_uniprot(self) -> str:
+        logger.info("Downloading uniprot files for target")
+
+        path = os.path.join(self.output_dir, "uniprot")
+        download = DownloadResource(path)
+        if not file_already_downloaded(os.path.join(path, self.config.uniprot.output_filename)):
+            return download.execute_download(self.config.uniprot)
+
+    def create_output_dirs(self) -> None:
+        directories = ["ensembl", "go", "hpa", "reactome", "projectScores", "gnomad", "ncbi", "uniprot"]
         for d in directories:
             path = self.output_dir + "/" + d
             if not os.path.exists(path):
@@ -143,7 +140,7 @@ class Target(object):
                 else:
                     print("Successfully created the directory %s" % d)
 
-    def execute(self) -> Dict[str, Dict[str, str]]:
+    def execute(self) -> slibDict[str, slibDict[str, str]]:
         """
         Saves all files in `target` section of config to PIS_OUTPUT_TARGET
         """
@@ -152,12 +149,13 @@ class Target(object):
         sources: List[str] = [self.download_hpa(),
                               self.download_gnomad(),
                               self.download_ncbi(),
-                              self.download_reactome()]
+                              self.download_reactome(),
+                              self.download_uniprot()]
 
         sources = sources + self.download_ftp_files("gene ontology", self.config.go,
                                                     os.path.join(self.output_dir, "go"))
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
-                                                                                                "ensembl"))
+                                                                                                 "ensembl"))
 
         sources = sources + self.download_project_scores()
         downloaded_files = {}
