@@ -7,7 +7,6 @@ from .DataPipelineConfig import DataPipelineConfig
 from .DownloadResource import DownloadResource
 from .Drug import Drug
 from .EFO import EFO
-from .TEP import TEP
 from .EnsemblResource import EnsemblResource
 from .GoogleBucketResource import GoogleBucketResource
 from .HPA import HPA
@@ -202,12 +201,6 @@ class RetrieveResource(object):
         end = time.time()
         logging.info("Stats evidence file: time of execution {}".format(str(end - start)))
 
-    def get_TEP(self):
-        tep_resource = TEP(PIS_OUTPUT_ANNOTATIONS)
-        tep_resource.download_spreadsheet(self.yaml.tep, PIS_OUTPUT_TEP)
-        tep_filename = tep_resource.generate_tep_json(self.yaml.tep)
-        self.list_files_downloaded[tep_filename] = {'resource': self.yaml.tep.resource,
-                                                    'gs_output_dir': self.yaml.tep.gs_output_dir}
 
     def get_target(self):
         targetStep = Target(self.yaml)
@@ -236,7 +229,6 @@ class RetrieveResource(object):
         if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("homologues"): self.get_homologues()
-        if self.has_step("tep"): self.get_TEP()
         if self.has_step("openfda"): self.get_openfda()
         if self.has_step("target"): self.get_target()
 

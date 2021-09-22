@@ -97,7 +97,6 @@ def init_output_dirs():
     get_output_dir(None, PIS_OUTPUT_DRUG)
     get_output_dir(None, PIS_OUTPUT_OPENFDA)
     get_output_dir(None, PIS_OUTPUT_TARGET)
-    get_output_dir(None, PIS_OUTPUT_TEP)
 
 def make_gzip(file_with_path):
     """Compress file_with_path to file_with_path.gz and return file name."""
