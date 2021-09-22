@@ -1,8 +1,8 @@
 import logging
 import os
 import subprocess
-import shutil
-from typing import Dict, List
+from typing import Dict as slibDict, List
+from addict import Dict
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
 from modules.common import extract_file_from_zip, make_ungzip
@@ -140,7 +140,7 @@ class Target(object):
                 else:
                     print("Successfully created the directory %s" % d)
 
-    def execute(self) -> Dict[str, Dict[str, str]]:
+    def execute(self) -> slibDict[str, slibDict[str, str]]:
         """
         Saves all files in `target` section of config to PIS_OUTPUT_TARGET
         """
