@@ -7,7 +7,6 @@ from .DataPipelineConfig import DataPipelineConfig
 from .DownloadResource import DownloadResource
 from .Drug import Drug
 from .EFO import EFO
-from .EnsemblResource import EnsemblResource
 from .GoogleBucketResource import GoogleBucketResource
 from .HPA import HPA
 from .Homologues import Homologues
@@ -70,12 +69,6 @@ class RetrieveResource(object):
         so_resource = SO(self.yaml.so, self.yaml.config)
         list_files = so_resource.download_so()
         self.list_files_downloaded.update(list_files)
-
-    def get_ensembl(self):
-        ensembl_resource = EnsemblResource(self.yaml.ensembl)
-        ensembl_filename = ensembl_resource.execute()
-        self.list_files_downloaded[ensembl_filename] = {'resource': self.yaml.ensembl.resource,
-                                                        'gs_output_dir': self.yaml.ensembl.gs_output_dir}
 
     def get_interactions(self):
         # Intact Resource
@@ -225,7 +218,6 @@ class RetrieveResource(object):
         if self.has_step("drug"): self.get_drug()
         if self.has_step("efo"): self.get_efo()
         if self.has_step("so"): self.get_so()
-        if self.has_step("ensembl"): self.get_ensembl()
         if self.has_step("evidence"): self.get_evidences()
         if self.has_step("interactions"): self.get_interactions()
         if self.has_step("homologues"): self.get_homologues()
