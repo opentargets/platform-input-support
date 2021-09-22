@@ -146,7 +146,14 @@ class Target(object):
         """
         self.create_output_dirs()
         # Download files
-        sources = []
+        sources: List[str] = [self.download_hpa(),
+                              self.download_gnomad(),
+                              self.download_ncbi(),
+                              self.download_reactome(),
+                              self.download_uniprot()]
+
+        sources = sources + self.download_ftp_files("gene ontology", self.config.go,
+                                                    os.path.join(self.output_dir, "go"))
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
                                                                                                  "ensembl"))
 
