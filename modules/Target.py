@@ -6,6 +6,7 @@ from addict import Dict
 from definitions import PIS_OUTPUT_TARGET
 from modules.DownloadResource import DownloadResource
 from modules.common import extract_file_from_zip, make_ungzip
+from modules.common.Riot import Riot
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,6 @@ class Target(object):
         Downloads raw ensembl file, converts to jsonl and filters using jq filter before uploading.
         Return: downloaded file name.
         """
-        from common.Riot import Riot
         riot = Riot(config)
         jq_binary_x = riot.check_path_command(jq_binary, self.common.jq)
 
@@ -146,14 +146,7 @@ class Target(object):
         """
         self.create_output_dirs()
         # Download files
-        sources: List[str] = [self.download_hpa(),
-                              self.download_gnomad(),
-                              self.download_ncbi(),
-                              self.download_reactome(),
-                              self.download_uniprot()]
-
-        sources = sources + self.download_ftp_files("gene ontology", self.config.go,
-                                                    os.path.join(self.output_dir, "go"))
+        sources = []
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
                                                                                                  "ensembl"))
 
