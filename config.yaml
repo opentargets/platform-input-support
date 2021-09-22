@@ -122,6 +122,10 @@ efo:
       owl_jq: '.["@graph"][] | @json'
 target:
   gs_output_dir: annotation-files/target
+  uniprot:
+    - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=txt
+      output_filename: uniprot-{suffix}.txt.gz
+      resource: uniprot-uri
   ensembl:
     - uri: ftp://ftp.ensembl.org/pub/release-104/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.json

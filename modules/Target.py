@@ -123,7 +123,7 @@ class Target(object):
         if not file_already_downloaded(os.path.join(path, self.config.ncbi.output_filename)):
             return download.ftp_download(self.config.ncbi)
 
-    def download_reactome(self):
+    def download_reactome(self) -> str:
         logger.info("Downloading reactome files for target.")
 
         path = os.path.join(self.output_dir, "reactome")
@@ -131,8 +131,16 @@ class Target(object):
         if not file_already_downloaded(os.path.join(path, self.config.reactome.output_filename)):
             return download.execute_download(self.config.reactome)
 
-    def create_output_dirs(self):
-        directories = ["ensembl", "go", "hpa", "reactome","projectScores", "gnomad", "ncbi"]
+    def download_uniprot(self) -> str:
+        logger.info("Downloading uniprot files for target")
+
+        path = os.path.join(self.output_dir, "uniprot")
+        download = DownloadResource(path)
+        if not file_already_downloaded(os.path.join(path, self.config.uniprot.output_filename)):
+            return download.execute_download(self.config.uniprot)
+
+    def create_output_dirs(self) -> None:
+        directories = ["ensembl", "go", "hpa", "reactome", "projectScores", "gnomad", "ncbi", "uniprot"]
         for d in directories:
             path = self.output_dir + "/" + d
             if not os.path.exists(path):
@@ -152,12 +160,13 @@ class Target(object):
         sources: List[str] = [self.download_hpa(),
                               self.download_gnomad(),
                               self.download_ncbi(),
-                              self.download_reactome()]
+                              self.download_reactome(),
+                              self.download_uniprot()]
 
         sources = sources + self.download_ftp_files("gene ontology", self.config.go,
                                                     os.path.join(self.output_dir, "go"))
         sources = sources + self.download_ftp_files("ensembl", self.config.ensembl, os.path.join(self.output_dir,
-                                                                                                "ensembl"))
+                                                                                                 "ensembl"))
 
         sources = sources + self.download_project_scores()
         downloaded_files = {}
