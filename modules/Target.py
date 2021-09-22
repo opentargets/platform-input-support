@@ -57,25 +57,14 @@ class Target(object):
                 logger.debug(f"Found {fname} in {output_dir}: will not download again.")
         return downloaded_files
 
-
-    def check_jq_path_command(self, cmd, yaml_cmd):
-        """
-        Check if the path for jq is available otherwise it uses the path provided in the config file.
-        Return: jq path
-        TODO: Duplication of the function in the Riot Module. Fix it.
-        """
-        cmd_result = shutil.which(cmd)
-        if cmd_result == None:
-            print(cmd+" not found. Using the path from config.yaml")
-            cmd_result = yaml_cmd
-        return cmd_result
-
     def download_and_process_ensembl(self, config: Dict, output_dir: str, jq_binary='/usr/bin/jq') -> str:
         """
         Downloads raw ensembl file, converts to jsonl and filters using jq filter before uploading.
         Return: downloaded file name.
         """
-        jq_binary_x = self.check_jq_path_command(jq_binary,self.common.jq)
+        from common.Riot import Riot
+        riot = Riot(config)
+        jq_binary_x = riot.check_path_command(jq_binary, self.common.jq)
 
         jsonl_filename = os.path.join(output_dir, config.jq_filename)
 
