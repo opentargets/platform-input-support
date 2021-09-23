@@ -127,7 +127,7 @@ target:
     - uri: ftp://ftp.ensembl.org/pub/release-104/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.json
       resource: target-ensembl
-      jq: '.genes[] | {id: .id, biotype: .biotype, description: .description, end: .end, start: .start, strand: .strand, chromosome: .seq_region_name, approvedSymbol: .name, transcripts: .transcripts, signalP: .signalP, uniprot_trembl: ."Uniprot/SPTREMBL", uniprot_swissprot: ."Uniprot/SWISSPROT"}'
+      jq: '.genes[] | {id: .id, biotype: .biotype, description: .description, end: .end, start: .start, strand: .strand, chromosome: .seq_region_name, approvedSymbol: .name, transcripts: .transcripts, signalP: .SignalP, uniprot_trembl: ."Uniprot/SPTREMBL", uniprot_swissprot: ."Uniprot/SWISSPROT"}'
       jq_filename: homo_sapiens.jsonl
     - uri: ftp://ftp.ensembl.org/pub/release-104/tsv/ensembl-compara/homologies/homo_sapiens/Compara.104.protein_default.homologies.tsv.gz
       output_filename: compara.104.protein_default.homologies.tsv.gz
