@@ -2,6 +2,8 @@ import datetime
 import urllib.request, urllib.parse, urllib.error
 import logging
 import threading
+import shutil
+import subprocess
 
 # Common packages
 from typing import Dict
@@ -23,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 
 # Generic class to download a specific URI
-# TODO: execute_download requires a dict("uri","output_filename"). Add a function to check the input
 class DownloadResource(object):
 
     def __init__(self, output_dir):
@@ -53,7 +54,6 @@ class DownloadResource(object):
             return destination_filename
         except urllib.error.URLError as e:
             logger.error('Download error:', e.reason)
-            content = None
             if retry_count > 0:
                 if hasattr(e, 'code') and 500 <= e.code < 600:
                     return self.execute_download(resource_info, retry_count - 1)
@@ -70,33 +70,15 @@ class DownloadResource(object):
 
     def ftp_download(self, resource_info: Dict) -> str:
         print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
-        filename = self.set_filename(resource_info.output_filename)
-        urllib.request.urlretrieve(resource_info.uri, filename)
-        urllib.request.urlcleanup()
+        try:
+            filename = self.set_filename(resource_info.output_filename)
+            urllib.request.urlretrieve(resource_info.uri, filename)
+            urllib.request.urlcleanup()
+        except Exception:
+            logger.error("Warning: FTP! {file}".format(file=resource_info.uri))
+            # try with wget temp solution
+            cmd = 'curl ' + resource_info.uri + ' --output ' + filename
+            logger.info("wget attempt {cmd}".format(cmd=cmd))
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
         return filename
-
-    def downloadHttp(self, resource_info, retry_count=3, proxy=None, data=None):
-        headers = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.100 Safari/537.36"
-        }
-        destination_filename = self.set_filename(resource_info.output_filename)
-        if resource_info.uri is None:
-            return None
-        try:
-            req = urllib.request.Request(resource_info.uri, headers=headers, data=data)
-            cookie = cookiejar.CookieJar()
-            cookie_process = urllib.request.HTTPCookieProcessor(cookie)
-            opener = urllib.request.build_opener()
-            if proxy:
-                proxies = {urllib.urlparse(resource_info.uri).scheme: proxy}
-                opener.add_handler(urllib.request.ProxyHandler(proxies))
-            content = opener.open(req).read()
-        except urllib.error.URLError as e:
-            print('downloadHttp download error:', e.reason)
-            content = None
-            if retry_count > 0:
-                if hasattr(e, 'code') and 500 <= e.code < 600:
-                    return self.download(resource_info.uri, retry_count - 1, headers, proxy, data)
-
-        return content

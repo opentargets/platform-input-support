@@ -1,10 +1,7 @@
 import logging
-import datetime
-import re
-import json
 import jsonlines
-from definitions import PIS_OUTPUT_EFO, PIS_OUTPUT_ANNOTATIONS
-from ..common import replace_suffix
+
+from modules.common import replace_suffix
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +40,7 @@ class HPOPhenotypes(object):
             return None
 
     def run(self, filename):
-        hpo_filename=PIS_OUTPUT_ANNOTATIONS + "/" + replace_suffix(filename)
+        hpo_filename= replace_suffix(filename)
         with jsonlines.open(hpo_filename, mode='w') as writer:
             with open(self.hpo_phenotypes_input) as input:
                 for line in input:
