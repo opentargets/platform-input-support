@@ -59,7 +59,7 @@ If you would rather run a containerised version of Conda use the provided Docker
 
 ```
 # build the image
-docker build --tag pis-py3 <path to Dockerfile>
+docker build --tag pis-py3.8 <path to Dockerfile>
 ```
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
@@ -70,7 +70,7 @@ This is an example how to run singularity using the docker image.
 singularity exec \
    -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
    docker://quay.io/opentargets/platform-input-support:cm_singularity \
-   conda run --no-capture-output -n pis-py3 python3 /usr/src/app/platform-input-support.py -steps drug
+   conda run --no-capture-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py -steps drug
   
 ```
 
@@ -166,7 +166,7 @@ element of the archive will be extracted under `output_filename` with the suffix
 git clone https://github.com/opentargets/platform-input-support
 cd platform-input-support
 conda env create -f environment.yaml
-conda activate pis-py3
+conda activate pis-py3.8
 
 python platform-input-support.py -h
 ```
@@ -174,7 +174,7 @@ python platform-input-support.py -h
 ## Usage
 
 ```
-conda activate pis-py3
+conda activate pis-py3.8
 cd your_path_application
 python platform-input-support -h
 usage: platform-input-support.py [-h] [-c CONFIG]
@@ -233,7 +233,7 @@ If you want to run PIS in a Docker container follow these steps:
    This command will drop you into a bash shell inside the container, where you can execute the code.
    
 3 activate environment
-  `conda activate pis-py3`
+  `conda activate pis-py3.8`
 
 4. execute code
   `python platform-input-support.py -steps <step> --log-level=DEBUG`
@@ -300,7 +300,7 @@ cd gitRepo
 git clone https://github.com/opentargets/platform-input-support.git
 cd platform-input-support
 conda env create -f environment.yaml
-conda activate pis-py3
+conda activate pis-py3.8
 python platform-input-support.py -l
 ```
 
