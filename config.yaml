@@ -26,6 +26,7 @@ disease:
     output_filename: ontology-mondo.jsonl
     path: ontology-inputs
     owl_jq: '.["@graph"][] | @json'
+  miniset: yes
 drug:
   http_downloads:
    - uri: https://go.drugbank.com/releases/5-1-8/downloads/all-drugbank-vocabulary
@@ -101,6 +102,7 @@ drug:
             - 'warning_refs'
             - 'warning_type'
             - 'warning_year'
+  miniset: yes
 evidence:
   gs_downloads_latest:
   - bucket: otar000-evidence_input/CancerBiomarkers/json
@@ -370,3 +372,4 @@ target:
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
       jq: '.genes[] | {id: .id, biotype: .biotype, description: .description, end: .end, start: .start, strand: .strand, chromosome: .seq_region_name, approvedSymbol: .name, transcripts: .transcripts, signalP: .SignalP, uniprot_trembl: ."Uniprot/SPTREMBL", uniprot_swissprot: ."Uniprot/SWISSPROT"}'
+  miniset: yes
