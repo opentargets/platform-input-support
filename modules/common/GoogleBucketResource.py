@@ -79,7 +79,8 @@ class GoogleBucketResource(object):
             return None
         return bucket
 
-    # google_resource.list_blobs('es5-sufentanil/tmp/','/', None, None)
+    # For instance you can call the method
+    # google_resource.list_blobs('bucket_name/directory/','/', None, None)
     def list_blobs(self, prefix, delimiter, include, exclude):
         list_blobs_dict = {}
         bucket = self.client.get_bucket(self.bucket_name)
