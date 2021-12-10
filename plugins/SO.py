@@ -4,6 +4,7 @@ from modules.common.Downloads import Downloads
 from modules.common import create_output_dir
 from modules.common.Riot import Riot
 logger = logging.getLogger(__name__)
+import os
 
 """
 
