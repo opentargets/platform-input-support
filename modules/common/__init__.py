@@ -18,15 +18,6 @@ def is_gzip(filename):
         return binascii.hexlify(test_f.read(2)) == b'1f8b'
 
 
-def get_lines(input_filename):
-    i = 0
-    if is_gzip(input_filename):
-        with gzip.open(input_filename, 'rb') as f:
-            for i, l in enumerate(f):
-                pass
-    return i + 1
-
-
 # Regular expression for date and format
 def date_reg_expr(filename, regexpr, format):
     date_file = None

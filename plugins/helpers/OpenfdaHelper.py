@@ -53,14 +53,8 @@ class OpenfdaHelper(object):
                             logger.warning(
                                 "NO EVENT DATA RESULTS for event file '{}', source URL '{}', description '{}'".format(
                                     unzip_filename, download_url, download_description))
-                unzip_resource_key = "{}-{}".format(download_resource_key, unzip_dest_filename)
-                extracted_filelist[unzip_dest_filename] = {
-                    'resource': unzip_resource_key,
-                    'gs_output_dir': unzip_dest_path
-                }
         logger.warning("Removing processed ZIP file '{}'".format(download_dest_path))
         os.remove(download_dest_path)
-        return extracted_filelist
 
 
 if __name__ == '__main__':
