@@ -75,7 +75,8 @@ class DownloadResource(object):
             urllib.request.urlcleanup()
         except Exception:
             logger.error("Warning: FTP! {file}".format(file=resource_info.uri))
-            # try with wget temp solution
+            # EBI FTP started to reply ConnectionResetError: [Errno 104] Connection reset by peer.
+            # I had an exchange of email with sysinfo, they suggested us to use wget.
             cmd = 'curl ' + resource_info.uri + ' --output ' + filename
             logger.info("wget attempt {cmd}".format(cmd=cmd))
             subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
