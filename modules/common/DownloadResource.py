@@ -2,7 +2,6 @@ import datetime
 import urllib.request, urllib.parse, urllib.error
 import logging
 import threading
-import shutil
 import subprocess
 
 # Common packages

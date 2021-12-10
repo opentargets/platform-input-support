@@ -3,7 +3,7 @@ from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.Utils import Utils
 from modules.common import create_output_dir, remove_output_dir
 from yapsy.PluginManager import PluginManager
-from definitions import *
+from definitions import PIS_OUTPUT_DIR
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,6 @@
 import logging
 from yapsy.IPlugin import IPlugin
 from modules.common.Downloads import Downloads
-from modules.common.Utils import Utils
 from modules.common import create_output_dir
 from modules.common.Riot import Riot
 from plugins.helpers.EFO import EFO as EFO

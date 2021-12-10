@@ -1,8 +1,8 @@
 import datetime
 import logging
+import os
 from modules.common.DownloadResource import DownloadResource
 from modules.common import create_output_dir
-from definitions import *
 from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.Utils import Utils
 
@@ -39,13 +39,13 @@ class Downloads(object):
             try:
                 path = create_output_dir(os.path.join(self.path_root, resource.path))
                 download = DownloadResource(path)
-                filename=download.ftp_download(resource)
+                download.ftp_download(resource)
             except:
                 logger.error(f"ERROR: The resource={resource.uri} was not download")
 
         for resource in resources_info.http_downloads:
             try:
-                filename=self.single_http_download(resource)
+                self.single_http_download(resource)
             except:
                 logger.error(f"ERROR: The resource={resource.uri} was not download")
 
@@ -55,7 +55,7 @@ class Downloads(object):
                 google_resource = GoogleBucketResource(bucket_name=param)
                 latest_resource = self.get_latest(google_resource, resource)
                 download_info = self.get_gs_path_info(latest_resource, resource)
-                filename=google_resource.download(download_info)
+                google_resource.download(download_info)
             except:
                 logger.error(f"ERROR: The resource={resource.bucket} was not download")
 

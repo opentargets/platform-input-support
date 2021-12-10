@@ -1,4 +1,3 @@
-from definitions import *
 import os
 import sys
 import zipfile

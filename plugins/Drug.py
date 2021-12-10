@@ -1,16 +1,10 @@
-import logging
-
 from yapsy.IPlugin import IPlugin
-from datetime import datetime
 from modules.common import create_output_dir
-# from modules.common.DownloadResource import DownloadResource
 from modules.common.Downloads import Downloads
 from modules.common.ElasticsearchReader import ElasticsearchReader
 from datetime import datetime
 import logging
 import warnings
-# import os
-import zipfile
 
 logger = logging.getLogger(__name__)
 
