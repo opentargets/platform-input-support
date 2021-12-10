@@ -9,7 +9,7 @@ from requests import ConnectionError
 logger = logging.getLogger(__name__)
 
 
-class ElasticsearchReader:
+class ElasticsearchReader(object):
     """
     Wrapper over an Elasticsearch instance.
     """

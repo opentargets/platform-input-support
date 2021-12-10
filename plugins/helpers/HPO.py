@@ -2,7 +2,6 @@ import logging
 import re
 import json
 import jsonlines
-from definitions import PIS_OUTPUT_EFO, PIS_OUTPUT_ANNOTATIONS
 
 logger = logging.getLogger(__name__)
 
@@ -125,8 +124,7 @@ class HPO(object):
 
 
     def save_hpo(self, output_filename):
-        hpo_filename = PIS_OUTPUT_ANNOTATIONS+'/'+output_filename
-        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/'+output_filename, mode='w') as writer:
+        with jsonlines.open(output_filename, mode='w') as writer:
             for hp in self.hpo:
                 writer.write(self.hpo[hp])
-        return hpo_filename
+        return output_filename

@@ -1,29 +1,25 @@
 # Open Targets: Platform-input-support overview
 
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
-The input files are copied in a specific google storage bucket.
+The input files are copied in a local hard disk and eventually in a specific google storage bucket 
 
-Currently, the application executes 13 steps and finally it generates a Yaml config file that can be used to run the
-the OT pipeline (https://github.com/opentargets/data_pipeline)
+Currently, the application executes 11 steps and finally it generates the input resources for the ETL pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
-- annotations
-- annotations_from_buckets
-- chemical_probes
-- drug
-- efo
-- ensembl
-- evidence
-- homologues
-- hpa  
-- interactions
-- known_target_safety
-- tep
-- so
+- Disease
+- Drug
+- Evidence
+- Expression
+- Go
+- Homologues
+- Interactions
+- Mousephenotypes
+- Reactome
+- SO
+- Target
 
-
-The step 'evidences' uploads the last evidences from different providers and 
-generates a subset of these evidences using the file `minimal_ensembl.txt`
+Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the file can be processed in order to generate a new resource.
+The final files are located under the output directory while the files used for the computation are saved under stages. 
 
 Below more details about how to execute the script.
 
@@ -32,16 +28,18 @@ Below more details about how to execute the script.
 * Conda
 * Apache-Jena
 * git
+* jq
+* Google Cloud SDK
 
 ## Conda for Linux/MAC
 
 Download Conda3 for Mac here: <br>
  https://www.anaconda.com/products/individual <br>
-[download Anaconda3-2020.07-MacOSX-x86_64.sh]
+[download Anaconda3-2021.05-MacOSX-x86_64.sh]
 
 Download Conda3 for Linux x86_84 <br>
  https://www.anaconda.com/products/individual <br>
-[download Anaconda3-2020.07-Linux-x86_64.sh]
+[download Anaconda3-2021.05-Linux-x86_64.sh]
 
 Conda: installation commands
 ```
@@ -61,7 +59,7 @@ If you would rather run a containerised version of Conda use the provided Docker
 
 ```
 # build the image
-docker build --tag pis-py3 <path to Dockerfile>
+docker build --tag pis-py3.8 <path to Dockerfile>
 ```
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
@@ -72,7 +70,7 @@ This is an example how to run singularity using the docker image.
 singularity exec \
    -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
    docker://quay.io/opentargets/platform-input-support:cm_singularity \
-   conda run --no-capture-output -n pis-py3 python3 /usr/src/app/platform-input-support.py -steps drug
+   conda run --no-capture-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py -steps drug
   
 ```
 
@@ -112,8 +110,8 @@ where
 ## Apache-Jena : Install Riot
 ```
 cd ~
-wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-3.16.0.tar.gz
-tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1
+wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-4.2.0.tar.gz
+tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1 -C /usr/share/
 
 Add ~/apache-jena/bi to .bashrc
 EG.
@@ -147,12 +145,6 @@ input types and required levels of configuration. See [step guides](#step-guides
 configuration requirements for specific steps.
 The section **config** can be used for specify where `riot` or `jq` are installed. 
 
-### Data pipeline schema
-
-`data_pipeline_schema` is a kind of summary output which lists where outputs were saved 
-and in some cases which inputs were used. This is to assist in generating configuration
-files for client programs like the data pipeline or ETL.
-
 ## A note on zip files
 
 We are only building the functionality which we need which introduces some limitations. At present if a zip file is downloaded 
@@ -174,7 +166,7 @@ element of the archive will be extracted under `output_filename` with the suffix
 git clone https://github.com/opentargets/platform-input-support
 cd platform-input-support
 conda env create -f environment.yaml
-conda activate pis-py3
+conda activate pis-py3.8
 
 python platform-input-support.py -h
 ```
@@ -182,7 +174,7 @@ python platform-input-support.py -h
 ## Usage
 
 ```
-conda activate pis-py3
+conda activate pis-py3.8
 cd your_path_application
 python platform-input-support -h
 usage: platform-input-support.py [-h] [-c CONFIG]
@@ -241,7 +233,7 @@ If you want to run PIS in a Docker container follow these steps:
    This command will drop you into a bash shell inside the container, where you can execute the code.
    
 3 activate environment
-  `conda activate pis-py3`
+  `conda activate pis-py3.8`
 
 4. execute code
   `python platform-input-support.py -steps <step> --log-level=DEBUG`
@@ -308,7 +300,7 @@ cd gitRepo
 git clone https://github.com/opentargets/platform-input-support.git
 cd platform-input-support
 conda env create -f environment.yaml
-conda activate pis-py3
+conda activate pis-py3.8
 python platform-input-support.py -l
 ```
 

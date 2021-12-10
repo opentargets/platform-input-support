@@ -1,4 +1,3 @@
-from definitions import *
 import os
 import sys
 import zipfile
@@ -8,6 +7,7 @@ import datetime
 import binascii
 import re
 import logging
+import pathlib
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +15,6 @@ logger = logging.getLogger(__name__)
 def is_gzip(filename):
     with open(filename, 'rb') as test_f:
         return binascii.hexlify(test_f.read(2)) == b'1f8b'
-
-
-def get_lines(input_filename):
-    i = 0
-    if is_gzip(input_filename):
-        with gzip.open(input_filename, 'rb') as f:
-            for i, l in enumerate(f):
-                pass
-    return i+1
 
 
 # Regular expression for date and format
@@ -66,45 +57,38 @@ def extract_date_from_file(filename):
     else:
         final_date = list(filter(None, valid_date))
         if len(final_date) == 1:
-            return (final_date[0])
+            return final_date[0]
         else:
-            raise ("Unexpected error !!!")
+            raise ValueError("Unexpected error !!!")
 
 
-def get_output_dir(output_dir, default_output_dir):
-    if output_dir is None:
-        output_dir = default_output_dir
+def remove_output_dir(output_dir):
     try:
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+        logger.info("Removing {} directories...".format(output_dir))
+        shutil.rmtree(output_dir)
+    except Exception as e:
+        print('Error while deleting directory {}'.format(e))
+
+    return output_dir
+
+
+def create_output_dir(output_dir):
+    try:
+        pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
     except OSError:
         sys.exit('Fatal: output directory "' + output_dir + '" does not exist and cannot be created')
 
     return output_dir
 
-# Init output dirs structure. Using definition.py vars
-def init_output_dirs():
-    get_output_dir(None, PIS_OUTPUT_DIR)
-    get_output_dir(None, PIS_OUTPUT_ANNOTATIONS)
-    get_output_dir(None, PIS_OUTPUT_EVIDENCES)
-    get_output_dir(None, PIS_OUTPUT_CHEMICAL_PROBES)
-    get_output_dir(None, PIS_OUTPUT_KNOWN_TARGET_SAFETY)
-    get_output_dir(None, PIS_OUTPUT_EFO)
-    get_output_dir(None, PIS_OUTPUT_CHEMBL_ES)
-    get_output_dir(None, PIS_OUTPUT_INTERACTIONS)
-    get_output_dir(None, PIS_OUTPUT_ANNOTATIONS_QC)
-    get_output_dir(None, PIS_OUTPUT_HOMOLOGY)
-    get_output_dir(None, PIS_OUTPUT_DRUG)
-    get_output_dir(None, PIS_OUTPUT_OPENFDA)
-    get_output_dir(None, PIS_OUTPUT_TARGET)
 
-def make_gzip(file_with_path):
+def make_gzip(file_with_path, dest_filename=None):
     """Compress file_with_path to file_with_path.gz and return file name."""
-    r_filename = file_with_path + '.gz'
-    with open(file_with_path, 'rb') as f_in, gzip.open(r_filename, 'wb') as f_out:
+    if dest_filename is None:
+        dest_filename = file_with_path + '.gz'
+    with open(file_with_path, 'rb') as f_in, gzip.open(dest_filename, 'wb') as f_out:
         f_out.writelines(f_in)
 
-    return r_filename
+    return dest_filename
 
 
 def make_ungzip(file_with_path):
@@ -136,7 +120,6 @@ def extract_file_from_zip(file_to_extract: str, zip_file: str, output_dir: str) 
                 f.write(zf.read(file_to_extract))
             file_to_extract_name = f.name
     return file_to_extract_name
-
 
 
 # The procedure raises an error if the zip file contains more than a file.

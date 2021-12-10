@@ -2,7 +2,6 @@ import logging
 import re
 import json
 import jsonlines
-from definitions import PIS_OUTPUT_EFO, PIS_OUTPUT_ANNOTATIONS
 
 logger = logging.getLogger(__name__)
 
@@ -115,8 +114,7 @@ class MONDO(object):
 
 
     def save_mondo(self, output_filename):
-        mondo_filename = PIS_OUTPUT_ANNOTATIONS+'/'+output_filename
-        with jsonlines.open(mondo_filename, mode='w') as writer:
+        with jsonlines.open(output_filename, mode='w') as writer:
             for elem in self.mondo:
                 writer.write(self.mondo[elem])
-        return mondo_filename
+        return output_filename

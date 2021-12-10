@@ -23,7 +23,7 @@ cat > singularity_cmd.sh <<EOF_B
   singularity exec \\
   -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \\
   docker://quay.io/opentargets/platform-input-support:$1 \\
-  conda run --no-capture-output -n pis-py3 python3 /usr/src/app/platform-input-support.py \\
+  conda run --no-capture-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py \\
   -gkey /homes/$USER/open-targets-pis.json \\
   -gb $3 -steps $2
 

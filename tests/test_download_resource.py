@@ -1,9 +1,8 @@
 import mock
 import unittest
-from modules.DownloadResource import DownloadResource
-from definitions import PIS_OUTPUT_ANNOTATIONS
+from modules.common.DownloadResource import DownloadResource
+from definitions import PIS_OUTPUT_DIR
 from addict import Dict
-import urllib.request
 import re
 
 class DownloadResourceTests(unittest.TestCase):
@@ -14,7 +13,7 @@ class DownloadResourceTests(unittest.TestCase):
 
     @mock.patch('urllib.request')
     def test_execute_download(self, urlopen_mock):
-        _download_resource = DownloadResource(PIS_OUTPUT_ANNOTATIONS)
+        _download_resource = DownloadResource(PIS_OUTPUT_DIR)
         destination_filename = _download_resource.execute_download(self.resource_info)
         assert re.search('([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))', destination_filename)
 

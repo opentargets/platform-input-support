@@ -3,9 +3,9 @@ import re
 import json
 import jsonlines
 from urllib import parse
-from definitions import PIS_OUTPUT_EFO, PIS_OUTPUT_ANNOTATIONS
 
 logger = logging.getLogger(__name__)
+
 
 # EFO
 # The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
@@ -20,7 +20,7 @@ class EFO(object):
         self.diseases = {}
         self.diseases_obsolete = {}
         self.has_location_ids = {}
-        self.all_path= {}
+        self.all_path = {}
         self.parent_child_tuples = []
 
     def init_disease(self, id, code):
@@ -40,7 +40,7 @@ class EFO(object):
             if isinstance(disease['IAO_0000115'], str):
                 self.diseases[id]['definition'] = disease['IAO_0000115'].strip('\n')
             else:
-                definitions=self.get_array_value(disease['IAO_0000115'])
+                definitions = self.get_array_value(disease['IAO_0000115'])
                 self.diseases[id]['definition'] = definitions[0]
                 if len(definitions) > 1: self.diseases[id]['definition_alternatives'] = definitions[1:]
 
@@ -49,34 +49,33 @@ class EFO(object):
         if isinstance(value, str):
             return [value.strip('\n')]
         else:
-            return [x.strip() for x in value if isinstance(x,str)]
+            return [x.strip() for x in value if isinstance(x, str)]
 
     # Return the synonyms. Complex structure. Clean and flatten.
     def set_efo_synonyms(self, id, disease):
         synonyms_details = {}
         if 'hasExactSynonym' in disease:
-            if len(disease['hasExactSynonym']) >0:
+            if len(disease['hasExactSynonym']) > 0:
                 synonyms = self.get_array_value(disease['hasExactSynonym'])
                 synonyms_details['hasExactSynonym'] = synonyms
 
         if 'hasRelatedSynonym' in disease:
-            if len(disease['hasRelatedSynonym']) >0:
+            if len(disease['hasRelatedSynonym']) > 0:
                 synonyms = self.get_array_value(disease['hasRelatedSynonym'])
                 synonyms_details['hasRelatedSynonym'] = synonyms
 
         if 'hasBroadSynonym' in disease:
-            if len(disease['hasBroadSynonym']) >0:
-                synonyms =  self.get_array_value(disease['hasBroadSynonym'])
+            if len(disease['hasBroadSynonym']) > 0:
+                synonyms = self.get_array_value(disease['hasBroadSynonym'])
                 synonyms_details['hasBroadSynonym'] = synonyms
 
         if 'hasNarrowSynonym' in disease:
-            if len(disease['hasNarrowSynonym']) >0:
+            if len(disease['hasNarrowSynonym']) > 0:
                 synonyms = self.get_array_value(disease['hasNarrowSynonym'])
                 synonyms_details['hasNarrowSynonym'] = synonyms
 
         if len(synonyms_details.keys()) > 0:
             self.diseases[id]['synonyms'] = synonyms_details
-
 
     # Extract skos: related: used for check phenotype info.
     def get_phenotypes(self, phenotypes):
@@ -99,7 +98,7 @@ class EFO(object):
             self.diseases[id]['isTherapeuticArea'] = False
 
     # Return the label of the term
-    def set_label(self,id, disease):
+    def set_label(self, id, disease):
         if 'label' in disease:
             if isinstance(disease['label'], str):
                 self.diseases[id]['label'] = disease['label'].strip('\n')
@@ -108,9 +107,8 @@ class EFO(object):
             else:
                 self.diseases[id]['label'] = self.get_array_value(disease['label'])[0]
 
-
     # Return the parents for the term
-    def set_parents(self,id,disease):
+    def set_parents(self, id, disease):
         if 'subClassOf' in disease:
             subset = disease['subClassOf']
             parents = []
@@ -124,12 +122,11 @@ class EFO(object):
 
             self.diseases[id]['parents'] = parents
 
-
     def extract_id(self, elem):
         return elem.replace(":", "_")
 
     # return the proper prefix.
-    def get_prefix(self,id):
+    def get_prefix(self, id):
         simple_id = re.match(r'^(.+?)_', id)
         if simple_id.group() in ["EFO_", "OTAR_"]:
             return "http://www.ebi.ac.uk/efo/"
@@ -140,16 +137,16 @@ class EFO(object):
 
     def extract_id_from_uri(self, uri):
         new_terms = []
-        if isinstance(uri,str):
+        if isinstance(uri, str):
             uris_to_extract = [uri]
-        elif isinstance(uri,list):
+        elif isinstance(uri, list):
             uris_to_extract = self.get_array_value(uri)
         else:
-            #todo: investigate to this case.
+            # todo: investigate to this case.
             uris_to_extract = []
 
         for uri_i in uris_to_extract:
-            full_path=parse.urlsplit(uri_i).path
+            full_path = parse.urlsplit(uri_i).path
             new_terms.append(full_path.rpartition('/')[2])
 
         return new_terms
@@ -160,9 +157,8 @@ class EFO(object):
         new_id = re.sub(r'^.*?:', '', ordo)
         return new_id
 
-
     # Check if the efo term is valid. term obsolete goes to a dedicated structure
-    def is_obsolete(self,disease, disease_id):
+    def is_obsolete(self, disease, disease_id):
         if 'owl:deprecated' in disease:
             if 'IAO_0100001' in disease:
                 new_terms = self.extract_id_from_uri(disease['IAO_0100001'])
@@ -202,13 +198,11 @@ class EFO(object):
         else:
             self.set_locationIds_structure(disease_id, disease)
 
-
     #
     def get_obsolete_info(self):
         for k, v in self.diseases_obsolete.items():
             if k in self.diseases:
                 self.diseases[k]['obsoleteTerms'] = list(self.diseases_obsolete[k])
-
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds
     def get_children(self, node):
@@ -217,7 +211,7 @@ class EFO(object):
     # LocationIds: This is part of the structure to retrieve the info about locationIds.
     # Recursively retrieve the location.
     def get_nodes(self, node, path):
-        data= set()
+        data = set()
         data.add(node)
         path.add(node)
         children = self.get_children(node)
@@ -241,12 +235,11 @@ class EFO(object):
             result = self.get_nodes(node, set())
             self.all_path[node] = [x for x in list(result) if not x.startswith('_:')]
 
-        for k,v in self.has_location_ids.items():
+        for k, v in self.has_location_ids.items():
             if k in self.all_path:
                 if not "locationIds" in self.diseases[v]:
                     self.diseases[v]["locationIds"] = set()
                 self.diseases[v]["locationIds"].update(self.all_path[k])
-
 
     # For any term it generates the dict id info.
     def generate(self):
@@ -265,23 +258,21 @@ class EFO(object):
         self.get_obsolete_info()
         self.get_locationIds()
 
-
     # Static file for alpha and production
     def save_static_disease_file(self, output_filename):
         valid_keys = ["parents", "id", "label"]
-        with jsonlines.open(PIS_OUTPUT_ANNOTATIONS+'/'+output_filename, mode='w') as writer:
+        with jsonlines.open(output_filename, mode='w') as writer:
             for id in self.diseases:
                 entry = {k: v for k, v in self.diseases[id].items() if k in valid_keys}
                 entry["parentIds"] = entry["parents"]
-                del(entry["parents"])
+                del (entry["parents"])
                 entry["name"] = entry["label"]
                 del (entry["label"])
 
                 writer.write(entry)
 
     def save_diseases(self, output_filename):
-        disease_filename = PIS_OUTPUT_ANNOTATIONS+'/'+output_filename
-        with jsonlines.open(disease_filename, mode='w') as writer:
+        with jsonlines.open(output_filename, mode='w') as writer:
             for disease in self.diseases:
                 # Set cannot be transform in Json. Transform into list.
                 if 'locationIds' in self.diseases[disease]:
@@ -290,4 +281,4 @@ class EFO(object):
 
                 writer.write(self.diseases[disease])
 
-        return disease_filename
+        return output_filename

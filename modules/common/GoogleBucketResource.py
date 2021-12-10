@@ -2,11 +2,11 @@ import os
 from google.cloud import storage, exceptions
 import google.auth
 import logging
-import re
 from datetime import datetime
 from modules.common import extract_date_from_file
 
 logger = logging.getLogger(__name__)
+
 
 class GoogleBucketResource(object):
 
@@ -15,36 +15,27 @@ class GoogleBucketResource(object):
         self.bucket_name = kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
         self.object_path = kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
         # Issue detect Upload of large files times out. #40
-        #storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
-        #storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
+        # storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
+        # storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
         self.client = storage.Client()
 
     def __del__(self):
-        logger.debug('Destroyed instance of %s',__name__)
+        logger.debug('Destroyed instance of %s', __name__)
+
 
     @staticmethod
-    def has_valid_auth_key(google_credential_key):
+    def has_valid_auth_key(google_credential_key=None):
         if google_credential_key is None:
-            return False
-
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
+            logger.info("gsutil will use the default credetial for the user.")
+        else:
+           os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
         try:
             credentials, project = google.auth.default()
-            logger.info('\n\tGoogle Bucket connection: %s',project)
+            logger.info('\n\tGoogle Bucket connection: %s', project)
         except Exception as error:
-            logger.error('Google Auth Error: %s',error)
+            logger.error('Google Auth Error: %s', error)
             raise ValueError("Google credential is not valid!")
-            return False
         return True
-
-    @staticmethod
-    def has_google_parameters(google_credential_key, bucket_name):
-        if (google_credential_key) is None and (bucket_name is None):
-            return False
-        if (google_credential_key is not None) and (bucket_name is not None):
-            return True
-        raise ValueError("--gkey and --google_bucket are mandatory for the google storage access")
-
 
     @staticmethod
     def get_bucket_and_path(google_bucket_param):
@@ -52,7 +43,7 @@ class GoogleBucketResource(object):
         if google_bucket_param is None:
             params.append('')
         else:
-            params=google_bucket_param.split('/',1)
+            params = google_bucket_param.split('/', 1)
         return params
 
     def get_full_path(self):
@@ -60,7 +51,7 @@ class GoogleBucketResource(object):
         if self.object_path is None:
             return self.bucket_name
         else:
-            return self.bucket_name+'/'+self.object_path
+            return self.bucket_name + '/' + self.object_path
 
     def get_bucket_name(self):
         return self.bucket_name
@@ -83,26 +74,25 @@ class GoogleBucketResource(object):
         except google.cloud.exceptions.NotFound:
             logger.error("Sorry, that bucket {} does not exist!".format(self.bucket_name))
             return None
-        except exceptions.Forbidden as ef:
+        except exceptions.Forbidden:
             logger.error(" ERROR: GCS forbidden access, path={}".format(self.bucket_name))
             return None
         return bucket
 
-
-
-    #google_resource.list_blobs('es5-sufentanil/tmp/','/', None, None)
+    # For instance you can call the method
+    # google_resource.list_blobs('bucket_name/directory/','/', None, None)
     def list_blobs(self, prefix, delimiter, include, exclude):
         list_blobs_dict = {}
         bucket = self.client.get_bucket(self.bucket_name)
         blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
 
         for blob in blobs:
-               logger.debug("Filename: %s , Created: %s, Updated: %s", blob.name, blob.time_created, blob.updated)
-               list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
-               if (exclude is not None) and (exclude in blob.name):
-                    list_blobs_dict.pop(blob.name, None)
-               if (include is not None) and (include not in blob.name):
-                   list_blobs_dict.pop(blob.name, None)
+            logger.debug("Filename: %s , Created: %s, Updated: %s", blob.name, blob.time_created, blob.updated)
+            list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
+            if (exclude is not None) and (exclude in blob.name):
+                list_blobs_dict.pop(blob.name, None)
+            if (include is not None) and (include not in blob.name):
+                list_blobs_dict.pop(blob.name, None)
         return list_blobs_dict
 
     def list_blobs_object_path(self):
@@ -114,7 +104,7 @@ class GoogleBucketResource(object):
     def list_blobs_object_path_includes(self, included_pattern):
         return self.list_blobs(self.object_path, '', included_pattern, None)
 
-    def copy_from(self, original_filename, dest_filename, gs_specific_output_dir = None):
+    def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
         bucket_link = self.get_bucket()
         if bucket_link is None:
             raise ValueError('Invalid google storage bucket {bucket}'.format(bucket=self.bucket_name))
@@ -133,14 +123,12 @@ class GoogleBucketResource(object):
         blob.upload_from_filename(filename=original_filename)
         return blob.name
 
-
     def is_a_spark_directory(self, filename):
-        if (filename.find("/_SUCCESS") > 0) or (filename.find("/part-0") > 0) or (filename.find("/.part-0") > 0) or (filename.find("/._")>0):
+        if (filename.find("/_SUCCESS") > 0) or (filename.find("/part-0") > 0) or (filename.find("/.part-0") > 0) or (
+                filename.find("/._") > 0):
             return True
         else:
             return False
-
-
 
     # Return the filename with the latest date. Manage collision of dates only for the latest date.
     def extract_latest_file(self, list_blobs):
@@ -174,7 +162,7 @@ class GoogleBucketResource(object):
         return {"latest_filename": last_recent_file,
                 "suffix": recent_date.strftime('%Y-%m-%d'), "spark": self.is_a_spark_directory(last_recent_file)}
 
-    def get_latest_file(self,resource_info):
+    def get_latest_file(self, resource_info):
         if 'excludes' in resource_info:
             list_blobs = self.list_blobs_object_path_excludes(resource_info.excludes)
         elif 'includes' in resource_info:
@@ -186,17 +174,16 @@ class GoogleBucketResource(object):
 
     def download_dir(self, dir_to_download, local_dir):
         list_files = []
-        dir_name = dir_to_download.rsplit("/",1)[0]
+        dir_name = dir_to_download.rsplit("/", 1)[0]
         bucket = self.get_bucket()
-        blobs = bucket.list_blobs(prefix = dir_name)  # Get list of files
+        blobs = bucket.list_blobs(prefix=dir_name)  # Get list of files
         for blob in blobs:
             haed, tail = os.path.split(blob.name)
-            filename_destination = local_dir +'/'+tail
+            filename_destination = local_dir + '/' + tail
             blob.download_to_filename(filename_destination)
             list_files.append(filename_destination)
 
         return list_files
-
 
     def download_file(self, filename_to_download, filename_destination):
         bucket = self.get_bucket()
@@ -204,11 +191,11 @@ class GoogleBucketResource(object):
         blob.download_to_filename(filename_destination)
         return filename_destination
 
-    def download_file_helper(self, output_dir, output_filename, latest_filename_info):
-        filename_destination = output_dir + '/' + output_filename.replace('{suffix}', latest_filename_info["suffix"])
-        final_filename = self.download_file(latest_filename_info["latest_filename"], filename_destination )
-
-        return final_filename
+    def download(self, info):
+        if info["is_dir"]:
+            self.download_dir(info["file"],info["output"])
+        else:
+            self.download_file(info["file"],info["output"])
 
     def blob_metadata(self, blob_name):
         """Prints out a blob's metadata."""
@@ -238,4 +225,4 @@ class GoogleBucketResource(object):
 
         if blob.retention_expiration_time:
             print(("retentionExpirationTime: {}"
-              .format(blob.retention_expiration_time)))
+                   .format(blob.retention_expiration_time)))
