@@ -29,7 +29,7 @@ disease:
   miniset: yes
 drug:
   http_downloads:
-   - uri: https://go.drugbank.com/releases/5-1-8/downloads/all-drugbank-vocabulary
+   - uri: https://go.drugbank.com/releases/5-1-9/downloads/all-drugbank-vocabulary
      path: chembl-inputs
      output_filename: 'drugbank_vocabulary.csv'
   gs_downloads_latest:
@@ -218,7 +218,7 @@ go:
 homologues:
   uri: ftp://ftp.ensembl.org/pub/release-{release}/json/
   path: target-inputs/homologue
-  release: 104
+  release: 105
   jq: ".genes[] | [.id, .name] | @tsv"
   resources:
       - 'caenorhabditis_elegans'
@@ -247,10 +247,10 @@ interactions:
     output_filename: intact-interactors-{suffix}.json
     path: interactions-inputs
   http_downloads:
-  - uri: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
+  - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.0.txt.gz
     output_filename: string-interactions-{suffix}.json.gz
     path: interactions-inputs
-  - uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.104.chr.gtf.gz
+  - uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.105.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
 mousephenotypes:
@@ -329,10 +329,10 @@ target:
     output_filename: tractability-{suffix}.tsv
     path: target-inputs/tractability
   ftp_downloads:
-  - uri: ftp://ftp.ensembl.org/pub/release-104/tsv/ensembl-compara/homologies/homo_sapiens/Compara.104.protein_default.homologies.tsv.gz
+  - uri: ftp://ftp.ensembl.org/pub/release-105/tsv/ensembl-compara/homologies/homo_sapiens/Compara.105.protein_default.homologies.tsv.gz
     output_filename: cpd.tsv.gz
     path: target-inputs/homologue
-  - uri: ftp://ftp.ensembl.org/pub/release-104/tsv/ensembl-compara/homologies/homo_sapiens/Compara.104.ncrna_default.homologies.tsv.gz
+  - uri: ftp://ftp.ensembl.org/pub/release-105/tsv/ensembl-compara/homologies/homo_sapiens/Compara.105.ncrna_default.homologies.tsv.gz
     output_filename: crna.tsv.gz
     path: target-inputs/homologue
   - uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
@@ -347,7 +347,7 @@ target:
   - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: ftp://ftp.ensembl.org/pub/release-104/species_EnsemblVertebrates.txt
+  - uri: ftp://ftp.ensembl.org/pub/release-105/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
   - uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -367,7 +367,7 @@ target:
       output_filename: essentiality_matrices.zip
       path: target-inputs/project-scores
     ensembl:
-      release: 104
+      release: 105
       uri: ftp://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
