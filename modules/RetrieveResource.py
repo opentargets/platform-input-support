@@ -49,20 +49,20 @@ class RetrieveResource(object):
         logger.info("Steps not found:\n" + ','.join(lowercase_steps))
         return matching_plugins
 
-    # Extract and check the steps to run
     def steps(self):
-        all_plugins_available = []
-        for plugin in self.simplePluginManager.getAllPlugins():
-            all_plugins_available.append(plugin.name)
-        steps_requested = self.matching_steps(self.args.steps, all_plugins_available)
-        excluded_requested = self.matching_steps(self.args.exclude, all_plugins_available)
+        """
+        Compute the effective list of Pipeline Steps to run. This will take into account whether a particular list of
+        steps was requested or not as well as the possibly excluded ones
+        """
+        steps_requested = self.matching_steps(self.args.steps, self.simplePluginManager.getAllPlugins())
+        excluded_requested = self.matching_steps(self.args.exclude, self.simplePluginManager.getAllPlugins())
         if len(self.args.steps) == 0:
-            plugin_order = list(set(all_plugins_available) - set(excluded_requested))
+            plugins_to_run = list(set(self.simplePluginManager.getAllPlugins()) - set(excluded_requested))
         else:
-            plugin_order = list(set(steps_requested))
+            plugins_to_run = list(set(steps_requested))
 
-        logger.info("Steps selected:\n" + ','.join(plugin_order))
-        return plugin_order
+        logger.info("Steps selected:\n" + ','.join(plugins_to_run))
+        return plugins_to_run
 
     # Init yapsy plugin manager
     def init_plugins(self):
