@@ -109,8 +109,16 @@ class RetrieveResource(object):
         self.yaml.outputs.prod_dir = create_output_dir(os.path.join(output_dir, 'prod'))
         self.yaml.outputs.staging_dir = create_output_dir(os.path.join(output_dir, 'staging'))
 
-    # Retrieve the resources requested.
     def run(self):
+        """
+        Run Resource Retrieval process.
+
+        This will:
+            - prepare pipeline output folder structure
+            - do some checks on provided GCP credentials
+            - Run the effective pipeline steps as requested
+            - And conditionally copy the results to the GCP bucket destination
+        """
         self.create_output_structure(self.output_dir)
         self.init_plugins()
         self.checks_gc_service_account()
