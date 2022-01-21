@@ -78,16 +78,20 @@ class RetrieveResource(object):
         self.simplePluginManager.collectPlugins()
 
     # noinspection PyBroadException
-    # Given a list of steps to run, this procedure executes the selected plugins/step
     def run_plugins(self):
+        """
+        Run the requested pipeline steps
+        """
         steps_to_execute = self.steps()
+        # TODO - Refactor this for running all steps in parallel, collecting possible results as Futures, with the
+        #  option of re-try on those that failed, based on the premise that they are idempotent
         for plugin_name in steps_to_execute:
             plugin = self.simplePluginManager.getPluginByName(plugin_name)
             try:
                 plugin.plugin_object.process(self.yaml[plugin_name.lower()], self.yaml.outputs, self.yaml.config)
             except Exception as e:
-                logger.info("WARNING Plugin not available {}".format(plugin_name))
-                logger.info(e)
+                logger.error("A problem occurred while running step '{}'".format(plugin_name))
+                logger.error(e)
 
     def create_output_structure(self, output_dir):
         """By default the directories prod and staging are created"""
