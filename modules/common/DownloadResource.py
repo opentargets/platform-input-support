@@ -37,7 +37,7 @@ class DownloadResource(object):
         if args.suffix:
             self.suffix = args.suffix
 
-    def set_filename(self, param_filename):
+    def set_filename(self, param_filename) -> str:
         return os.path.join(self.output_dir, param_filename.replace('{suffix}', self.suffix))
 
     def execute_download(self, resource_info, retry_count=1) -> str:
