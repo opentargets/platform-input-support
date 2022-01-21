@@ -23,8 +23,10 @@ def threaded(fn):
 logger = logging.getLogger(__name__)
 
 
-# Generic class to download a specific URI
 class DownloadResource(object):
+    """
+    This class implements a URI download helper
+    """
 
     def __init__(self, output_dir):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
