@@ -37,13 +37,19 @@ class DownloadResource(object):
         if args.suffix:
             self.suffix = args.suffix
 
-    def set_filename(self, param_filename) -> str:
+    def set_filename(self, filename) -> str:
         """
         Build final file path and file name including suffix
+        @param filename Base file name
         """
-        return os.path.join(self.output_dir, param_filename.replace('{suffix}', self.suffix))
+        return os.path.join(self.output_dir, filename.replace('{suffix}', self.suffix))
 
     def execute_download(self, resource_info, retry_count=1) -> str:
+        """
+        Perform downloading of a resource described by the given resource information.
+        @param resource_info information on the resource to download
+        @param retry_count number of times to re-try downloading the resource in case of error
+        """
         logger.debug("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         try:
             opener = urllib.request.build_opener()
