@@ -26,8 +26,10 @@ class RetrieveResource(object):
         else:
             GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
 
-    # Copy the local files to the Google Storage
     def copy_to_gs(self):
+        """
+        Copy local files to the given Google Storage Bucket destination
+        """
         if self.args.google_bucket is not None:
             Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(self.args.google_bucket)
         else:
