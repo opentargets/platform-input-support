@@ -1,3 +1,4 @@
+import os
 import logging
 from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.Utils import Utils
@@ -38,6 +39,8 @@ class RetrieveResource(object):
     def matching_steps(self, steps, all_plugins_available):
         """
         This function finds out the list of plugins that we need to run for covering the requested pipeline steps
+        @param steps requested steps
+        @param all_plugins_available list of all the plugins available in the pipeline
         """
         lowercase_steps = set(each_step.lower() for each_step in steps)
         matching_plugins = []
@@ -70,9 +73,9 @@ class RetrieveResource(object):
         """
         # Tell it the default place(s) where to find plugins
         # NOTE - Should we parameterize this? The configuration file is probably the place for manipulating the pipeline
-        # stages behavior, so this could probably go somewhere else, maybe as an environment variable. On another
-        # thought, we may just want to make this a constant somewhere, probably the application itself, so its value is
-        # specified in a single place.
+        #  stages behavior, so this could probably go somewhere else, maybe as an environment variable. On another
+        #  thought, we may just want to make this a constant somewhere, probably the application itself, so its value is
+        #  specified in a single place.
         self.simplePluginManager.setPluginPlaces(["plugins"])
         # Load all plugins
         self.simplePluginManager.collectPlugins()
@@ -94,10 +97,17 @@ class RetrieveResource(object):
                 logger.error(e)
 
     def create_output_structure(self, output_dir):
-        """By default the directories prod and staging are created"""
-        remove_output_dir(output_dir) if self.args.force_clean else logger.info("Warning: Output not deleted.")
-        self.yaml.outputs.prod_dir = create_output_dir(output_dir + '/prod')
-        self.yaml.outputs.staging_dir = create_output_dir(output_dir + '/staging')
+        """
+        Prepare pipeline output folder including an area for staging results ('staging') and another one for final
+        results ('prod').
+        @param output_dir destination path for the pipeline output filetree structure
+        """
+        if self.args.force_clean:
+            remove_output_dir(output_dir)
+        else:
+            logger.info("Warning: Output not deleted.")
+        self.yaml.outputs.prod_dir = create_output_dir(os.path.join(output_dir, 'prod'))
+        self.yaml.outputs.staging_dir = create_output_dir(os.path.join(output_dir, 'staging'))
 
     # Retrieve the resources requested.
     def run(self):
