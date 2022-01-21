@@ -35,9 +35,10 @@ class RetrieveResource(object):
         else:
             logger.error("Destination bucket info missing")
 
-    # This function normalise the input inserted by the user. Lower and Upper cases can break the code if
-    # not managed. Eg. SO/so/So -> SO Plugin
     def normalise_steps(self, steps, all_plugins_available):
+        """
+        This function finds out the list of plugins that we need to run for covering the requested pipeline steps
+        """
         normalise_steps = []
         lowercase_steps = [each_step.lower() for each_step in steps]
         for plugin in all_plugins_available:
