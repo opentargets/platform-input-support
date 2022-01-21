@@ -16,8 +16,10 @@ class RetrieveResource(object):
         self.output_dir = args.output_dir if args.output_dir is not None else PIS_OUTPUT_DIR
         self.yaml = yaml
 
-    # Warning the user about the gc credential needs for access to GC itself
     def checks_gc_service_account(self):
+        """
+        Check that valid Google Cloud Platform credentials have been provided
+        """
         if self.args.google_credential_key is None:
             logger.info("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
                         "Eg. Evidence")
