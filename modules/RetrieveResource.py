@@ -35,27 +35,27 @@ class RetrieveResource(object):
         else:
             logger.error("Destination bucket info missing")
 
-    def normalise_steps(self, steps, all_plugins_available):
+    def matching_steps(self, steps, all_plugins_available):
         """
         This function finds out the list of plugins that we need to run for covering the requested pipeline steps
         """
-        normalise_steps = []
-        lowercase_steps = [each_step.lower() for each_step in steps]
+        lowercase_steps = set(each_step.lower() for each_step in steps)
+        matching_plugins = []
         for plugin in all_plugins_available:
             if plugin.lower() in lowercase_steps:
-                normalise_steps.append(plugin)
+                matching_plugins.append(plugin)
                 lowercase_steps.remove(plugin.lower())
 
         logger.info("Steps not found:\n" + ','.join(lowercase_steps))
-        return normalise_steps
+        return matching_plugins
 
     # Extract and check the steps to run
     def steps(self):
         all_plugins_available = []
         for plugin in self.simplePluginManager.getAllPlugins():
             all_plugins_available.append(plugin.name)
-        steps_requested = self.normalise_steps(self.args.steps, all_plugins_available)
-        excluded_requested = self.normalise_steps(self.args.exclude, all_plugins_available)
+        steps_requested = self.matching_steps(self.args.steps, all_plugins_available)
+        excluded_requested = self.matching_steps(self.args.exclude, all_plugins_available)
         if len(self.args.steps) == 0:
             plugin_order = list(set(all_plugins_available) - set(excluded_requested))
         else:
