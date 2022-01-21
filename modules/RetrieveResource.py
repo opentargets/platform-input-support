@@ -64,9 +64,15 @@ class RetrieveResource(object):
         logger.info("Steps selected:\n" + ','.join(plugins_to_run))
         return plugins_to_run
 
-    # Init yapsy plugin manager
     def init_plugins(self):
+        """
+        Initialise Yapsy Plugin Manager
+        """
         # Tell it the default place(s) where to find plugins
+        # NOTE - Should we parameterize this? The configuration file is probably the place for manipulating the pipeline
+        # stages behavior, so this could probably go somewhere else, maybe as an environment variable. On another
+        # thought, we may just want to make this a constant somewhere, probably the application itself, so its value is
+        # specified in a single place.
         self.simplePluginManager.setPluginPlaces(["plugins"])
         # Load all plugins
         self.simplePluginManager.collectPlugins()
