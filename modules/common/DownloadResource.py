@@ -59,7 +59,7 @@ class DownloadResource(object):
         :param retry_count: number of times to re-try downloading the resource in case of error, '1' by default
         :return: the download destination path when successful, empty path if not
         """
-        logger.debug("Start to download\n\t{uri} ".format(uri=resource_info.uri))
+        logger.debug("Start to download\n\t{} ".format(resource_info.uri))
         for attempt in range(retry_count):
             try:
                 opener = urllib.request.build_opener()
@@ -94,17 +94,24 @@ class DownloadResource(object):
         self.execute_download(resource_info)
 
     def ftp_download(self, resource_info: Dict) -> str:
+        """
+        Perform an FTP download
+
+        :param resource_info: information on the resource to download
+        :return: the download destination path when successful, empty path if not
+        """
         print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         try:
             filename = self.set_filename(resource_info.output_filename)
             urllib.request.urlretrieve(resource_info.uri, filename)
             urllib.request.urlcleanup()
         except Exception:
-            logger.error("Warning: FTP! {file}".format(file=resource_info.uri))
+            logger.warning("Warning: FTP! {}".format(resource_info.uri))
             # EBI FTP started to reply ConnectionResetError: [Errno 104] Connection reset by peer.
             # I had an exchange of email with sysinfo, they suggested us to use wget.
             cmd = 'curl ' + resource_info.uri + ' --output ' + filename
-            logger.info("wget attempt {cmd}".format(cmd=cmd))
-            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            logger.warning("wget attempt {}".format(cmd))
+            # TODO We need to handle the completion of this command, I think it would be worth writing a handler helper
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
         return filename
