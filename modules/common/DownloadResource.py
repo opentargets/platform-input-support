@@ -4,14 +4,15 @@ import datetime
 import threading
 import subprocess
 import urllib.request, urllib.parse, urllib.error
-
 # Common packages
 from typing import Dict
-
 from modules.common.TqdmUpTo import TqdmUpTo
+from pip._internal.utils.deprecation import deprecated
 
 
 # Decorator for the threading parameter.
+@deprecated(reason='This method is not being used anywhere in the code, '
+                   'multithreading when downloading data would need to be refactored to find out its best fit')
 def threaded(fn):
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
