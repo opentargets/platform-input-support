@@ -38,9 +38,10 @@ class RetrieveResource(object):
 
     def matching_steps(self, steps, all_plugins_available):
         """
-        This function finds out the list of plugins that we need to run for covering the requested pipeline steps
-        @param steps requested steps
-        @param all_plugins_available list of all the plugins available in the pipeline
+        This function finds out the list of plugins that we need to run for covering the requested pipeline steps.
+
+        :param steps: requested steps
+        :param all_plugins_available: list of all the plugins available in the pipeline
         """
         lowercase_steps = set(each_step.lower() for each_step in steps)
         matching_plugins = []
@@ -100,7 +101,8 @@ class RetrieveResource(object):
         """
         Prepare pipeline output folder including an area for staging results ('staging') and another one for final
         results ('prod').
-        @param output_dir destination path for the pipeline output filetree structure
+
+        :param output_dir: destination path for the pipeline output filetree structure
         """
         if self.args.force_clean:
             remove_output_dir(output_dir)
