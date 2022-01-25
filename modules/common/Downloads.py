@@ -89,6 +89,11 @@ class Downloads(object):
                 logger.error(f"ERROR: The resource={resource.bucket} was not downloaded, '{e}'")
 
     def single_http_download(self, resource):
+        """
+        Perform a single HTTP download
+
+        :param resource: information on the resource to be downloaded
+        """
         download = DownloadResource(create_output_dir(os.path.join(self.path_root, resource.path)))
         return download.execute_download(resource)
 
