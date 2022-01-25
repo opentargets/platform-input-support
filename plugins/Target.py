@@ -32,7 +32,7 @@ class Target(IPlugin):
         jq_cmd = Utils.check_path_command("jq", cmd.jq)
         resource_stage = Dict()
         resource_stage.uri = ensembl.uri.replace('{release}', str(ensembl.release))
-        file_input = Downloads.dowload_staging_ftp(output.staging_dir, resource_stage)
+        file_input = Downloads.download_staging_ftp(output.staging_dir, resource_stage)
         output_dir = os.path.join(output.prod_dir,ensembl.path )
         output_file = os.path.join(create_output_dir(output_dir), ensembl.output_filename)
         with open(output_file, "wb") as jsonwrite:

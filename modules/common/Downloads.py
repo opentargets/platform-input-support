@@ -104,7 +104,7 @@ class Downloads(object):
         return download.execute_download(stage_resource)
 
     @staticmethod
-    def dowload_staging_ftp(staging_dir, resource):
+    def download_staging_ftp(staging_dir, resource):
         download = DownloadResource(staging_dir)
         stage_resource = Utils.resource_for_stage(resource)
         return download.ftp_download(stage_resource)
