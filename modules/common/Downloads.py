@@ -59,6 +59,11 @@ class Downloads(object):
         return latest_filename
 
     def exec(self, resources_info):
+        """
+        Download the resources according to their provided information
+
+        :param resources_info: information on the resources to download
+        """
         for resource in resources_info.ftp_downloads:
             try:
                 path = create_output_dir(os.path.join(self.path_root, resource.path))
