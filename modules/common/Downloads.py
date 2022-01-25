@@ -14,6 +14,11 @@ class Downloads(object):
     """
 
     def __init__(self, output_dir):
+        """
+        Constructor
+
+        :param output_dir: path to download destination folder
+        """
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.path_root = output_dir
 
