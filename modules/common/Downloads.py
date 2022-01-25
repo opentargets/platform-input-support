@@ -69,27 +69,27 @@ class Downloads(object):
                 path = create_output_dir(os.path.join(self.path_root, resource.path))
                 download = DownloadResource(path)
                 download.ftp_download(resource)
-            except:
-                logger.error(f"ERROR: The resource={resource.uri} was not download")
+            except Exception as e:
+                logger.error(f"ERROR: The resource={resource.uri} was not downloaded, '{e}'")
 
         for resource in resources_info.http_downloads:
             try:
                 self.single_http_download(resource)
-            except:
-                logger.error(f"ERROR: The resource={resource.uri} was not download")
+            except Exception as e:
+                logger.error(f"ERROR: The resource={resource.uri} was not downloaded, '{e}'")
 
         for resource in resources_info.gs_downloads_latest:
             try:
-                param = GoogleBucketResource.get_bucket_and_path(resource.bucket)
-                google_resource = GoogleBucketResource(bucket_name=param)
+                google_resource = GoogleBucketResource(
+                    bucket_name=GoogleBucketResource.get_bucket_and_path(resource.bucket))
                 latest_resource = self.get_latest(google_resource, resource)
                 download_info = self.prepare_gs_download(latest_resource, resource)
                 google_resource.download(download_info)
-            except:
-                logger.error(f"ERROR: The resource={resource.bucket} was not download")
+            except Exception as e:
+                logger.error(f"ERROR: The resource={resource.bucket} was not downloaded, '{e}'")
 
     def single_http_download(self, resource):
-        download = DownloadResource(create_output_dir(self.path_root + '/' + resource.path))
+        download = DownloadResource(create_output_dir(os.path.join(self.path_root, resource.path)))
         return download.execute_download(resource)
 
     @staticmethod
