@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from modules.common import create_output_dir
 from modules.common.Downloads import Downloads
-from modules.common.ElasticsearchReader import ElasticsearchReader
+from modules.common.ElasticsearchHelper import ElasticsearchInstance
 from datetime import datetime
 import logging
 import warnings
@@ -25,8 +25,8 @@ class Drug(IPlugin):
         :return: list of files successfully saved.
         """
         results = []
-        elasticsearch_reader = ElasticsearchReader(url, port)
-        if elasticsearch_reader.confirm_es_reachable():
+        elasticsearch_reader = ElasticsearchInstance(url, port)
+        if elasticsearch_reader.is_reachable():
             for index in list(indices.values()):
                 index_name = index['name']
                 outfile = output_dir + '/' + index_name + "-" + self.write_date + ".jsonl"

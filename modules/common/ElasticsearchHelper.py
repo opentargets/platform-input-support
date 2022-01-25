@@ -2,14 +2,14 @@ import json
 import logging
 import requests
 
+from requests import ConnectionError
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, utils
-from requests import ConnectionError
 
 logger = logging.getLogger(__name__)
 
 
-class ElasticsearchReader(object):
+class ElasticsearchInstance(object):
     """
     Wrapper over an Elasticsearch instance.
     """
@@ -20,7 +20,7 @@ class ElasticsearchReader(object):
         logger.info("Creating ElasticsearchReader with url: {}, port: {}".format(self.HOST, self.PORT))
         self.es = Elasticsearch([{'host': self.HOST, 'port': self.PORT}])
 
-    def confirm_es_reachable(self):
+    def is_reachable(self):
         """Pings configured Elasticsearch instance and returns true if reachable, false otherwise"""
         try:
             request = requests.head("http://{}:{}".format(self.HOST, self.PORT), timeout=1)
