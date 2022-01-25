@@ -1,15 +1,17 @@
+import os
 import datetime
 import logging
-import os
-from modules.common.DownloadResource import DownloadResource
-from modules.common import create_output_dir
-from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.Utils import Utils
+from modules.common import create_output_dir
+from modules.common.DownloadResource import DownloadResource
+from modules.common.GoogleBucketResource import GoogleBucketResource
 
 logger = logging.getLogger(__name__)
 
-# Generic class to downloads file from https, http, ftp and GS
 class Downloads(object):
+    """
+    Helper for downloading files from HTTPS, HTTP, FTP and GS
+    """
 
     def __init__(self, output_dir):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
