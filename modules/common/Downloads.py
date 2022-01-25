@@ -8,6 +8,7 @@ from modules.common.GoogleBucketResource import GoogleBucketResource
 
 logger = logging.getLogger(__name__)
 
+
 class Downloads(object):
     """
     Helper for downloading files from HTTPS, HTTP, FTP and GS
@@ -22,20 +23,36 @@ class Downloads(object):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.path_root = output_dir
 
-    def get_gs_path_info(self, gs_info, resource):
+    def prepare_gs_download(self, gs_info, resource):
+        """
+        Prepare Google Storage download.
+
+        :param gs_info: Google Storage information object
+        :param resource: Download Resource information
+        :return: destination information for this download
+        """
         if gs_info["spark"]:
-            output = self.path_root + '/' + resource.path  + '/' +  resource.output_spark_dir.replace('{suffix}', gs_info["suffix"])
+            output = os.path.join(self.path_root, resource.path,
+                                  resource.output_spark_dir.replace('{suffix}', gs_info["suffix"]))
             create_output_dir(output)
         else:
-            create_output_dir(self.path_root + '/' + resource.path)
-            output = self.path_root + '/' + resource.path  + '/' +  resource.output_filename.replace('{suffix}', gs_info["suffix"])
+            create_output_dir(os.path.join(self.path_root, resource.path))
+            output = os.path.join(self.path_root, resource.path,
+                                  resource.output_filename.replace('{suffix}', gs_info["suffix"]))
 
         return {'output': output, 'is_dir': gs_info["spark"], 'file': gs_info["latest_filename"]}
 
-    def get_latest(self, google_resource, resource):
-        bucket = google_resource.get_bucket()
+    @staticmethod
+    def get_latest(google_resource, resource):
+        """
+        Get the latest file name in a given Google Storage Bucket, specified by a given resource
+
+        :param google_resource: Google Storage Bucket
+        :param resource: resource information to look for in the Google Storage Bucket
+        :return: the latest filename in the given Google Storage Bucket for the given resource information
+        """
         latest_filename = None
-        if bucket is not None:
+        if google_resource.get_bucket() is not None:
             latest_filename = google_resource.get_latest_file(resource)
             if latest_filename["latest_filename"] is None:
                 logger.info(f"ERROR: The path={google_resource.get_bucket_name()} does not contain any recent file")
@@ -61,11 +78,10 @@ class Downloads(object):
                 param = GoogleBucketResource.get_bucket_and_path(resource.bucket)
                 google_resource = GoogleBucketResource(bucket_name=param)
                 latest_resource = self.get_latest(google_resource, resource)
-                download_info = self.get_gs_path_info(latest_resource, resource)
+                download_info = self.prepare_gs_download(latest_resource, resource)
                 google_resource.download(download_info)
             except:
                 logger.error(f"ERROR: The resource={resource.bucket} was not download")
-
 
     def single_http_download(self, resource):
         download = DownloadResource(create_output_dir(self.path_root + '/' + resource.path))
