@@ -33,11 +33,11 @@ class Expression(IPlugin):
                 writer.write(entry)
 
     def get_tissue_map(self, output, resource):
-        filename = Downloads.dowload_staging_http(output.staging_dir, resource)
+        filename = Downloads.download_staging_http(output.staging_dir, resource)
         self.save_tissue_translation_map(output.prod_dir, resource, filename)
 
     def get_normal_tissues(self, output, resource):
-        filename = Downloads.dowload_staging_http(output.staging_dir, resource)
+        filename = Downloads.download_staging_http(output.staging_dir, resource)
         filename_unzip=make_unzip_single_file(filename)
         gzip_filename=os.path.join(create_output_dir(os.path.join(output.prod_dir, resource.path)),resource.output_filename.replace('{suffix}', self.suffix))
         make_gzip(filename_unzip, gzip_filename)

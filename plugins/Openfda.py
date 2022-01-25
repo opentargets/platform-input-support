@@ -43,7 +43,7 @@ class Openfda(IPlugin):
         logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
         downloaded_files = dict()
         logger.info("Download OpenFDA FAERS repository metadata")
-        download = Downloads.dowload_staging_http(output.staging_dir, resource)
+        download = Downloads.download_staging_http(output.staging_dir, resource)
         repo_metadata = {}
         with open(download, 'r') as f:
             repo_metadata = json.load(f)

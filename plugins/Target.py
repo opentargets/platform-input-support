@@ -16,13 +16,13 @@ class Target(IPlugin):
         self._logger = logging.getLogger(__name__)
 
     def get_gnomad(self, gnomad, output):
-        filename = Downloads.dowload_staging_http(output.staging_dir, gnomad)
+        filename = Downloads.download_staging_http(output.staging_dir, gnomad)
         filename_unzip=make_ungzip(filename)
         gzip_filename=os.path.join(create_output_dir(os.path.join(output.prod_dir, gnomad.path)),gnomad.output_filename)
         make_gzip(filename_unzip, gzip_filename)
 
     def get_subcellular_location(self, sub_location, output):
-        filename = Downloads.dowload_staging_http(output.staging_dir, sub_location)
+        filename = Downloads.download_staging_http(output.staging_dir, sub_location)
         filename_unzip=make_unzip_single_file(filename)
         gzip_filename=os.path.join(create_output_dir(os.path.join(output.prod_dir, sub_location.path)),sub_location.output_filename)
         make_gzip(filename_unzip, gzip_filename)
@@ -43,7 +43,7 @@ class Target(IPlugin):
         logger.info("Downloading project scores target files")
         # we only want one file from a zipped archive
         file_of_interest = 'EssentialityMatrices/04_binaryDepScores.tsv'
-        file_input = Downloads.dowload_staging_http(output.staging_dir, project_score_entry)
+        file_input = Downloads.download_staging_http(output.staging_dir, project_score_entry)
         output_dir = os.path.join(output.prod_dir,project_score_entry.path )
         create_output_dir(output_dir)
         extract_file_from_zip(file_of_interest, file_input, output_dir)

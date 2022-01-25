@@ -25,11 +25,11 @@ class Disease(IPlugin):
         return riot.convert_owl_to_jsonld(filename_input, file_ouput_path, resource.owl_jq)
 
     def download_converted_file(self, resource, output, riot):
-        filename_input = Downloads.dowload_staging_http(output.staging_dir, resource)
+        filename_input = Downloads.download_staging_http(output.staging_dir, resource)
         return self.owl_to_json(filename_input, output.staging_dir, resource, riot)
 
     def get_hpo_phenotypes(self, conf, output):
-        hpo_pheno_filename = Downloads.dowload_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)
+        hpo_pheno_filename = Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)
         hpo_phenotypes = HPOPhenotypes(hpo_pheno_filename)
         create_output_dir(output.prod_dir + "/" + conf.etl.hpo_phenotypes.path)
         hpo_phenotypes.run(output.prod_dir + "/" + conf.etl.hpo_phenotypes.path + "/" + conf.etl.hpo_phenotypes.output_filename)

@@ -98,7 +98,7 @@ class Downloads(object):
         return download.execute_download(resource)
 
     @staticmethod
-    def dowload_staging_http(staging_dir, resource):
+    def download_staging_http(staging_dir, resource):
         download = DownloadResource(staging_dir)
         stage_resource = Utils.resource_for_stage(resource)
         return download.execute_download(stage_resource)
