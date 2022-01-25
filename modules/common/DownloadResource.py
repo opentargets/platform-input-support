@@ -34,7 +34,7 @@ class DownloadResource(object):
         """
         Constructor
 
-        :param output_dir path to download destination folder
+        :param output_dir: path to download destination folder
         """
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.output_dir = output_dir
