@@ -9,6 +9,8 @@ from modules.common.GoogleBucketResource import GoogleBucketResource
 logger = logging.getLogger(__name__)
 
 
+# NOTE I would probably refactor the name of this class, it is in module 'Downloads'
+# I would probably call it 'DownloadHelper'
 class Downloads(object):
     """
     Helper for downloading files from HTTPS, HTTP, FTP and GS
