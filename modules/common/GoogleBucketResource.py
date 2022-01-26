@@ -121,6 +121,11 @@ class GoogleBucketResource(object):
         return list_blobs_dict
 
     def list_blobs_object_path(self):
+        """
+        List BLOBs for the given object path configured in this resource instance
+
+        :return: a map from BLOB name to its 'created' and 'updated' time stamps
+        """
         return self.list_blobs(self.object_path, '', None, None)
 
     def list_blobs_object_path_excludes(self, excludes_pattern):
