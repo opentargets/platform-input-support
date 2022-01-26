@@ -139,6 +139,12 @@ class GoogleBucketResource(object):
         return self.list_blobs(self.object_path, exclude=excludes_pattern)
 
     def list_blobs_object_path_includes(self, included_pattern):
+        """
+        List BLOBs for the given object path configured in this resource instance, but given an inclusion pattern
+
+        :param included_pattern: inclusion pattern to be used when building the BLOB listing
+        :return: a map from BLOB name to its 'created' and 'updated' time stamps
+        """
         return self.list_blobs(self.object_path, include=included_pattern)
 
     def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
