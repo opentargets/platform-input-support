@@ -66,8 +66,13 @@ class GoogleBucketResource(object):
             return self.bucket_name + '/' + self.object_path
         return self.bucket_name
 
-    # Retrieve the list of buckets available for the user
+    # NOTE This method is not being used anywhere
     def get_list_buckets(self):
+        """
+        Retrieve the list of Google Storage Buckets available to the user
+
+        :return: list of available buckets
+        """
         return self.client.list_buckets()
 
     # Retrieve the list of buckets available for the user
