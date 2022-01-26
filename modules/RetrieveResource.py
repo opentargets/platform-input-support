@@ -19,7 +19,7 @@ class RetrieveResource(object):
 
     def checks_gc_service_account(self):
         """
-        Check that valid Google Cloud Platform credentials have been provided
+        Check that valid Google Cloud Platform credentials are present
         """
         if self.args.google_credential_key is None:
             logger.warning("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
