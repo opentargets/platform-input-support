@@ -129,6 +129,11 @@ class GoogleBucketResource(object):
         return self.list_blobs(self.object_path, '', None, None)
 
     def list_blobs_object_path_excludes(self, excludes_pattern):
+        """
+        List BLOBs for the given object path configured in this resource instance, but given an exclusion pattern
+
+        :return: a map from BLOB name to its 'created' and 'updated' time stamps
+        """
         return self.list_blobs(self.object_path, '', None, excludes_pattern)
 
     def list_blobs_object_path_includes(self, included_pattern):
