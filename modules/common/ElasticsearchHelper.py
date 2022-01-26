@@ -15,19 +15,27 @@ class ElasticsearchInstance(object):
     """
 
     def __init__(self, host, port):
-        self.PORT = port
-        self.HOST = host
-        logger.info("Creating ElasticsearchReader with url: {}, port: {}".format(self.HOST, self.PORT))
-        self.es = Elasticsearch([{'host': self.HOST, 'port': self.PORT}])
+        """
+        Constructor
+
+        :param host: Elastic Search Host information
+        :param port: Elastic Search Port information
+        """
+        self._port = port
+        self._host = host
+        logger.info("Creating Elastic Search Instance Wrapper with host: {}, port: {}".format(self._host, self._port))
+        self.es = Elasticsearch([{'host': self._host, 'port': self._port}])
 
     def is_reachable(self):
-        """Pings configured Elasticsearch instance and returns true if reachable, false otherwise"""
+        """
+        Pings configured Elasticsearch instance and returns true if reachable, false otherwise
+        """
         try:
-            request = requests.head("http://{}:{}".format(self.HOST, self.PORT), timeout=1)
+            request = requests.head("http://{}:{}".format(self._host, self._port), timeout=1)
             return request.ok
         except ConnectionError as error:
-            logger.error("Unable to reach {}. Error msg: ".format(self.HOST, error))
-            return False
+            logger.error("Unable to reach {}. Error msg: ".format(self._host, error))
+        return False
 
     def get_fields_on_index(self, index, outfile, fields=None, pagesize=1000):
         """
