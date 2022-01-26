@@ -57,11 +57,14 @@ class GoogleBucketResource(object):
         return split[0], split[1]
 
     def get_full_path(self):
-        # the bucket_name is present.
-        if self.object_path is None:
-            return self.bucket_name
-        else:
+        """
+        Get the full Google Storage Bucket Path, including the bucket name
+
+        :return: full Google Storage Bucket Path
+        """
+        if self.object_path is not None:
             return self.bucket_name + '/' + self.object_path
+        return self.bucket_name
 
     def get_bucket_name(self):
         return self.bucket_name
