@@ -8,8 +8,6 @@ import urllib.request, urllib.parse, urllib.error
 from typing import Dict
 from modules.common.TqdmUpTo import TqdmUpTo
 
-from pip._internal.utils.deprecation import deprecated
-
 logger = logging.getLogger(__name__)
 
 
