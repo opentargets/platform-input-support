@@ -45,27 +45,29 @@ class ElasticsearchInstance(object):
             logger.error("Unable to reach {}. Error msg: ".format(self.es_url, error))
         return False
 
+    @staticmethod
+    def _process_hit_value(field_value):
+        """
+        :param field_value: Value wrapped in an Elasticsearch wrapper
+        :return: Json serializable version of v
+        """
+        if isinstance(field_value, utils.AttrList):
+            return field_value._l_
+        elif isinstance(field_value, utils.AttrDict):
+            return field_value._d_
+        else:
+            return field_value
+
     def get_fields_on_index(self, index, outfile, fields=None, pagesize=1000):
         """
         Return all documents from `index` returning only the `fields` specified.
+
         :param index: Elasticsearch index to query as Str
         :param outfile: file to save results of query
-        :param fields: subset of fields to return as List[Str]
+        :param fields: subset of fields to return as list[Str]
         :param pagesize: number of documents to buffer before writing
-        :return: List of dictionary entries including `fields` if available.
+        :return: List of dictionary entries, including `fields` if available.
         """
-
-        def _process_hit_value(field_value):
-            """
-            :param field_value: Value wrapped in an Elasticsearch wrapper
-            :return: Json serializable version of v
-            """
-            if isinstance(field_value, utils.AttrList):
-                return field_value._l_
-            elif isinstance(field_value, utils.AttrDict):
-                return field_value._d_
-            else:
-                return field_value
 
         size = pagesize
         doc_count = 0
@@ -78,7 +80,7 @@ class ElasticsearchInstance(object):
             hit_dict = {}
             for f in fields:
                 if f in hit:
-                    hit_dict[f] = _process_hit_value(hit[f])
+                    hit_dict[f] = self._process_hit_value(hit[f])
                 else:
                     logger.error("field \"%s\" not found on document from index: %s", f, index)
             doc_buffer.append(hit_dict)
