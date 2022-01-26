@@ -1,13 +1,14 @@
 import os
+import re
 import sys
-import zipfile
 import gzip
 import shutil
-import datetime
-import binascii
-import re
 import logging
+import zipfile
 import pathlib
+import binascii
+
+from datetime import datetime
 
 # WARNING - This file is for flagging the folder as a module for the python interpreter, it's usually left empty, or
 #  used for module-wide imports, initialization, but not as a code library. This code should be refactored out from here
@@ -15,18 +16,25 @@ import pathlib
 logger = logging.getLogger(__name__)
 
 
+# NOTE Refactor this out into a helper module
 def is_gzip(filename):
+    """
+    Check whether the given path is a gzip file
+
+    :return: True if the given path is a gzip file, False otherwise
+    """
     with open(filename, 'rb') as test_f:
+        # Check for the magic number for gzip files
         return binascii.hexlify(test_f.read(2)) == b'1f8b'
 
 
 # Regular expression for date and format
-def date_reg_expr(filename, regexpr, format):
+def date_reg_expr(sourcestr, regexpr, format):
     date_file = None
-    find_date_file = re.search(regexpr, filename)
-    if find_date_file:
+    re_match = re.search(regexpr, sourcestr)
+    if re_match:
         try:
-            date_file = datetime.datetime.strptime(find_date_file.group(1), format)
+            date_file = datetime.strptime(re_match.group(1), format)
             if date_file.year < 2000:
                 date_file = None
         except ValueError:
@@ -148,5 +156,5 @@ def get_output_spark_files(directory_info, filter):
 
 
 def replace_suffix(filename):
-    suffix = datetime.datetime.today().strftime('%Y-%m-%d')
+    suffix = datetime.today().strftime('%Y-%m-%d')
     return filename.replace('{suffix}', suffix)
