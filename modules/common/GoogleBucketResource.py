@@ -53,8 +53,8 @@ class GoogleBucketResource(object):
         """
         if google_bucket_param is None:
             return None, None
-        split = google_bucket_param.split('/', 1)
-        return split[0], split[1] if len(split) == 2 else None
+        split = google_bucket_param.split('/', 1) + [None]
+        return split[0], split[1]
 
     def get_full_path(self):
         # the bucket_name is present.
