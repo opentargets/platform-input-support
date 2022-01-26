@@ -167,7 +167,7 @@ class GoogleBucketResource(object):
         blob.upload_from_filename(filename=original_filename)
         return blob.name
 
-    
+    # NOTE General helper method that should be refactored out of this class into a Spark related Helper module
     @staticmethod
     def is_a_spark_directory(filename):
         """
