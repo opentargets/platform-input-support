@@ -14,15 +14,17 @@ class ElasticsearchInstance(object):
     Wrapper over an Elasticsearch instance.
     """
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, scheme='http'):
         """
         Constructor
 
         :param host: Elastic Search Host information
         :param port: Elastic Search Port information
+        :param scheme: which access scheme to use for accessing the given Elastic Search Instance
         """
         self._port = port
         self._host = host
+        self._scheme = scheme
         logger.info("Creating Elastic Search Instance Wrapper with host: {}, port: {}".format(self._host, self._port))
         self.es = Elasticsearch([{'host': self._host, 'port': self._port}])
 
