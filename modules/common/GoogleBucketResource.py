@@ -66,9 +66,6 @@ class GoogleBucketResource(object):
             return self.bucket_name + '/' + self.object_path
         return self.bucket_name
 
-    def get_bucket_name(self):
-        return self.bucket_name
-
     def get_object_path(self):
         return self.object_path
 
