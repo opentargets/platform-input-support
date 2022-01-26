@@ -9,6 +9,9 @@ import re
 import logging
 import pathlib
 
+# WARNING - This file is for flagging the folder as a module for the python interpreter, it's usually left empty, or
+#  used for module-wide imports, initialization, but not as a code library. This code should be refactored out from here
+#  into their corresponding helper modules
 logger = logging.getLogger(__name__)
 
 
