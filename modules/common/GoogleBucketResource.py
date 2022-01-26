@@ -77,19 +77,20 @@ class GoogleBucketResource(object):
 
     # Retrieve the list of buckets available for the user
     def get_bucket(self):
+        """
+        Get a reference to the Google Cloud Bucket in this resource instance
+        """
         if self.bucket_name is None:
-            logger.error("Cannot determine path without bucket name.")
-            return None
-
-        try:
-            bucket = self.client.get_bucket(self.bucket_name)
-        except google.cloud.exceptions.NotFound:
-            logger.error("Sorry, that bucket {} does not exist!".format(self.bucket_name))
-            return None
-        except exceptions.Forbidden:
-            logger.error(" ERROR: GCS forbidden access, path={}".format(self.bucket_name))
-            return None
-        return bucket
+            logger.error("No bucket name has been provided for this resource instance")
+        else:
+            try:
+                bucket = self.client.get_bucket(self.bucket_name)
+                return bucket
+            except google.cloud.exceptions.NotFound:
+                logger.error("Sorry, that bucket {} does not exist!".format(self.bucket_name))
+            except exceptions.Forbidden:
+                logger.error(" ERROR: GCS forbidden access, path={}".format(self.bucket_name))
+        return None
 
     # For instance you can call the method
     # google_resource.list_blobs('bucket_name/directory/','/', None, None)
