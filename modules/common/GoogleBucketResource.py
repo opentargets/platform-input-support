@@ -1,8 +1,8 @@
 import os
-from google.cloud import storage, exceptions
-import google.auth
 import logging
+import google.auth
 from datetime import datetime
+from google.cloud import storage, exceptions
 from modules.common import extract_date_from_file
 
 logger = logging.getLogger(__name__)
@@ -22,13 +22,12 @@ class GoogleBucketResource(object):
     def __del__(self):
         logger.debug('Destroyed instance of %s', __name__)
 
-
     @staticmethod
     def has_valid_auth_key(google_credential_key=None):
         if google_credential_key is None:
             logger.info("gsutil will use the default credetial for the user.")
         else:
-           os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
         try:
             credentials, project = google.auth.default()
             logger.info('\n\tGoogle Bucket connection: %s', project)
@@ -193,9 +192,9 @@ class GoogleBucketResource(object):
 
     def download(self, info):
         if info["is_dir"]:
-            self.download_dir(info["file"],info["output"])
+            self.download_dir(info["file"], info["output"])
         else:
-            self.download_file(info["file"],info["output"])
+            self.download_file(info["file"], info["output"])
 
     def blob_metadata(self, blob_name):
         """Prints out a blob's metadata."""
