@@ -82,8 +82,8 @@ class Downloads(object):
 
         for resource in resources_info.gs_downloads_latest:
             try:
-                google_resource = GoogleBucketResource(
-                    bucket_name=GoogleBucketResource.get_bucket_and_path(resource.bucket))
+                bucket_name, path = GoogleBucketResource.get_bucket_and_path(resource.bucket)
+                google_resource = GoogleBucketResource(bucket_name, path)
                 latest_resource = self.get_latest(google_resource, resource)
                 download_info = self.prepare_gs_download(latest_resource, resource)
                 google_resource.download(download_info)

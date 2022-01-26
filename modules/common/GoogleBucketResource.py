@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 class GoogleBucketResource(object):
 
     # args -- tuple of anonymous arguments | kwargs -- dictionary of named arguments
-    def __init__(self, *args, **kwargs):
-        self.bucket_name = kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
-        self.object_path = kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
+    # def __init__(self, *args, **kwargs):
+    def __init__(self, bucket_name=None, path=None):
+        self.bucket_name = bucket_name # kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
+        self.object_path = path # kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
         # Issue detect Upload of large files times out. #40
         # storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
         # storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
@@ -50,10 +51,10 @@ class GoogleBucketResource(object):
 
         :param google_bucket_param: Google Cloud Bucket full path, without scheme, e.g. gcp_bucket_name/path/to/...
         """
-        # NOTE I would refactor this to return a tuple (bucket_name, path) instead of a list
         if google_bucket_param is None:
-            return list('')
-        return google_bucket_param.split('/', 1)
+            return None, None
+        split = google_bucket_param.split('/', 1)
+        return split[0], split[1] if len(split) == 2 else None
 
     def get_full_path(self):
         # the bucket_name is present.
