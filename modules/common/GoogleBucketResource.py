@@ -134,7 +134,7 @@ class GoogleBucketResource(object):
 
         :return: a map from BLOB name to its 'created' and 'updated' time stamps
         """
-        return self.list_blobs(self.object_path, '', None, excludes_pattern)
+        return self.list_blobs(self.object_path, '', exclude=excludes_pattern)
 
     def list_blobs_object_path_includes(self, included_pattern):
         return self.list_blobs(self.object_path, '', included_pattern, None)
