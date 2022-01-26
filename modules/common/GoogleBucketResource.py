@@ -147,6 +147,7 @@ class GoogleBucketResource(object):
         """
         return self.list_blobs(self.object_path, include=included_pattern)
 
+    # WARNING - UNUSED - REMOVE - DEPRECATE
     def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
         bucket_link = self.get_bucket()
         if bucket_link is None:
