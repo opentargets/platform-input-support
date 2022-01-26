@@ -22,10 +22,11 @@ class RetrieveResource(object):
         Check that valid Google Cloud Platform credentials have been provided
         """
         if self.args.google_credential_key is None:
-            logger.info("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
+            logger.warning("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
                         "Eg. Evidence")
-        else:
-            GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key)
+        # We may still have the default user credentials
+        if not GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key):
+            raise ValueError("Google credential is not valid!")
 
     def copy_to_gs(self):
         """
