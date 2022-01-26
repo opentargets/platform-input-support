@@ -66,9 +66,6 @@ class GoogleBucketResource(object):
             return self.bucket_name + '/' + self.object_path
         return self.bucket_name
 
-    def get_object_path(self):
-        return self.object_path
-
     # Retrieve the list of buckets available for the user
     def get_list_buckets(self):
         return self.client.list_buckets()
