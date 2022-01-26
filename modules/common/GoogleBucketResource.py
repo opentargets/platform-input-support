@@ -79,6 +79,8 @@ class GoogleBucketResource(object):
     def get_bucket(self):
         """
         Get a reference to the Google Cloud Bucket in this resource instance
+
+        :return: a reference to the specified bucket in this instance, None otherwise
         """
         if self.bucket_name is None:
             logger.error("No bucket name has been provided for this resource instance")
