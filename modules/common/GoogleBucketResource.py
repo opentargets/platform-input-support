@@ -167,12 +167,20 @@ class GoogleBucketResource(object):
         blob.upload_from_filename(filename=original_filename)
         return blob.name
 
-    def is_a_spark_directory(self, filename):
-        if (filename.find("/_SUCCESS") > 0) or (filename.find("/part-0") > 0) or (filename.find("/.part-0") > 0) or (
-                filename.find("/._") > 0):
+    
+    @staticmethod
+    def is_a_spark_directory(filename):
+        """
+        Check whether a given path is a Spark directory or not
+
+        :return: True if the given path is a Spark directory, False otherwise
+        """
+        if (filename.find("/_SUCCESS") > 0) \
+                or (filename.find("/part-0") > 0) \
+                or (filename.find("/.part-0") > 0) \
+                or (filename.find("/._") > 0):
             return True
-        else:
-            return False
+        return False
 
     # Return the filename with the latest date. Manage collision of dates only for the latest date.
     def extract_latest_file(self, list_blobs):
