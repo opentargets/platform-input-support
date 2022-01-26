@@ -45,12 +45,14 @@ class GoogleBucketResource(object):
 
     @staticmethod
     def get_bucket_and_path(google_bucket_param):
-        params = list()
+        """
+        Separate the Google Storage Bucket name from the path within that bucket
+
+        :param google_bucket_param: Google Cloud Bucket full path, without scheme, e.g. gcp_bucket_name/path/to/...
+        """
         if google_bucket_param is None:
-            params.append('')
-        else:
-            params = google_bucket_param.split('/', 1)
-        return params
+            return list('')
+        return google_bucket_param.split('/', 1)
 
     def get_full_path(self):
         # the bucket_name is present.
