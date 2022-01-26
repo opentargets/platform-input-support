@@ -28,6 +28,10 @@ class ElasticsearchInstance(object):
         logger.info("Creating Elastic Search Instance Wrapper with host: {}, port: {}".format(self._host, self._port))
         self.es = Elasticsearch([{'host': self._host, 'port': self._port}])
 
+    @property
+    def es_url(self):
+        return "{}://{}:{}".format(self._scheme, self._host, self._port)
+
     def is_reachable(self):
         """
         Pings configured Elasticsearch instance and returns true if reachable, false otherwise
