@@ -25,7 +25,7 @@ class GoogleBucketResource(object):
     @staticmethod
     def has_valid_auth_key(google_credential_key=None):
         if google_credential_key is None:
-            logger.info("gsutil will use the default credetial for the user.")
+            logger.info("gsutil will use the default credential for the user.")
         else:
             os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
         try:
