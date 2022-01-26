@@ -50,6 +50,7 @@ class GoogleBucketResource(object):
 
         :param google_bucket_param: Google Cloud Bucket full path, without scheme, e.g. gcp_bucket_name/path/to/...
         """
+        # NOTE I would refactor this to return a tuple (bucket_name, path) instead of a list
         if google_bucket_param is None:
             return list('')
         return google_bucket_param.split('/', 1)
