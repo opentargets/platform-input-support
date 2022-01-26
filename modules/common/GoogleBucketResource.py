@@ -13,8 +13,8 @@ class GoogleBucketResource(object):
     # args -- tuple of anonymous arguments | kwargs -- dictionary of named arguments
     # def __init__(self, *args, **kwargs):
     def __init__(self, bucket_name=None, path=None):
-        self.bucket_name = bucket_name # kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
-        self.object_path = path # kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
+        self.bucket_name = bucket_name  # kwargs.get('bucket_name')[0] if kwargs.get('bucket_name')[0] != "" else None
+        self.object_path = path  # kwargs.get('bucket_name')[1] if len(kwargs.get('bucket_name')) == 2 else None
         # Issue detect Upload of large files times out. #40
         # storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
         # storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
@@ -96,18 +96,28 @@ class GoogleBucketResource(object):
 
     # For instance you can call the method
     # google_resource.list_blobs('bucket_name/directory/','/', None, None)
-    def list_blobs(self, prefix, delimiter, include, exclude):
+    def list_blobs(self, prefix, delimiter, include=None, exclude=None):
+        """
+        List BLOBs in a Google Storage Bucket
+
+        :param prefix: Google Storage Bucket Path, including bucket name
+        :param delimiter: Path separator
+        :param include: optionally specify information on which BLOBs should be the only ones included in the listing
+        :param exclude: optionally specify information on which BLOBs should be excluded from the listing, this takes
+        precedence over the 'included' information
+        :return: a map from BLOB name to its 'created' and 'updated' time stamps
+        """
         list_blobs_dict = {}
         bucket = self.client.get_bucket(self.bucket_name)
-        blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
+        if bucket is not None:
+            blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
 
-        for blob in blobs:
-            logger.debug("Filename: %s , Created: %s, Updated: %s", blob.name, blob.time_created, blob.updated)
-            list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
-            if (exclude is not None) and (exclude in blob.name):
-                list_blobs_dict.pop(blob.name, None)
-            if (include is not None) and (include not in blob.name):
-                list_blobs_dict.pop(blob.name, None)
+            for blob in blobs:
+                logger.debug("Filename: %s , Created: %s, Updated: %s", blob.name, blob.time_created, blob.updated)
+                if ((exclude is not None) and (exclude in blob.name)
+                        or (include is not None) and (include not in blob.name)):
+                    continue
+                list_blobs_dict[blob.name] = {'created': blob.time_created, 'updated': blob.updated}
         return list_blobs_dict
 
     def list_blobs_object_path(self):
