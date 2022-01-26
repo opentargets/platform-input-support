@@ -96,15 +96,16 @@ class GoogleBucketResource(object):
 
     # For instance you can call the method
     # google_resource.list_blobs('bucket_name/directory/','/', None, None)
-    def list_blobs(self, prefix, delimiter, include=None, exclude=None):
+    def list_blobs(self, prefix, delimiter='', include=None, exclude=None):
         """
         List BLOBs in a Google Storage Bucket
 
         :param prefix: Google Storage Bucket Path, including bucket name
-        :param delimiter: Path separator
-        :param include: optionally specify information on which BLOBs should be the only ones included in the listing
+        :param delimiter: Path separator, default ''
+        :param include: optionally specify information on which BLOBs should be the only ones included in the listing,
+        default None
         :param exclude: optionally specify information on which BLOBs should be excluded from the listing, this takes
-        precedence over the 'included' information
+        precedence over the 'included' information, default None
         :return: a map from BLOB name to its 'created' and 'updated' time stamps
         """
         list_blobs_dict = {}
@@ -126,7 +127,7 @@ class GoogleBucketResource(object):
 
         :return: a map from BLOB name to its 'created' and 'updated' time stamps
         """
-        return self.list_blobs(self.object_path, '', None, None)
+        return self.list_blobs(self.object_path)
 
     def list_blobs_object_path_excludes(self, excludes_pattern):
         """
@@ -134,10 +135,10 @@ class GoogleBucketResource(object):
 
         :return: a map from BLOB name to its 'created' and 'updated' time stamps
         """
-        return self.list_blobs(self.object_path, '', exclude=excludes_pattern)
+        return self.list_blobs(self.object_path, exclude=excludes_pattern)
 
     def list_blobs_object_path_includes(self, included_pattern):
-        return self.list_blobs(self.object_path, '', included_pattern, None)
+        return self.list_blobs(self.object_path, include=included_pattern)
 
     def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
         bucket_link = self.get_bucket()
