@@ -30,6 +30,15 @@ def is_gzip(filename):
 
 # Regular expression for date and format
 def date_reg_expr(sourcestr, regexpr, format):
+    """
+    Extract the date from a string given the date regular expression to isolate it from the rest of the string, and its
+    format, for building the date object
+
+    :param sourcestr: string to extract the date from
+    :param regexpr: regular expression to use for isolating the date substring
+    :param format: expected format of the date substring
+    :return: the extracted date as an object or None if it was not possible
+    """
     date_file = None
     re_match = re.search(regexpr, sourcestr)
     if re_match:
@@ -40,7 +49,6 @@ def date_reg_expr(sourcestr, regexpr, format):
         except ValueError:
             # Date does not match format. No valid date found.
             date_file = None
-
     return date_file
 
 
