@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 # Decorator for the threading parameter.
-@deprecated(reason='This method is not being used anywhere in the code, '
-                   'multithreading when downloading data would need to be refactored to find out its best fit')
+# @deprecated(reason='This method is not being used anywhere in the code, '
+#                  'multithreading when downloading data would need to be refactored to find out its best fit')
 def threaded(fn):
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
@@ -88,7 +88,7 @@ class DownloadResource(object):
             break
         return ''
 
-    @deprecated(reason='no longer used, it would benefit from a refactoring round')
+    # @deprecated(reason='no longer used, it would benefit from a refactoring round')
     @threaded
     def execute_download_threaded(self, resource_info):
         self.execute_download(resource_info)
