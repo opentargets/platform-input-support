@@ -34,13 +34,15 @@ class ElasticsearchInstance(object):
 
     def is_reachable(self):
         """
-        Pings configured Elasticsearch instance and returns true if reachable, false otherwise
+        Pings configured Elasticsearch instance
+
+        :return: true if reachable, false otherwise
         """
         try:
-            request = requests.head("http://{}:{}".format(self._host, self._port), timeout=1)
+            request = requests.head(self.es_url, timeout=1)
             return request.ok
         except ConnectionError as error:
-            logger.error("Unable to reach {}. Error msg: ".format(self._host, error))
+            logger.error("Unable to reach {}. Error msg: ".format(self.es_url, error))
         return False
 
     def get_fields_on_index(self, index, outfile, fields=None, pagesize=1000):
