@@ -95,16 +95,17 @@ class ElasticsearchInstance(object):
             doc_count += len(doc_buffer)
         return doc_count
 
-    def write_elasticsearch_docs_as_jsonl(self, docs, fname):
+    def write_elasticsearch_docs_as_jsonl(self, docs, filename):
         """
         Write list of elasticsearch objects to file as jsonl format.
-        :param fname: file to write contents of `doc`. New docs are appended to file if it exists.
+
         :param docs: List of elasticsearch documents represented as dictionaries. Each document will be written as a
         standalone json object (jsonl).
+        :param filename: file to write contents of `doc`. New docs are appended to file if it exists.
         :return: None
         """
-        with open(fname, 'a+') as outfile:
+        with open(filename, 'a+') as outfile:
             for doc in docs:
                 json.dump(doc, outfile)
                 outfile.write('\n')
-        logger.debug("Wrote {} documents to {}.".format(len(docs), fname))
+        logger.debug("Wrote {} documents to {}.".format(len(docs), filename))
