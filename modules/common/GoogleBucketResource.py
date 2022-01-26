@@ -24,17 +24,24 @@ class GoogleBucketResource(object):
 
     @staticmethod
     def has_valid_auth_key(google_credential_key=None):
+        """
+        Check whether the available Google Cloud Access key is valid or not
+
+        :param google_credential_key: Google Cloud access credentials file
+        :return: True if valid, False otherwise
+        """
         if google_credential_key is None:
             logger.info("gsutil will use the default credential for the user.")
         else:
             os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
         try:
             credentials, project = google.auth.default()
-            logger.info('\n\tGoogle Bucket connection: %s', project)
         except Exception as error:
             logger.error('Google Auth Error: %s', error)
-            raise ValueError("Google credential is not valid!")
-        return True
+        else:
+            logger.info('\n\tGoogle Bucket connection: %s', project)
+            return True
+        return False
 
     @staticmethod
     def get_bucket_and_path(google_bucket_param):
