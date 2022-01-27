@@ -2,7 +2,7 @@ import os
 import logging
 from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.Utils import Utils
-from modules.common import create_output_dir, remove_output_dir
+from modules.common import create_output_dir, recursive_remove_folder
 from yapsy.PluginManager import PluginManager
 from definitions import PIS_OUTPUT_DIR
 
@@ -106,7 +106,7 @@ class RetrieveResource(object):
         :param output_dir: destination path for the pipeline output filetree structure
         """
         if self.args.force_clean:
-            remove_output_dir(output_dir)
+            recursive_remove_folder(output_dir)
         else:
             logger.info("Warning: Output not deleted.")
         self.yaml.outputs.prod_dir = create_output_dir(os.path.join(output_dir, 'prod'))

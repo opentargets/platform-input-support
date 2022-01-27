@@ -88,14 +88,20 @@ def extract_date_from_file(filename):
     return None
 
 
-def remove_output_dir(output_dir):
-    try:
-        logger.info("Removing {} directories...".format(output_dir))
-        shutil.rmtree(output_dir)
-    except Exception as e:
-        print('Error while deleting directory {}'.format(e))
+def recursive_remove_folder(folder):
+    """
+    Remove the folder tree starting at the given folder
 
-    return output_dir
+    :param folder: starting point for the recursive removal of files and folders
+    :return: the removed folder tree path if success, None otherwise
+    """
+    try:
+        logger.info("Removing '{}' folder tree...".format(folder))
+        shutil.rmtree(folder)
+        return folder
+    except Exception as e:
+        logger.error("Error while deleting folder tree '{}'".format(e))
+    return None
 
 
 def create_output_dir(output_dir):
