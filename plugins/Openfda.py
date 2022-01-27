@@ -1,6 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from modules.common.Downloads import Downloads
-from modules.common import create_output_dir
+from modules.common import create_folder
 from plugins.helpers.OpenfdaHelper import OpenfdaHelper
 import logging
 import multiprocessing as mp
@@ -25,7 +25,7 @@ class Openfda(IPlugin):
         # Body
         if repo_metadata:
             logger.info("OpenFDA FAERs metadata received")
-            fda_output = create_output_dir(os.path.join(output.prod_dir,"fda-inputs"))
+            fda_output = create_folder(os.path.join(output.prod_dir, "fda-inputs"))
             fda = OpenfdaHelper(fda_output)
             # Parallel data gathering
             logger.info("Prepare download pool of {} processes".format(mp.cpu_count()))

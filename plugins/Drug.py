@@ -1,5 +1,5 @@
 from yapsy.IPlugin import IPlugin
-from modules.common import create_output_dir
+from modules.common import create_folder
 from modules.common.Downloads import Downloads
 from modules.common.ElasticsearchHelper import ElasticsearchInstance
 from datetime import datetime
@@ -73,7 +73,7 @@ class Drug(IPlugin):
             return []
 
     def download_indices(self, conf, output):
-        output_dir = create_output_dir(output.prod_dir+"/" + conf.etl.chembl.path)
+        output_dir = create_folder(output.prod_dir + "/" + conf.etl.chembl.path)
         es_files_written = self._handle_elasticsearch(conf.etl.chembl, output_dir)
         return es_files_written
 

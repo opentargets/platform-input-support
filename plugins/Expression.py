@@ -1,7 +1,7 @@
 import logging
 from yapsy.IPlugin import IPlugin
 from modules.common import make_unzip_single_file, make_gzip
-from modules.common import create_output_dir
+from modules.common import create_folder
 from modules.common.Downloads import Downloads
 from opentargets_urlzsource import URLZSource
 import jsonlines
@@ -24,7 +24,7 @@ class Expression(IPlugin):
         with URLZSource(filename).open(mode='rb') as r_file:
             tissues_json['tissues'] = json.load(r_file)['tissues']
         r_file.close()
-        create_output_dir(os.path.join(output_path, resource.path))
+        create_folder(os.path.join(output_path, resource.path))
         filename_tissue = os.path.join(output_path, resource.path, resource.output_filename.replace('{suffix}', self.suffix))
         with jsonlines.open(filename_tissue, mode='w') as writer:
             for item in tissues_json['tissues']:
@@ -39,7 +39,7 @@ class Expression(IPlugin):
     def get_normal_tissues(self, output, resource):
         filename = Downloads.download_staging_http(output.staging_dir, resource)
         filename_unzip=make_unzip_single_file(filename)
-        gzip_filename=os.path.join(create_output_dir(os.path.join(output.prod_dir, resource.path)),resource.output_filename.replace('{suffix}', self.suffix))
+        gzip_filename=os.path.join(create_folder(os.path.join(output.prod_dir, resource.path)), resource.output_filename.replace('{suffix}', self.suffix))
         make_gzip(filename_unzip, gzip_filename)
 
     def process(self, conf, output, cmd_conf):

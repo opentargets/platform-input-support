@@ -2,7 +2,7 @@ import os
 import datetime
 import logging
 from modules.common.Utils import Utils
-from modules.common import create_output_dir
+from modules.common import create_folder
 from modules.common.DownloadResource import DownloadResource
 from modules.common.GoogleBucketResource import GoogleBucketResource
 
@@ -36,9 +36,9 @@ class Downloads(object):
         if gs_info["spark"]:
             output = os.path.join(self.path_root, resource.path,
                                   resource.output_spark_dir.replace('{suffix}', gs_info["suffix"]))
-            create_output_dir(output)
+            create_folder(output)
         else:
-            create_output_dir(os.path.join(self.path_root, resource.path))
+            create_folder(os.path.join(self.path_root, resource.path))
             output = os.path.join(self.path_root, resource.path,
                                   resource.output_filename.replace('{suffix}', gs_info["suffix"]))
 
@@ -68,7 +68,7 @@ class Downloads(object):
         """
         for resource in resources_info.ftp_downloads:
             try:
-                path = create_output_dir(os.path.join(self.path_root, resource.path))
+                path = create_folder(os.path.join(self.path_root, resource.path))
                 download = DownloadResource(path)
                 download.ftp_download(resource)
             except Exception as e:
@@ -96,7 +96,7 @@ class Downloads(object):
 
         :param resource: information on the resource to be downloaded
         """
-        download = DownloadResource(create_output_dir(os.path.join(self.path_root, resource.path)))
+        download = DownloadResource(create_folder(os.path.join(self.path_root, resource.path)))
         return download.execute_download(resource)
 
     @staticmethod

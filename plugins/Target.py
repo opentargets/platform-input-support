@@ -1,7 +1,7 @@
 import logging
 from yapsy.IPlugin import IPlugin
 from modules.common.Downloads import Downloads
-from modules.common import extract_file_from_zip, create_output_dir, make_ungzip, make_gzip, make_unzip_single_file
+from modules.common import extract_file_from_zip, create_folder, make_ungzip, make_gzip, make_unzip_single_file
 import subprocess
 from addict import Dict
 from modules.common.Utils import Utils
@@ -18,13 +18,13 @@ class Target(IPlugin):
     def get_gnomad(self, gnomad, output):
         filename = Downloads.download_staging_http(output.staging_dir, gnomad)
         filename_unzip=make_ungzip(filename)
-        gzip_filename=os.path.join(create_output_dir(os.path.join(output.prod_dir, gnomad.path)),gnomad.output_filename)
+        gzip_filename=os.path.join(create_folder(os.path.join(output.prod_dir, gnomad.path)), gnomad.output_filename)
         make_gzip(filename_unzip, gzip_filename)
 
     def get_subcellular_location(self, sub_location, output):
         filename = Downloads.download_staging_http(output.staging_dir, sub_location)
         filename_unzip=make_unzip_single_file(filename)
-        gzip_filename=os.path.join(create_output_dir(os.path.join(output.prod_dir, sub_location.path)),sub_location.output_filename)
+        gzip_filename=os.path.join(create_folder(os.path.join(output.prod_dir, sub_location.path)), sub_location.output_filename)
         make_gzip(filename_unzip, gzip_filename)
 
     def extract_ensembl(self, ensembl, output, cmd):
@@ -34,7 +34,7 @@ class Target(IPlugin):
         resource_stage.uri = ensembl.uri.replace('{release}', str(ensembl.release))
         file_input = Downloads.download_staging_ftp(output.staging_dir, resource_stage)
         output_dir = os.path.join(output.prod_dir,ensembl.path )
-        output_file = os.path.join(create_output_dir(output_dir), ensembl.output_filename)
+        output_file = os.path.join(create_folder(output_dir), ensembl.output_filename)
         with open(output_file, "wb") as jsonwrite:
             jqp = subprocess.Popen([jq_cmd, "-c", ensembl.jq, file_input], stdout=subprocess.PIPE)
             jsonwrite.write(jqp.stdout.read())
@@ -45,7 +45,7 @@ class Target(IPlugin):
         file_of_interest = 'EssentialityMatrices/04_binaryDepScores.tsv'
         file_input = Downloads.download_staging_http(output.staging_dir, project_score_entry)
         output_dir = os.path.join(output.prod_dir,project_score_entry.path )
-        create_output_dir(output_dir)
+        create_folder(output_dir)
         extract_file_from_zip(file_of_interest, file_input, output_dir)
 
     def process(self, conf, output, cmd_conf):

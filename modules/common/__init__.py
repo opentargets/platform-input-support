@@ -104,13 +104,20 @@ def recursive_remove_folder(folder):
     return None
 
 
-def create_output_dir(output_dir):
-    try:
-        pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
-    except OSError:
-        sys.exit('Fatal: output directory "' + output_dir + '" does not exist and cannot be created')
+def create_folder(folder):
+    """
+    Create the given folder including all possible parents
 
-    return output_dir
+    :return: the created folder
+    :raise OSError: in case the folder could not be created
+    """
+    try:
+        pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        msg = "Fatal: output directory '{}' does not exist and cannot be created. ERROR: '{}'".format(folder, e)
+        logger.error(msg)
+        raise
+    return folder
 
 
 def make_gzip(file_with_path, dest_filename=None):

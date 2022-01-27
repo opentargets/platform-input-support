@@ -6,7 +6,7 @@ import subprocess
 from addict import Dict
 from modules.common.DownloadResource import DownloadResource
 from modules.common.Utils import Utils
-from modules.common import create_output_dir
+from modules.common import create_folder
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ class Homologues(IPlugin):
     def process(self, conf, output, cmd_conf):
         download = DownloadResource(output.staging_dir)
         uri_release = conf.uri.replace("{release}", str(conf.release))
-        create_output_dir(os.path.join(output.prod_dir, conf.path, str(conf.release)))
+        create_folder(os.path.join(output.prod_dir, conf.path, str(conf.release)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         for species in conf.resources:
             logger.debug(f'Downloading files for {species}')
