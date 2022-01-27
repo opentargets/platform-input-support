@@ -165,19 +165,22 @@ def make_zip(file_with_path):
     return filename_zip
 
 
-def extract_file_from_zip(file_to_extract: str, zip_file: str, output_dir: str) -> str:
+def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: str) -> str:
     """
     Opens `zip_file` and saves `file_to_extract` to `output_dir`.
+
+    :param file_to_extract_path: file to extract from the zip compressed file
+    :param zip_file: zip compressed file where to extract the file from
+    :param output_dir: destination folder for the extracted file
     """
-    file_to_extract_name = None
     with zipfile.ZipFile(zip_file) as zf:
-        if file_to_extract in zf.namelist():
-            _, tail = os.path.split(file_to_extract)
-            with open(os.path.join(output_dir, tail), "wb") as f:
-                logger.info(f"Extracting {file_to_extract} from {zip_file} to {f.name}")
-                f.write(zf.read(file_to_extract))
-            file_to_extract_name = f.name
-    return file_to_extract_name
+        if file_to_extract_path in zf.namelist():
+            _, dst_file_name = os.path.split(file_to_extract_path)
+            with open(os.path.join(output_dir, dst_file_name), "wb") as f:
+                logger.info(f"Extracting {file_to_extract_path} from {zip_file} to {f.name}")
+                f.write(zf.read(file_to_extract_path))
+                return f.name
+    return ''
 
 
 # The procedure raises an error if the zip file contains more than a file.
