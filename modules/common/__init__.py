@@ -153,10 +153,15 @@ def make_gunzip(file_with_path):
 
 
 def make_zip(file_with_path):
+    """
+    Compress the file in the given path using Zip, in place, into a new file with '.zip' extension
+
+    :param file_with_path: source file path
+    :return: path to the compressed file
+    """
     filename_zip = file_with_path + ".zip"
-    zf = zipfile.ZipFile(filename_zip, "w", zipfile.ZIP_DEFLATED, allowZip64=True)
-    zf.write(file_with_path)
-    zf.close()
+    with zipfile.ZipFile(filename_zip, "w", zipfile.ZIP_DEFLATED, allowZip64=True) as zf:
+        zf.write(file_with_path)
     return filename_zip
 
 
