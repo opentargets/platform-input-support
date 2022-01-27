@@ -121,12 +121,18 @@ def create_folder(folder):
 
 
 def make_gzip(file_with_path, dest_filename=None):
-    """Compress file_with_path to file_with_path.gz and return file name."""
+    """
+    Gzip compress the given file by using the highest compression level, 9
+
+    :param file_with_path: path to the source file
+    :param dest_filename: optional, path to the destination file, if missing, the path to the source file will be used
+    but appending '.gz' to it
+    :return: the destination file path where to the source file content has been compressed to
+    """
     if dest_filename is None:
         dest_filename = file_with_path + '.gz'
     with open(file_with_path, 'rb') as f_in, gzip.open(dest_filename, 'wb') as f_out:
         f_out.writelines(f_in)
-
     return dest_filename
 
 
