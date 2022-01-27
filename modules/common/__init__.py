@@ -122,7 +122,7 @@ def create_folder(folder):
 
 def make_gzip(file_with_path, dest_filename=None):
     """
-    Gzip compress the given file by using the highest compression level, 9
+    Gzip compress the file at the given path, by using the highest compression level '9'
 
     :param file_with_path: path to the source file
     :param dest_filename: optional, path to the destination file, if missing, the path to the source file will be used
@@ -132,11 +132,19 @@ def make_gzip(file_with_path, dest_filename=None):
     if dest_filename is None:
         dest_filename = file_with_path + '.gz'
     with open(file_with_path, 'rb') as f_in, gzip.open(dest_filename, 'wb') as f_out:
+        # TODO Why not using shutil.copyfileobj() like for the gunzip method?
         f_out.writelines(f_in)
     return dest_filename
 
 
-def make_ungzip(file_with_path):
+def make_gunzip(file_with_path):
+    """
+    Gzip uncompress the file at the given path, in place, into a new file path with the compressed file extension
+    removed
+
+    :param file_with_path: path to the file that will be gunzipped
+    :return: the path to the uncompressed file
+    """
     filename_unzip = file_with_path.replace('.gz', '').replace('.gzip', '').replace('.zip', '').replace('.bgz', '')
     with gzip.open(file_with_path, 'rb') as f_in:
         with open(filename_unzip, 'wb') as f_out:

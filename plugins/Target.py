@@ -1,7 +1,7 @@
 import logging
 from yapsy.IPlugin import IPlugin
 from modules.common.Downloads import Downloads
-from modules.common import extract_file_from_zip, create_folder, make_ungzip, make_gzip, make_unzip_single_file
+from modules.common import extract_file_from_zip, create_folder, make_gunzip, make_gzip, make_unzip_single_file
 import subprocess
 from addict import Dict
 from modules.common.Utils import Utils
@@ -17,7 +17,7 @@ class Target(IPlugin):
 
     def get_gnomad(self, gnomad, output):
         filename = Downloads.download_staging_http(output.staging_dir, gnomad)
-        filename_unzip=make_ungzip(filename)
+        filename_unzip=make_gunzip(filename)
         gzip_filename=os.path.join(create_folder(os.path.join(output.prod_dir, gnomad.path)), gnomad.output_filename)
         make_gzip(filename_unzip, gzip_filename)
 
