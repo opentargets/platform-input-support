@@ -317,7 +317,7 @@ target:
     output_filename: chemicalprobes-{suffix}.json
     path: target-inputs/chemicalprobes
   - bucket: otar001-core/TargetSafety/data_files/adverse_events
-    output_filename: adverse_event_safety.json
+    output_filename: adverse_event_safety-{suffix}.json
     path: target-inputs/safety/adverse_events
   - bucket: otar001-core/TargetSafety/data_files/safety_risk/
     output_filename: sr-{suffix}.json
