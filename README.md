@@ -55,7 +55,7 @@ source ~/.bashrc
 ```
 
 ## Run Docker image using quay repository
-Platform input support is available as docker image. The image is stored using Quay repository
+Platform input support is available as docker image. The image is stored using Quay.io repository
 
 For instance
 ```
