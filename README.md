@@ -61,12 +61,12 @@ For instance
 ```
 mkdir /tmp/pis
 sudo docker run 
- -v /Users/cinzia/private/credentials:/usr/src/app/cred 
+ -v path_with_credentials:/usr/src/app/cred 
  -v /tmp/pis:/usr/src/app/output 
  quay.io/opentargets/platform-input-support:master 
  -steps Evidence 
  -gkey /usr/src/app/cred/open-targets-gac.json 
- -gb ot-team/cinzia/docker
+ -gb ot-team/pis_output/docker
 ```
 
 For using an external config file, simply add the option -c and the volume where the config file is available
