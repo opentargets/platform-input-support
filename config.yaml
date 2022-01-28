@@ -310,7 +310,7 @@ target:
     output_filename: cosmic-hallmarks-{suffix}.tsv.gz
     path: target-inputs/hallmarks
     includes: hallmarks
-  - bucket: otar001-core/TEPs/data_files
+  - bucket: otar001-core/TEPs
     output_filename: tep-{suffix}.json.gz
     path: target-inputs/tep
   - bucket: otar001-core/ChemicalProbes/annotation
