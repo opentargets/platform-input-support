@@ -183,7 +183,6 @@ def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: 
     return ''
 
 
-# The procedure raises an error if the zip file contains more than a file.
 def make_unzip_single_file(file_with_path):
     """
     Unzip a given zip file that contains only one compressed file.
@@ -192,20 +191,14 @@ def make_unzip_single_file(file_with_path):
     :raise ValueError: if the zip file contains more than one compressed file
     :result: the uncompressed file within the zip file
     """
-    split_filename = file_with_path.rsplit('/', 1)
-    dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
-    output_dir = split_filename[0] if len(split_filename) == 2 else None
-    filename_unzip = dest_filename.replace('.gz', '').replace('.gzip', '').replace('.zip', '')
-
-    # Change the metadata of the file renaming the filename metadata.
     zipdata = zipfile.ZipFile(file_with_path)
     zipinfos = zipdata.infolist()
     if len(zipinfos) != 1:
         raise ValueError('Zip File contains more than a single file %s.' % file_with_path)
-    zipinfos[0].filename = filename_unzip
-    filename_unzip_with_path = zipdata.extract(zipinfos[0], output_dir)
-
-    return filename_unzip_with_path
+    zipinfos[0].filename = os.path.basename(file_with_path).replace('.gz', '').replace('.gzip', '').replace('.zip', '')
+    return zipdata.extract(zipinfos[0],
+                           os.path.dirname(file_with_path)
+                           if os.path.dirname(file_with_path) != '' else None)
 
 
 def get_output_spark_files(directory_info, filter):
