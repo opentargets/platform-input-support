@@ -185,6 +185,13 @@ def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: 
 
 # The procedure raises an error if the zip file contains more than a file.
 def make_unzip_single_file(file_with_path):
+    """
+    Unzip a given zip file that contains only one compressed file.
+
+    :param file_with_path: path to the zip file to uncompress
+    :raise ValueError: if the zip file contains more than one compressed file
+    :result: the uncompressed file within the zip file
+    """
     split_filename = file_with_path.rsplit('/', 1)
     dest_filename = split_filename[1] if len(split_filename) == 2 else split_filename[0]
     output_dir = split_filename[0] if len(split_filename) == 2 else None
