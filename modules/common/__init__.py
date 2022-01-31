@@ -202,7 +202,14 @@ def make_unzip_single_file(file_with_path):
 
 
 def get_output_spark_files(directory_info, filter):
-    return [directory_info + '/' + file for file in os.listdir(directory_info) if file.endswith(filter)]
+    """
+    Get a listing of paths to files in a given folder which file name ends in the given filter
+
+    :param directory_info: folder to list files from
+    :param filter: filter condition to get the file listing
+    :return: a list of paths in the given folder which file name end matches the given filter
+    """
+    return [os.path.join(directory_info, file) for file in os.listdir(directory_info) if file.endswith(filter)]
 
 
 def replace_suffix(filename):
