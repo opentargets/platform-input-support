@@ -266,11 +266,16 @@ class GoogleBucketResource(object):
             .download_to_filename(dst_path_file)
         return dst_path_file
 
-    def download(self, info):
-        if info["is_dir"]:
-            self.download_dir(info["file"], info["output"])
-        else:
-            self.download_file(info["file"], info["output"])
+    def download(self, download_descriptor):
+        """
+        Download 'something', it could be an entire folder or just a file, described by the given download descriptor
+
+        :return: a file path listing for the downloaded files in case the download descriptor describes a folder, or a
+        destination file path in case it describes a file
+        """
+        if download_descriptor["is_dir"]:
+            return self.download_dir(download_descriptor["file"], download_descriptor["output"])
+        return self.download_file(download_descriptor["file"], download_descriptor["output"])
 
     def blob_metadata(self, blob_name):
         """Prints out a blob's metadata."""
