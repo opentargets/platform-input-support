@@ -278,7 +278,11 @@ class GoogleBucketResource(object):
         return self.download_file(download_descriptor["file"], download_descriptor["output"])
 
     def blob_metadata(self, blob_name):
-        """Prints out a blob's metadata."""
+        """
+        Prints out a blob's metadata for the given BLOB name
+
+        :param blob_name: BLOB name to print metadata for
+        """
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(self.bucket_name)
         blob = bucket.get_blob(blob_name)
