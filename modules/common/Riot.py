@@ -11,9 +11,6 @@ class Riot(object):
 
     def __init__(self, yaml):
         self.yaml = yaml
-        self.riot_cmd = Utils.check_path_command("riot", self.yaml.riot)
-        self.jq_cmd = Utils.check_path_command("jq", self.yaml.jq)
-        self.jvm_args = self.set_jvm_args()
 
     @property
     def riot_cmd(self):
