@@ -42,15 +42,20 @@ class Riot(object):
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
         :return: destination file path of the conversion + filtering for the given OWL file
         """
-        output_path = os.path.join(dir_output, json_file)
-        with open(output_path) as json_output, \
-                subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file],
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE) as riot_process, \
-                subprocess.Popen([self.jq_cmd, "-r", owl_jq],
-                                 stdin=riot_process.stdout,
-                                 stdout=subprocess.PIPE) as jq_process:
-            json_output.write(jq_process.stdout.read())
+        try:
+            output_path = os.path.join(dir_output, json_file)
+            with open(output_path) as json_output, \
+                    subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file],
+                                     stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE) as riot_process, \
+                    subprocess.Popen([self.jq_cmd, "-r", owl_jq],
+                                     stdin=riot_process.stdout,
+                                     stdout=subprocess.PIPE) as jq_process:
+                json_output.write(jq_process.stdout.read())
+        except EnvironmentError as e:
+            logger.error("When running RIOT for OWL file '{}', "
+                         "with destination path '{}' and JQ filter '{}', "
+                         "the following error occurred: '{}'".format(owl_file, output_path, owl_jq, e))
         return output_path
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_qj):
