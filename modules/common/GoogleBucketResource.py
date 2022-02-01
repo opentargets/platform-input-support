@@ -182,7 +182,6 @@ class GoogleBucketResource(object):
             return True
         return False
 
-    # Return the filename with the latest date. Manage collision of dates only for the latest date.
     def extract_latest_file(self, list_blobs):
         """
         Return the filename with the latest date within the given BLOB listing, managing collisions only for the latest
