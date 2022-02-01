@@ -211,7 +211,8 @@ class GoogleBucketResource(object):
                     last_recent_file = filename
         if possible_recent_date_collision:
             # Raise an error. No filename is unique in the recent date selected.
-            msg = "Error TWO files with the same date: '{}' and '{}'".format(last_recent_file, recent_date.strftime('%d-%m-%Y'))
+            msg = "Error TWO files with the same date: '{}' and '{}'".format(last_recent_file,
+                                                                             recent_date.strftime('%d-%m-%Y'))
             logger.error(msg)
             raise ValueError(msg)
         logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
@@ -235,16 +236,21 @@ class GoogleBucketResource(object):
         return latest_filename_info
 
     def download_dir(self, dir_to_download, local_dir):
+        """
+        Download the files from a given folder in the current bucket into the given local folder
+
+        :param dir_to_download: bucket path where to download the files from
+        :param local_dir: local destination for the downloaded files
+        :return: a list of local paths to the downloaded files
+        """
         list_files = []
-        dir_name = dir_to_download.rsplit("/", 1)[0]
-        bucket = self.get_bucket()
-        blobs = bucket.list_blobs(prefix=dir_name)  # Get list of files
-        for blob in blobs:
-            haed, tail = os.path.split(blob.name)
-            filename_destination = local_dir + '/' + tail
+        dir_name = os.path.dirname(dir_to_download)  # dir_to_download.rsplit("/", 1)[0]
+        # WARNING bucket could be 'None'
+        for blob in self.get_bucket().list_blobs(prefix=dir_name):
+            folder, filename = os.path.split(blob.name)
+            filename_destination = os.path.join(local_dir, filename)
             blob.download_to_filename(filename_destination)
             list_files.append(filename_destination)
-
         return list_files
 
     def download_file(self, filename_to_download, filename_destination):
