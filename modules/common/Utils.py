@@ -73,6 +73,12 @@ class Utils(object):
 
     @staticmethod
     def resource_for_stage(resource):
+        """
+        Build a resource stage description for the given information.
+
+        :param resource: information to use for building the resource stage description
+        :return: resource stage description
+        """
         resource_stage = Dict()
         resource_stage.path = ""
         resource_stage.uri = resource.uri
