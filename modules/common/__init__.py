@@ -212,6 +212,11 @@ def get_output_spark_files(directory_info, filter):
     return [os.path.join(directory_info, file) for file in os.listdir(directory_info) if file.endswith(filter)]
 
 
-def replace_suffix(filename):
-    suffix = datetime.today().strftime('%Y-%m-%d')
-    return filename.replace('{suffix}', suffix)
+def set_suffix_timestamp(filename):
+    """
+    Given a file name, set its suffix to the current date by replacing '{suffix}' placeholder in the name of the file
+
+    :param filename: file name to set its suffix
+    :return: the new file name with its suffix set to current date
+    """
+    return filename.replace('{suffix}', datetime.today().strftime('%Y-%m-%d'))

@@ -1,7 +1,7 @@
 import logging
 import jsonlines
 
-from modules.common import replace_suffix
+from modules.common import set_suffix_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class HPOPhenotypes(object):
             return None
 
     def run(self, filename):
-        hpo_filename= replace_suffix(filename)
+        hpo_filename= set_suffix_timestamp(filename)
         with jsonlines.open(hpo_filename, mode='w') as writer:
             with open(self.hpo_phenotypes_input) as input:
                 for line in input:
