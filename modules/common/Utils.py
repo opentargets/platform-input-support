@@ -1,8 +1,8 @@
-import logging
+import os
 import shutil
+import logging
 import subprocess
 from addict import Dict
-import os
 
 
 logger = logging.getLogger(__name__)
@@ -17,11 +17,19 @@ class Utils(object):
 
     @staticmethod
     def check_path_command(cmd, yaml_cmd):
+        """
+        Establish the path for a particular command from either the system environment or the specified setting in the
+        configuration file
+
+        :param cmd: Command to establish the path for
+        :param yaml_cmd: command's path set in the configuration file
+        :return: the path for the given command
+        """
         cmd_result = shutil.which(cmd)
         if cmd_result is None:
-            logger.info(cmd + " not found. Using the path from config.yaml")
             cmd_result = yaml_cmd
-        logger.debug(f"{cmd} path {cmd_result}")
+            logger.info("'{}' not found. Using the path from config.yaml".format(cmd))
+        logger.debug(f"'{cmd}' path '{cmd_result}'")
         return cmd_result
 
     def gsutil_multi_copy_to(self, destination_bucket):
