@@ -23,7 +23,9 @@ class Riot(object):
 
     @property
     def jq_cmd(self):
-        pass
+        if self._jq_cmd is None:
+            self._jq_cmd = Utils.check_path_command("jq", self.yaml.jq)
+        return self._jq_cmd
 
     @property
     def jvm_args(self):
