@@ -29,12 +29,11 @@ class Riot(object):
 
     @property
     def jvm_args(self):
-        pass
-
-    def set_jvm_args(self):
-        os.environ["JVM_ARGS"] = str(self.yaml.java_vm)
-        logger.info("JVM_ARGS: " + os.environ["JVM_ARGS"])
-        return str(self.yaml.java_vm)
+        if self._jvm_args is None:
+            os.environ["JVM_ARGS"] = str(self.yaml.java_vm)
+            logger.info("JVM_ARGS: " + os.environ["JVM_ARGS"])
+            self._jvm_args = str(self.yaml.java_vm)
+        return self._jvm_args
 
     def run_riot(self, owl_file, dir_output, json_file, owl_jq):
         json_output = open(dir_output + '/' + json_file, "wb")
