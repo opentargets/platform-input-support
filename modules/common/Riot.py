@@ -1,7 +1,7 @@
+import os
+import errno
 import logging
 import subprocess
-import errno
-import os
 from modules.common.Utils import Utils
 
 logger = logging.getLogger(__name__)
@@ -11,9 +11,23 @@ class Riot(object):
 
     def __init__(self, yaml):
         self.yaml = yaml
-        self.riot_cmd = Utils.check_path_command("riot", self.yaml.riot )
-        self.jq_cmd = Utils.check_path_command("jq", self.yaml.jq )
+        self.riot_cmd = Utils.check_path_command("riot", self.yaml.riot)
+        self.jq_cmd = Utils.check_path_command("jq", self.yaml.jq)
         self.jvm_args = self.set_jvm_args()
+
+    @property
+    def riot_cmd(self):
+        if self._riot_cmd is None:
+            self._riot_cmd = Utils.check_path_command("riot", self.yaml.riot)
+        return self._riot_cmd
+
+    @property
+    def jq_cmd(self):
+        pass
+
+    @property
+    def jvm_args(self):
+        pass
 
     def set_jvm_args(self):
         os.environ["JVM_ARGS"] = str(self.yaml.java_vm)
@@ -23,8 +37,10 @@ class Riot(object):
     def run_riot(self, owl_file, dir_output, json_file, owl_jq):
         json_output = open(dir_output + '/' + json_file, "wb")
         try:
-            riot_process = subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            jq_process = subprocess.Popen([self.jq_cmd, "-r", owl_jq], stdin=riot_process.stdout, stdout=subprocess.PIPE)
+            riot_process = subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], stdin=subprocess.PIPE,
+                                            stdout=subprocess.PIPE)
+            jq_process = subprocess.Popen([self.jq_cmd, "-r", owl_jq], stdin=riot_process.stdout,
+                                          stdout=subprocess.PIPE)
             json_output.write(jq_process.stdout.read())
             json_output.close()
         except OSError as e:
@@ -41,4 +57,3 @@ class Riot(object):
         head, tail = os.path.split(owl_file)
         json_file = tail.replace(".owl", ".json")
         return self.run_riot(owl_file, output_dir, json_file, owl_qj)
-
