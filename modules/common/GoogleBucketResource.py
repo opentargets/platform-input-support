@@ -253,11 +253,18 @@ class GoogleBucketResource(object):
             list_files.append(filename_destination)
         return list_files
 
-    def download_file(self, filename_to_download, filename_destination):
-        bucket = self.get_bucket()
-        blob = bucket.blob(filename_to_download)
-        blob.download_to_filename(filename_destination)
-        return filename_destination
+    def download_file(self, src_path_file, dst_path_file):
+        """
+        Download a specific file from the current bucket
+
+        :param src_path_file: source file path to download
+        :param dst_path_file: destination file path for the downloaded file
+        :return: destination file path of the downloaded file
+        """
+        self.get_bucket()\
+            .blob(src_path_file)\
+            .download_to_filename(dst_path_file)
+        return dst_path_file
 
     def download(self, info):
         if info["is_dir"]:
