@@ -214,12 +214,17 @@ class GoogleBucketResource(object):
             msg = "Error TWO files with the same date: '{}' and '{}'".format(last_recent_file, recent_date.strftime('%d-%m-%Y'))
             logger.error(msg)
             raise ValueError(msg)
-
         logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
         return {"latest_filename": last_recent_file,
                 "suffix": recent_date.strftime('%Y-%m-%d'), "spark": self.is_a_spark_directory(last_recent_file)}
 
     def get_latest_file(self, resource_info):
+        """
+        Get the latest 'entity' given a resource information
+
+        :param resource_info: Resource information where to extract latest entity from
+        :return: latest entity in resource
+        """
         if 'excludes' in resource_info:
             list_blobs = self.list_blobs_object_path_excludes(resource_info.excludes)
         elif 'includes' in resource_info:
