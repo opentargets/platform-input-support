@@ -33,6 +33,11 @@ class Utils(object):
         return cmd_result
 
     def gsutil_multi_copy_to(self, destination_bucket):
+        """
+        Copy all files in the currently set output folder to the given Google Storage Bucket location
+
+        :param destination_bucket: destination Google Storage Bucket location
+        """
         # print(os.environ["PATH"])
         # cmd_result = shutil.which("gsutil")
         # cmd = "gsutil -q -m cp -r " + self.yaml.output_dir + "/* gs://" + destination_bucket + "/"
