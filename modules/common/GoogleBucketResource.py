@@ -188,6 +188,7 @@ class GoogleBucketResource(object):
         date
 
         :param list_blobs: BLOB listing to use as source for the file with the latest date
+        :raise ValueError: if multiple entries are found to have the same date
         :return: the file name with the latest date
         """
         last_recent_file = None
@@ -202,18 +203,17 @@ class GoogleBucketResource(object):
                     else:
                         # it is spark dir. Check if it is the same dir
                         if os.path.dirname(filename) != os.path.dirname(last_recent_file):
-                            logger.info(filename + " vs " + last_recent_file)
+                            logger.info("'{}' vs '{}'".format(filename, last_recent_file))
                             possible_recent_date_collision = True
                 if date_file > recent_date:
                     possible_recent_date_collision = False
                     recent_date = date_file
                     last_recent_file = filename
-
         if possible_recent_date_collision:
             # Raise an error. No filename is unique in the recent date selected.
-            logger.error("Error TWO files with the same date: %s %s", last_recent_file,
-                         recent_date.strftime('%d-%m-%Y'))
-            exit(1)
+            msg = "Error TWO files with the same date: '{}' and '{}'".format(last_recent_file, recent_date.strftime('%d-%m-%Y'))
+            logger.error(msg)
+            raise ValueError(msg)
 
         logger.info("Latest file: %s %s", last_recent_file, recent_date.strftime('%d-%m-%Y'))
         return {"latest_filename": last_recent_file,
