@@ -33,23 +33,25 @@ class Riot(object):
         return self._jvm_args
 
     def run_riot(self, owl_file, dir_output, json_file, owl_jq):
-        json_output = open(dir_output + '/' + json_file, "wb")
-        try:
-            riot_process = subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], stdin=subprocess.PIPE,
-                                            stdout=subprocess.PIPE)
-            jq_process = subprocess.Popen([self.jq_cmd, "-r", owl_jq], stdin=riot_process.stdout,
-                                          stdout=subprocess.PIPE)
-            json_output.write(jq_process.stdout.read())
-            json_output.close()
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                # handle file not found error.
-                logger.error(errno.ENOENT)
-            else:
-                # Something else went wrong
-                raise
+        """
+        Convert the given OWL file into JSON-LD with a filtering step on the produced JSON-LD by the given filter
 
-        return json_output.name
+        :param owl_file: OWL file to convert
+        :param dir_output: destination folder for OWL conversion
+        :param json_file: destination json file name for OWL conversion
+        :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
+        :return: destination file path of the conversion + filtering for the given OWL file
+        """
+        output_path = os.path.join(dir_output, json_file)
+        with open(output_path) as json_output, \
+                subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file],
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE) as riot_process, \
+                subprocess.Popen([self.jq_cmd, "-r", owl_jq],
+                                 stdin=riot_process.stdout,
+                                 stdout=subprocess.PIPE) as jq_process:
+            json_output.write(jq_process.stdout.read())
+        return output_path
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_qj):
         head, tail = os.path.split(owl_file)
