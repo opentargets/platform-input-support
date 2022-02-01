@@ -4,10 +4,10 @@ import logging
 import subprocess
 from addict import Dict
 
-
 logger = logging.getLogger(__name__)
 
-#print(os.environ["PATH"])
+
+# print(os.environ["PATH"])
 
 class Utils(object):
 
@@ -42,13 +42,34 @@ class Utils(object):
         # cmd_result = shutil.which("gsutil")
         # cmd = "gsutil -q -m cp -r " + self.yaml.output_dir + "/* gs://" + destination_bucket + "/"
         # subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        proc = subprocess.Popen(
-            ["gsutil", "-m", "cp", "-r", self.output_dir + "/*", "gs://" + destination_bucket + "/"])
-        try:
-            outs, errs = proc.communicate()
-        except:
+        proc = subprocess.Popen(["gsutil",
+                                 "-m",
+                                 "cp",
+                                 "-r",
+                                 os.path.join(self.output_dir, "*"),
+                                 "gs://{}/".format(destination_bucket)],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # I know, magic numbers
+        completed = False
+        for attempt in range(7):
+            try:
+                # Wait for 1 hour for the operation to complete
+                _, err = proc.communicate(timeout=3600)
+            except subprocess.TimeoutExpired:
+                logger.error("Attempt #{} timed out!".format(attempt + 1))
+                continue
+            except Exception as e:
+                proc.kill()
+                logger.error(f"There was a problem copying files to bucket {destination_bucket}, ERROR '{e}'")
+                break
+            else:
+                completed = True
+                break
+        if not completed:
             proc.kill()
-            outs, errs = proc.communicate()
+            _, err = proc.communicate()
+            logger.error(
+                f"Could not complete file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'")
 
     @staticmethod
     def resource_for_stage(resource):
