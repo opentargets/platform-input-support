@@ -46,6 +46,12 @@ class EFO(object):
     # return the cross reference for the phenotype.
     # ETL uses it with hpo-phenotypes-_yyyy-mm-dd_.jsonl
     def set_phenotypes(self, id, disease):
+        """
+        Set the db xrefs for the given disease ID if present, in the current EFO model
+
+        :param id: disease ID
+        :param disease: disease information object
+        """
         if 'hasDbXref' in disease:
             self.diseases[id]['dbXRefs'] = disease['hasDbXref']
 
