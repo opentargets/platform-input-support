@@ -168,19 +168,22 @@ class EFO(object):
             else:
                 self.diseases[id]['label'] = self.get_values(disease['label'])[0]
 
-    # Return the parents for the term
     def set_parents(self, id, disease):
-        if 'subClassOf' in disease:
-            subset = disease['subClassOf']
-            parents = []
-            if len(subset) > 0:
-                for father in subset:
-                    if father.startswith('_:'):
-                        self.has_location_ids[father] = id
-                    else:
-                        father_id = self.get_id(father)
-                        parents.append(father_id)
+        """
+        Set the parents for the given term ID in the current EFO data model instance, according to the information in
+        the given disease object
 
+        :param id: term ID
+        :param disease: disease information object
+        """
+        if 'subClassOf' in disease:
+            parents = []
+            for father in disease['subClassOf']:
+                if father.startswith('_:'):
+                    self.has_location_ids[father] = id
+                else:
+                    father_id = self.get_id(father)
+                    parents.append(father_id)
             self.diseases[id]['parents'] = parents
 
     def extract_id(self, elem):
