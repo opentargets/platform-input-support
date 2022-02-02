@@ -153,8 +153,13 @@ class EFO(object):
         else:
             self.diseases[id]['isTherapeuticArea'] = False
 
-    # Return the label of the term
     def set_label(self, id, disease):
+        """
+        Set the label data for the given EFO entry ID with information in the given disease information object.
+
+        :param id: EFO entry ID in the current data model
+        :param disease: disease information object
+        """
         if 'label' in disease:
             if isinstance(disease['label'], str):
                 self.diseases[id]['label'] = disease['label'].strip('\n')
