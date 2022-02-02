@@ -194,8 +194,15 @@ class EFO(object):
         """
         return elem.replace(":", "_")
 
-    # return the proper prefix.
     def get_prefix(self, id):
+        """
+        Get the right ontology URL prefix for the given term ID
+
+        :param id: term ID to find out the URL prefix for
+        :return: the URL prefix recognised for the given term ID
+        """
+        # We should probably externalise this in the configuration file, so we don't need to potentially change the code
+        # in the future. Alternatively, we could use resolution services like https://identifiers.org
         simple_id = re.match(r'^(.+?)_', id)
         if simple_id.group() in ["EFO_", "OTAR_"]:
             return "http://www.ebi.ac.uk/efo/"
