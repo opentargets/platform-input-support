@@ -14,6 +14,7 @@ The structure disease_obsolete stores the obsolete terms and it is used to retri
 The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
 """
 
+
 class EFO(object):
     """
     EFO Data modeling
@@ -55,18 +56,37 @@ class EFO(object):
         if 'hasDbXref' in disease:
             self.diseases[id]['dbXRefs'] = disease['hasDbXref']
 
-    # Retrieve the definition info
     def set_definition(self, id, disease):
+        """
+        Set a definition for the given disease ID if it exists in the given disease object according to the term
+        http://www.ontobee.org/ontology/IAO?iri=http://purl.obolibrary.org/obo/IAO_0000115
+
+        If multiple definitions are present in the given 'disease' object, the first one will be set as the main
+        definition, and the rest as alternative ones.
+
+        :param id: disease ID
+        :param disease: disease information object
+        """
         if 'IAO_0000115' in disease:
             if isinstance(disease['IAO_0000115'], str):
+                # The case where the disease definition is just one string
                 self.diseases[id]['definition'] = disease['IAO_0000115'].strip('\n')
             else:
+                # In the case the disease definition is multiple (strings), it will pick the first one as the main
+                # definition, and set the others as alternative definitions
                 definitions = self.get_array_value(disease['IAO_0000115'])
                 self.diseases[id]['definition'] = definitions[0]
                 if len(definitions) > 1: self.diseases[id]['definition_alternatives'] = definitions[1:]
 
-    # Return an array of strings without new line.
+    # NOTE it should probably be renamed to give a better clue of what it does
     def get_array_value(self, value):
+        """
+        Strip the new line character from either a given string or all the elements in a list of strings and return that
+        as a list of strings
+
+        :param value: data where to strip the new line character from
+        :return: a list of strings where the new line character has been stripped off
+        """
         if isinstance(value, str):
             return [value.strip('\n')]
         else:
