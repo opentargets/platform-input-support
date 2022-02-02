@@ -40,4 +40,9 @@ class YAMLReader(object):
             return self.yaml_dictionary
 
     def get_list_keys(self):
+        """
+        Get a listing of keys in the currently wrapped YAML file
+
+        :return: a list of keys in the currently wrapped YAML file
+        """
         return list(self.yaml_dictionary.keys())
