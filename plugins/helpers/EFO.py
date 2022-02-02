@@ -187,6 +187,11 @@ class EFO(object):
             self.diseases[id]['parents'] = parents
 
     def extract_id(self, elem):
+        """
+        It replaces a ':' by a '_' in the given element string.
+
+        :return: the given element string with its first ':' replaced by '_'
+        """
         return elem.replace(":", "_")
 
     # return the proper prefix.
