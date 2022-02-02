@@ -1,10 +1,10 @@
 import os
 import logging
-from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.Utils import Utils
-from modules.common import create_folder, recursive_remove_folder
-from yapsy.PluginManager import PluginManager
 from definitions import PIS_OUTPUT_DIR
+from yapsy.PluginManager import PluginManager
+from modules.common import create_folder, recursive_remove_folder
+from modules.common.GoogleBucketResource import GoogleBucketResource
 
 logger = logging.getLogger(__name__)
 
@@ -12,10 +12,21 @@ logger = logging.getLogger(__name__)
 class RetrieveResource(object):
 
     def __init__(self, args, yaml):
-        self.simplePluginManager = PluginManager()
         self.args = args
-        self.output_dir = args.output_dir if args.output_dir is not None else PIS_OUTPUT_DIR
         self.yaml = yaml
+
+    @property
+    def output_dir(self):
+        if self.args.output_dir is not None:
+            return self.args.output_dir
+        else:
+            return PIS_OUTPUT_DIR
+
+    @property
+    def simplePluginManager(self):
+        if self._simplePluginManager is None:
+            self._simplePluginManager = PluginManager()
+        return self._simplePluginManager
 
     def checks_gc_service_account(self):
         """
@@ -23,7 +34,7 @@ class RetrieveResource(object):
         """
         if self.args.google_credential_key is None:
             logger.warning("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
-                        "Eg. Evidence")
+                           "Eg. Evidence")
         # We may still have the default user credentials
         if not GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key):
             raise ValueError("Google credential is not valid!")
