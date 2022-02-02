@@ -13,12 +13,6 @@ class YAMLReader(object):
         self.yaml_dictionary = {}
         self.yaml_data = {}
 
-    def get_yaml_data(self):
-        return self.yaml_data
-
-    def get_Dict(self):
-        return self.yaml_dictionary
-
     def read_yaml(self, standard_output=False):
         # print("Config file: " + self.yaml_file )
         with open(self.yaml_file, 'r') as stream:
