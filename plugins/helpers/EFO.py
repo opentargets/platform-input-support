@@ -129,11 +129,25 @@ class EFO(object):
     # The field sko is used to check if the phenotype cross references are correct.
     # ETL - GraphQL test.
     def set_phenotypes_old(self, id, disease):
+        """
+        Set 'SKO' data from existing related phenotypes in the provided disease information object for the given EFO
+        data model entry ID
+
+        :param id: EFO data model entry ID
+        :param disease: disease information object to extract SKO information from
+        """
         if "related" in disease:
             self.diseases[id]['sko'] = self.get_phenotypes(disease["related"])
 
     # Return if the term is a TherapeuticArea
     def set_therapeutic_area(self, id, disease):
+        """
+        For the given EFO data model entry ID, and a disease information object, set whether it's a therapeutic area or
+        not
+
+        :param id: ID for the EFO entry
+        :param disease: disease information object
+        """
         if 'oboInOwl:inSubset' in disease:
             self.diseases[id]['isTherapeuticArea'] = True
         else:
