@@ -91,28 +91,25 @@ class EFO(object):
         else:
             return [x.strip() for x in value if isinstance(x, str)]
 
-    # Return the synonyms. Complex structure. Clean and flatten.
     def set_efo_synonyms(self, id, disease):
+        """
+        Set EFO synonyms for the given ID in the current EFO model using the given disease data.
+
+        :param id: EFO model entry ID
+        :param disease: disease information object
+        """
         synonyms_details = {}
-        if 'hasExactSynonym' in disease:
-            if len(disease['hasExactSynonym']) > 0:
-                synonyms = self.get_values(disease['hasExactSynonym'])
-                synonyms_details['hasExactSynonym'] = synonyms
+        if 'hasExactSynonym' in disease and len(disease['hasExactSynonym']) > 0:
+            synonyms_details['hasExactSynonym'] = self.get_values(disease['hasExactSynonym'])
 
-        if 'hasRelatedSynonym' in disease:
-            if len(disease['hasRelatedSynonym']) > 0:
-                synonyms = self.get_values(disease['hasRelatedSynonym'])
-                synonyms_details['hasRelatedSynonym'] = synonyms
+        if 'hasRelatedSynonym' in disease and len(disease['hasRelatedSynonym']) > 0:
+            synonyms_details['hasRelatedSynonym'] = self.get_values(disease['hasRelatedSynonym'])
 
-        if 'hasBroadSynonym' in disease:
-            if len(disease['hasBroadSynonym']) > 0:
-                synonyms = self.get_values(disease['hasBroadSynonym'])
-                synonyms_details['hasBroadSynonym'] = synonyms
+        if 'hasBroadSynonym' in disease and len(disease['hasBroadSynonym']) > 0:
+            synonyms_details['hasBroadSynonym'] = self.get_values(disease['hasBroadSynonym'])
 
-        if 'hasNarrowSynonym' in disease:
-            if len(disease['hasNarrowSynonym']) > 0:
-                synonyms = self.get_values(disease['hasNarrowSynonym'])
-                synonyms_details['hasNarrowSynonym'] = synonyms
+        if 'hasNarrowSynonym' in disease and len(disease['hasNarrowSynonym']) > 0:
+            synonyms_details['hasNarrowSynonym'] = self.get_values(disease['hasNarrowSynonym'])
 
         if len(synonyms_details.keys()) > 0:
             self.diseases[id]['synonyms'] = synonyms_details
