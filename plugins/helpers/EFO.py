@@ -33,6 +33,12 @@ class EFO(object):
         self.parent_child_tuples = []
 
     def init_disease(self, id, code):
+        """
+        Initialize a disease entry given its ID and code
+
+        :param id: disease ID
+        :param code: disease code
+        """
         self.diseases[id] = {}
         self.diseases[id]['id'] = id
         self.diseases[id]['code'] = code
