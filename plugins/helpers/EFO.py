@@ -1,21 +1,30 @@
-import logging
 import re
 import json
+import logging
 import jsonlines
 from urllib import parse
 
 logger = logging.getLogger(__name__)
 
-
-# EFO
-# The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
-# The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
-# term and obsolete terms.
-# The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
+"""
+- EFO -
+The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
+The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
+    term and obsolete terms.
+The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
+"""
 
 class EFO(object):
+    """
+    EFO Data modeling
+    """
 
     def __init__(self, efo_input):
+        """
+        Constructor for EFO data model instance based on the given efo_input
+
+        :parm efo_input: path to EFO input file
+        """
         self.efo_input = efo_input
         self.diseases = {}
         self.diseases_obsolete = {}
