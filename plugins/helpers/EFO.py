@@ -74,12 +74,11 @@ class EFO(object):
             else:
                 # In the case the disease definition is multiple (strings), it will pick the first one as the main
                 # definition, and set the others as alternative definitions
-                definitions = self.get_array_value(disease['IAO_0000115'])
+                definitions = self.get_values(disease['IAO_0000115'])
                 self.diseases[id]['definition'] = definitions[0]
                 if len(definitions) > 1: self.diseases[id]['definition_alternatives'] = definitions[1:]
 
-    # NOTE it should probably be renamed to give a better clue of what it does
-    def get_array_value(self, value):
+    def get_values(self, value):
         """
         Strip the new line character from either a given string or all the elements in a list of strings and return that
         as a list of strings
@@ -97,22 +96,22 @@ class EFO(object):
         synonyms_details = {}
         if 'hasExactSynonym' in disease:
             if len(disease['hasExactSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasExactSynonym'])
+                synonyms = self.get_values(disease['hasExactSynonym'])
                 synonyms_details['hasExactSynonym'] = synonyms
 
         if 'hasRelatedSynonym' in disease:
             if len(disease['hasRelatedSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasRelatedSynonym'])
+                synonyms = self.get_values(disease['hasRelatedSynonym'])
                 synonyms_details['hasRelatedSynonym'] = synonyms
 
         if 'hasBroadSynonym' in disease:
             if len(disease['hasBroadSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasBroadSynonym'])
+                synonyms = self.get_values(disease['hasBroadSynonym'])
                 synonyms_details['hasBroadSynonym'] = synonyms
 
         if 'hasNarrowSynonym' in disease:
             if len(disease['hasNarrowSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasNarrowSynonym'])
+                synonyms = self.get_values(disease['hasNarrowSynonym'])
                 synonyms_details['hasNarrowSynonym'] = synonyms
 
         if len(synonyms_details.keys()) > 0:
@@ -146,7 +145,7 @@ class EFO(object):
             elif isinstance(disease['label'], dict):
                 self.diseases[id]['label'] = disease['label']['@value'].strip('\n')
             else:
-                self.diseases[id]['label'] = self.get_array_value(disease['label'])[0]
+                self.diseases[id]['label'] = self.get_values(disease['label'])[0]
 
     # Return the parents for the term
     def set_parents(self, id, disease):
@@ -181,7 +180,7 @@ class EFO(object):
         if isinstance(uri, str):
             uris_to_extract = [uri]
         elif isinstance(uri, list):
-            uris_to_extract = self.get_array_value(uri)
+            uris_to_extract = self.get_values(uri)
         else:
             # todo: investigate to this case.
             uris_to_extract = []
