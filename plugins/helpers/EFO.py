@@ -114,8 +114,13 @@ class EFO(object):
         if len(synonyms_details.keys()) > 0:
             self.diseases[id]['synonyms'] = synonyms_details
 
-    # Extract skos: related: used for check phenotype info.
     def get_phenotypes(self, phenotypes):
+        """
+        Extract phenotype information as a list of phenotypes from the given phenotype information object.
+
+        :param phenotypes: Phenotypes information object
+        :return: a list of the extracted phenotypes
+        """
         if isinstance(phenotypes, str):
             return [self.get_id(phenotypes)]
         else:
