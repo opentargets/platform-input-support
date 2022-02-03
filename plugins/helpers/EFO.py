@@ -212,19 +212,25 @@ class EFO(object):
             return "http://purl.obolibrary.org/obo/"
 
     def extract_id_from_uri(self, uri):
+        """
+        Extract term IDs from the given URI information
+
+        :param uri: URI information to extract term IDs from
+        :return: the list of term IDs that have been extracted from the given URI data
+        """
         new_terms = []
+        uris_to_process = []
         if isinstance(uri, str):
-            uris_to_extract = [uri]
+            uris_to_process = [uri]
         elif isinstance(uri, list):
-            uris_to_extract = self.get_values(uri)
-        else:
-            # todo: investigate to this case.
-            uris_to_extract = []
+            uris_to_process = self.get_values(uri)
 
-        for uri_i in uris_to_extract:
+        # TODO investigate the case of empty URIs, which would result on no IDs
+        for uri_i in uris_to_process:
             full_path = parse.urlsplit(uri_i).path
+            # TODO I think what we are after here is the last part of the path, that would be [-1] element in the
+            #  partition list
             new_terms.append(full_path.rpartition('/')[2])
-
         return new_terms
 
     # Get the id and create a standard output. Eg. EFO:123 -> EFO_123, HP:9392 -> HP_9392
