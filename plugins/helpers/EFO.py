@@ -265,7 +265,15 @@ class EFO(object):
         return False
 
     # LocationIds: This procedure fills in the structure parent,child
+    # TODO WARNING 'disease_id' is not being used, is that on purpose?
     def set_locationIds_structure(self, disease_id, disease):
+        """
+        Populate possible parentage entries between the given disease ID and the disease information object in the
+        current EFO data model instance
+
+        :param disease_id: WARNING! This is supposed to be the parent ID, but it's not used in this method's logic
+        :param disease: disease information object
+        """
         collection = None
         if "unionOf" in disease:
             collection = disease["unionOf"]["@list"]
