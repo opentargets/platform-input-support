@@ -246,17 +246,23 @@ class EFO(object):
 
     # Check if the efo term is valid. term obsolete goes to a dedicated structure
     def is_obsolete(self, disease, disease_id):
+        """
+        Given a disease ID, and a disease information object, process possible deprecated terms into the current EFO
+        data model instance
+
+        :param disease: disease information object
+        :param disease_id: disease ID
+        :return: True if 'owl:deprecated' was present in the given disease information object, False otherwise
+        """
         if 'owl:deprecated' in disease:
             if 'IAO_0100001' in disease:
-                new_terms = self.extract_id_from_uri(disease['IAO_0100001'])
-                for term in new_terms:
+                for term in self.extract_id_from_uri(disease['IAO_0100001']):
                     if term in self.diseases_obsolete:
                         self.diseases_obsolete[term].append(disease_id)
                     else:
                         self.diseases_obsolete[term] = [disease_id]
             return True
-        else:
-            return False
+        return False
 
     # LocationIds: This procedure fills in the structure parent,child
     def set_locationIds_structure(self, disease_id, disease):
