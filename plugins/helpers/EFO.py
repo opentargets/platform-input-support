@@ -235,9 +235,14 @@ class EFO(object):
 
     # Get the id and create a standard output. Eg. EFO:123 -> EFO_123, HP:9392 -> HP_9392
     def get_id(self, id):
+        """
+        Get the ID and standardise it
+
+        :param id: string to exctract the ID from
+        :return: the standardised version of the extracted ID
+        """
         ordo = re.sub(r'^.*?ORDO/', '', id)
-        new_id = re.sub(r'^.*?:', '', ordo)
-        return new_id
+        return re.sub(r'^.*?:', '', ordo)
 
     # Check if the efo term is valid. term obsolete goes to a dedicated structure
     def is_obsolete(self, disease, disease_id):
