@@ -286,6 +286,15 @@ class EFO(object):
                     self.parent_child_tuples.append((disease["@id"], elem))
 
     def load_type_class(self, disease, disease_id):
+        """
+        For the given disease ID and disease information object, set, in the current EFO data model instance, all the
+        information related to labeling, definition, therapeutic areas, synonyms, phenotypes, parents, etc.
+
+        Unless the given disease information is about a location ID.
+
+        :param disease: disease information object
+        :param disease_id: disease ID
+        """
         if not disease["@id"].startswith('_:'):
             code = self.get_prefix(disease_id) + disease_id
             self.init_disease(disease_id, code)
