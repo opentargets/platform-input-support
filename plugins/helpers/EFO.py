@@ -308,8 +308,10 @@ class EFO(object):
         else:
             self.set_locationIds_structure(disease_id, disease)
 
-    #
     def get_obsolete_info(self):
+        """
+        Compute 'obsolete data' in the current EFO data model
+        """
         for k, v in self.diseases_obsolete.items():
             if k in self.diseases:
                 self.diseases[k]['obsoleteTerms'] = list(self.diseases_obsolete[k])
