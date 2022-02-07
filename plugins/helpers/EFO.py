@@ -412,12 +412,17 @@ class EFO(object):
                 writer.write(entry)
 
     def save_diseases(self, output_filename):
+        """
+        Persist disease data for the current EFO data model instance to a given destination file path
+
+        :param output_filename: output file path
+        :return: the output file path where the data has been persisted
+        """
         with jsonlines.open(output_filename, mode='w') as writer:
             for disease in self.diseases:
                 # Set cannot be transform in Json. Transform into list.
                 if 'locationIds' in self.diseases[disease]:
-                    listValues = list(self.diseases[disease]['locationIds'])
-                    self.diseases[disease]['locationIds'] = listValues
+                    self.diseases[disease]['locationIds'] = list(self.diseases[disease]['locationIds'])
 
                 writer.write(self.diseases[disease])
 
