@@ -114,6 +114,13 @@ class MONDO(object):
         return 'owl:deprecated' not in mondo
 
     def get_subClassOf(self, id, mondo):
+        """
+        Compute the superclasses for the given term ID according to the information in the given MONDO object for the
+        current MONDO data model instance
+
+        :param id: term ID
+        :param mondo: MONDO information object
+        """
         if "subClassOf" in mondo:
             classesOf = []
             if isinstance(mondo['subClassOf'], str):
