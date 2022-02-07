@@ -355,11 +355,17 @@ class EFO(object):
     # LocationIds are stored in the restriction tag.
     # The info are stored inside a structure json parent-child
     def get_locationIds(self):
+        """
+        Compute location IDs for the current EFO data model instance
+        """
+        # NOTE We could probably get a slight performance improvement here by making both lists into sets
         parents, children = zip(*self.parent_child_tuples)
         self.root_nodes = {x for x in parents if x not in children}
         for node in self.root_nodes:
             result = self.get_nodes(node, set())
-            self.all_path[node] = [x for x in list(result) if not x.startswith('_:')]
+            # self.all_path[node] = [x for x in list(result) if not x.startswith('_:')]
+            # A set is iterable, nevertheless, I leave the original line here ^ for future reference
+            self.all_path[node] = [x for x in result if not x.startswith('_:')]
 
         for k, v in self.has_location_ids.items():
             if k in self.all_path:
