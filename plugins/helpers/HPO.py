@@ -32,6 +32,7 @@ class HPO(object):
         Given a term, this method 'normalises' the ID by replacing ':' for '_'
 
         :param elem: term to normalise
+        :return: the normalised ID
         """
         return elem.replace(":", "_")
 

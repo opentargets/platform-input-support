@@ -28,6 +28,12 @@ class MONDO(object):
         self.mondo[id]['resource'] = 'MONDO'
 
     def extract_id(self, elem):
+        """
+        Given a term, this method 'normalises' the ID by replacing ':' for '_'
+
+        :param elem: term to normalise
+        :return: the normalised ID
+        """
         return elem.replace(":", "_")
 
     def get_id(self, mondo):
