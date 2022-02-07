@@ -1,6 +1,6 @@
-import logging
 import re
 import json
+import logging
 import jsonlines
 
 logger = logging.getLogger(__name__)
@@ -9,10 +9,20 @@ logger = logging.getLogger(__name__)
 class MONDO(object):
 
     def __init__(self, mondo_input):
+        """
+        Constructor for the MONDO data model instance
+
+        :param mondo_input: input file path
+        """
         self.mondo_input = mondo_input
         self.mondo = {}
 
     def init_mondo(self, id):
+        """
+        Initialise a term entry given the term ID, in the current MONDO data model instance
+
+        :param id: term ID
+        """
         self.mondo[id] = {}
         self.mondo[id]['id'] = id
         self.mondo[id]['resource'] = 'MONDO'
@@ -24,9 +34,9 @@ class MONDO(object):
         if 'id' in mondo:
             return mondo['id'].replace(":", "_")
         if '@id' in mondo:
-            return re.sub(r'^.*?:', '', mondo['@id'] )
+            return re.sub(r'^.*?:', '', mondo['@id'])
         else:
-            print ("orrore")
+            print("orrore")
 
     def set_dbXRefs(self, id, mondo):
         dbXRefs = []
@@ -37,7 +47,7 @@ class MONDO(object):
                 for ref in mondo['hasDbXref']:
                     dbXRefs.append(ref)
 
-            self.mondo[id]['dbXRefs']= dbXRefs
+            self.mondo[id]['dbXRefs'] = dbXRefs
 
     def set_obsoleted_term(self, id, mondo):
         if "hasAlternativeId" in mondo:
@@ -49,7 +59,6 @@ class MONDO(object):
                     obsolete.append(self.extract_id(term))
 
             self.mondo[id]['obsolete_terms'] = obsolete
-
 
     def set_label(self, id, mondo):
         if 'label' in mondo:
@@ -63,17 +72,17 @@ class MONDO(object):
                 else:
                     self.mondo[id]['name'] = mondo['label'][0]['@value']
 
-    def is_valid(self,mondo):
+    def is_valid(self, mondo):
         if 'owl:deprecated' in mondo:
             return False
         else:
             return True
 
-    def get_subClassOf(self,id, mondo):
+    def get_subClassOf(self, id, mondo):
         if "subClassOf" in mondo:
             classesOf = []
             if isinstance(mondo['subClassOf'], str):
-                classesOf.append(re.sub(r'^.*?:', '', mondo['subClassOf'] ).replace(":", "_"))
+                classesOf.append(re.sub(r'^.*?:', '', mondo['subClassOf']).replace(":", "_"))
             else:
                 for term in mondo['subClassOf']:
                     classesOf.append(re.sub(r'^.*?:', '', term).replace(":", "_"))
@@ -82,7 +91,7 @@ class MONDO(object):
 
     def set_mapping(self, id, mondo):
         if 'someValuesFrom' in mondo:
-            self.mondo[id]['mapping'] = re.sub(r'^.*?:', '', mondo['someValuesFrom'] ).replace(":", "_")
+            self.mondo[id]['mapping'] = re.sub(r'^.*?:', '', mondo['someValuesFrom']).replace(":", "_")
 
     def set_phenotype(self):
         for mondo_id in self.mondo:
@@ -96,7 +105,6 @@ class MONDO(object):
                             phenotypes.append(elem)
             self.mondo[mondo_id]['phenotypes'] = phenotypes
 
-
     def generate(self):
         with open(self.mondo_input) as input:
             for line in input:
@@ -108,10 +116,9 @@ class MONDO(object):
                     self.set_dbXRefs(id, mondo)
                     self.set_obsoleted_term(id, mondo)
                     self.get_subClassOf(id, mondo)
-                    self.set_mapping(id,mondo)
+                    self.set_mapping(id, mondo)
 
         self.set_phenotype()
-
 
     def save_mondo(self, output_filename):
         with jsonlines.open(output_filename, mode='w') as writer:
