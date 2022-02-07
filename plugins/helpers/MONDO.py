@@ -37,11 +37,18 @@ class MONDO(object):
         return elem.replace(":", "_")
 
     def get_id(self, mondo):
+        """
+        Extract term ID from the given MONDO term or skip it in case it contains no ID
+
+        :param mondo: term to extract ID from
+        :return: the extracted ID, None otherwise
+        """
         if 'id' in mondo:
             return mondo['id'].replace(":", "_")
         if '@id' in mondo:
             return re.sub(r'^.*?:', '', mondo['@id'])
         else:
+            # NOTE WHAAAAT? hahaha!
             print("orrore")
 
     def set_dbXRefs(self, id, mondo):
