@@ -1,6 +1,6 @@
-import logging
 import re
 import json
+import logging
 import jsonlines
 
 logger = logging.getLogger(__name__)
