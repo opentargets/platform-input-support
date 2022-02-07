@@ -52,6 +52,13 @@ class MONDO(object):
             print("orrore")
 
     def set_dbXRefs(self, id, mondo):
+        """
+        Compute DB Xrefs for the given term ID according to the given MONDO information object, in the current MONDO
+        data model instance
+
+        :param id: term ID
+        :param mondo: MONDO information object
+        """
         dbXRefs = []
         if 'hasDbXref' in mondo:
             if isinstance(mondo['hasDbXref'], str):
@@ -63,6 +70,13 @@ class MONDO(object):
             self.mondo[id]['dbXRefs'] = dbXRefs
 
     def set_obsoleted_term(self, id, mondo):
+        """
+        Compute obsolete terms information for the given term ID, according to the given MONDO information object in the
+        current MONDO data model instance
+
+        :param id: term ID
+        :param mondo: MONDO information object
+        """
         if "hasAlternativeId" in mondo:
             obsolete = []
             if isinstance(mondo['hasAlternativeId'], str):
@@ -74,6 +88,12 @@ class MONDO(object):
             self.mondo[id]['obsolete_terms'] = obsolete
 
     def set_label(self, id, mondo):
+        """
+        Set the MONDO label information for the given term ID in the current MONDO data model instance
+
+        :param id: term ID
+        :param mondo: MONDO information object
+        """
         if 'label' in mondo:
             if isinstance(mondo['label'], str):
                 self.mondo[id]['name'] = mondo['label']
@@ -86,10 +106,12 @@ class MONDO(object):
                     self.mondo[id]['name'] = mondo['label'][0]['@value']
 
     def is_valid(self, mondo):
-        if 'owl:deprecated' in mondo:
-            return False
-        else:
-            return True
+        """
+        Check wheter the given MONDO information object describes a NOT deprecated term or not.
+
+        :return: False if the given MONDO term is deprecated, True otherwise
+        """
+        return 'owl:deprecated' not in mondo
 
     def get_subClassOf(self, id, mondo):
         if "subClassOf" in mondo:
