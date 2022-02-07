@@ -330,6 +330,13 @@ class EFO(object):
     # LocationIds: This is part of the structure to retrieve the info about locationIds.
     # Recursively retrieve the location.
     def get_nodes(self, node, path):
+        """
+        Compute all the location ID children under a given node recursively in the node subtree.
+
+        :param node: node to get the children for
+        :param path: already visited nodes
+        :return: all the location ID children for the given node, taking into account the already visited nodes
+        """
         data = set()
         data.add(node)
         path.add(node)
