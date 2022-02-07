@@ -375,6 +375,9 @@ class EFO(object):
 
     # For any term it generates the dict id info.
     def generate(self):
+        """
+        For any term, compute the dictionary ID information for the current EFO data model instance
+        """
         with open(self.efo_input) as input:
             for line in input:
                 disease = json.loads(line)
