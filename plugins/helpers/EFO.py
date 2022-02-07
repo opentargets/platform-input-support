@@ -395,6 +395,11 @@ class EFO(object):
 
     # Static file for alpha and production
     def save_static_disease_file(self, output_filename):
+        """
+        Produce the static disease file given a destination path for the current EFO data model instance.
+
+        :param output_filename: output file path
+        """
         valid_keys = ["parents", "id", "label"]
         with jsonlines.open(output_filename, mode='w') as writer:
             for id in self.diseases:
