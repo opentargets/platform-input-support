@@ -318,6 +318,13 @@ class EFO(object):
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds
     def get_children(self, node):
+        """
+        For the given node, retrieve all its children according with the parentage information in the current EFO data
+        model instance
+
+        :param node: EFO node to get children from
+        :return: the list of children for the given EFO node
+        """
         return [x[1] for x in self.parent_child_tuples if x[0] == node]
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds.
