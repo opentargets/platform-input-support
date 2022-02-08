@@ -1,21 +1,23 @@
+import logging
+import warnings
+from datetime import datetime
 from yapsy.IPlugin import IPlugin
 from modules.common import create_folder
 from modules.common.Downloads import Downloads
 from modules.common.ElasticsearchHelper import ElasticsearchInstance
-from datetime import datetime
-import logging
-import warnings
 
 logger = logging.getLogger(__name__)
 
-"""
-
-"""
-
 
 class Drug(IPlugin):
+    """
+    Drug data collection step implementation
+    """
 
     def __init__(self):
+        """
+        Constructor, prepare logging subsystem and time stamp
+        """
         self._logger = logging.getLogger(__name__)
         self.write_date = datetime.today().strftime('%Y-%m-%d')
 
@@ -77,12 +79,13 @@ class Drug(IPlugin):
         es_files_written = self._handle_elasticsearch(conf.etl.chembl, output_dir)
         return es_files_written
 
-    def process(self, conf, output, cmd_conf):
+    def process(self, conf, output, cmd_conf=None):
         """
-        Download all resources specified in `config.yaml` and return dictionary of files downloaded.
+        Drug pipeline step implementation
 
-        The returned dictionary has form k -> {'resource': <filename>, 'gs_output_dir': <output as in config>} so that
-        it matches the structure of other steps and can be uploaded to GCP.
+        :param conf: step configuration object
+        :param output: output folder
+        :param cmd_conf: UNUSED
         """
         self._logger.info("Drug step")
         Downloads(output.prod_dir).exec(conf)
