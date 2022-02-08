@@ -1,3 +1,4 @@
+import os
 import logging
 import warnings
 from datetime import datetime
@@ -24,6 +25,11 @@ class Drug(IPlugin):
     def _download_elasticsearch_data(self, output_dir, url, port, indices):
         """
         Query elasticsearchReader for each index specified in indices and saves results as jsonl files at output_dir.
+
+        :param output_dir: output folder
+        :param url: Elastic Search URL
+        :param port: Elastic Search port
+        :param indices: indices for querying Elastic Search
         :return: list of files successfully saved.
         """
         results = []
@@ -31,9 +37,9 @@ class Drug(IPlugin):
         if elasticsearch_reader.is_reachable():
             for index in list(indices.values()):
                 index_name = index['name']
-                outfile = output_dir + '/' + index_name + "-" + self.write_date + ".jsonl"
+                outfile = os.path.join(output_dir, "{}-{}.jsonl".format(index_name, self.write_date))
 
-                logger.info("Downloading Elasticsearch data from index {}".format(index_name))
+                logger.info("Downloading Elasticsearch data from index {}, to file '{}'".format(index_name, outfile))
                 docs_saved = elasticsearch_reader.get_fields_on_index(index_name, outfile, index['fields'])
                 # docs = elasticsearch_reader.get_fields_on_index(index_name, index['fields'])
                 # elasticsearch_reader.write_elasticsearch_docs_as_jsonl(docs, outfile)
@@ -43,8 +49,10 @@ class Drug(IPlugin):
                     logger.warning("Failed to download all records from {}.".format(index_name))
                 results.append(outfile)
         else:
-            logger.error("Unable to reach ChEMBL Elasticsearch! Cannot collect necessary data.")
-            warnings.warn("ChEMBL Elasticsearch is unreachable: check network settings.")
+            logger.error("Unable to reach ChEMBL Elasticsearch! "
+                         "at URL '{}', port '{}' Cannot collect necessary data.".format(url, port))
+            warnings.warn("ChEMBL Elasticsearch is unreachable: "
+                          "URL '{}', port '{}', check network settings.".format(url, port))
         return results
 
     def _handle_elasticsearch(self, source, output_dir):
