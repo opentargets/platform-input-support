@@ -13,6 +13,7 @@ class OpenfdaHelper(object):
     """
     OpenFDA data download Helper with re-entrant download event file method for multithreading safety.
     """
+
     def __init__(self, output_dir):
         """
         Constructor
@@ -22,6 +23,11 @@ class OpenfdaHelper(object):
         self.output = output_dir
 
     def _do_download_openfda_event_file(self, download_entry):
+        """
+        Download a given OpenFDA event file and uncompress and process its contents to their final destination file path
+
+        :param download_entry: download information object
+        """
         logger.info(download_entry)
         download_url = download_entry['file']
         download_description = download_entry['display_name']
@@ -40,8 +46,8 @@ class OpenfdaHelper(object):
             'accept': 'application/zip'
         })
         # Download the file
-        downloader = DownloadResource(self.output)
-        downloader.execute_download(download_resource, 7)
+        DownloadResource(self.output) \
+            .execute_download(download_resource, 7)
         with zipfile.ZipFile(download_dest_path, 'r') as zipf:
             for event_file in zipf.filelist:
                 unzip_filename = event_file.filename
