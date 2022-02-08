@@ -176,6 +176,12 @@ class MONDO(object):
         self.set_phenotype()
 
     def save_mondo(self, output_filename):
+        """
+        Persist the current MONDO data model instance to the given destination path
+
+        :param output_filename: destination file path
+        :return: file path where the data model has been persisted
+        """
         with jsonlines.open(output_filename, mode='w') as writer:
             for elem in self.mondo:
                 writer.write(self.mondo[elem])
