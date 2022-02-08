@@ -143,6 +143,9 @@ class MONDO(object):
             self.mondo[id]['mapping'] = re.sub(r'^.*?:', '', mondo['someValuesFrom']).replace(":", "_")
 
     def set_phenotype(self):
+        """
+        Set phenotype information for the current MONDO data model instance
+        """
         for mondo_id in self.mondo:
             phenotypes = []
             if 'subClassOf' in self.mondo[mondo_id]:
@@ -155,6 +158,9 @@ class MONDO(object):
             self.mondo[mondo_id]['phenotypes'] = phenotypes
 
     def generate(self):
+        """
+        Process MONDO input data and compute the MONDO data model instance
+        """
         with open(self.mondo_input) as input:
             for line in input:
                 mondo = json.loads(line)
