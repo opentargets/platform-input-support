@@ -107,6 +107,13 @@ class Disease(IPlugin):
         return efo.save_diseases(os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename))
 
     def process(self, conf, output, cmd_conf):
+        """
+        Disease pipeline step implementation, it collects and pre-processes EFO, MONDO, HPO and HPO phenotypes data
+
+        :param conf: step configuration
+        :param output: output folder for collected and pre-processed data
+        :param cmd_conf: command line tools configuration
+        """
         riot = Riot(cmd_conf)
         self.get_ontology_EFO(conf, output, riot)
         self.get_ontology_mondo(conf, output, riot)
