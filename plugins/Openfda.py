@@ -28,6 +28,16 @@ class Openfda(IPlugin):
         self._logger = logging.getLogger(__name__)
 
     def _download_selected_event_files(self, repo_metadata, output):
+        """
+        Collect a subset of the available OpenFDA data, described by the given repository metadata, into a specified
+        destination folder
+
+        :param repo_metadata: OpenFDA repository metadata
+        :param output: output folder for the collected OpenFDA data
+        :return it should return information on the downloaded files, but, in fact, that information is empty
+        """
+        # TODO Collect the information on the produced / downloaded files into the output directory by using a thread
+        #  safe version of Dict() or maybe Futures... etc.
         downloaded_files = dict()
         # Body
         if repo_metadata:
