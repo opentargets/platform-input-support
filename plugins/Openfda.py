@@ -48,6 +48,13 @@ class Openfda(IPlugin):
         return downloaded_files
 
     def _download_openfda_faers(self, resource, output):
+        """
+        Get OpenFDA repository metadata and kick start the OpenFDA data collection process
+
+        :param resource: download descriptor for OpenFDA repository metadata file
+        :param output: output folder for the data collection
+        :return: information on the downloaded files
+        """
         logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
         downloaded_files = dict()
         logger.info("Download OpenFDA FAERS repository metadata")
