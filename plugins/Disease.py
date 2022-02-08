@@ -75,11 +75,17 @@ class Disease(IPlugin):
 
     # Download mondo.owl and create a JSON output with a subset of info.
     def get_ontology_mondo(self, conf, output, riot):
-        mondo_filename = self.download_and_convert_file(conf.etl.mondo, output, riot)
-        mondo = MONDO(mondo_filename)
+        """
+        Collect and process MONDO data into the specified destination path
+
+        :param conf: MONDO information for collection and processing
+        :param output: output folder
+        :return: destination file path for MONDO collected and processed data
+        """
+        create_folder(os.path.join(output.prod_dir, conf.etl.mondo.path))
+        mondo = MONDO(self.download_and_convert_file(conf.etl.mondo, output, riot))
         mondo.generate()
-        create_folder(output.prod_dir + "/" + conf.etl.mondo.path)
-        mondo.save_mondo(output.prod_dir + "/" + conf.etl.mondo.path + "/" + conf.etl.mondo.output_filename)
+        return mondo.save_mondo(os.path.join(output.prod_dir, conf.etl.mondo.path, conf.etl.mondo.output_filename))
 
     def get_ontology_EFO(self, conf, output, riot):
         efo_filename = self.download_and_convert_file(conf.etl.efo, output, riot)
