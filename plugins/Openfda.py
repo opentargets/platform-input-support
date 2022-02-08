@@ -1,12 +1,12 @@
-from yapsy.IPlugin import IPlugin
-from modules.common.Downloads import Downloads
-from modules.common import create_folder
-from plugins.helpers.OpenfdaHelper import OpenfdaHelper
+import os
+import json
+import tqdm
 import logging
 import multiprocessing as mp
-import tqdm
-import json
-import os
+from yapsy.IPlugin import IPlugin
+from modules.common import create_folder
+from modules.common.Downloads import Downloads
+from plugins.helpers.OpenfdaHelper import OpenfdaHelper
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +15,7 @@ This module gathers all data related to OpenFDA FAERS database, with a focus on 
 
 In addition, a collection of blacklisted events is downloaded for later use in the ETL backend pipeline.
 """
+
 
 class Openfda(IPlugin):
     def __init__(self):
@@ -33,7 +34,8 @@ class Openfda(IPlugin):
             logger.info(mp.current_process())
             try:
                 for _ in tqdm.tqdm(download_pool.map(fda._do_download_openfda_event_file,
-                                                 repo_metadata['results']['drug']['event']['partitions']), total=len(repo_metadata['results']['drug']['event']['partitions'])):
+                                                     repo_metadata['results']['drug']['event']['partitions']),
+                                   total=len(repo_metadata['results']['drug']['event']['partitions'])):
                     logger.info('\rdone {0:%}'.format(_ / len(repo_metadata['results']['drug']['event']['partitions'])))
             except Exception as e:
                 logger.info("Something went wrong: " + str(e))

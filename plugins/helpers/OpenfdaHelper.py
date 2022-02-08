@@ -10,7 +10,15 @@ logger = logging.getLogger(__name__)
 
 
 class OpenfdaHelper(object):
+    """
+    OpenFDA data download Helper with re-entrant download event file method for multithreading safety.
+    """
     def __init__(self, output_dir):
+        """
+        Constructor
+
+        :param output_dir: destination folder for the downloaded event file
+        """
         self.output = output_dir
 
     def _do_download_openfda_event_file(self, download_entry):
