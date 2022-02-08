@@ -16,6 +16,7 @@ class Disease(IPlugin):
     """
     Disease data collection step implementation
     """
+
     def __init__(self):
         """
         Constructor, prepare the logging subsystem
@@ -48,10 +49,16 @@ class Disease(IPlugin):
                                 output.staging_dir, resource, riot)
 
     def get_hpo_phenotypes(self, conf, output):
-        hpo_pheno_filename = Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)
-        hpo_phenotypes = HPOPhenotypes(hpo_pheno_filename)
-        create_folder(output.prod_dir + "/" + conf.etl.hpo_phenotypes.path)
-        hpo_phenotypes.run(output.prod_dir + "/" + conf.etl.hpo_phenotypes.path + "/" + conf.etl.hpo_phenotypes.output_filename)
+        """
+        Collect and process HPO Phenotypes data into the given output folder
+
+        :param conf: HPO phenotypes information for collection and processing
+        :param output: output folder
+        :return: destination file path for the processed collected information
+        """
+        create_folder(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path))
+        HPOPhenotypes(Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)) \
+            .run(output.prod_dir + "/" + conf.etl.hpo_phenotypes.path + "/" + conf.etl.hpo_phenotypes.output_filename)
 
     def get_ontology_hpo(self, conf, output, riot):
         hpo_filename = self.download_and_convert_file(conf.etl.hpo, output, riot)
@@ -73,7 +80,8 @@ class Disease(IPlugin):
         efo = EFO(efo_filename)
         efo.generate()
         create_folder(output.prod_dir + "/" + conf.etl.efo.path)
-        efo.save_static_disease_file(output.prod_dir + "/" + conf.etl.efo.path + "/" + conf.etl.efo.diseases_static_file)
+        efo.save_static_disease_file(
+            output.prod_dir + "/" + conf.etl.efo.path + "/" + conf.etl.efo.diseases_static_file)
         efo.save_diseases(output.prod_dir + "/" + conf.etl.efo.path + "/" + conf.etl.efo.output_filename)
 
     def process(self, conf, output, cmd_conf):
