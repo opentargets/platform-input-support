@@ -57,15 +57,21 @@ class Disease(IPlugin):
         :return: destination file path for the processed collected information
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path))
-        HPOPhenotypes(Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)) \
-            .run(output.prod_dir + "/" + conf.etl.hpo_phenotypes.path + "/" + conf.etl.hpo_phenotypes.output_filename)
+        return HPOPhenotypes(Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)) \
+            .run(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path, conf.etl.hpo_phenotypes.output_filename))
 
     def get_ontology_hpo(self, conf, output, riot):
-        hpo_filename = self.download_and_convert_file(conf.etl.hpo, output, riot)
-        hpo = HPO(hpo_filename)
+        """
+        Collect and process HPO ontology into the specified destination path
+
+        :param conf: HPO ontology information for collection and processing
+        :param output: output folder
+        :return: destination file path for HPO collected and processed data
+        """
+        create_folder(os.path.join(output.prod_dir, conf.etl.hpo.path))
+        hpo = HPO(self.download_and_convert_file(conf.etl.hpo, output, riot))
         hpo.generate()
-        create_folder(output.prod_dir + "/" + conf.etl.hpo.path)
-        hpo.save_hpo(output.prod_dir + "/" + conf.etl.hpo.path + "/" + conf.etl.hpo.output_filename)
+        return hpo.save_hpo(os.path.join(output.prod_dir, conf.etl.hpo.path, conf.etl.hpo.output_filename))
 
     # Download mondo.owl and create a JSON output with a subset of info.
     def get_ontology_mondo(self, conf, output, riot):
