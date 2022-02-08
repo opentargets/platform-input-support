@@ -55,32 +55,24 @@ class Drug(IPlugin):
                           "URL '{}', port '{}', check network settings.".format(url, port))
         return results
 
+    # TODO We should refactor this out into a generic Elastic Search Helper
     def _handle_elasticsearch(self, source, output_dir):
-        """Helper function to handle datasources which use Elasticsearch and returns list of files downloaded.
+        """
+        Helper function to handle datasources which use Elasticsearch and returns list of files downloaded.
+
         :param source: `datasource` entry from the `config.yaml` file.
+        :param output_dir: output folder
         :return: list of files downloaded.
         """
 
-        def _validate_host(host):
-            logger.debug("Validating elasticsearch host from config.")
-            return host is not None and isinstance(host, str)
-
-        def _validate_port(port):
-            logger.debug("Validating elasticsearch port from config.")
-            return port is not None and isinstance(port, int)
-
-        indices = source.indices
-        output_dir = output_dir
-        host = source.url
-        port = source.port
-
-        if _validate_host(host) and _validate_port(port):
-            logger.info("{} indices found for {}.".format(len(indices), source))
-            files = self._download_elasticsearch_data(output_dir, host, port, indices)
-            return files
-        else:
-            logger.error("Unable to validate host and port for Elasticsearch connection.")
-            return []
+        if source.url is not None \
+                and source.port is not None \
+                and isinstance(source.url, str) \
+                and isinstance(source.port, int):
+            logger.info("{} indices found for {}.".format(len(source.indices), source))
+            return self._download_elasticsearch_data(output_dir, source.url, source.port, source.indices)
+        logger.error("Unable to validate host and port for Elasticsearch connection.")
+        return []
 
     def download_indices(self, conf, output):
         output_dir = create_folder(output.prod_dir + "/" + conf.etl.chembl.path)
