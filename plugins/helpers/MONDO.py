@@ -132,6 +132,13 @@ class MONDO(object):
             self.mondo[id]['subClassOf'] = classesOf
 
     def set_mapping(self, id, mondo):
+        """
+        Set mapping information for the given term ID according to the provided MONDO information object in the current
+        MONDO data model instance
+
+        :param id: term ID
+        :param mondo: MONDO information object
+        """
         if 'someValuesFrom' in mondo:
             self.mondo[id]['mapping'] = re.sub(r'^.*?:', '', mondo['someValuesFrom']).replace(":", "_")
 
