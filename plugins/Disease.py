@@ -42,7 +42,7 @@ class Disease(IPlugin):
 
         :param resource: resource information object to download with filtering information
         :param output: output folder for the converted + filtered data
-        :param riot: Apache RIOT command
+        :param riot: Apache RIOT helper
         :return: destination file path for the converted + filtered data
         """
         return self.owl_to_json(Downloads.download_staging_http(output.staging_dir, resource),
@@ -66,6 +66,7 @@ class Disease(IPlugin):
 
         :param conf: HPO ontology information for collection and processing
         :param output: output folder
+        :param riot: Apache RIOT helper
         :return: destination file path for HPO collected and processed data
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo.path))
@@ -80,6 +81,7 @@ class Disease(IPlugin):
 
         :param conf: MONDO information for collection and processing
         :param output: output folder
+        :param riot: Apache RIOT helper
         :return: destination file path for MONDO collected and processed data
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.mondo.path))
@@ -88,13 +90,21 @@ class Disease(IPlugin):
         return mondo.save_mondo(os.path.join(output.prod_dir, conf.etl.mondo.path, conf.etl.mondo.output_filename))
 
     def get_ontology_EFO(self, conf, output, riot):
-        efo_filename = self.download_and_convert_file(conf.etl.efo, output, riot)
-        efo = EFO(efo_filename)
+        """
+        Collect and process EFO ontology data into the specified destination path
+
+        :param conf: EFO ontology for collection and processing
+        :param output: output folder
+        :param riot: Apache RIOT helper
+        :return: destination file path for EFO ontology collected and processed data
+        """
+        create_folder(os.path.join(output.prod_dir, conf.etl.efo.path))
+        efo = EFO(self.download_and_convert_file(conf.etl.efo, output, riot))
         efo.generate()
-        create_folder(output.prod_dir + "/" + conf.etl.efo.path)
-        efo.save_static_disease_file(
-            output.prod_dir + "/" + conf.etl.efo.path + "/" + conf.etl.efo.diseases_static_file)
-        efo.save_diseases(output.prod_dir + "/" + conf.etl.efo.path + "/" + conf.etl.efo.output_filename)
+        efo.save_static_disease_file(os.path.join(output.prod_dir,
+                                                  conf.etl.efo.path,
+                                                  conf.etl.efo.diseases_static_file))
+        return efo.save_diseases(os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename))
 
     def process(self, conf, output, cmd_conf):
         riot = Riot(cmd_conf)
