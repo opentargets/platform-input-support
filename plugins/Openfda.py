@@ -18,7 +18,13 @@ In addition, a collection of blacklisted events is downloaded for later use in t
 
 
 class Openfda(IPlugin):
+    """
+    This class implements the OpenFDA data collection step
+    """
     def __init__(self):
+        """
+        Constructor, prepares logging subsystem
+        """
         self._logger = logging.getLogger(__name__)
 
     def _download_selected_event_files(self, repo_metadata, output):
@@ -53,8 +59,14 @@ class Openfda(IPlugin):
         downloaded_files.update(downloaded_event_files)
         return downloaded_files
 
-    def process(self, conf, output, cmd_conf):
+    def process(self, conf, output, cmd_conf=None):
+        """
+        OpenFDA data collection step implementation
+
+        :param conf: OpenFDA step configuration object
+        :param output: output folder for collected OpenFDA data
+        :param cmd_conf: UNUSED
+        """
         self._logger.info("Openfda step")
         Downloads(output.prod_dir).exec(conf)
-
         self._download_openfda_faers(conf.etl.downloads, output)
