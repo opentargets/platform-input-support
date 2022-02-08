@@ -1,10 +1,10 @@
-import logging
 import os
 import json
 import uuid
+import logging
+import zipfile
 from urllib.parse import urlparse
 from modules.common.DownloadResource import DownloadResource
-import zipfile
 
 logger = logging.getLogger(__name__)
 
