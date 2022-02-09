@@ -21,14 +21,25 @@ class Target(IPlugin):
         self._logger = logging.getLogger(__name__)
 
     def get_gnomad(self, gnomad, output):
+        """
+        Collect gnomeAD data
+
+        :param gnomad: data source configuration object
+        :param output: output configuration object for collected data
+        """
         filename = Downloads.download_staging_http(output.staging_dir, gnomad)
         filename_unzip = make_gunzip(filename)
         gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, gnomad.path)), gnomad.output_filename)
         make_gzip(filename_unzip, gzip_filename)
 
     def get_subcellular_location(self, sub_location, output):
-        filename = Downloads.download_staging_http(output.staging_dir, sub_location)
-        filename_unzip = make_unzip_single_file(filename)
+        """
+        Collect subsellular location data
+
+        :param sub_location: subcellular location data source information object
+        :param output: output configuration object for the collected data
+        """
+        filename_unzip = make_unzip_single_file(Downloads.download_staging_http(output.staging_dir, sub_location))
         gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, sub_location.path)),
                                      sub_location.output_filename)
         make_gzip(filename_unzip, gzip_filename)
