@@ -11,6 +11,9 @@ class Riot(object):
 
     def __init__(self, yaml):
         self.yaml = yaml
+        self._jq_cmd = None
+        self._riot_cmd = None
+        self._jvm_args = None
 
     @property
     def riot_cmd(self):

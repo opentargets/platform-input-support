@@ -14,13 +14,13 @@ class RetrieveResource(object):
     def __init__(self, args, yaml):
         self.args = args
         self.yaml = yaml
+        self._simplePluginManager = None
 
     @property
     def output_dir(self):
         if self.args.output_dir is not None:
             return self.args.output_dir
-        else:
-            return PIS_OUTPUT_DIR
+        return PIS_OUTPUT_DIR
 
     @property
     def simplePluginManager(self):
