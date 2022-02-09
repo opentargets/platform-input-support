@@ -10,8 +10,18 @@ class GO(IPlugin):
     GO pipeline step implementation
     """
     def __init__(self):
+        """
+        Constructor, prepare the logging subsystem
+        """
         self._logger = logging.getLogger(__name__)
 
-    def process(self, conf, output, cmd_conf):
+    def process(self, conf, output, cmd_conf=None):
+        """
+        GO data collection pipeline step implementation
+
+        :param conf: step configuration object
+        :param output: data collection destination information object
+        :param cmd_conf: NOT USED
+        """
         self._logger.info("GO step")
         Downloads(output.prod_dir).exec(conf)
