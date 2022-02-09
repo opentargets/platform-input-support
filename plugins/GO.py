@@ -1,12 +1,14 @@
 import logging
 from yapsy.IPlugin import IPlugin
 from modules.common.Downloads import Downloads
+
 logger = logging.getLogger(__name__)
 
-"""
 
-"""
 class GO(IPlugin):
+    """
+    GO pipeline step implementation
+    """
     def __init__(self):
         self._logger = logging.getLogger(__name__)
 
