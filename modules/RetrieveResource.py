@@ -58,9 +58,9 @@ class RetrieveResource(object):
         lowercase_steps = set(each_step.lower() for each_step in steps)
         matching_plugins = []
         for plugin in all_plugins_available:
-            if plugin.lower() in lowercase_steps:
+            if plugin.name.lower() in lowercase_steps:
                 matching_plugins.append(plugin)
-                lowercase_steps.remove(plugin.lower())
+                lowercase_steps.remove(plugin.name.lower())
 
         logger.info("Steps not found:\n" + ','.join(lowercase_steps))
         return matching_plugins
