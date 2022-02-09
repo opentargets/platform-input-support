@@ -39,8 +39,15 @@ class Expression(IPlugin):
                 writer.write(entry)
 
     def get_tissue_map(self, output, resource):
-        filename = Downloads.download_staging_http(output.staging_dir, resource)
-        self.save_tissue_translation_map(output.prod_dir, resource, filename)
+        """
+        Collect and persist tissue map information
+
+        :param output: output folder information
+        :param resource: download resource information object
+        """
+        self.save_tissue_translation_map(output.prod_dir,
+                                         resource,
+                                         Downloads.download_staging_http(output.staging_dir, resource))
 
     def get_normal_tissues(self, output, resource):
         filename = Downloads.download_staging_http(output.staging_dir, resource)
