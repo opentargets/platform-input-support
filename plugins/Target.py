@@ -34,6 +34,13 @@ class Target(IPlugin):
         make_gzip(filename_unzip, gzip_filename)
 
     def extract_ensembl(self, ensembl, output, cmd):
+        """
+        Collect Ensembl data
+
+        :param ensembl: ensembl data source configuration object
+        :param output: output information object for where to place results
+        :param cmd: command line tools configuration object
+        """
         logger.info("Converting Ensembl json file into jsonl.")
         jq_cmd = Utils.check_path_command("jq", cmd.jq)
         resource_stage = Dict()
