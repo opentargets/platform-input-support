@@ -75,9 +75,17 @@ class Drug(IPlugin):
         return []
 
     def download_indices(self, conf, output):
-        output_dir = create_folder(output.prod_dir + "/" + conf.etl.chembl.path)
-        es_files_written = self._handle_elasticsearch(conf.etl.chembl, output_dir)
-        return es_files_written
+        """
+        Download the specified indices from Elastic Search into the given output folder
+
+        :param conf: configuration object
+        :param output: output folder information
+        :return: downloaded files listing
+        """
+        return self._handle_elasticsearch(
+            conf.etl.chembl,
+            create_folder(os.path.join(output.prod_dir, conf.etl.chembl.path))
+        )
 
     def process(self, conf, output, cmd_conf=None):
         """
