@@ -25,9 +25,17 @@ class Expression(IPlugin):
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
 
     def save_tissue_translation_map(self, output_path, resource, filename):
+        """
+        Persist tissue translation map information
+
+        :param output_path: destination path
+        :param resource: resource information object on the persisting data
+        :param filename: source file
+        """
         tissues_json = {}
         with URLZSource(filename).open(mode='rb') as r_file:
             tissues_json['tissues'] = json.load(r_file)['tissues']
+        # NOTE The following should have been performed by the context handler when exiting the 'with' block
         r_file.close()
         create_folder(os.path.join(output_path, resource.path))
         filename_tissue = os.path.join(output_path, resource.path,
