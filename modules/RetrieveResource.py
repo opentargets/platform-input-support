@@ -53,14 +53,14 @@ class RetrieveResource(object):
         This function finds out the list of plugins that we need to run for covering the requested pipeline steps.
 
         :param steps: requested steps
-        :param all_plugins_available: list of all the plugins available in the pipeline
+        :param all_plugins_available: list of all the plugins available in the pipeline (their names)
         """
         lowercase_steps = set(each_step.lower() for each_step in steps)
         matching_plugins = []
         for plugin in all_plugins_available:
-            if plugin.name.lower() in lowercase_steps:
+            if plugin.lower() in lowercase_steps:
                 matching_plugins.append(plugin)
-                lowercase_steps.remove(plugin.name.lower())
+                lowercase_steps.remove(plugin.lower())
 
         logger.info("Steps not found:\n" + ','.join(lowercase_steps))
         return matching_plugins
@@ -70,10 +70,11 @@ class RetrieveResource(object):
         Compute the effective list of Pipeline Steps to run. This will take into account whether a particular list of
         steps was requested or not as well as the possibly excluded ones
         """
-        steps_requested = self.matching_steps(self.args.steps, self.simplePluginManager.getAllPlugins())
-        excluded_requested = self.matching_steps(self.args.exclude, self.simplePluginManager.getAllPlugins())
+        all_plugins_available_names = [plugin.name for plugin in self.simplePluginManager.getAllPlugins()]
+        steps_requested = self.matching_steps(self.args.steps, all_plugins_available_names)
+        excluded_requested = self.matching_steps(self.args.exclude, all_plugins_available_names)
         if len(self.args.steps) == 0:
-            plugins_to_run = list(set(self.simplePluginManager.getAllPlugins()) - set(excluded_requested))
+            plugins_to_run = list(set(all_plugins_available_names) - set(excluded_requested))
         else:
             plugins_to_run = list(set(steps_requested))
 
