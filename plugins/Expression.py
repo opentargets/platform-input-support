@@ -49,7 +49,14 @@ class Expression(IPlugin):
                                      resource.output_filename.replace('{suffix}', self.suffix))
         make_gzip(filename_unzip, gzip_filename)
 
-    def process(self, conf, output, cmd_conf):
+    def process(self, conf, output, cmd_conf=None):
+        """
+        Expression data collection pipeline step implementation
+
+        :param conf: step configuration object
+        :param output: output folder information
+        :param cmd_conf: NOT USED
+        """
         self._logger.info("Expression step")
         Downloads(output.prod_dir).exec(conf)
         self.get_tissue_map(output, conf.etl.tissue_translation_map)
