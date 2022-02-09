@@ -82,6 +82,13 @@ class Homologues(IPlugin):
         return output_file
 
     def process(self, conf, output, cmd_conf):
+        """
+        Homologues pipeline step implementation
+
+        :param conf: step configuration object
+        :param output: output information object for results from this step
+        :param cmd_conf: command line configuration object for external tools
+        """
         download = DownloadResource(output.staging_dir)
         uri_release = conf.uri.replace("{release}", str(conf.release))
         create_folder(os.path.join(output.prod_dir, conf.path, str(conf.release)))
