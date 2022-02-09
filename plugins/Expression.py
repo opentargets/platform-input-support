@@ -50,8 +50,13 @@ class Expression(IPlugin):
                                          Downloads.download_staging_http(output.staging_dir, resource))
 
     def get_normal_tissues(self, output, resource):
-        filename = Downloads.download_staging_http(output.staging_dir, resource)
-        filename_unzip = make_unzip_single_file(filename)
+        """
+        Collect normal tissue data, gzip compressed.
+
+        :param output: output folder information object
+        :param resource: download resource information object
+        """
+        filename_unzip = make_unzip_single_file(Downloads.download_staging_http(output.staging_dir, resource))
         gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, resource.path)),
                                      resource.output_filename.replace('{suffix}', self.suffix))
         make_gzip(filename_unzip, gzip_filename)
