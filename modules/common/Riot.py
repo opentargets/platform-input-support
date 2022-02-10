@@ -74,4 +74,6 @@ class Riot(object):
         """
         path, filename = os.path.split(owl_file)
         dst_filename = filename.replace(".owl", ".json")
+        logger.debug("RIOT OWL file '{}' to JSON, output folder '{}', destination file name '{}', JQ filter '{}'"
+                     .format(owl_file, output_dir, dst_filename, owl_jq))
         return self.run_riot(owl_file, output_dir, dst_filename, owl_jq)

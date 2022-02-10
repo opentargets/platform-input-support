@@ -32,9 +32,10 @@ class Disease(IPlugin):
         :param resource: information object with JQ filtering string information
         :return: destination file path of the conversion + filtering process
         """
-        file_ouput_path = os.path.join(output_dir, resource.path)
-        create_folder(file_ouput_path)
-        return riot.convert_owl_to_jsonld(filename_input, file_ouput_path, resource.owl_jq)
+        file_output_path = os.path.join(output_dir, resource.path)
+        logger.debug("OWL to JSON output path '{}'".format(file_output_path))
+        create_folder(file_output_path)
+        return riot.convert_owl_to_jsonld(filename_input, file_output_path, resource.owl_jq)
 
     def download_and_convert_file(self, resource, output, riot):
         """
