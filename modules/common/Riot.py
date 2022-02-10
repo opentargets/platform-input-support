@@ -47,18 +47,20 @@ class Riot(object):
         """
         try:
             output_path = os.path.join(dir_output, json_file)
+            cmd_riot = [self.riot_cmd, "--output", "JSON-LD", owl_file]
+            cmd_jq = [self.jq_cmd, "-r", owl_jq]
             with open(output_path) as json_output, \
-                    subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file],
-                                     stdin=subprocess.PIPE,
+                    subprocess.Popen(cmd_riot,
                                      stdout=subprocess.PIPE) as riot_process, \
-                    subprocess.Popen([self.jq_cmd, "-r", owl_jq],
+                    subprocess.Popen(cmd_jq,
                                      stdin=riot_process.stdout,
                                      stdout=subprocess.PIPE) as jq_process:
                 json_output.write(jq_process.stdout.read())
         except EnvironmentError as e:
-            logger.error("When running RIOT for OWL file '{}', "
-                         "with destination path '{}' and JQ filter '{}', "
-                         "the following error occurred: '{}'".format(owl_file, output_path, owl_jq, e))
+            logger.error("When running RIOT for OWL file '{}', RIOT command '{}'"
+                         "with destination path '{}' and JQ command '{}' and filter '{}', "
+                         "the following error occurred: '{}'"
+                         .format(owl_file, cmd_riot, output_path, cmd_jq, owl_jq, e))
         return output_path
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
