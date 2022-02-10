@@ -55,7 +55,13 @@ class Riot(object):
                     subprocess.Popen(cmd_jq,
                                      stdin=riot_process.stdout,
                                      stdout=subprocess.PIPE) as jq_process:
-                json_output.write(jq_process.stdout.read())
+                try:
+                    jqout, jqerr = jq_process.communicate(timeout=3600)
+                except subprocess.TimeoutExpired as e:
+                    jq_process.kill()
+                    jqout, jqerr = jq_process.communicate()
+                else:
+                    json_output.write(jqout)
         except EnvironmentError as e:
             logger.error("When running RIOT for OWL file '{}', RIOT command '{}'"
                          "with destination path '{}' and JQ command '{}' and filter '{}', "
