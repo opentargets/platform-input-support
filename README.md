@@ -53,6 +53,26 @@ wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 ```
+
+## Run Docker image using quay repository
+Platform input support is available as docker image. The image is stored using Quay.io repository
+
+For instance
+```
+mkdir /tmp/pis
+sudo docker run 
+ -v path_with_credentials:/usr/src/app/cred 
+ -v /tmp/pis:/usr/src/app/output 
+ quay.io/opentargets/platform-input-support:master 
+ -steps Evidence 
+ -gkey /usr/src/app/cred/open-targets-gac.json 
+ -gb ot-team/pis_output/docker
+```
+
+For using an external config file, simply add the option -c and the volume where the config file is available
+
+
+
 ## Conda in Docker (for PyCharm)
 
 If you would rather run a containerised version of Conda use the provided Dockerfile. 
