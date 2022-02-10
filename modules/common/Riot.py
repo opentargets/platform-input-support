@@ -55,6 +55,7 @@ class Riot(object):
         except OSError as e:
             if e.errno == errno.ENOENT:
                 # handle file not found error.
+                logger.error(e)
                 logger.error(errno.ENOENT)
             else:
                 # Something else went wrong
