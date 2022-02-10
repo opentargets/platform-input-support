@@ -45,29 +45,24 @@ class Riot(object):
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
         :return: destination file path of the conversion + filtering for the given OWL file
         """
+        json_output = open(os.path.join(dir_output, json_file), "wb")
         try:
-            output_path = os.path.join(dir_output, json_file)
-            cmd_riot = [self.riot_cmd, "--output", "JSON-LD", owl_file]
-            cmd_jq = [self.jq_cmd, "-r", owl_jq]
-            with open(output_path) as json_output, \
-                    subprocess.Popen(cmd_riot,
-                                     stdout=subprocess.PIPE) as riot_process, \
-                    subprocess.Popen(cmd_jq,
-                                     stdin=riot_process.stdout,
-                                     stdout=subprocess.PIPE) as jq_process:
-                try:
-                    jqout, jqerr = jq_process.communicate(timeout=3600)
-                except subprocess.TimeoutExpired as e:
-                    jq_process.kill()
-                    jqout, jqerr = jq_process.communicate()
-                else:
-                    json_output.write(jqout)
-        except EnvironmentError as e:
-            logger.error("When running RIOT for OWL file '{}', RIOT command '{}'"
-                         "with destination path '{}' and JQ command '{}' and filter '{}', "
-                         "the following error occurred: '{}'"
-                         .format(owl_file, cmd_riot, output_path, cmd_jq, owl_jq, e))
-        return output_path
+            riot_process = subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], stdin=subprocess.PIPE,
+                                            stdout=subprocess.PIPE)
+            jq_process = subprocess.Popen([self.jq_cmd, "-r", owl_jq], stdin=riot_process.stdout,
+                                          stdout=subprocess.PIPE)
+            json_output.write(jq_process.stdout.read())
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                # handle file not found error.
+                logger.error(errno.ENOENT)
+            else:
+                # Something else went wrong
+                raise
+        finally:
+            json_output.close()
+
+        return json_output.name
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
         """
