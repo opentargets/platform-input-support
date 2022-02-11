@@ -18,7 +18,7 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 
 # install helper utilities, including Apache Jena (RIOT provider)
-RUN apt install -y jq; \
+RUN apt install -y jq openjdk-11-jre-headless; \
     mkdir /tmp; \
     cd /tmp; \
     wget --no-check-certificate -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-4.4.0.tar.gz; \
