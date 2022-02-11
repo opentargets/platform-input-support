@@ -46,15 +46,20 @@ class Openfda(IPlugin):
             fda = OpenfdaHelper(fda_output)
             # Parallel data gathering
             self._logger.info("Prepare download pool of {} processes".format(mp.cpu_count()))
-            download_pool = mp.Pool(mp.cpu_count())
-            self._logger.info(mp.current_process())
-            try:
-                for _ in tqdm.tqdm(download_pool.map(fda._do_download_openfda_event_file,
-                                                     repo_metadata['results']['drug']['event']['partitions']),
-                                   total=len(repo_metadata['results']['drug']['event']['partitions'])):
-                    self._logger.info('\rdone {0:%}'.format(_ / len(repo_metadata['results']['drug']['event']['partitions'])))
-            except Exception as e:
-                self._logger.info("Something went wrong: " + str(e))
+            download_pool_nprocesses = mp.cpu_count() * 2
+            download_pool_chunksize = int(
+                len(repo_metadata['results']['drug']['event']['partitions']) / download_pool_nprocesses
+            )
+            with mp.Pool() as download_pool:
+                self._logger.info(mp.current_process())
+                try:
+                    for _ in tqdm.tqdm(download_pool.map(fda._do_download_openfda_event_file,
+                                                         repo_metadata['results']['drug']['event']['partitions'],
+                                                         chunksize=download_pool_chunksize),
+                                       total=len(repo_metadata['results']['drug']['event']['partitions'])):
+                        self._logger.info('\rdone {0:%}'.format(_ / len(repo_metadata['results']['drug']['event']['partitions'])))
+                except Exception as e:
+                    self._logger.info("Something went wrong: " + str(e))
         return downloaded_files
 
     def _download_openfda_faers(self, resource, output):
