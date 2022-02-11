@@ -41,20 +41,20 @@ class Openfda(IPlugin):
         downloaded_files = dict()
         # Body
         if repo_metadata:
-            logger.info("OpenFDA FAERs metadata received")
+            self._logger.info("OpenFDA FAERs metadata received")
             fda_output = create_folder(os.path.join(output.prod_dir, "fda-inputs"))
             fda = OpenfdaHelper(fda_output)
             # Parallel data gathering
-            logger.info("Prepare download pool of {} processes".format(mp.cpu_count()))
+            self._logger.info("Prepare download pool of {} processes".format(mp.cpu_count()))
             download_pool = mp.Pool(mp.cpu_count())
-            logger.info(mp.current_process())
+            self._logger.info(mp.current_process())
             try:
                 for _ in tqdm.tqdm(download_pool.map(fda._do_download_openfda_event_file,
                                                      repo_metadata['results']['drug']['event']['partitions']),
                                    total=len(repo_metadata['results']['drug']['event']['partitions'])):
-                    logger.info('\rdone {0:%}'.format(_ / len(repo_metadata['results']['drug']['event']['partitions'])))
+                    self._logger.info('\rdone {0:%}'.format(_ / len(repo_metadata['results']['drug']['event']['partitions'])))
             except Exception as e:
-                logger.info("Something went wrong: " + str(e))
+                self._logger.info("Something went wrong: " + str(e))
         return downloaded_files
 
     def _download_openfda_faers(self, resource, output):
@@ -65,9 +65,9 @@ class Openfda(IPlugin):
         :param output: output folder for the data collection
         :return: information on the downloaded files
         """
-        logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
+        self._logger.info("OpenFDA available files download, URI '{}' --- START ---".format(resource.uri))
         downloaded_files = dict()
-        logger.info("Download OpenFDA FAERS repository metadata")
+        self._logger.info("Download OpenFDA FAERS repository metadata")
         download = Downloads.download_staging_http(output.staging_dir, resource)
         repo_metadata = {}
         with open(download, 'r') as f:
