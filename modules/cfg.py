@@ -1,6 +1,6 @@
 import os
-import configargparse
 import logging
+import configargparse
 
 logger = logging.getLogger(__name__)
 
@@ -8,7 +8,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def setup_parser():
-    """ This function defines the input parameters and defines some default values.
+    """
+    This function defines the input parameters and defines some default values.
     """
     p = configargparse.get_argument_parser(config_file_parser_class=configargparse.YAMLConfigFileParser)
     p.description = 'Open Targets platform input support'
@@ -27,7 +28,8 @@ def setup_parser():
           env_var="OT_OUTPUT_DIR", help='By default, the files are generated in the root directory')
 
     p.add('-f', '--force-clean', action='store_false', default=True,
-          env_var="OT_CLEAN_OUTPUT", help='By default, the output directory is deleted. To not delete the files use this flag.')
+          env_var="OT_CLEAN_OUTPUT",
+          help='By default, the output directory is deleted. To not delete the files use this flag.')
 
     # argument to run the script using thread
     p.add('-t', '--thread', env_var="OT_THREAD", action='store_true', help='Run the script with thread')
@@ -54,16 +56,17 @@ def setup_parser():
     return p
 
 
-# return the list of args passed by command line
 def get_args():
-    p = configargparse.get_argument_parser()
-    args = p.parse_known_args()[0]
+    """
+    Get the list of args passed by the command line
+    """
+    return configargparse.get_argument_parser().parse_known_args()[0]
 
-    return args
 
-
-# Configuration of log file.
 def setBasicConfigLog():
+    """
+    Set Logging subsystem baseline configuration
+    """
     logfilename = os.path.join(BASE_DIR, 'log/output.log')
     logging.basicConfig(level=logging.INFO, filename=logfilename, format='%(name)-12s: %(levelname)-8s %(message)s',
                         datefmt='%H:%M:%S')
@@ -76,12 +79,13 @@ def setBasicConfigLog():
     console.setFormatter(formatter)
     # add the handler to the root logger
     logging.getLogger('').addHandler(console)
-
-    logger = logging.getLogger(__name__)
-    return logger
+    return logging.getLogger(__name__)
 
 
 def set_up_logging(args):
+    """
+    Setup logging configuration according to command line arguments
+    """
     # set up logging
     if args.log_config:
         if os.path.isfile(args.log_config) and os.access(args.log_config, os.R_OK):
@@ -90,10 +94,8 @@ def set_up_logging(args):
         else:
             logger = setBasicConfigLog()
             logger.warning("unable to read file {}".format(args.log_config))
-
     else:
-        logger = setBasicConfigLog
-
+        logger = setBasicConfigLog()
     if args.log_level:
         try:
             root_logger = logging.getLogger()
@@ -103,4 +105,5 @@ def set_up_logging(args):
             root_logger.info('root log level set to: ' + str(args.log_level))
         except Exception as e:
             root_logger.exception(e)
+            # NOTE The returning value is never used
             return 1

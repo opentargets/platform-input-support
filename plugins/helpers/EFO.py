@@ -1,21 +1,31 @@
-import logging
 import re
 import json
+import logging
 import jsonlines
 from urllib import parse
 
 logger = logging.getLogger(__name__)
 
+"""
+- EFO -
+The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
+The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
+    term and obsolete terms.
+The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
+"""
 
-# EFO
-# The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
-# The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
-# term and obsolete terms.
-# The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
 
 class EFO(object):
+    """
+    EFO Data modeling
+    """
 
     def __init__(self, efo_input):
+        """
+        Constructor for EFO data model instance based on the given efo_input
+
+        :parm efo_input: path to EFO input file
+        """
         self.efo_input = efo_input
         self.diseases = {}
         self.diseases_obsolete = {}
@@ -24,6 +34,12 @@ class EFO(object):
         self.parent_child_tuples = []
 
     def init_disease(self, id, code):
+        """
+        Initialize a disease entry given its ID and code
+
+        :param id: disease ID
+        :param code: disease code
+        """
         self.diseases[id] = {}
         self.diseases[id]['id'] = id
         self.diseases[id]['code'] = code
@@ -31,54 +47,80 @@ class EFO(object):
     # return the cross reference for the phenotype.
     # ETL uses it with hpo-phenotypes-_yyyy-mm-dd_.jsonl
     def set_phenotypes(self, id, disease):
+        """
+        Set the db xrefs for the given disease ID if present, in the current EFO model
+
+        :param id: disease ID
+        :param disease: disease information object
+        """
         if 'hasDbXref' in disease:
             self.diseases[id]['dbXRefs'] = disease['hasDbXref']
 
-    # Retrieve the definition info
     def set_definition(self, id, disease):
+        """
+        Set a definition for the given disease ID if it exists in the given disease object according to the term
+        http://www.ontobee.org/ontology/IAO?iri=http://purl.obolibrary.org/obo/IAO_0000115
+
+        If multiple definitions are present in the given 'disease' object, the first one will be set as the main
+        definition, and the rest as alternative ones.
+
+        :param id: disease ID
+        :param disease: disease information object
+        """
         if 'IAO_0000115' in disease:
             if isinstance(disease['IAO_0000115'], str):
+                # The case where the disease definition is just one string
                 self.diseases[id]['definition'] = disease['IAO_0000115'].strip('\n')
             else:
-                definitions = self.get_array_value(disease['IAO_0000115'])
+                # In the case the disease definition is multiple (strings), it will pick the first one as the main
+                # definition, and set the others as alternative definitions
+                definitions = self.get_values(disease['IAO_0000115'])
                 self.diseases[id]['definition'] = definitions[0]
                 if len(definitions) > 1: self.diseases[id]['definition_alternatives'] = definitions[1:]
 
-    # Return an array of strings without new line.
-    def get_array_value(self, value):
+    def get_values(self, value):
+        """
+        Strip the new line character from either a given string or all the elements in a list of strings and return that
+        as a list of strings
+
+        :param value: data where to strip the new line character from
+        :return: a list of strings where the new line character has been stripped off
+        """
         if isinstance(value, str):
             return [value.strip('\n')]
         else:
             return [x.strip() for x in value if isinstance(x, str)]
 
-    # Return the synonyms. Complex structure. Clean and flatten.
     def set_efo_synonyms(self, id, disease):
+        """
+        Set EFO synonyms for the given ID in the current EFO model using the given disease data.
+
+        :param id: EFO model entry ID
+        :param disease: disease information object
+        """
         synonyms_details = {}
-        if 'hasExactSynonym' in disease:
-            if len(disease['hasExactSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasExactSynonym'])
-                synonyms_details['hasExactSynonym'] = synonyms
+        if 'hasExactSynonym' in disease and len(disease['hasExactSynonym']) > 0:
+            synonyms_details['hasExactSynonym'] = self.get_values(disease['hasExactSynonym'])
 
-        if 'hasRelatedSynonym' in disease:
-            if len(disease['hasRelatedSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasRelatedSynonym'])
-                synonyms_details['hasRelatedSynonym'] = synonyms
+        if 'hasRelatedSynonym' in disease and len(disease['hasRelatedSynonym']) > 0:
+            synonyms_details['hasRelatedSynonym'] = self.get_values(disease['hasRelatedSynonym'])
 
-        if 'hasBroadSynonym' in disease:
-            if len(disease['hasBroadSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasBroadSynonym'])
-                synonyms_details['hasBroadSynonym'] = synonyms
+        if 'hasBroadSynonym' in disease and len(disease['hasBroadSynonym']) > 0:
+            synonyms_details['hasBroadSynonym'] = self.get_values(disease['hasBroadSynonym'])
 
-        if 'hasNarrowSynonym' in disease:
-            if len(disease['hasNarrowSynonym']) > 0:
-                synonyms = self.get_array_value(disease['hasNarrowSynonym'])
-                synonyms_details['hasNarrowSynonym'] = synonyms
+        if 'hasNarrowSynonym' in disease and len(disease['hasNarrowSynonym']) > 0:
+            synonyms_details['hasNarrowSynonym'] = self.get_values(disease['hasNarrowSynonym'])
 
         if len(synonyms_details.keys()) > 0:
             self.diseases[id]['synonyms'] = synonyms_details
 
-    # Extract skos: related: used for check phenotype info.
     def get_phenotypes(self, phenotypes):
+        """
+        Extract phenotype information as a list of phenotypes from the given phenotype information object.
+
+        :param phenotypes: Phenotypes information object
+        :return: a list of the extracted phenotypes
+        """
         if isinstance(phenotypes, str):
             return [self.get_id(phenotypes)]
         else:
@@ -87,46 +129,80 @@ class EFO(object):
     # The field sko is used to check if the phenotype cross references are correct.
     # ETL - GraphQL test.
     def set_phenotypes_old(self, id, disease):
+        """
+        Set 'SKO' data from existing related phenotypes in the provided disease information object for the given EFO
+        data model entry ID
+
+        :param id: EFO data model entry ID
+        :param disease: disease information object to extract SKO information from
+        """
         if "related" in disease:
             self.diseases[id]['sko'] = self.get_phenotypes(disease["related"])
 
     # Return if the term is a TherapeuticArea
     def set_therapeutic_area(self, id, disease):
+        """
+        For the given EFO data model entry ID, and a disease information object, set whether it's a therapeutic area or
+        not
+
+        :param id: ID for the EFO entry
+        :param disease: disease information object
+        """
         if 'oboInOwl:inSubset' in disease:
             self.diseases[id]['isTherapeuticArea'] = True
         else:
             self.diseases[id]['isTherapeuticArea'] = False
 
-    # Return the label of the term
     def set_label(self, id, disease):
+        """
+        Set the label data for the given EFO entry ID with information in the given disease information object.
+
+        :param id: EFO entry ID in the current data model
+        :param disease: disease information object
+        """
         if 'label' in disease:
             if isinstance(disease['label'], str):
                 self.diseases[id]['label'] = disease['label'].strip('\n')
             elif isinstance(disease['label'], dict):
                 self.diseases[id]['label'] = disease['label']['@value'].strip('\n')
             else:
-                self.diseases[id]['label'] = self.get_array_value(disease['label'])[0]
+                self.diseases[id]['label'] = self.get_values(disease['label'])[0]
 
-    # Return the parents for the term
     def set_parents(self, id, disease):
-        if 'subClassOf' in disease:
-            subset = disease['subClassOf']
-            parents = []
-            if len(subset) > 0:
-                for father in subset:
-                    if father.startswith('_:'):
-                        self.has_location_ids[father] = id
-                    else:
-                        father_id = self.get_id(father)
-                        parents.append(father_id)
+        """
+        Set the parents for the given term ID in the current EFO data model instance, according to the information in
+        the given disease object
 
+        :param id: term ID
+        :param disease: disease information object
+        """
+        if 'subClassOf' in disease:
+            parents = []
+            for father in disease['subClassOf']:
+                if father.startswith('_:'):
+                    self.has_location_ids[father] = id
+                else:
+                    father_id = self.get_id(father)
+                    parents.append(father_id)
             self.diseases[id]['parents'] = parents
 
     def extract_id(self, elem):
+        """
+        It replaces a ':' by a '_' in the given element string.
+
+        :return: the given element string with its first ':' replaced by '_'
+        """
         return elem.replace(":", "_")
 
-    # return the proper prefix.
     def get_prefix(self, id):
+        """
+        Get the right ontology URL prefix for the given term ID
+
+        :param id: term ID to find out the URL prefix for
+        :return: the URL prefix recognised for the given term ID
+        """
+        # We should probably externalise this in the configuration file, so we don't need to potentially change the code
+        # in the future. Alternatively, we could use resolution services like https://identifiers.org
         simple_id = re.match(r'^(.+?)_', id)
         if simple_id.group() in ["EFO_", "OTAR_"]:
             return "http://www.ebi.ac.uk/efo/"
@@ -136,43 +212,68 @@ class EFO(object):
             return "http://purl.obolibrary.org/obo/"
 
     def extract_id_from_uri(self, uri):
+        """
+        Extract term IDs from the given URI information
+
+        :param uri: URI information to extract term IDs from
+        :return: the list of term IDs that have been extracted from the given URI data
+        """
         new_terms = []
+        uris_to_process = []
         if isinstance(uri, str):
-            uris_to_extract = [uri]
+            uris_to_process = [uri]
         elif isinstance(uri, list):
-            uris_to_extract = self.get_array_value(uri)
-        else:
-            # todo: investigate to this case.
-            uris_to_extract = []
+            uris_to_process = self.get_values(uri)
 
-        for uri_i in uris_to_extract:
+        # TODO investigate the case of empty URIs, which would result on no IDs
+        for uri_i in uris_to_process:
             full_path = parse.urlsplit(uri_i).path
+            # TODO I think what we are after here is the last part of the path, that would be [-1] element in the
+            #  partition list
             new_terms.append(full_path.rpartition('/')[2])
-
         return new_terms
 
     # Get the id and create a standard output. Eg. EFO:123 -> EFO_123, HP:9392 -> HP_9392
     def get_id(self, id):
+        """
+        Get the ID and standardise it
+
+        :param id: string to exctract the ID from
+        :return: the standardised version of the extracted ID
+        """
         ordo = re.sub(r'^.*?ORDO/', '', id)
-        new_id = re.sub(r'^.*?:', '', ordo)
-        return new_id
+        return re.sub(r'^.*?:', '', ordo)
 
     # Check if the efo term is valid. term obsolete goes to a dedicated structure
     def is_obsolete(self, disease, disease_id):
+        """
+        Given a disease ID, and a disease information object, process possible deprecated terms into the current EFO
+        data model instance
+
+        :param disease: disease information object
+        :param disease_id: disease ID
+        :return: True if 'owl:deprecated' was present in the given disease information object, False otherwise
+        """
         if 'owl:deprecated' in disease:
             if 'IAO_0100001' in disease:
-                new_terms = self.extract_id_from_uri(disease['IAO_0100001'])
-                for term in new_terms:
+                for term in self.extract_id_from_uri(disease['IAO_0100001']):
                     if term in self.diseases_obsolete:
                         self.diseases_obsolete[term].append(disease_id)
                     else:
                         self.diseases_obsolete[term] = [disease_id]
             return True
-        else:
-            return False
+        return False
 
     # LocationIds: This procedure fills in the structure parent,child
+    # TODO WARNING 'disease_id' is not being used, is that on purpose?
     def set_locationIds_structure(self, disease_id, disease):
+        """
+        Populate possible parentage entries between the given disease ID and the disease information object in the
+        current EFO data model instance
+
+        :param disease_id: WARNING! This is supposed to be the parent ID, but it's not used in this method's logic
+        :param disease: disease information object
+        """
         collection = None
         if "unionOf" in disease:
             collection = disease["unionOf"]["@list"]
@@ -185,6 +286,15 @@ class EFO(object):
                     self.parent_child_tuples.append((disease["@id"], elem))
 
     def load_type_class(self, disease, disease_id):
+        """
+        For the given disease ID and disease information object, set, in the current EFO data model instance, all the
+        information related to labeling, definition, therapeutic areas, synonyms, phenotypes, parents, etc.
+
+        Unless the given disease information is about a location ID.
+
+        :param disease: disease information object
+        :param disease_id: disease ID
+        """
         if not disease["@id"].startswith('_:'):
             code = self.get_prefix(disease_id) + disease_id
             self.init_disease(disease_id, code)
@@ -198,19 +308,35 @@ class EFO(object):
         else:
             self.set_locationIds_structure(disease_id, disease)
 
-    #
     def get_obsolete_info(self):
+        """
+        Compute 'obsolete data' in the current EFO data model
+        """
         for k, v in self.diseases_obsolete.items():
             if k in self.diseases:
                 self.diseases[k]['obsoleteTerms'] = list(self.diseases_obsolete[k])
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds
     def get_children(self, node):
+        """
+        For the given node, retrieve all its children according with the parentage information in the current EFO data
+        model instance
+
+        :param node: EFO node to get children from
+        :return: the list of children for the given EFO node
+        """
         return [x[1] for x in self.parent_child_tuples if x[0] == node]
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds.
     # Recursively retrieve the location.
     def get_nodes(self, node, path):
+        """
+        Compute all the location ID children under a given node recursively in the node subtree.
+
+        :param node: node to get the children for
+        :param path: already visited nodes
+        :return: all the location ID children for the given node, taking into account the already visited nodes
+        """
         data = set()
         data.add(node)
         path.add(node)
@@ -229,11 +355,17 @@ class EFO(object):
     # LocationIds are stored in the restriction tag.
     # The info are stored inside a structure json parent-child
     def get_locationIds(self):
+        """
+        Compute location IDs for the current EFO data model instance
+        """
+        # NOTE We could probably get a slight performance improvement here by making both lists into sets
         parents, children = zip(*self.parent_child_tuples)
         self.root_nodes = {x for x in parents if x not in children}
         for node in self.root_nodes:
             result = self.get_nodes(node, set())
-            self.all_path[node] = [x for x in list(result) if not x.startswith('_:')]
+            # self.all_path[node] = [x for x in list(result) if not x.startswith('_:')]
+            # A set is iterable, nevertheless, I leave the original line here ^ for future reference
+            self.all_path[node] = [x for x in result if not x.startswith('_:')]
 
         for k, v in self.has_location_ids.items():
             if k in self.all_path:
@@ -243,6 +375,9 @@ class EFO(object):
 
     # For any term it generates the dict id info.
     def generate(self):
+        """
+        For any term, compute the dictionary ID information for the current EFO data model instance
+        """
         with open(self.efo_input) as input:
             for line in input:
                 disease = json.loads(line)
@@ -260,6 +395,11 @@ class EFO(object):
 
     # Static file for alpha and production
     def save_static_disease_file(self, output_filename):
+        """
+        Produce the static disease file given a destination path for the current EFO data model instance.
+
+        :param output_filename: output file path
+        """
         valid_keys = ["parents", "id", "label"]
         with jsonlines.open(output_filename, mode='w') as writer:
             for id in self.diseases:
@@ -272,12 +412,17 @@ class EFO(object):
                 writer.write(entry)
 
     def save_diseases(self, output_filename):
+        """
+        Persist disease data for the current EFO data model instance to a given destination file path
+
+        :param output_filename: output file path
+        :return: the output file path where the data has been persisted
+        """
         with jsonlines.open(output_filename, mode='w') as writer:
             for disease in self.diseases:
                 # Set cannot be transform in Json. Transform into list.
                 if 'locationIds' in self.diseases[disease]:
-                    listValues = list(self.diseases[disease]['locationIds'])
-                    self.diseases[disease]['locationIds'] = listValues
+                    self.diseases[disease]['locationIds'] = list(self.diseases[disease]['locationIds'])
 
                 writer.write(self.diseases[disease])
 

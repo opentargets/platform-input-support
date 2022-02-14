@@ -1,46 +1,64 @@
 import logging
 import jsonlines
-
-from modules.common import replace_suffix
+from modules.common import set_suffix_timestamp
 
 logger = logging.getLogger(__name__)
+
 
 class HPOPhenotypes(object):
 
     def __init__(self, hpo_input):
+        """
+        Constructor
+
+        :param hpo_input: HPO input data file
+        """
         self.hpo_phenotypes_input = hpo_input
 
     def replace_HP_id(self, value):
+        """
+        Normalise IDs, 'HP:' to 'HP_'
+
+        :param value: ID to normalise
+        :return: normalised ID
+        """
         return value.replace("HP:", "HP_")
 
-
     def convert_string_to_set(self, value, convert_HP_term):
-        if self.empty_string_to_null(value) != None:
+        """
+        Convert a string to a set by splitting on ';', optionally normalising the term IDs
+
+        :param value: string to convert
+        :param convert_HP_term: whether or not each HP term in the string should be normalised
+        :return: a list of HP terms or None if the string was empty or None
+        """
+        if self.empty_string_to_null(value) is not None:
             if convert_HP_term:
-                new_values = []
-                values = set(value.split(";"))
-                for entry in values:
-                    new_values.append(self.replace_HP_id(entry))
-                return new_values
-            else:
-                return list(set(value.split(";")))
-        else:
-            return None
+                return [self.replace_HP_id(entry) for entry in set(value.split(";"))]
+            return list(set(value.split(";")))
+        return None
 
     def empty_string_to_null(self, value, convert_HP_term=False):
-        if value is not None:
-            if value == "":
-                return None
-            else:
-                if convert_HP_term:
-                    return self.replace_HP_id(value)
-                else:
-                    return value
-        else:
-            return None
+        """
+        Convert empty string to None or return the string, optionally normalised
+
+        :param value: string to convert
+        :param convert_HP_term: whether the non-empty string value should be normalised
+        """
+        if value is not None and value != "":
+            if convert_HP_term:
+                return self.replace_HP_id(value)
+            return value
+        return None
 
     def run(self, filename):
-        hpo_filename= replace_suffix(filename)
+        """
+        Convert input HPO Phenotype data into a new data model, persisting it in the given file path.
+
+        :param filename: destination file path with 'suffix' placeholder for the new data model
+        :return: file path where the new data model has been persisted
+        """
+        hpo_filename = set_suffix_timestamp(filename)
         with jsonlines.open(hpo_filename, mode='w') as writer:
             with open(self.hpo_phenotypes_input) as input:
                 for line in input:
@@ -56,7 +74,7 @@ class HPOPhenotypes(object):
                         data['onset'] = self.convert_string_to_set(row[6], True)
                         data['frequency'] = self.empty_string_to_null(row[7], True)
                         data['sex'] = self.empty_string_to_null(row[8])
-                        data['modifiers'] = self.convert_string_to_set(row[9],True)
+                        data['modifiers'] = self.convert_string_to_set(row[9], True)
                         data['aspect'] = row[10]
                         data['biocuration'] = row[11].rstrip()
                         data['resource'] = 'HPO'
