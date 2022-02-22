@@ -60,7 +60,7 @@ class OpenfdaHelper(object):
                         event_data = json.load(compressedf)
                         if event_data['results']:
                             for result in event_data['results']:
-                                inflatedf.write(json.dumps(result))
+                                inflatedf.write("{}\n".format(json.dumps(result)))
                         else:
                             logger.warning(
                                 "NO EVENT DATA RESULTS for event file '{}', source URL '{}', description '{}'".format(
