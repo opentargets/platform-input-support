@@ -130,7 +130,7 @@ evidence:
     output_spark_dir: cosmic-{suffix}
     excludes: hallmarks
     path: evidence-files
-  - bucket: otar008-chembl
+  - bucket: otar000-evidence_input/ChEMBL/json
     output_filename: chembl-{suffix}.json.gz
     output_spark_dir: chembl-{suffix}
     path: evidence-files
