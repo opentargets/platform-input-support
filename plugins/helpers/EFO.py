@@ -209,6 +209,7 @@ class EFO(object):
         elif (simple_id.group() in 'Orphanet_'):
             return "http://www.orpha.net/ORDO/"
         else:
+            logger.error("Match fail for {}".format(id))
             return "http://purl.obolibrary.org/obo/"
 
     def extract_id_from_uri(self, uri):
