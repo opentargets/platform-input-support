@@ -139,7 +139,7 @@ evidence:
     output_spark_dir: genetics-portal-evidences-{suffix}
     path: evidence-files
   - bucket: otar010-atlas
-    output_filename: atlas-{suffix}.json.gz
+    output_filename: atlas-{suffix}.json.bz2
     output_spark_dir: atlas-{suffix}
     path: evidence-files
   - bucket: otar011-uniprot
