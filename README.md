@@ -17,6 +17,7 @@ List of available steps:
 - Reactome
 - SO
 - Target
+- Literature
 
 Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the file can be processed in order to generate a new resource.
 The final files are located under the output directory while the files used for the computation are saved under stages. 
