@@ -139,7 +139,7 @@ evidence:
     output_spark_dir: genetics-portal-evidences-{suffix}
     path: evidence-files
   - bucket: otar010-atlas
-    output_filename: atlas-{suffix}.json.gz
+    output_filename: atlas-{suffix}.json.bz2
     output_spark_dir: atlas-{suffix}
     path: evidence-files
   - bucket: otar011-uniprot
@@ -256,7 +256,7 @@ interactions:
 mousephenotypes:
   gs_downloads_latest:
   - bucket: otar001-core/MousePhenotypes
-    output_filename: mousePhenotypes-{suffix}.json.gz
+    output_filename: mouse_phenotypes-{suffix}.json.gz
     path: mouse-phenotypes-inputs
 openfda:
   http_downloads:
@@ -310,7 +310,7 @@ target:
     output_filename: cosmic-hallmarks-{suffix}.tsv.gz
     path: target-inputs/hallmarks
     includes: hallmarks
-  - bucket: otar001-core/TEPs/data_files
+  - bucket: otar001-core/TEPs
     output_filename: tep-{suffix}.json.gz
     path: target-inputs/tep
   - bucket: otar001-core/ChemicalProbes/annotation
