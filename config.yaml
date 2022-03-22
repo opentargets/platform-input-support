@@ -11,8 +11,8 @@ disease:
     output_filename: hpo-phenotypes-{suffix}.jsonl
     path: ontology-inputs
    efo:
-    uri: https://github.com/EBISPOT/efo/releases/download/v3.38.0/efo_otar_slim.owl
-    output_filename: ontology-efo-v3.38.0.jsonl
+    uri: https://github.com/EBISPOT/efo/releases/download/v3.40.0/efo_otar_slim.owl
+    output_filename: ontology-efo-v3.40.0.jsonl
     path: ontology-inputs
     owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
     diseases_static_file: diseases_efo.jsonl
