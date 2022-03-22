@@ -42,6 +42,8 @@ class Utils(object):
         # cmd_result = shutil.which("gsutil")
         # cmd = "gsutil -q -m cp -r " + self.yaml.output_dir + "/* gs://" + destination_bucket + "/"
         # subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        logger.debug("gsutil_multi_copy_to - using gsutil for source '{}', destination '{}'"
+                     .format(os.path.join(self.output_dir, "*"), "gs://{}/".format(destination_bucket)))
         proc = subprocess.Popen(["gsutil",
                                  "-m",
                                  "cp",
