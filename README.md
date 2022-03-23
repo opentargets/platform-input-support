@@ -55,8 +55,8 @@ bash Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 ```
 
-## Run Docker image using quay repository
-Platform input support is available as docker image. The image is stored using Quay.io repository
+## Running PIS via Docker image
+Platform input support is available as docker image, a _Dockerfile_ is provided for building the container image.
 
 For instance
 ```
@@ -64,13 +64,19 @@ mkdir /tmp/pis
 sudo docker run 
  -v path_with_credentials:/usr/src/app/cred 
  -v /tmp/pis:/usr/src/app/output 
- quay.io/opentargets/platform-input-support:master 
+ pis_docker_image 
  -steps Evidence 
  -gkey /usr/src/app/cred/open-targets-gac.json 
  -gb ot-team/pis_output/docker
 ```
 
-For using an external config file, simply add the option -c and the volume where the config file is available
+When providing a Google Cloud key file, please, make sure that it is mounted within the container at this exact mount point
+```
+/srv/credentials/open-targets-gac.json
+```
+This allows the activation of the service account when running the container image, so _gcloud-sdk_ can work with the destination Google Cloud Storage Bucket.
+
+For using an external config file, simply add the option -c and the path where the config file is available
 
 
 
@@ -116,7 +122,7 @@ You can use `singularity/ebi.sh` to run PIS inside the EBI infrastructure.
  ./singularity docker_tag_image step google_storage_path 
 ```
 where 
-* docker_tag_image: docker image tag (quay.io)
+* docker_tag_image: docker image tag (quay.io) (**under review**)
 * step : Eg. drug 
 * google_storage_path: gs bucket [not mandatory]
 
