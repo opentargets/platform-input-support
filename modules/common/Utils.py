@@ -66,6 +66,8 @@ class Utils(object):
                 break
             else:
                 completed = True
+                logger.info("gsutil copy for source '{}', destination '{}' completed!"
+                            .format(os.path.join(self.output_dir, "*"), "gs://{}/".format(destination_bucket)))
                 break
         if not completed:
             proc.kill()
