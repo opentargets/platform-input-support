@@ -170,10 +170,6 @@ evidence:
     output_filename: phenodigm-{suffix}.json.gz
     output_spark_dir: phenodigm-{suffix}
     path: evidence-files
-  - bucket: otar000-evidence_input/PheWAS/json
-    output_filename: phewas_catalog-{suffix}.json.gz
-    output_spark_dir: phewas-catalog-{suffix}
-    path: evidence-files
   - bucket: otar000-evidence_input/PROGENy/json
     output_filename: progeny-{suffix}.json.gz
     output_spark_dir: progeny-{suffix}
