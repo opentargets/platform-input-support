@@ -186,6 +186,10 @@ evidence:
     output_filename: sysbio-{suffix}.json.gz
     output_spark_dir: sysbio-{suffix}
     path: evidence-files
+  - bucket: otar000-evidence_input/GeneBurden/json
+    output_filename: gene_burden-{suffix}.json.gz
+    output_spark_dir: gene_burden-{suffix}
+    path: evidence-files
 expression:
   http_downloads:
   - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
