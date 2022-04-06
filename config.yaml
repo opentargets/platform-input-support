@@ -247,7 +247,7 @@ interactions:
     output_filename: intact-interactors-{suffix}.json
     path: interactions-inputs
   http_downloads:
-  - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.0.txt.gz
+  - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
     output_filename: string-interactions-{suffix}.json.gz
     path: interactions-inputs
   - uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.105.chr.gtf.gz
