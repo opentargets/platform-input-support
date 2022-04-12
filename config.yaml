@@ -166,9 +166,9 @@ evidence:
     output_filename: intogen-{suffix}.json.gz
     output_spark_dir: intogen-{suffix}
     path: evidence-files
-  - bucket: otar000-evidence_input/PhenoDigm/json
-    output_filename: phenodigm-{suffix}.json.gz
-    output_spark_dir: phenodigm-{suffix}
+  - bucket: otar000-evidence_input/IMPC/json
+    output_filename: impc-{suffix}.json.gz
+    output_spark_dir: impc-{suffix}
     path: evidence-files
   - bucket: otar000-evidence_input/PROGENy/json
     output_filename: progeny-{suffix}.json.gz
