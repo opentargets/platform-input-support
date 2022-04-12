@@ -218,7 +218,7 @@ go:
 homologues:
   uri: ftp://ftp.ensembl.org/pub/release-{release}/json/
   path: target-inputs/homologue
-  release: 105
+  release: 106
   jq: ".genes[] | [.id, .name] | @tsv"
   resources:
       - 'caenorhabditis_elegans'
