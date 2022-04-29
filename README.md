@@ -225,7 +225,7 @@ optional arguments:
   -gb GOOGLE_BUCKET, --google_bucket GOOGLE_BUCKET
                         Copy the files from the output directory to a specific
                         google bucket (default: None)
-  -o OUTPUT_DIR, --output_dir OUTPUT_DIR
+  -o OUTPUT_DIR, --output OUTPUT_DIR
                         By default, the files are generated in the root
                         directory [env var: OT_OUTPUT_DIR] (default: None)
   -t, --thread          Run the script with thread [env var: OT_THREAD]
