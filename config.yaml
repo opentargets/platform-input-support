@@ -189,26 +189,26 @@ evidence:
 expression:
   http_downloads:
   - uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/curation.tsv
-    output_filename: expression_hierarchy_curation-{suffix}.tsv
+    output_filename: expression_hierarchy_curation.tsv
     path: expression-inputs
   gs_downloads_latest:
   - bucket: atlas_baseline_expression/baseline_expression_binned
-    output_filename: baseline_expression_binned-{suffix}.tsv
+    output_filename: baseline_expression_binned.tsv
     path: expression-inputs
   - bucket: atlas_baseline_expression/baseline_expression_counts
-    output_filename: baseline_expression_counts-{suffix}.tsv
+    output_filename: baseline_expression_counts.tsv
     path: expression-inputs
   - bucket: atlas_baseline_expression/baseline_expression_zscore_binned
-    output_filename: baseline_expression_zscore_binned-{suffix}.tsv
+    output_filename: baseline_expression_zscore_binned.tsv
     path: expression-inputs
   etl:
     tissue_translation_map:
       uri: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
-      output_filename: tissue-translation-map-{suffix}.json
+      output_filename: tissue-translation-map.json
       path: expression-inputs
     normal_tissues:
       uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
-      output_filename: normal_tissue-{suffix}.tsv.gz
+      output_filename: normal_tissue.tsv.gz
       path: expression-inputs
 go:
   http_downloads:
