@@ -244,13 +244,13 @@ interactions:
     output_filename: HUMAN_9606_idmapping.dat.gz
     path: interactions-inputs
   - uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
-    output_filename: intact-interactors-{suffix}.json
+    output_filename: intact-interactors.json
     path: interactions-inputs
   http_downloads:
   - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
-    output_filename: string-interactions-{suffix}.json.gz
+    output_filename: string-interactions.json.gz
     path: interactions-inputs
-  - uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.105.chr.gtf.gz
+  - uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.106.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
 mousephenotypes:
