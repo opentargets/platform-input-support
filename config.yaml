@@ -106,85 +106,85 @@ drug:
 evidence:
   gs_downloads_latest:
   - bucket: otar000-evidence_input/CancerBiomarkers/json
-    output_filename: cancerbiomarkers-{suffix}.json.gz
-    output_spark_dir: cancerbiomarkers-{suffix}
+    output_filename: cancerbiomarkers.json.gz
+    output_spark_dir: cancerbiomarkers
     path: evidence-files
   - bucket: otar000-evidence_input/Orphanet/json
-    output_filename: orphanet-{suffix}.json.gz
-    output_spark_dir: orphanet-{suffix}
+    output_filename: orphanet.json.gz
+    output_spark_dir: orphanet
     path: evidence-files
   - bucket: otar000-evidence_input/ClinGen/json
-    output_filename: clingen-{suffix}.json.gz
-    output_spark_dir: clingen-{suffix}
+    output_filename: clingen.json.gz
+    output_spark_dir: clingen
     path: evidence-files
   - bucket: otar000-evidence_input/CRISPR/json
-    output_filename: crispr-{suffix}.json.gz
-    output_spark_dir: crispr-{suffix}
+    output_filename: crispr.json.gz
+    output_spark_dir: crispr
     path: evidence-files
   - bucket: otar006-reactome
-    output_filename: reactome-{suffix}.json.gz
-    output_spark_dir: reactome-{suffix}
+    output_filename: reactome.json.gz
+    output_spark_dir: reactome
     path: evidence-files
   - bucket: otar007-cosmic
-    output_filename: cosmic-{suffix}.json.gz
-    output_spark_dir: cosmic-{suffix}
+    output_filename: cosmic.json.gz
+    output_spark_dir: cosmic
     excludes: hallmarks
     path: evidence-files
   - bucket: otar000-evidence_input/ChEMBL/json
-    output_filename: chembl-{suffix}.json.gz
-    output_spark_dir: chembl-{suffix}
+    output_filename: chembl.json.gz
+    output_spark_dir: chembl
     path: evidence-files
   - bucket: otar000-evidence_input/Genetics_portal/json/
-    output_filename: genetics-portal-evidences-{suffix}.json.gz
-    output_spark_dir: genetics-portal-evidences-{suffix}
+    output_filename: genetics-portal-evidences.json.gz
+    output_spark_dir: genetics-portal-evidences
     path: evidence-files
   - bucket: otar010-atlas
-    output_filename: atlas-{suffix}.json.bz2
-    output_spark_dir: atlas-{suffix}
+    output_filename: atlas.json.bz2
+    output_spark_dir: atlas
     path: evidence-files
   - bucket: otar011-uniprot
-    output_filename: uniprot-{suffix}.json.gz
-    output_spark_dir: uniprot-{suffix}
+    output_filename: uniprot.json.gz
+    output_spark_dir: uniprot
     path: evidence-files
   - bucket: otar012-eva
-    output_filename: eva-{suffix}.json.gz
-    output_spark_dir: eva-{suffix}
+    output_filename: eva.json.gz
+    output_spark_dir: eva
     path: evidence-files
   - bucket: otar000-evidence_input/EPMC/json
-    output_filename: epmc-{suffix}.json.gz
-    output_spark_dir: epmc-{suffix}
+    output_filename: epmc.json.gz
+    output_spark_dir: epmc
     path: evidence-files
   - bucket: otar000-evidence_input/Gene2Phenotype/json
-    output_filename: gene2phenotype-{suffix}.json.gz
-    output_spark_dir: gene2phenotype-{suffix}
+    output_filename: gene2phenotype.json.gz
+    output_spark_dir: gene2phenotype
     path: evidence-files
   - bucket: otar000-evidence_input/GenomicsEngland/json
-    output_filename: genomics_england-{suffix}.json.gz
-    output_spark_dir: genomics-england-{suffix}
+    output_filename: genomics_england.json.gz
+    output_spark_dir: genomics-england
     path: evidence-files
   - bucket: otar000-evidence_input/IntOgen/json
-    output_filename: intogen-{suffix}.json.gz
-    output_spark_dir: intogen-{suffix}
+    output_filename: intogen.json.gz
+    output_spark_dir: intogen
     path: evidence-files
   - bucket: otar000-evidence_input/IMPC/json
-    output_filename: impc-{suffix}.json.gz
-    output_spark_dir: impc-{suffix}
+    output_filename: impc.json.gz
+    output_spark_dir: impc
     path: evidence-files
   - bucket: otar000-evidence_input/PROGENy/json
-    output_filename: progeny-{suffix}.json.gz
-    output_spark_dir: progeny-{suffix}
+    output_filename: progeny.json.gz
+    output_spark_dir: progeny
     path: evidence-files
   - bucket: otar000-evidence_input/SLAPEnrich/json
-    output_filename: slapenrich-{suffix}.json.gz
-    output_spark_dir: slapenrich-{suffix}
+    output_filename: slapenrich.json.gz
+    output_spark_dir: slapenrich
     path: evidence-files
   - bucket: otar000-evidence_input/SysBio/json
-    output_filename: sysbio-{suffix}.json.gz
-    output_spark_dir: sysbio-{suffix}
+    output_filename: sysbio.json.gz
+    output_spark_dir: sysbio
     path: evidence-files
   - bucket: otar000-evidence_input/GeneBurden/json
-    output_filename: gene_burden-{suffix}.json.gz
-    output_spark_dir: gene_burden-{suffix}
+    output_filename: gene_burden.json.gz
+    output_spark_dir: gene_burden
     path: evidence-files
 expression:
   http_downloads:
