@@ -256,7 +256,7 @@ interactions:
 mousephenotypes:
   gs_downloads_latest:
   - bucket: otar001-core/MousePhenotypes
-    output_filename: mouse_phenotypes-{suffix}.json.gz
+    output_filename: mouse_phenotypes.json.gz
     path: mouse-phenotypes-inputs
 openfda:
   http_downloads:
