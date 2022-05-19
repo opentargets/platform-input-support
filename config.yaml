@@ -34,7 +34,7 @@ drug:
      output_filename: 'drugbank_vocabulary.csv'
   gs_downloads_latest:
    - bucket: otar001-core/DrugBank/annotation
-     output_filename: drugbank-{suffix}.csv.gz
+     output_filename: drugbank.csv.gz
      path: chembl-inputs
   etl:
     chembl:
