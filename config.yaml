@@ -285,54 +285,54 @@ so:
 target:
   http_downloads:
   - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
-    output_filename: hgnc_complete_set-{suffix}.json
+    output_filename: hgnc_complete_set.json
     path: target-inputs/genenames
   - uri: https://reactome.org/download/current/Ensembl2Reactome.txt
     output_filename: Ensembl2Reactome.txt
     path: target-inputs/reactome
   - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
-    output_filename: human_all_hcop_sixteen_column-{suffix}.txt.gz
+    output_filename: human_all_hcop_sixteen_column.txt.gz
     path: target-inputs/genenames
   - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
     output_filename: gene_identifiers_latest.csv.gz
     path: target-inputs/project-scores
   - uri: https://www.uniprot.org/uniprot/?query=reviewed%3Ayes%2BAND%2Borganism%3A9606&compress=yes&format=txt
-    output_filename: uniprot-{suffix}.txt.gz
+    output_filename: uniprot.txt.gz
     path: target-inputs/uniprot
   - uri: https://www.uniprot.org/locations/?query=*&format=tab&force=true&columns=id&compress=yes
-    output_filename: uniprot-ssl-{suffix}.tsv.gz
+    output_filename: uniprot-ssl.tsv.gz
     path: target-inputs/uniprot
   gs_downloads_latest:
   - bucket: otar001-core/subcellularLocations
-    output_filename: subcellular_locations_ssl-{suffix}.tsv
+    output_filename: subcellular_locations_ssl.tsv
     path: target-inputs/hpa
   - bucket: otar007-cosmic
-    output_filename: cosmic-hallmarks-{suffix}.tsv.gz
+    output_filename: cosmic-hallmarks.tsv.gz
     path: target-inputs/hallmarks
     includes: hallmarks
   - bucket: otar001-core/TEPs
-    output_filename: tep-{suffix}.json.gz
+    output_filename: tep.json.gz
     path: target-inputs/tep
   - bucket: otar001-core/ChemicalProbes/annotation
-    output_filename: chemicalprobes-{suffix}.json
+    output_filename: chemicalprobes.json
     path: target-inputs/chemicalprobes
   - bucket: otar001-core/TargetSafety/data_files/adverse_events
-    output_filename: adverse_event_safety-{suffix}.json
+    output_filename: adverse_event_safety.json
     path: target-inputs/safety/adverse_events
   - bucket: otar001-core/TargetSafety/data_files/safety_risk/
-    output_filename: sr-{suffix}.json
+    output_filename: sr.json
     path: target-inputs/safety/safety_risk
   - bucket: otar001-core/TargetSafety/data_files/toxcast/
-    output_filename: ToxCast-{suffix}.tsv
+    output_filename: ToxCast.tsv
     path: target-inputs/safety/toxcast
   - bucket: otar001-core/Tractability
-    output_filename: tractability-{suffix}.tsv
+    output_filename: tractability.tsv
     path: target-inputs/tractability
   ftp_downloads:
-  - uri: ftp://ftp.ensembl.org/pub/release-105/tsv/ensembl-compara/homologies/homo_sapiens/Compara.105.protein_default.homologies.tsv.gz
+  - uri: ftp://ftp.ensembl.org/pub/release-106/tsv/ensembl-compara/homologies/homo_sapiens/Compara.106.protein_default.homologies.tsv.gz
     output_filename: cpd.tsv.gz
     path: target-inputs/homologue
-  - uri: ftp://ftp.ensembl.org/pub/release-105/tsv/ensembl-compara/homologies/homo_sapiens/Compara.105.ncrna_default.homologies.tsv.gz
+  - uri: ftp://ftp.ensembl.org/pub/release-106/tsv/ensembl-compara/homologies/homo_sapiens/Compara.106.ncrna_default.homologies.tsv.gz
     output_filename: crna.tsv.gz
     path: target-inputs/homologue
   - uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
