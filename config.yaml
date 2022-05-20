@@ -271,10 +271,10 @@ openfda:
 reactome:
   http_downloads:
   - uri: https://reactome.org/download/current/ReactomePathways.txt
-    output_filename: ReactomePathways-{suffix}.txt
+    output_filename: ReactomePathways.txt
     path: reactome-inputs
   - uri: https://reactome.org/download/current/ReactomePathwaysRelation.txt
-    output_filename: ReactomePathwaysRelation-{suffix}.txt
+    output_filename: ReactomePathwaysRelation.txt
     path: reactome-inputs
 so:
   etl:
