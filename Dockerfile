@@ -9,7 +9,7 @@ RUN apt update; \
     apt install -y google-cloud-cli ; \
     mkdir /tmp; \
     cd /tmp; \
-    wget --no-check-certificate -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-4.4.0.tar.gz; \
+    wget --no-check-certificate -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-4.5.0.tar.gz; \
     tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1 -C /usr/share/
 
 ARG conda_env=pis-py3.8
