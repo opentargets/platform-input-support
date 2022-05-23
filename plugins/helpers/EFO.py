@@ -254,7 +254,6 @@ class EFO(object):
         :param id: string to exctract the ID from
         :return: the standardised version of the extracted ID
         """
-        logger.debug("[EFO Helper]\t\t\t---| Get ID |---")
         ordo = re.sub(r'^.*?ORDO/', '', id)
         return re.sub(r'^.*?:', '', ordo)
 
@@ -268,7 +267,6 @@ class EFO(object):
         :param disease_id: disease ID
         :return: True if 'owl:deprecated' was present in the given disease information object, False otherwise
         """
-        logger.debug("[EFO Helper]\t\t\t---| Is Obsolete |---")
         if 'owl:deprecated' in disease:
             if 'IAO_0100001' in disease:
                 for term in self.extract_id_from_uri(disease['IAO_0100001']):
@@ -289,7 +287,6 @@ class EFO(object):
         :param disease_id: WARNING! This is supposed to be the parent ID, but it's not used in this method's logic
         :param disease: disease information object
         """
-        logger.debug("[EFO Helper]\t\t\t---| Set Location IDs Structure |---")
         collection = None
         if "unionOf" in disease:
             collection = disease["unionOf"]["@list"]
@@ -311,7 +308,6 @@ class EFO(object):
         :param disease: disease information object
         :param disease_id: disease ID
         """
-        logger.debug("[EFO Helper]\t\t\t---| Load Type Class |---")
         if not disease["@id"].startswith('_:'):
             code = self.get_prefix(disease_id) + disease_id
             self.init_disease(disease_id, code)
@@ -329,7 +325,6 @@ class EFO(object):
         """
         Compute 'obsolete data' in the current EFO data model
         """
-        logger.debug("[EFO Helper]\t\t\t---| Get Obsolete Info |---")
         for k, v in self.diseases_obsolete.items():
             if k in self.diseases:
                 self.diseases[k]['obsoleteTerms'] = list(self.diseases_obsolete[k])
@@ -356,7 +351,6 @@ class EFO(object):
         :param path: already visited nodes
         :return: all the location ID children for the given node, taking into account the already visited nodes
         """
-        logger.debug("[EFO Helper]\t\t\t---| Get nodes |---")
         data = set()
         data.add(node)
         path.add(node)
@@ -381,7 +375,6 @@ class EFO(object):
         """
         Compute location IDs for the current EFO data model instance
         """
-        logger.debug("[EFO Helper]\t\t\t---| Get Location IDs |---")
         # NOTE We could probably get a slight performance improvement here by making both lists into sets
         parents, children = zip(*self.parent_child_tuples)
         self.root_nodes = {x for x in parents if x not in children}
@@ -402,7 +395,6 @@ class EFO(object):
         """
         For any term, compute the dictionary ID information for the current EFO data model instance
         """
-        logger.debug("[EFO Helper]\t\t\t---| Generate |---")
         with open(self.efo_input) as input:
             for line in input:
                 disease = json.loads(line)
@@ -425,7 +417,6 @@ class EFO(object):
 
         :param output_filename: output file path
         """
-        logger.debug("[EFO Helper]\t\t\t---| Save Static Disease File |---")
         valid_keys = ["parents", "id", "label"]
         with jsonlines.open(output_filename, mode='w') as writer:
             for id in self.diseases:
@@ -444,7 +435,6 @@ class EFO(object):
         :param output_filename: output file path
         :return: the output file path where the data has been persisted
         """
-        logger.debug("[EFO Helper]\t\t\t---| Save Disease |---")
         with jsonlines.open(output_filename, mode='w') as writer:
             for disease in self.diseases:
                 # Set cannot be transform in Json. Transform into list.

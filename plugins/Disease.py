@@ -116,11 +116,7 @@ class Disease(IPlugin):
         :param cmd_conf: command line tools configuration
         """
         riot = Riot(cmd_conf)
-        logger.debug("Get EFO        ------------------------------------------------->")
         self.get_ontology_EFO(conf, output, riot)
-        logger.debug("Get MONDO      ------------------------------------------------->")
         self.get_ontology_mondo(conf, output, riot)
-        logger.debug("Get HPO        ------------------------------------------------->")
         self.get_ontology_hpo(conf, output, riot)
-        logger.debug("Get PHENOTYPES ------------------------------------------------->")
         self.get_hpo_phenotypes(conf, output)
