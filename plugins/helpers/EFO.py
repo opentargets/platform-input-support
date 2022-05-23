@@ -53,6 +53,7 @@ class EFO(object):
         :param id: disease ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Phenotypes |---")
         if 'hasDbXref' in disease:
             self.diseases[id]['dbXRefs'] = disease['hasDbXref']
 
@@ -67,6 +68,7 @@ class EFO(object):
         :param id: disease ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Definition |---")
         if 'IAO_0000115' in disease:
             if isinstance(disease['IAO_0000115'], str):
                 # The case where the disease definition is just one string
@@ -86,6 +88,7 @@ class EFO(object):
         :param value: data where to strip the new line character from
         :return: a list of strings where the new line character has been stripped off
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Values |---")
         if isinstance(value, str):
             return [value.strip('\n')]
         else:
@@ -98,6 +101,7 @@ class EFO(object):
         :param id: EFO model entry ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set EFO Synonyms |---")
         synonyms_details = {}
         if 'hasExactSynonym' in disease and len(disease['hasExactSynonym']) > 0:
             synonyms_details['hasExactSynonym'] = self.get_values(disease['hasExactSynonym'])
@@ -121,6 +125,7 @@ class EFO(object):
         :param phenotypes: Phenotypes information object
         :return: a list of the extracted phenotypes
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Phenotypes |---")
         if isinstance(phenotypes, str):
             return [self.get_id(phenotypes)]
         else:
@@ -136,6 +141,7 @@ class EFO(object):
         :param id: EFO data model entry ID
         :param disease: disease information object to extract SKO information from
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Phenotypes Old |---")
         if "related" in disease:
             self.diseases[id]['sko'] = self.get_phenotypes(disease["related"])
 
@@ -148,6 +154,7 @@ class EFO(object):
         :param id: ID for the EFO entry
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Therapeutic Area |---")
         if 'oboInOwl:inSubset' in disease:
             self.diseases[id]['isTherapeuticArea'] = True
         else:
@@ -160,6 +167,7 @@ class EFO(object):
         :param id: EFO entry ID in the current data model
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Label |---")
         if 'label' in disease:
             if isinstance(disease['label'], str):
                 self.diseases[id]['label'] = disease['label'].strip('\n')
@@ -176,6 +184,7 @@ class EFO(object):
         :param id: term ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Parents |---")
         if 'subClassOf' in disease:
             parents = []
             for father in disease['subClassOf']:
@@ -192,6 +201,7 @@ class EFO(object):
 
         :return: the given element string with its first ':' replaced by '_'
         """
+        logger.debug("[EFO Helper]\t\t\t---| Extract ID |---")
         return elem.replace(":", "_")
 
     def get_prefix(self, id):
@@ -203,6 +213,7 @@ class EFO(object):
         """
         # We should probably externalise this in the configuration file, so we don't need to potentially change the code
         # in the future. Alternatively, we could use resolution services like https://identifiers.org
+        logger.debug("[EFO Helper]\t\t\t---| Get Prefix |---")
         simple_id = re.match(r'^(.+?)_', id)
         if simple_id.group() in ["EFO_", "OTAR_"]:
             return "http://www.ebi.ac.uk/efo/"
@@ -219,6 +230,7 @@ class EFO(object):
         :param uri: URI information to extract term IDs from
         :return: the list of term IDs that have been extracted from the given URI data
         """
+        logger.debug("[EFO Helper]\t\t\t---| Extract ID from URI |---")
         new_terms = []
         uris_to_process = []
         if isinstance(uri, str):
@@ -242,6 +254,7 @@ class EFO(object):
         :param id: string to exctract the ID from
         :return: the standardised version of the extracted ID
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get ID |---")
         ordo = re.sub(r'^.*?ORDO/', '', id)
         return re.sub(r'^.*?:', '', ordo)
 
@@ -255,6 +268,7 @@ class EFO(object):
         :param disease_id: disease ID
         :return: True if 'owl:deprecated' was present in the given disease information object, False otherwise
         """
+        logger.debug("[EFO Helper]\t\t\t---| Is Obsolete |---")
         if 'owl:deprecated' in disease:
             if 'IAO_0100001' in disease:
                 for term in self.extract_id_from_uri(disease['IAO_0100001']):
@@ -275,6 +289,7 @@ class EFO(object):
         :param disease_id: WARNING! This is supposed to be the parent ID, but it's not used in this method's logic
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Location IDs Structure |---")
         collection = None
         if "unionOf" in disease:
             collection = disease["unionOf"]["@list"]
@@ -296,6 +311,7 @@ class EFO(object):
         :param disease: disease information object
         :param disease_id: disease ID
         """
+        logger.debug("[EFO Helper]\t\t\t---| Load Type Class |---")
         if not disease["@id"].startswith('_:'):
             code = self.get_prefix(disease_id) + disease_id
             self.init_disease(disease_id, code)
@@ -313,6 +329,7 @@ class EFO(object):
         """
         Compute 'obsolete data' in the current EFO data model
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Obsolete Info |---")
         for k, v in self.diseases_obsolete.items():
             if k in self.diseases:
                 self.diseases[k]['obsoleteTerms'] = list(self.diseases_obsolete[k])
@@ -326,6 +343,7 @@ class EFO(object):
         :param node: EFO node to get children from
         :return: the list of children for the given EFO node
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Children |---")
         return [x[1] for x in self.parent_child_tuples if x[0] == node]
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds.
@@ -338,6 +356,7 @@ class EFO(object):
         :param path: already visited nodes
         :return: all the location ID children for the given node, taking into account the already visited nodes
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get nodes |---")
         data = set()
         data.add(node)
         path.add(node)
@@ -345,11 +364,14 @@ class EFO(object):
         if children:
             lista = set()
             for child in children:
-                if not child.startswith("obo:"):
-                    lista.update(self.get_nodes(child, path))
-                else:
-                    child_clean_code = re.sub(r'^.*?:', '', child)
-                    lista.add(child_clean_code)
+                try:
+                    if not child.startswith("obo:"):
+                        lista.update(self.get_nodes(child, path))
+                    else:
+                        child_clean_code = re.sub(r'^.*?:', '', child)
+                        lista.add(child_clean_code)
+                except Exception as e:
+                    logger.error("Error processing child: {}\nERROR: {}".format(json.dumps(child), e))
             data.update(lista)
         return data
 
@@ -359,6 +381,7 @@ class EFO(object):
         """
         Compute location IDs for the current EFO data model instance
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Location IDs |---")
         # NOTE We could probably get a slight performance improvement here by making both lists into sets
         parents, children = zip(*self.parent_child_tuples)
         self.root_nodes = {x for x in parents if x not in children}
@@ -379,6 +402,7 @@ class EFO(object):
         """
         For any term, compute the dictionary ID information for the current EFO data model instance
         """
+        logger.debug("[EFO Helper]\t\t\t---| Generate |---")
         with open(self.efo_input) as input:
             for line in input:
                 disease = json.loads(line)
@@ -401,6 +425,7 @@ class EFO(object):
 
         :param output_filename: output file path
         """
+        logger.debug("[EFO Helper]\t\t\t---| Save Static Disease File |---")
         valid_keys = ["parents", "id", "label"]
         with jsonlines.open(output_filename, mode='w') as writer:
             for id in self.diseases:
@@ -419,6 +444,7 @@ class EFO(object):
         :param output_filename: output file path
         :return: the output file path where the data has been persisted
         """
+        logger.debug("[EFO Helper]\t\t\t---| Save Disease |---")
         with jsonlines.open(output_filename, mode='w') as writer:
             for disease in self.diseases:
                 # Set cannot be transform in Json. Transform into list.
