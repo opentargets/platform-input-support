@@ -358,14 +358,11 @@ class EFO(object):
         if children:
             lista = set()
             for child in children:
-                try:
-                    if not child.startswith("obo:"):
-                        lista.update(self.get_nodes(child, path))
-                    else:
-                        child_clean_code = re.sub(r'^.*?:', '', child)
-                        lista.add(child_clean_code)
-                except Exception as e:
-                    logger.error("Error processing child: {}\nERROR: {}".format(json.dumps(child), e))
+                if not child.startswith("obo:"):
+                    lista.update(self.get_nodes(child, path))
+                else:
+                    child_clean_code = re.sub(r'^.*?:', '', child)
+                    lista.add(child_clean_code)
             data.update(lista)
         return data
 
