@@ -53,6 +53,7 @@ class EFO(object):
         :param id: disease ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Phenotypes |---")
         if 'hasDbXref' in disease:
             self.diseases[id]['dbXRefs'] = disease['hasDbXref']
 
@@ -67,6 +68,7 @@ class EFO(object):
         :param id: disease ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Definition |---")
         if 'IAO_0000115' in disease:
             if isinstance(disease['IAO_0000115'], str):
                 # The case where the disease definition is just one string
@@ -86,6 +88,7 @@ class EFO(object):
         :param value: data where to strip the new line character from
         :return: a list of strings where the new line character has been stripped off
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Values |---")
         if isinstance(value, str):
             return [value.strip('\n')]
         else:
@@ -98,6 +101,7 @@ class EFO(object):
         :param id: EFO model entry ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set EFO Synonyms |---")
         synonyms_details = {}
         if 'hasExactSynonym' in disease and len(disease['hasExactSynonym']) > 0:
             synonyms_details['hasExactSynonym'] = self.get_values(disease['hasExactSynonym'])
@@ -121,6 +125,7 @@ class EFO(object):
         :param phenotypes: Phenotypes information object
         :return: a list of the extracted phenotypes
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Phenotypes |---")
         if isinstance(phenotypes, str):
             return [self.get_id(phenotypes)]
         else:
@@ -136,6 +141,7 @@ class EFO(object):
         :param id: EFO data model entry ID
         :param disease: disease information object to extract SKO information from
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Phenotypes Old |---")
         if "related" in disease:
             self.diseases[id]['sko'] = self.get_phenotypes(disease["related"])
 
@@ -148,6 +154,7 @@ class EFO(object):
         :param id: ID for the EFO entry
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Therapeutic Area |---")
         if 'oboInOwl:inSubset' in disease:
             self.diseases[id]['isTherapeuticArea'] = True
         else:
@@ -160,6 +167,7 @@ class EFO(object):
         :param id: EFO entry ID in the current data model
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Label |---")
         if 'label' in disease:
             if isinstance(disease['label'], str):
                 self.diseases[id]['label'] = disease['label'].strip('\n')
@@ -176,6 +184,7 @@ class EFO(object):
         :param id: term ID
         :param disease: disease information object
         """
+        logger.debug("[EFO Helper]\t\t\t---| Set Parents |---")
         if 'subClassOf' in disease:
             parents = []
             for father in disease['subClassOf']:
@@ -192,6 +201,7 @@ class EFO(object):
 
         :return: the given element string with its first ':' replaced by '_'
         """
+        logger.debug("[EFO Helper]\t\t\t---| Extract ID |---")
         return elem.replace(":", "_")
 
     def get_prefix(self, id):
@@ -203,6 +213,7 @@ class EFO(object):
         """
         # We should probably externalise this in the configuration file, so we don't need to potentially change the code
         # in the future. Alternatively, we could use resolution services like https://identifiers.org
+        logger.debug("[EFO Helper]\t\t\t---| Get Prefix |---")
         simple_id = re.match(r'^(.+?)_', id)
         if simple_id.group() in ["EFO_", "OTAR_"]:
             return "http://www.ebi.ac.uk/efo/"
@@ -219,6 +230,7 @@ class EFO(object):
         :param uri: URI information to extract term IDs from
         :return: the list of term IDs that have been extracted from the given URI data
         """
+        logger.debug("[EFO Helper]\t\t\t---| Extract ID from URI |---")
         new_terms = []
         uris_to_process = []
         if isinstance(uri, str):
@@ -326,6 +338,7 @@ class EFO(object):
         :param node: EFO node to get children from
         :return: the list of children for the given EFO node
         """
+        logger.debug("[EFO Helper]\t\t\t---| Get Children |---")
         return [x[1] for x in self.parent_child_tuples if x[0] == node]
 
     # LocationIds: This is part of the structure to retrieve the info about locationIds.
