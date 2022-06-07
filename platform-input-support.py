@@ -3,6 +3,7 @@ import logging.config
 
 # Custom modules
 import modules.cfg as cfg
+import manifest
 from modules.common.YAMLReader import YAMLReader
 from modules.RetrieveResource import RetrieveResource
 
@@ -26,6 +27,9 @@ def main():
     print_list_steps(yaml.get_list_keys())
     cfg.set_up_logging(args)
 
+    # Session's Manifest
+    manifest_service = manifest.get_manifest_service(args, yaml_dict)
+    # Resources retriever
     resources = RetrieveResource(args, yaml_dict)
     resources.run()
 

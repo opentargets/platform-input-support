@@ -1,6 +1,10 @@
 # Manifest file Models
 import time
 import typing
+import logging
+
+# Logging
+logger = logging.getLogger(__name__)
 
 # TODO - Global Data model
 class ManifestDocument:
@@ -9,6 +13,7 @@ class ManifestDocument:
         Constructor for the Manifest file root content
         """
         timestamp :float = time.time()
+        self.session :float = timestamp
         self.created :float = timestamp
         self.modified :float = timestamp
         self.steps :typing.Dict[str, ManifestStep] = dict()
@@ -19,7 +24,8 @@ class ManifestStep:
         timestamp :float = time.time()
         self.created :float = timestamp
         self.modified :float = timestamp
-        self.steps = typing.Dict[str, ManifestResource]
+        self.step :str = "NOT SPECIFIED"
+        self.steps :typing.Dict[str, ManifestResource] = dict()
 
 # TODO - Resource data model
 class ManifestResource:

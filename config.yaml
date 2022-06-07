@@ -4,6 +4,8 @@ config:
   riot: /usr/share/apache-jena/bin/riot
   jq: /usr/bin/jq
   java_vm: -Xmx6096M
+  manifest:
+    file_name: "manifest.json"
 disease:
   etl:
    hpo_phenotypes:

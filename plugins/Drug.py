@@ -20,7 +20,6 @@ class Drug(IPlugin):
         Constructor, prepare logging subsystem and time stamp
         """
         self._logger = logging.getLogger(__name__)
-        self.write_date = datetime.today().strftime('%Y-%m-%d')
 
     def _download_elasticsearch_data(self, output_dir, url, port, indices):
         """
@@ -37,7 +36,7 @@ class Drug(IPlugin):
         if elasticsearch_reader.is_reachable():
             for index in list(indices.values()):
                 index_name = index['name']
-                outfile = os.path.join(output_dir, "{}-{}.jsonl".format(index_name, self.write_date))
+                outfile = os.path.join(output_dir, "{}.jsonl".format(index_name))
 
                 logger.info("Downloading Elasticsearch data from index {}, to file '{}'".format(index_name, outfile))
                 docs_saved = elasticsearch_reader.get_fields_on_index(index_name, outfile, index['fields'])
