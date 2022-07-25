@@ -42,7 +42,6 @@ drug:
     chembl:
       type: elasticsearch
       url: https://www.ebi.ac.uk/chembl/elk/es
-      port: 80
       path: chembl-inputs
       indices:
         chembl-indication:
