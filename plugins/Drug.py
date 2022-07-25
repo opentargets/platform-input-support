@@ -63,10 +63,7 @@ class Drug(IPlugin):
         :return: list of files downloaded.
         """
 
-        if source.url is not None \
-                and source.port is not None \
-                and isinstance(source.url, str) \
-                and isinstance(source.port, int):
+        if source.url is not None and isinstance(source.url, str):
             logger.info("{} indices found for {}.".format(len(source.indices), source))
             return self._download_elasticsearch_data(output_dir, source.url, source.indices)
         logger.error("Unable to validate host and port for Elasticsearch connection.")
