@@ -41,8 +41,8 @@ drug:
   etl:
     chembl:
       type: elasticsearch
-      url: hh-rke-wp-webadmin-04-worker-4.caas.ebi.ac.uk
-      port: 32000
+      url: https://www.ebi.ac.uk/chembl/elk/es
+      port: 80
       path: chembl-inputs
       indices:
         chembl-indication:
