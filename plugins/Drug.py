@@ -21,18 +21,17 @@ class Drug(IPlugin):
         """
         self._logger = logging.getLogger(__name__)
 
-    def _download_elasticsearch_data(self, output_dir, url, port, indices):
+    def _download_elasticsearch_data(self, output_dir, url, indices):
         """
         Query elasticsearchReader for each index specified in indices and saves results as jsonl files at output_dir.
 
         :param output_dir: output folder
         :param url: Elastic Search URL
-        :param port: Elastic Search port
         :param indices: indices for querying Elastic Search
         :return: list of files successfully saved.
         """
         results = []
-        elasticsearch_reader = ElasticsearchInstance(url, port)
+        elasticsearch_reader = ElasticsearchInstance(url)
         if elasticsearch_reader.is_reachable():
             for index in list(indices.values()):
                 index_name = index['name']
@@ -49,9 +48,9 @@ class Drug(IPlugin):
                 results.append(outfile)
         else:
             logger.error("Unable to reach ChEMBL Elasticsearch! "
-                         "at URL '{}', port '{}' Cannot collect necessary data.".format(url, port))
+                         "at URL '{}', Cannot collect necessary data.".format(url))
             warnings.warn("ChEMBL Elasticsearch is unreachable: "
-                          "URL '{}', port '{}', check network settings.".format(url, port))
+                          "URL '{}', check network settings.".format(url))
         return results
 
     # TODO We should refactor this out into a generic Elastic Search Helper
@@ -69,7 +68,7 @@ class Drug(IPlugin):
                 and isinstance(source.url, str) \
                 and isinstance(source.port, int):
             logger.info("{} indices found for {}.".format(len(source.indices), source))
-            return self._download_elasticsearch_data(output_dir, source.url, source.port, source.indices)
+            return self._download_elasticsearch_data(output_dir, source.url, source.indices)
         logger.error("Unable to validate host and port for Elasticsearch connection.")
         return []
 
