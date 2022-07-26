@@ -14,7 +14,7 @@ class ElasticsearchInstance(object):
     Wrapper over an Elasticsearch instance.
     """
 
-    def __init__(self, host, port, scheme='http'):
+    def __init__(self, url=None, host=None, port=None, scheme='http'):
         """
         Constructor
 
@@ -25,12 +25,20 @@ class ElasticsearchInstance(object):
         self._port = port
         self._host = host
         self._scheme = scheme
-        logger.info("Creating Elastic Search Instance Wrapper with host: {}, port: {}".format(self._host, self._port))
-        self.es = Elasticsearch([{'host': self._host, 'port': self._port}])
+        self._url = url
+        self._es = None
 
     @property
-    def es_url(self):
-        return "{}://{}:{}".format(self._scheme, self._host, self._port)
+    def url(self):
+        if self._url is None:
+            return "{}://{}:{}".format(self._scheme, self._host, self._port)
+        return self._url
+
+    @property
+    def es(self):
+        if self._es is None:
+            self._es = Elasticsearch(self.url)
+        return self._es
 
     def is_reachable(self):
         """
@@ -39,10 +47,10 @@ class ElasticsearchInstance(object):
         :return: true if reachable, false otherwise
         """
         try:
-            request = requests.head(self.es_url, timeout=1)
+            request = requests.head(self.url, timeout=1)
             return request.ok
         except ConnectionError as error:
-            logger.error("Unable to reach {}. Error msg: ".format(self.es_url, error))
+            logger.error("Unable to reach {}. Error msg: ".format(self.url, error))
         return False
 
     @staticmethod

@@ -366,9 +366,6 @@ The Drug step is used to gather the raw data for the [platform ETL](https://gith
 ChEMBL have made an Elasticsearch instance available for querying. To keep data volumes and running times down specify the
 index and fields which are required in the config file.
 
-ChEMBL's ES instance is only available from within the EMBL-EBI VPN. If you need to run this step it is necessary that you
-use a machine that is connected to the VPN network. 
-
 ## Homology Step
 
 This step is used to download raw json data from the ENSEMBL [ftp server](https://ftp.ensembl.org/pub/current_json/) for 
