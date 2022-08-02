@@ -1,0 +1,9 @@
+[Core]
+Name = OtarProjects
+Module = OtarProjects
+
+[Documentation]
+Author = Open Targets Core Team
+Version = 0.1
+Website = http://github.com/opentargets
+Description = OTAR Projects data collection
