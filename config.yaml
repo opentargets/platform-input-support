@@ -380,9 +380,10 @@ literature:
     output_filename: PMID_PMCID_DOI.csv.gz
     path: literature-inputs
 otar_projects:
-  output_filename: otar_projects.tsv
   resource: otarproject
-  gs_output_dir: annotation-files/otar
+  gs_output_dir: otar-inputs
+  output_filename_metadata: otar_meta.tsv
+  output_filename_mapping: otar_project_to_efo.tsv
   id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
   id_sheet_metadata: 1179867447
   id_sheet_mapping: 72910172
