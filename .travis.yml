@@ -20,7 +20,7 @@ install:
 
   - conda env create --force -f environment.yaml python=$TRAVIS_PYTHON_VERSION
 #  - conda env create -f environment.yaml
-  - source activate pis-py3.8
+  - source activate otpis
 #  - conda skeleton pypi opentargets-urlzsource
 #  - conda build opentargets-urlzsource
 #  - conda build purge
