@@ -1,4 +1,4 @@
-name: pis-py3.8
+name: otpis
 channels:
   - conda-forge
   - defaults
