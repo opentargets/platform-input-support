@@ -379,7 +379,7 @@ literature:
   - uri: http://ftp.ebi.ac.uk/pub/databases/pmc/DOI/PMID_PMCID_DOI.csv.gz
     output_filename: PMID_PMCID_DOI.csv.gz
     path: literature-inputs
-otar_projects:
+otar:
   resource: otarproject
   gs_output_dir: otar-inputs
   output_filename_metadata: otar_meta.tsv

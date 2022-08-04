@@ -13,5 +13,4 @@ class Otar(IPlugin):
         self.logger = logging.getLogger(__name__)
 
     def process(self, conf, output, cmd_conf=None):
-        # TODO
         self.logger.info("OTAR Projects data collection - START -")
