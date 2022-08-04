@@ -42,7 +42,7 @@ class GoogleSpreadSheet(ABC):
             .format(self.spreadsheet_id, self.worksheet_name, self.output_format, self.path_output)
 
     def get_writer(self, f):
-        # TODO - This implementation only returns a CSV writer, extend in the future
+        # TODO - This implementation only returns a CSV writer, extend it in the future, e.g. for TSV, etc
         return csv.writer(f)
 
     def download(self):
