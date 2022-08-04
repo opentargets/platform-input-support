@@ -14,10 +14,12 @@ List of available steps:
 - Homologues
 - Interactions
 - Mousephenotypes
+- OpenFDA
 - Reactome
 - SO
 - Target
 - Literature
+- Otar
 
 Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the file can be processed in order to generate a new resource.
 The final files are located under the output directory while the files used for the computation are saved under stages. 
@@ -386,7 +388,11 @@ It requires two input parameters via the configuation file:
 - URL of the events black list.
 - URL where to find OpenFDA FAERS repository metadata in JSON format.
 
+## OTAR
 
+This step collects two kinds of information on OTAR Projects, used in the internal platform:
+1. **Metadata** information on the projects.
+2. **Mapping Information**, between the projects and diseases
 
 # Application architecture
 
