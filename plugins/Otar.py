@@ -24,6 +24,7 @@ class Otar(IPlugin):
         create_folder(dst_folder)
         if gcp_credentials is None:
             self.logger.warning("NO GCP credentials have been provided")
+        # TODO - Parallelize this
         for sheet in conf.sheets:
             path_dst = os.path.join(dst_folder, sheet.output_filename)
             handler = get_spreadsheet_handler(sheet.id_spreadsheet,
