@@ -348,7 +348,7 @@ target:
   - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: ftp://ftp.ensembl.org/pub/release-105/species_EnsemblVertebrates.txt
+  - uri: ftp://ftp.ensembl.org/pub/release-106/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
   - uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -368,7 +368,7 @@ target:
       output_filename: essentiality_matrices.zip
       path: target-inputs/project-scores
     ensembl:
-      release: 105
+      release: 106
       uri: ftp://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
