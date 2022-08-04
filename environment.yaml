@@ -9,6 +9,7 @@ dependencies:
  - elasticsearch-dsl
  - jsonlines
  - google-cloud-storage=1.42.3
+ - gspread
  - mock
  - pip
  - python=3.8.8
