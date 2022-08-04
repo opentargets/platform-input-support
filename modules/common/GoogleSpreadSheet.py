@@ -60,8 +60,8 @@ class AuthHandler(GoogleSpreadSheet):
                 writer = self.get_writer(f)
                 writer.writerows(worksheet.get_all_values())
         except Exception as e:
-            # TODO - Improve exception handling here
             self.logger.error(e)
+            raise
 
 
 class NoneAuthHandler(GoogleSpreadSheet):
