@@ -385,10 +385,8 @@ otar:
   auth_token_env: PIS_CONFIG_OTAR_AUTH_TOKEN
   sheets:
     - id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
-      id_sheet_metadata: 1179867447
-      id_sheet_mapping: 72910172
+      id_sheet: 1179867447
       output_filename: otar_meta.tsv
     - id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
-      id_sheet_metadata: 1179867447
-      id_sheet_mapping: 72910172
+      id_sheet: 72910172
       output_filename: otar_project_to_efo.tsv
