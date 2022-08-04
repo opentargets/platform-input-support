@@ -1,6 +1,6 @@
 [Core]
-Name = OtarProjects
-Module = OtarProjects
+Name = Otar
+Module = Otar
 
 [Documentation]
 Author = Open Targets Core Team
