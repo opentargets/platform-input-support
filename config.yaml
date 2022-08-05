@@ -348,7 +348,7 @@ target:
   - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: ftp://ftp.ensembl.org/pub/release-105/species_EnsemblVertebrates.txt
+  - uri: ftp://ftp.ensembl.org/pub/release-106/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
   - uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -368,7 +368,7 @@ target:
       output_filename: essentiality_matrices.zip
       path: target-inputs/project-scores
     ensembl:
-      release: 105
+      release: 106
       uri: ftp://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
@@ -379,3 +379,15 @@ literature:
   - uri: http://ftp.ebi.ac.uk/pub/databases/pmc/DOI/PMID_PMCID_DOI.csv.gz
     output_filename: PMID_PMCID_DOI.csv.gz
     path: literature-inputs
+otar:
+  resource: otarproject
+  gs_output_dir: otar-inputs
+  sheets:
+    - id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
+      worksheet_name: MetaData
+      output_format: csv
+      output_filename: otar_meta.tsv
+    - id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
+      worksheet_name: Project2Disease
+      output_format: csv
+      output_filename: otar_project_to_efo.tsv

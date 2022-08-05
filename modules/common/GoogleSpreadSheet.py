@@ -1,39 +1,70 @@
-import os
+import csv
+import gspread
 import logging
-import requests
+from abc import abstractmethod, ABC
 
 logger = logging.getLogger(__name__)
 
 
-class GoogleSpreadSheet(object):
+# Factory method
+def get_spreadsheet_handler(spreadsheet_id,
+                            worksheet_name,
+                            path_output,
+                            output_format='csv',
+                            gcp_credentials=None):
+    if gcp_credentials is None:
+        return NoneAuthHandler(spreadsheet_id, worksheet_name, path_output, output_format)
+    return AuthHandler(spreadsheet_id, worksheet_name, path_output, output_format, gcp_credentials)
 
-    def __init__(self, output_dir, server='https://docs.google.com/spreadsheets/d'):
-        self.server = server
-        self.output_type = 'tsv'
-        self.output_dir = output_dir
 
-    def download_as_csv(self, spreadsheet_info):
-        """
-        Download the Google Spreadsheet desribed by the given details in the configured format
+class GoogleSpreadSheet(ABC):
+    def __init__(self,
+                 spreadsheet_id,
+                 worksheet_name,
+                 path_output,
+                 output_format='csv',
+                 gcp_credentials=None, base_url='https://docs.google.com/spreadsheets/d'):
+        self._base_url = base_url
+        self._gcp_credentials = gcp_credentials
+        self.spreadsheet_id = spreadsheet_id
+        self.worksheet_name = worksheet_name
+        self.path_output = path_output
+        self.output_format = output_format
+        self.logger = logging.getLogger(__name__)
 
-        :param spreadsheet_info: spreadsheet information object
-        :return: destination path for downloaded spreadsheet file
-        """
-        uri = "{}/{}/export?format={}&gid={}".format(self.server, spreadsheet_info.gkey, self.output_type,
-                                                     spreadsheet_info.gid)
-        dst_path_file = os.path.join(self.output_dir, spreadsheet_info.output_filename)
-        msg_download_info = "Google Spreadsheet URI '{}', download to '{}'".format(uri, dst_path_file)
+    @abstractmethod
+    def _do_download(self):
+        pass
+
+    @property
+    def summary(self):
+        return "Google Spreadsheet ID '{}', Worksheet name '{}', format '{}', destination PATH '{}'" \
+            .format(self.spreadsheet_id, self.worksheet_name, self.output_format, self.path_output)
+
+    def get_writer(self, f):
+        # TODO - This implementation only returns a CSV writer, extend it in the future, e.g. for TSV, etc
+        return csv.writer(f)
+
+    def download(self):
+        self._do_download()
+
+
+class AuthHandler(GoogleSpreadSheet):
+    def _do_download(self):
+        self.logger.info("Authenticated Google Spreadsheet data collection for {}".format(self.summary))
         try:
-            response = requests.get(uri)
-        except requests.exceptions.RequestException as e:
-            logger.error("Could not retrieve {}, due to ERROR '{}'".format(msg_download_info, e))
-        else:
-            if response.status_code == requests.codes.ok:
-                # NOTE We should also catch a possible error when writing the local file. I haven't done it here because
-                # it's everywhere we use 'with', and I don't want to overcomplicate this module right now.
-                with open(dst_path_file, mode='wb') as localfile:
-                    localfile.write(response.content)
-                    logger.info(msg_download_info)
-            else:
-                logger.error("Could not retrieve {}, due to response code '{}'".format(msg_download_info, response.status_code))
-        return dst_path_file
+            gs_handler = gspread.service_account(filename=self._gcp_credentials)
+            spreadsheet = gs_handler.open_by_key(self.spreadsheet_id)
+            worksheet = spreadsheet.worksheet(self.worksheet_name)
+            with open(self.path_output, 'w') as f:
+                writer = self.get_writer(f)
+                writer.writerows(worksheet.get_all_values())
+        except Exception as e:
+            self.logger.error(e)
+            raise
+
+
+class NoneAuthHandler(GoogleSpreadSheet):
+    def _do_download(self):
+        raise NotImplementedError(
+            "NOT IMPLEMENTED - Anonymous Google Srpeadsheet data collection for {}".format(self.summary))

@@ -104,8 +104,10 @@ class RetrieveResource(object):
         #  option of re-try on those that failed, based on the premise that they are idempotent
         for plugin_name in steps_to_execute:
             plugin = self.simplePluginManager.getPluginByName(plugin_name)
+            plugin_configuration = self.yaml[plugin_name.lower()]
+            plugin_configuration['google_credential_key'] = self.args.google_credential_key
             try:
-                plugin.plugin_object.process(self.yaml[plugin_name.lower()], self.yaml.outputs, self.yaml.config)
+                plugin.plugin_object.process(plugin_configuration, self.yaml.outputs, self.yaml.config)
             except Exception as e:
                 logger.error("A problem occurred while running step '{}'".format(plugin_name))
                 logger.error(e)
