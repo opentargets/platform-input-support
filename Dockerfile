@@ -12,7 +12,7 @@ RUN apt update; \
     wget --no-check-certificate -O apache-jena.tar.gz https://archive.apache.org/dist/jena/binaries/apache-jena-4.4.0.tar.gz; \
     tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1 -C /usr/share/
 
-ARG conda_env=pis-py3.8
+ARG conda_env=otpis
 
 COPY environment.yaml .
 
