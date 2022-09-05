@@ -48,7 +48,7 @@ class Riot(object):
         path_output = os.path.join(dir_output, json_file)
         # Set JVM memory limits
         run_env = os.environ.copy()
-        run_env["JAVA_OPTS"] = "-Xms2048m -Xmx8192m"
+        run_env["JAVA_OPTS"] = "-Xms4096m -Xmx8192m"
         try:
             with open(path_output, "wb") as json_output, \
                     subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env,
