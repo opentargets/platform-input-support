@@ -46,11 +46,14 @@ class Riot(object):
         :return: destination file path of the conversion + filtering for the given OWL file
         """
         path_output = os.path.join(dir_output, json_file)
+        # Set JVM memory limits
+        run_env = os.environ.copy()
+        run_env["JAVA_OPTS"] = "-Xms2048m -Xmx8192m"
         try:
             with open(path_output, "wb") as json_output, \
-                    subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file],
+                    subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env,
                                      stdout=subprocess.PIPE) as riot_process, \
-                    subprocess.Popen([self.jq_cmd, "-r", owl_jq],
+                    subprocess.Popen([self.jq_cmd, "-r", owl_jq], env=run_env,
                                      stdin=riot_process.stdout,
                                      stdout=subprocess.PIPE) as jq_process:
                 json_output.write(jq_process.stdout.read())
