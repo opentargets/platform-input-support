@@ -330,8 +330,7 @@ target:
     output_filename: tractability.tsv
     path: target-inputs/tractability
   ftp_downloads:
-  - uri: ftp://ftp.ebi.ac.
-      uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz
+  - uri: ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz
     output_filename: gencode.gff3.gz
     path: target-inputs/gencode
   - uri: ftp://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.protein_default.homologies.tsv.gz
