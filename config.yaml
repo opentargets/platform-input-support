@@ -251,7 +251,7 @@ interactions:
   - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
     output_filename: string-interactions.json.gz
     path: interactions-inputs
-  - uri: http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.107.chr.gtf.gz
+  - uri: https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.107.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
 mousephenotypes:
@@ -379,7 +379,7 @@ target:
   miniset: yes
 literature:
   http_downloads:
-  - uri: http://ftp.ebi.ac.uk/pub/databases/pmc/DOI/PMID_PMCID_DOI.csv.gz
+  - uri: https://ftp.ebi.ac.uk/pub/databases/pmc/DOI/PMID_PMCID_DOI.csv.gz
     output_filename: PMID_PMCID_DOI.csv.gz
     path: literature-inputs
 otar:
