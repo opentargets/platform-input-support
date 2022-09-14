@@ -285,13 +285,13 @@ so:
     owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class" and .id != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
 target:
   http_downloads:
-  - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
+  - uri: https://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
     output_filename: hgnc_complete_set.json
     path: target-inputs/genenames
   - uri: https://reactome.org/download/current/Ensembl2Reactome.txt
     output_filename: Ensembl2Reactome.txt
     path: target-inputs/reactome
-  - uri: http://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
+  - uri: https://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_all_hcop_sixteen_column.txt.gz
     output_filename: human_all_hcop_sixteen_column.txt.gz
     path: target-inputs/genenames
   - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
