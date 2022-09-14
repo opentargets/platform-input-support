@@ -217,7 +217,7 @@ go:
     output_filename: go.obo
     path: gene-ontology-inputs
 homologues:
-  uri: ftp://ftp.ensembl.org/pub/release-{release}/json/
+  uri: https://ftp.ensembl.org/pub/release-{release}/json/
   path: target-inputs/homologue
   release: 107
   jq: ".genes[] | [.id, .name] | @tsv"
@@ -238,13 +238,13 @@ homologues:
       - 'homo_sapiens'
 interactions:
   ftp_downloads:
-  - uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
+  - uri: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
     output_filename: rna_central_ensembl.tsv
     path: interactions-inputs
-  - uri : ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
+  - uri : https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
     output_filename: HUMAN_9606_idmapping.dat.gz
     path: interactions-inputs
-  - uri : ftp://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
+  - uri : https://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
     output_filename: intact-interactors.json
     path: interactions-inputs
   http_downloads:
@@ -330,31 +330,31 @@ target:
     output_filename: tractability.tsv
     path: target-inputs/tractability
   ftp_downloads:
-  - uri: ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz
+  - uri: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz
     output_filename: gencode.gff3.gz
     path: target-inputs/gencode
-  - uri: ftp://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.protein_default.homologies.tsv.gz
+  - uri: https://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.protein_default.homologies.tsv.gz
     output_filename: cpd.tsv.gz
     path: target-inputs/homologue
-  - uri: ftp://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.ncrna_default.homologies.tsv.gz
+  - uri: https://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.ncrna_default.homologies.tsv.gz
     output_filename: crna.tsv.gz
     path: target-inputs/homologue
-  - uri: ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
+  - uri: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
     output_filename: ensembl.tsv
     path: target-inputs/go
-  - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz
+  - uri: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz
     output_filename: goa_human.gaf.gz
     path: target-inputs/go
-  - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz
+  - uri: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz
     output_filename: goa_human_rna.gaf.gz
     path: target-inputs/go
-  - uri: ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
+  - uri: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: ftp://ftp.ensembl.org/pub/release-107/species_EnsemblVertebrates.txt
+  - uri: https://ftp.ensembl.org/pub/release-107/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
-  - uri: ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
+  - uri: https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
     output_filename: Homo_sapiens.gene_info.gz
     path: target-inputs/ncbi
   etl:
@@ -372,7 +372,7 @@ target:
       path: target-inputs/project-scores
     ensembl:
       release: 107
-      uri: ftp://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
+      uri: https://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
       jq: '.genes[] | {id: .id, biotype: .biotype, description: .description, end: .end, start: .start, strand: .strand, chromosome: .seq_region_name, approvedSymbol: .name, transcripts: .transcripts, signalP: .SignalP, uniprot_trembl: ."Uniprot/SPTREMBL", uniprot_swissprot: ."Uniprot/SWISSPROT"}'
