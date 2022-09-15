@@ -151,10 +151,6 @@ evidence:
     output_filename: eva.json.gz
     output_spark_dir: eva
     path: evidence-files
-  - bucket: otar000-evidence_input/EPMC/json
-    output_filename: epmc.json.gz
-    output_spark_dir: epmc
-    path: evidence-files
   - bucket: otar000-evidence_input/Gene2Phenotype/json
     output_filename: gene2phenotype.json.gz
     output_spark_dir: gene2phenotype
