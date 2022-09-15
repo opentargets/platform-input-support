@@ -297,10 +297,10 @@ target:
   - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
     output_filename: gene_identifiers_latest.csv.gz
     path: target-inputs/project-scores
-  - uri: https://rest.uniprot.org/uniprotkb/search?query=reviewed:true+AND+organism_id:9606&compress=yes&format=txt
+  - uri: https://rest.uniprot.org/uniprotkb/stream\?compressed\=true\&format\=txt\&query\=%28%28reviewed%3Atrue%29%29%20AND%20%28model_organism%3A9606%29
     output_filename: uniprot.txt.gz
     path: target-inputs/uniprot
-  - uri: https://www.uniprot.org/locations/?query=*&format=tab&force=true&columns=id&compress=yes
+  - uri: https://rest.uniprot.org/locations/stream?compressed=true&fields=id%2Cname%2Ccategory&format=tsv&query=%28%2A%29
     output_filename: uniprot-ssl.tsv.gz
     path: target-inputs/uniprot
   gs_downloads_latest:
