@@ -30,7 +30,7 @@ class DownloadResource(object):
 
     def __init__(self, output_dir):
         """
-        Constructor
+        Constructor.
 
         :param output_dir: path to download destination folder
         """
@@ -43,7 +43,7 @@ class DownloadResource(object):
 
     def set_filename(self, filename) -> str:
         """
-        Build final destination file path
+        Build final destination file path.
 
         :param filename: Base file name
         """
