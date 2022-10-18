@@ -18,7 +18,7 @@ class Downloads(object):
 
     def __init__(self, output_dir):
         """
-        Constructor
+        Constructor.
 
         :param output_dir: path to download destination folder
         """
