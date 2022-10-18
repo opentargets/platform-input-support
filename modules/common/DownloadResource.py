@@ -106,12 +106,13 @@ class DownloadResource(object):
             urllib.request.urlcleanup()
             logger.info(f"[DOWNLOAD] END: '{resource_info.uri}' -> '{filename}'")
         except Exception:
-            logger.warning("Warning: FTP! {}".format(resource_info.uri))
+            logger.warning("[DOWNLOAD] Re-trying with a command line tool - '{}'".format(resource_info.uri))
             # EBI FTP started to reply ConnectionResetError: [Errno 104] Connection reset by peer.
             # I had an exchange of email with sysinfo, they suggested us to use wget.
             cmd = 'curl ' + resource_info.uri + ' --output ' + filename
-            logger.warning("wget attempt {}".format(cmd))
+            logger.warning("[DOWNLOAD] Re-try Command '{}'".format(cmd))
             # TODO We need to handle the completion of this command, I think it would be worth writing a handler helper
+            # TODO There is neither a timed wait nor a re-try strategy for this command
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
         return filename
