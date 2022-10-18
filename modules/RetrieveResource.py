@@ -79,7 +79,7 @@ class RetrieveResource(object):
         else:
             plugins_to_run = list(set(steps_requested))
 
-        logger.info("Steps selected:\n" + ','.join(plugins_to_run))
+        logger.info("SELECTED Steps:\n" + ','.join(plugins_to_run))
         return plugins_to_run
 
     def init_plugins(self):
