@@ -63,7 +63,7 @@ class RetrieveResource(object):
                 matching_plugins.append(plugin)
                 lowercase_steps.remove(plugin.lower())
 
-        logger.warning("Steps not found:\n" + ','.join(lowercase_steps))
+        logger.warning("Steps NOT FOUND:\n" + ','.join(lowercase_steps))
         return matching_plugins
 
     def steps(self):
