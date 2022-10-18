@@ -93,7 +93,7 @@ def recursive_remove_folder(folder):
     :return: the removed folder tree path if success, None otherwise
     """
     try:
-        logger.info("Removing '{}' folder tree...".format(folder))
+        logger.debug("Removing '{}' folder tree...".format(folder))
         shutil.rmtree(folder)
         return folder
     except Exception as e:
@@ -174,7 +174,7 @@ def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: 
         if file_to_extract_path in zf.namelist():
             _, dst_file_name = os.path.split(file_to_extract_path)
             with open(os.path.join(output_dir, dst_file_name), "wb") as f:
-                logger.info(f"Extracting {file_to_extract_path} from {zip_file} to {f.name}")
+                logger.debug(f"Extracting {file_to_extract_path} from {zip_file} to {f.name}")
                 f.write(zf.read(file_to_extract_path))
                 return f.name
     return ''
