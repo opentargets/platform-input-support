@@ -123,7 +123,7 @@ class RetrieveResource(object):
         if self.args.force_clean:
             recursive_remove_folder(output_dir)
         else:
-            logger.info("Warning: Output not deleted.")
+            logger.warning("Output folder NOT CLEANED UP.")
         self.yaml.outputs.prod_dir = create_folder(os.path.join(output_dir, 'prod'))
         self.yaml.outputs.staging_dir = create_folder(os.path.join(output_dir, 'staging'))
 
