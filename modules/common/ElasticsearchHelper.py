@@ -51,7 +51,7 @@ class ElasticsearchInstance(object):
             request = requests.head(self.url, timeout=1)
             return request.ok
         except ConnectionError as error:
-            logger.error("Unable to reach {}. Error msg: ".format(self.url, error))
+            logger.error("Unable to reach {}. Error msg: {}".format(self.url, error))
         return False
 
     @staticmethod
