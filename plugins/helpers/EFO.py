@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
 The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
     term and obsolete terms.
-The locationIds are generated retriving the structure parent/child and recursevely retrieve the proper info
+The locationIds are generated retrieving the structure parent/child and recursively retrieve the proper info
 """
 
 
