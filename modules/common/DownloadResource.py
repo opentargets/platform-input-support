@@ -6,7 +6,6 @@ import subprocess
 import urllib.request, urllib.parse, urllib.error
 # Common packages
 from typing import Dict
-from modules.common.TqdmUpTo import TqdmUpTo
 
 logger = logging.getLogger(__name__)
 
