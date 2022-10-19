@@ -57,7 +57,7 @@ class Downloads(object):
         if google_resource.get_bucket() is not None:
             latest_filename = google_resource.get_latest_file(resource)
             if latest_filename["latest_filename"] is None:
-                logger.info(f"ERROR: The path={google_resource.bucket_name} does not contain any recent file")
+                logger.warning(f"The path={google_resource.bucket_name} does not contain any recent file")
         return latest_filename
 
     def exec(self, resources_info):
