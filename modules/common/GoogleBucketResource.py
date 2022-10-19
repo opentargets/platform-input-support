@@ -203,7 +203,7 @@ class GoogleBucketResource(object):
                     else:
                         # it is spark dir. Check if it is the same dir
                         if os.path.dirname(filename) != os.path.dirname(last_recent_file):
-                            logger.info("'{}' vs '{}'".format(filename, last_recent_file))
+                            logger.debug("'{}' vs '{}'".format(filename, last_recent_file))
                             possible_recent_date_collision = True
                 if date_file > recent_date:
                     possible_recent_date_collision = False
