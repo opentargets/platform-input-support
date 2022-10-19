@@ -53,10 +53,10 @@ class OpenfdaHelper(object):
                 unzip_filename = event_file.filename
                 unzip_dest_filename = "{}.jsonl".format(uuid.uuid4())
                 unzip_dest_path = os.path.join(self.output, unzip_dest_filename)
-                logger.info("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
+                logger.debug("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
                 with zipf.open(unzip_filename, 'r') as compressedf:
                     with open(unzip_dest_path, 'w') as inflatedf:
-                        logger.info("Extracting event file results")
+                        logger.debug("Extracting event file results")
                         event_data = json.load(compressedf)
                         if event_data['results']:
                             for result in event_data['results']:
