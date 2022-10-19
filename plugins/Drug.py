@@ -91,7 +91,7 @@ class Drug(IPlugin):
         :param cmd_conf: UNUSED
         """
         # TODO - Handle errors in the process and report back
-        self._logger.info("Drug step")
+        self._logger.info("[STEP] BEGIN, Drug")
         Downloads(output.prod_dir).exec(conf)
-        self._logger.info("Drug download indices")
         self.download_indices(conf, output)
+        self._logger.info("[STEP] END, Drug")
