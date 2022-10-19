@@ -31,7 +31,8 @@ class ElasticsearchInstance(object):
     @property
     def url(self):
         if self._url is None:
-            return "{}://{}:{}".format(self._scheme, self._host, self._port)
+            self._url = "{}://{}:{}".format(self._scheme, self._host, self._port)
+        logger.debug(f"Elastic Search Helper - URL '{self._url}'")
         return self._url
 
     @property
