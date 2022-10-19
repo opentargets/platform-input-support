@@ -1,5 +1,6 @@
 from tqdm import tqdm
 
+# TODO Flagged for removal
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
     def update_to(self, b=1, bsize=1, tsize=None):
