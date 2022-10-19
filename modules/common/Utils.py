@@ -53,7 +53,7 @@ class Utils(object):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # I know, magic numbers
         completed = False
-        for attempt in range(7):
+        for attempt in range(9):
             try:
                 # Wait for 1 hour for the operation to complete
                 _, err = proc.communicate(timeout=3600)
