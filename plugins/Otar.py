@@ -17,13 +17,13 @@ class Otar(IPlugin):
         self.logger = logging.getLogger(__name__)
 
     def process(self, conf, output, cmd_conf=None):
-        self.logger.info("OTAR Projects data collection - START -")
+        self._logger.info("[STEP] BEGIN, otar")
         gcp_credentials = conf.google_credential_key
         dst_folder = os.path.join(output.prod_dir, conf.gs_output_dir)
         self.logger.debug("Prepare destination folder at '{}'".format(dst_folder))
         create_folder(dst_folder)
         if gcp_credentials is None:
-            self.logger.warning("NO GCP credentials have been provided")
+            self.logger.error("NO GCP credentials have been provided")
         # TODO - Parallelize this
         for sheet in conf.sheets:
             path_dst = os.path.join(dst_folder, sheet.output_filename)
@@ -33,3 +33,4 @@ class Otar(IPlugin):
                                               sheet.output_format,
                                               gcp_credentials)
             handler.download()
+        self._logger.info("[STEP] END, otar")
