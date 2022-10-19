@@ -23,5 +23,6 @@ class Evidence(IPlugin):
         :param output: output folder information
         :param cmd_conf: UNUSED
         """
-        self._logger.info("Evidence step")
+        self._logger.info("[STEP] BEGIN, Evidence")
         Downloads(output.prod_dir).exec(conf)
+        self._logger.info("[STEP] END, Evidence")
