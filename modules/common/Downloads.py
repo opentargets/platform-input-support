@@ -62,7 +62,7 @@ class Downloads(object):
 
     def exec(self, resources_info):
         """
-        Download the resources according to their provided information
+        Download the resources according to their provided information.
 
         :param resources_info: information on the resources to download
         """
@@ -72,13 +72,13 @@ class Downloads(object):
                 download = DownloadResource(path)
                 download.ftp_download(resource)
             except Exception as e:
-                logger.error(f"ERROR: The resource={resource.uri} was not downloaded, '{e}'")
+                logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
         for resource in resources_info.http_downloads:
             try:
                 self.single_http_download(resource)
             except Exception as e:
-                logger.error(f"ERROR: The resource={resource.uri} was not downloaded, '{e}'")
+                logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
         for resource in resources_info.gs_downloads_latest:
             try:
@@ -88,7 +88,7 @@ class Downloads(object):
                 download_info = self.prepare_gs_download(latest_resource, resource)
                 google_resource.download(download_info)
             except Exception as e:
-                logger.error(f"ERROR: The resource={resource.bucket} was not downloaded, '{e}'")
+                logger.error(f"COULD NOT DOWNLOAD resource '{resource.bucket}', due to '{e}'")
 
     def single_http_download(self, resource):
         """
