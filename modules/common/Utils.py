@@ -28,7 +28,7 @@ class Utils(object):
         cmd_result = shutil.which(cmd)
         if cmd_result is None:
             cmd_result = yaml_cmd
-            logger.info("'{}' not found. Using the path from config.yaml".format(cmd))
+            logger.warning("Command '{}' NOT FOUND. Using the path from config.yaml".format(cmd))
         logger.debug(f"'{cmd}' path '{cmd_result}'")
         return cmd_result
 
