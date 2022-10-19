@@ -49,7 +49,9 @@ class MONDO(object):
             return re.sub(r'^.*?:', '', mondo['@id'])
         else:
             # NOTE WHAAAAT? hahaha!
-            print("orrore")
+            logger.warning(
+                "WTF just happened here? - neither 'id' nor '@id' has been found in this MONDO item: '{}'".format(
+                    mondo))
 
     def set_dbXRefs(self, id, mondo):
         """
