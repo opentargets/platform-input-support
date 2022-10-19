@@ -147,7 +147,7 @@ class GoogleBucketResource(object):
         """
         return self.list_blobs(self.object_path, include=included_pattern)
 
-    # WARNING - UNUSED - REMOVE - DEPRECATE
+    # TODO - UNUSED method, REMOVE
     def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
         bucket_link = self.get_bucket()
         if bucket_link is None:
@@ -277,6 +277,7 @@ class GoogleBucketResource(object):
             return self.download_dir(download_descriptor["file"], download_descriptor["output"])
         return self.download_file(download_descriptor["file"], download_descriptor["output"])
 
+    # TODO - UNUSED method, REMOVE
     def blob_metadata(self, blob_name):
         """
         Prints out a blob's metadata for the given BLOB name
