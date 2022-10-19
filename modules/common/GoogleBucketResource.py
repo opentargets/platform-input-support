@@ -89,9 +89,9 @@ class GoogleBucketResource(object):
                 bucket = self.client.get_bucket(self.bucket_name)
                 return bucket
             except google.cloud.exceptions.NotFound:
-                logger.error("Sorry, that bucket {} does not exist!".format(self.bucket_name))
+                logger.error("Bucket '{}' NOT FOUND".format(self.bucket_name))
             except exceptions.Forbidden:
-                logger.error(" ERROR: GCS forbidden access, path={}".format(self.bucket_name))
+                logger.error("Google Cloud Storage, FORBIDDEN access, path '{}'".format(self.bucket_name))
         return None
 
     # For instance you can call the method
@@ -158,7 +158,7 @@ class GoogleBucketResource(object):
             object_path = object_path + '/' + gs_specific_output_dir
 
         blob = bucket_link.blob(object_path + '/' + dest_filename)
-        logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
+        logger.debug('Copy the file %s to the bucket %s', original_filename, bucket_link)
         if ".gz" in original_filename:
             blob.content_type = "application/x-gzip"
         else:
