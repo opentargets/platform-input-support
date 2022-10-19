@@ -91,7 +91,7 @@ class ElasticsearchInstance(object):
                 if f in hit:
                     hit_dict[f] = self._process_hit_value(hit[f])
                 else:
-                    logger.error("field \"%s\" not found on document from index: %s", f, index)
+                    logger.error("field \"%s\" NOT FOUND on document from index: %s", f, index)
             doc_buffer.append(hit_dict)
             # write buffer to file, update document count, and clear buffer
             if len(doc_buffer) >= size:
