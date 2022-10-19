@@ -58,7 +58,7 @@ class Utils(object):
                 # Wait for 1 hour for the operation to complete
                 _, err = proc.communicate(timeout=3600)
             except subprocess.TimeoutExpired:
-                logger.error("Attempt #{} timed out!".format(attempt + 1))
+                logger.warning("Attempt #{} timed out!".format(attempt + 1))
                 continue
             except Exception as e:
                 proc.kill()
@@ -66,14 +66,14 @@ class Utils(object):
                 break
             else:
                 completed = True
-                logger.info("gsutil copy for source '{}', destination '{}' completed!"
+                logger.info("gsutil copy for source '{}', destination '{}' COMPLETED!"
                             .format(os.path.join(self.output_dir, "*"), "gs://{}/".format(destination_bucket)))
                 break
         if not completed:
             proc.kill()
             _, err = proc.communicate()
             logger.error(
-                f"Could not complete file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'")
+                f"COULD NOT COMPLETE file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'")
 
     @staticmethod
     def resource_for_stage(resource):
