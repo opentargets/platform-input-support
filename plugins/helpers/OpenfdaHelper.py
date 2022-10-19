@@ -21,6 +21,7 @@ class OpenfdaHelper(object):
         :param output_dir: destination folder for the downloaded event file
         """
         self.output = output_dir
+        self._logger = logging.getLogger(__name__)
 
     def _do_download_openfda_event_file(self, download_entry):
         """
@@ -28,14 +29,14 @@ class OpenfdaHelper(object):
 
         :param download_entry: download information object
         """
-        logger.info(download_entry)
+        self._logger.debug(download_entry)
         download_url = download_entry['file']
         download_description = download_entry['display_name']
         download_src_filename = os.path.basename(urlparse(download_url).path)
         download_dest_filename = "{}.zip".format(uuid.uuid4())
         download_dest_path = os.path.join(self.output, download_dest_filename)
         download_resource_key = "openfda-event-{}".format(download_dest_filename)
-        logger.info("Download OpenFDA FAERs '{}', from '{}', destination file name '{}'".format(download_description,
+        self._logger.info("Download OpenFDA FAERs '{}', from '{}', destination file name '{}'".format(download_description,
                                                                                                 download_url,
                                                                                                 download_src_filename))
         download_resource = type('download_resource', (object,), {
@@ -53,21 +54,17 @@ class OpenfdaHelper(object):
                 unzip_filename = event_file.filename
                 unzip_dest_filename = "{}.jsonl".format(uuid.uuid4())
                 unzip_dest_path = os.path.join(self.output, unzip_dest_filename)
-                logger.debug("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
+                self._logger.debug("Inflating event file '{}', CRC '{}'".format(unzip_filename, event_file.CRC))
                 with zipf.open(unzip_filename, 'r') as compressedf:
                     with open(unzip_dest_path, 'w') as inflatedf:
-                        logger.debug("Extracting event file results")
+                        self._logger.debug("Extracting event file results")
                         event_data = json.load(compressedf)
                         if event_data['results']:
                             for result in event_data['results']:
                                 inflatedf.write("{}\n".format(json.dumps(result)))
                         else:
-                            logger.warning(
+                            self._logger.warning(
                                 "NO EVENT DATA RESULTS for event file '{}', source URL '{}', description '{}'".format(
                                     unzip_filename, download_url, download_description))
-        logger.warning("Removing processed ZIP file '{}'".format(download_dest_path))
+        self._logger.warning("Removing processed ZIP file '{}'".format(download_dest_path))
         os.remove(download_dest_path)
-
-
-if __name__ == '__main__':
-    pass
