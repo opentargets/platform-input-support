@@ -89,6 +89,7 @@ class Openfda(IPlugin):
         :param output: output folder for collected OpenFDA data
         :param cmd_conf: UNUSED
         """
-        self._logger.info("Openfda step")
+        self._logger.info("[STEP] BEGIN, openfda")
         Downloads(output.prod_dir).exec(conf)
         self._download_openfda_faers(conf.etl.downloads, output)
+        self._logger.info("[STEP] END, openfda")
