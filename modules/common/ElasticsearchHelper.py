@@ -7,6 +7,9 @@ from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, utils
 
 logger = logging.getLogger(__name__)
+# Remove excessive logging for Elastic Search Library
+es_logger = logging.getLogger('elasticsearch')
+es_logger.setLevel(logging.WARNING)
 
 
 class ElasticsearchInstance(object):
