@@ -1,7 +1,6 @@
 import json
 import logging
 import requests
-
 from requests import ConnectionError
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, utils

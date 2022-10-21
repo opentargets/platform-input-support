@@ -33,6 +33,7 @@ class Drug(IPlugin):
         results = []
         elasticsearch_reader = ElasticsearchInstance(url)
         if elasticsearch_reader.is_reachable():
+            # TODO Easy point of improvement, parallelize indexes data collection by using one process per index
             for index in list(indices.values()):
                 index_name = index['name']
                 outfile = os.path.join(output_dir, "{}.jsonl".format(index_name))
