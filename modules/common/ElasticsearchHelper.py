@@ -1,12 +1,17 @@
 import json
 import logging
 import requests
-
 from requests import ConnectionError
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, utils
 
 logger = logging.getLogger(__name__)
+# Remove excessive logging for Elastic Search Library
+es_logger = logging.getLogger('elasticsearch')
+es_logger.setLevel(logging.WARNING)
+# Remove excessive logging from urllib3 used by Elastic Search Library
+urllib_logger = logging.getLogger('urllib3.connectionpool')
+urllib_logger.setLevel(logging.WARNING)
 
 
 class ElasticsearchInstance(object):
@@ -31,7 +36,8 @@ class ElasticsearchInstance(object):
     @property
     def url(self):
         if self._url is None:
-            return "{}://{}:{}".format(self._scheme, self._host, self._port)
+            self._url = "{}://{}:{}".format(self._scheme, self._host, self._port)
+        logger.debug(f"Elastic Search Helper - URL '{self._url}'")
         return self._url
 
     @property
@@ -50,7 +56,7 @@ class ElasticsearchInstance(object):
             request = requests.head(self.url, timeout=1)
             return request.ok
         except ConnectionError as error:
-            logger.error("Unable to reach {}. Error msg: ".format(self.url, error))
+            logger.error("Unable to reach {}. Error msg: {}".format(self.url, error))
         return False
 
     @staticmethod
@@ -90,7 +96,7 @@ class ElasticsearchInstance(object):
                 if f in hit:
                     hit_dict[f] = self._process_hit_value(hit[f])
                 else:
-                    logger.error("field \"%s\" not found on document from index: %s", f, index)
+                    logger.error("field \"%s\" NOT FOUND on document from index: %s", f, index)
             doc_buffer.append(hit_dict)
             # write buffer to file, update document count, and clear buffer
             if len(doc_buffer) >= size:

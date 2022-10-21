@@ -77,7 +77,8 @@ class Expression(IPlugin):
         :param output: output folder information
         :param cmd_conf: NOT USED
         """
-        self._logger.info("Expression step")
+        self._logger.info("[STEP] BEGIN, Expression")
         Downloads(output.prod_dir).exec(conf)
         self.get_tissue_map(output, conf.etl.tissue_translation_map)
         self.get_normal_tissues(output, conf.etl.normal_tissues)
+        self._logger.info("[STEP] END, Expression")

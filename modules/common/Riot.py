@@ -58,6 +58,7 @@ class Riot(object):
                                      stdout=subprocess.PIPE) as jq_process:
                 json_output.write(jq_process.stdout.read())
         except EnvironmentError as e:
+            # TODO - Report back to caller
             logger.error("When running RIOT for OWL file '{}', "
                          "with destination path '{}' and JQ filter '{}', "
                          "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e))

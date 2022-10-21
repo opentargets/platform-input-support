@@ -6,7 +6,6 @@ import subprocess
 import urllib.request, urllib.parse, urllib.error
 # Common packages
 from typing import Dict
-from modules.common.TqdmUpTo import TqdmUpTo
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ class DownloadResource(object):
 
     def __init__(self, output_dir):
         """
-        Constructor
+        Constructor.
 
         :param output_dir: path to download destination folder
         """
@@ -43,7 +42,7 @@ class DownloadResource(object):
 
     def set_filename(self, filename) -> str:
         """
-        Build final destination file path
+        Build final destination file path.
 
         :param filename: Base file name
         """
@@ -66,14 +65,14 @@ class DownloadResource(object):
                     opener.addheaders = [('User-agent', 'Mozilla/5.0'), ('Accept', resource_info.accept)]
                 urllib.request.install_opener(opener)
                 destination_filename = self.set_filename(resource_info.output_filename)
-                with TqdmUpTo(unit='B', unit_scale=True, miniters=1,
-                              desc=resource_info.uri.split('/')[-1]) as t:  # all optional kwargs
-                    urllib.request.urlretrieve(resource_info.uri, destination_filename,
-                                               reporthook=t.update_to, data=None)
+                logger.info(f"[DOWNLOAD] BEGIN: '{resource_info.uri}' -> '{destination_filename}'")
+                urllib.request.urlretrieve(resource_info.uri, destination_filename)
+                logger.info(f"[DOWNLOAD] END: '{resource_info.uri}' -> '{destination_filename}'")
                 return destination_filename
             except urllib.error.URLError as e:
-                logger.error('Download error:', e.reason)
+                logger.error('[DOWNLOAD] ERROR:', e.reason)
                 try:
+                    # TODO - This is useful information to report back to the caller
                     if 500 <= e.code < 600:
                         continue
                     break
@@ -101,15 +100,18 @@ class DownloadResource(object):
         print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         try:
             filename = self.set_filename(resource_info.output_filename)
+            logger.info(f"[DOWNLOAD] BEGIN: '{resource_info.uri}' -> '{filename}'")
             urllib.request.urlretrieve(resource_info.uri, filename)
             urllib.request.urlcleanup()
+            logger.info(f"[DOWNLOAD] END: '{resource_info.uri}' -> '{filename}'")
         except Exception:
-            logger.warning("Warning: FTP! {}".format(resource_info.uri))
+            logger.warning("[DOWNLOAD] Re-trying with a command line tool - '{}'".format(resource_info.uri))
             # EBI FTP started to reply ConnectionResetError: [Errno 104] Connection reset by peer.
             # I had an exchange of email with sysinfo, they suggested us to use wget.
             cmd = 'curl ' + resource_info.uri + ' --output ' + filename
-            logger.warning("wget attempt {}".format(cmd))
+            logger.warning("[DOWNLOAD] Re-try Command '{}'".format(cmd))
             # TODO We need to handle the completion of this command, I think it would be worth writing a handler helper
+            # TODO There is neither a timed wait nor a re-try strategy for this command
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
         return filename

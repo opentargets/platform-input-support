@@ -23,5 +23,6 @@ class GO(IPlugin):
         :param output: data collection destination information object
         :param cmd_conf: NOT USED
         """
-        self._logger.info("GO step")
+        self._logger.info("[STEP] BEGIN, GO")
         Downloads(output.prod_dir).exec(conf)
+        self._logger.info("[STEP] END, GO")

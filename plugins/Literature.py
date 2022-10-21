@@ -23,5 +23,6 @@ class Literature(IPlugin):
         :param output: output information object on where the results of this step should be placed
         :param cmd_conf: NOT USED
         """
-        self._logger.info("Literature step")
+        self._logger.info("[STEP] BEGIN, Literature")
         Downloads(output.prod_dir).exec(conf)
+        self._logger.info("[STEP] END, Literature")

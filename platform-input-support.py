@@ -18,7 +18,7 @@ def print_list_steps(keys_list):
     print(list_steps)
 
 
-# This procedure reads the config file and the args and runs the plugins requested.å
+# This procedure reads the config file and the args and runs the plugins requested.
 def main():
     cfg.setup_parser()
     args = cfg.get_args()

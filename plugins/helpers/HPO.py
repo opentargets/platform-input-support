@@ -48,7 +48,7 @@ class HPO(object):
         elif '@id' in hp:
             return re.sub(r'^.*?:', '', hp['@id']).replace(":", "_")
         else:
-            print("skip this id:" + hp)
+            logger.debug("skip this id:" + hp)
 
     def is_not_obsolete(self, id, hpo):
         """

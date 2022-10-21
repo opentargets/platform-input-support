@@ -23,5 +23,6 @@ class MousePhenotypes(IPlugin):
         :param output: destination information for the results of this step
         :param cmd_conf: NOT USED
         """
-        self._logger.info("MousePhenotypes step")
+        self._logger.info("[STEP] BEGIN, mousephenotypes")
         Downloads(output.prod_dir).exec(conf)
+        self._logger.info("[STEP] END, mousephenotypes")

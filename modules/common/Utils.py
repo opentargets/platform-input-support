@@ -28,7 +28,7 @@ class Utils(object):
         cmd_result = shutil.which(cmd)
         if cmd_result is None:
             cmd_result = yaml_cmd
-            logger.info("'{}' not found. Using the path from config.yaml".format(cmd))
+            logger.warning("Command '{}' NOT FOUND. Using the path from config.yaml".format(cmd))
         logger.debug(f"'{cmd}' path '{cmd_result}'")
         return cmd_result
 
@@ -53,12 +53,12 @@ class Utils(object):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # I know, magic numbers
         completed = False
-        for attempt in range(7):
+        for attempt in range(9):
             try:
                 # Wait for 1 hour for the operation to complete
                 _, err = proc.communicate(timeout=3600)
             except subprocess.TimeoutExpired:
-                logger.error("Attempt #{} timed out!".format(attempt + 1))
+                logger.warning("Attempt #{} timed out!".format(attempt + 1))
                 continue
             except Exception as e:
                 proc.kill()
@@ -66,14 +66,14 @@ class Utils(object):
                 break
             else:
                 completed = True
-                logger.info("gsutil copy for source '{}', destination '{}' completed!"
+                logger.info("gsutil copy for source '{}', destination '{}' COMPLETED!"
                             .format(os.path.join(self.output_dir, "*"), "gs://{}/".format(destination_bucket)))
                 break
         if not completed:
             proc.kill()
             _, err = proc.communicate()
             logger.error(
-                f"Could not complete file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'")
+                f"COULD NOT COMPLETE file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'")
 
     @staticmethod
     def resource_for_stage(resource):

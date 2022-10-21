@@ -23,5 +23,6 @@ class Reactome(IPlugin):
         :param outputs: output location information object for step results
         :param cmd_conf: NOT USED
         """
-        self._logger.info("Reactome step")
+        self._logger.info("[STEP] BEGIN, reactome")
         Downloads(outputs.prod_dir).exec(conf)
+        self._logger.info("[STEP] END, reactome")

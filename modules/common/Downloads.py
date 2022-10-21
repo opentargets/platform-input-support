@@ -18,7 +18,7 @@ class Downloads(object):
 
     def __init__(self, output_dir):
         """
-        Constructor
+        Constructor.
 
         :param output_dir: path to download destination folder
         """
@@ -57,28 +57,29 @@ class Downloads(object):
         if google_resource.get_bucket() is not None:
             latest_filename = google_resource.get_latest_file(resource)
             if latest_filename["latest_filename"] is None:
-                logger.info(f"ERROR: The path={google_resource.bucket_name} does not contain any recent file")
+                logger.warning(f"The path={google_resource.bucket_name} does not contain any recent file")
         return latest_filename
 
     def exec(self, resources_info):
         """
-        Download the resources according to their provided information
+        Download the resources according to their provided information.
 
         :param resources_info: information on the resources to download
         """
+        # TODO Those places where the download was not possible, need to report back to the caller.
         for resource in resources_info.ftp_downloads:
             try:
                 path = create_folder(os.path.join(self.path_root, resource.path))
                 download = DownloadResource(path)
                 download.ftp_download(resource)
             except Exception as e:
-                logger.error(f"ERROR: The resource={resource.uri} was not downloaded, '{e}'")
+                logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
         for resource in resources_info.http_downloads:
             try:
                 self.single_http_download(resource)
             except Exception as e:
-                logger.error(f"ERROR: The resource={resource.uri} was not downloaded, '{e}'")
+                logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
         for resource in resources_info.gs_downloads_latest:
             try:
@@ -88,7 +89,7 @@ class Downloads(object):
                 download_info = self.prepare_gs_download(latest_resource, resource)
                 google_resource.download(download_info)
             except Exception as e:
-                logger.error(f"ERROR: The resource={resource.bucket} was not downloaded, '{e}'")
+                logger.error(f"COULD NOT DOWNLOAD resource '{resource.bucket}', due to '{e}'")
 
     def single_http_download(self, resource):
         """

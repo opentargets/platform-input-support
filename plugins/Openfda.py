@@ -1,6 +1,5 @@
 import os
 import json
-import tqdm
 import logging
 import multiprocessing as mp
 from yapsy.IPlugin import IPlugin
@@ -41,25 +40,23 @@ class Openfda(IPlugin):
         downloaded_files = dict()
         # Body
         if repo_metadata:
-            self._logger.info("OpenFDA FAERs metadata received")
+            self._logger.debug("OpenFDA FAERs metadata received")
             fda_output = create_folder(os.path.join(output.prod_dir, "fda-inputs"))
             fda = OpenfdaHelper(fda_output)
             # Parallel data gathering
-            self._logger.info("Prepare download pool of {} processes".format(mp.cpu_count()))
+            self._logger.debug("Download processes pool -- {}".format(mp.cpu_count()))
             download_pool_nprocesses = mp.cpu_count() * 2
             download_pool_chunksize = int(
                 len(repo_metadata['results']['drug']['event']['partitions']) / download_pool_nprocesses
             )
             with mp.Pool() as download_pool:
-                self._logger.info(mp.current_process())
+                # self._logger.info(mp.current_process())
                 try:
-                    for _ in tqdm.tqdm(download_pool.map(fda._do_download_openfda_event_file,
-                                                         repo_metadata['results']['drug']['event']['partitions'],
-                                                         chunksize=download_pool_chunksize),
-                                       total=len(repo_metadata['results']['drug']['event']['partitions'])):
-                        self._logger.info('\rdone {0:%}'.format(_ / len(repo_metadata['results']['drug']['event']['partitions'])))
+                    download_pool.map(fda._do_download_openfda_event_file,
+                                      repo_metadata['results']['drug']['event']['partitions'],
+                                      chunksize=download_pool_chunksize)
                 except Exception as e:
-                    self._logger.info("Something went wrong: " + str(e))
+                    self._logger.error("Something went wrong: " + str(e))
         return downloaded_files
 
     def _download_openfda_faers(self, resource, output):
@@ -89,6 +86,7 @@ class Openfda(IPlugin):
         :param output: output folder for collected OpenFDA data
         :param cmd_conf: UNUSED
         """
-        self._logger.info("Openfda step")
+        self._logger.info("[STEP] BEGIN, openfda")
         Downloads(output.prod_dir).exec(conf)
         self._download_openfda_faers(conf.etl.downloads, output)
+        self._logger.info("[STEP] END, openfda")

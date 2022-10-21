@@ -52,8 +52,8 @@ class Homologues(IPlugin):
         resource_stage.output_dir = staging
         return download.ftp_download(resource_stage)
 
-    @staticmethod
-    def extract_fields_from_json(input_file, conf, output, jq_cmd) -> str:
+
+    def extract_fields_from_json(self, input_file, conf, output, jq_cmd) -> str:
         """
         Extract the data defined by the JQ filter from the given input file
 
@@ -65,7 +65,7 @@ class Homologues(IPlugin):
         """
         head, tail = os.path.split(input_file)
         output_file = os.path.join(output.prod_dir, conf.path, str(conf.release), tail.replace('json', 'tsv'))
-        logger.info(f"Extracting id and name from: {input_file}")
+        self._logger.info(f"Extracting id and name from: {input_file}")
         with open(output_file, "ba+") as tsv:
             try:
                 jqp = subprocess.Popen(f"{jq_cmd} '{conf.jq}' {input_file}",
@@ -75,7 +75,7 @@ class Homologues(IPlugin):
             except OSError as e:
                 if e.errno == errno.ENOENT:
                     # handle file not found error.
-                    logger.error(e)
+                    self._logger.error(e)
                 else:
                     # Something else went wrong
                     raise
@@ -89,11 +89,13 @@ class Homologues(IPlugin):
         :param output: output information object for results from this step
         :param cmd_conf: command line configuration object for external tools
         """
+        self._logger.info("[STEP] BEGIN, Homologues")
         download = DownloadResource(output.staging_dir)
         uri_release = conf.uri.replace("{release}", str(conf.release))
         create_folder(os.path.join(output.prod_dir, conf.path, str(conf.release)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         for species in conf.resources:
-            logger.debug(f'Downloading files for {species}')
+            self._logger.debug(f'Downloading files for {species}')
             filename_json = self.download_species(uri_release, conf.release, output.staging_dir, download, species)
             self.extract_fields_from_json(filename_json, conf, output, jq_cmd)
+        self._logger.info("[STEP] END, Homologues")

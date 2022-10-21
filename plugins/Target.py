@@ -70,7 +70,6 @@ class Target(IPlugin):
         :param project_score_entry: project scoring data download information
         :param output: output configuration object for download
         """
-        logger.info("Downloading project scores target files")
         # we only want one file from a zipped archive
         file_of_interest = 'EssentialityMatrices/04_binaryDepScores.tsv'
         file_input = Downloads.download_staging_http(output.staging_dir, project_score_entry)
@@ -86,9 +85,10 @@ class Target(IPlugin):
         :param output: output configuration object for step results
         :param cmd_conf: command line tools configuration object
         """
-        self._logger.info("Target step")
+        self._logger.info("[STEP] BEGIN, target")
         Downloads(output.prod_dir).exec(conf)
         self.get_project_scores(conf.etl.project_scores, output)
         self.extract_ensembl(conf.etl.ensembl, output, cmd_conf)
         self.get_subcellular_location(conf.etl.subcellular_location, output)
         self.get_gnomad(conf.etl.gnomad, output)
+        self._logger.info("[STEP] END, target")

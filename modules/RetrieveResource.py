@@ -44,9 +44,10 @@ class RetrieveResource(object):
         Copy local files to the given Google Storage Bucket destination
         """
         if self.args.google_bucket is not None:
+            logger.info(f"Copying files to GCP bucket '{self.args.google_bucket}'")
             Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(self.args.google_bucket)
         else:
-            logger.error("Destination bucket info missing")
+            logger.warning("No GCP Bucket details provided, THE COLLECTED DATA WILL STAY LOCAL")
 
     def matching_steps(self, steps, all_plugins_available):
         """
@@ -62,7 +63,7 @@ class RetrieveResource(object):
                 matching_plugins.append(plugin)
                 lowercase_steps.remove(plugin.lower())
 
-        logger.info("Steps not found:\n" + ','.join(lowercase_steps))
+        logger.warning("Steps NOT FOUND:\n" + ','.join(lowercase_steps))
         return matching_plugins
 
     def steps(self):
@@ -78,7 +79,7 @@ class RetrieveResource(object):
         else:
             plugins_to_run = list(set(steps_requested))
 
-        logger.info("Steps selected:\n" + ','.join(plugins_to_run))
+        logger.info("SELECTED Steps:\n" + ','.join(plugins_to_run))
         return plugins_to_run
 
     def init_plugins(self):
@@ -122,7 +123,7 @@ class RetrieveResource(object):
         if self.args.force_clean:
             recursive_remove_folder(output_dir)
         else:
-            logger.info("Warning: Output not deleted.")
+            logger.warning("Output folder NOT CLEANED UP.")
         self.yaml.outputs.prod_dir = create_folder(os.path.join(output_dir, 'prod'))
         self.yaml.outputs.staging_dir = create_folder(os.path.join(output_dir, 'staging'))
 

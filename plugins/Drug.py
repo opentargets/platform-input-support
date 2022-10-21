@@ -33,6 +33,7 @@ class Drug(IPlugin):
         results = []
         elasticsearch_reader = ElasticsearchInstance(url)
         if elasticsearch_reader.is_reachable():
+            # TODO Easy point of improvement, parallelize indexes data collection by using one process per index
             for index in list(indices.values()):
                 index_name = index['name']
                 outfile = os.path.join(output_dir, "{}.jsonl".format(index_name))
@@ -90,7 +91,8 @@ class Drug(IPlugin):
         :param output: output folder
         :param cmd_conf: UNUSED
         """
-        self._logger.info("Drug step")
+        # TODO - Handle errors in the process and report back
+        self._logger.info("[STEP] BEGIN, Drug")
         Downloads(output.prod_dir).exec(conf)
-        self._logger.info("Drug download indices")
         self.download_indices(conf, output)
+        self._logger.info("[STEP] END, Drug")

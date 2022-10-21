@@ -33,6 +33,7 @@ class YAMLReader(object):
                 self.yaml_data = yaml.load(stream, yaml.SafeLoader)
                 self.yaml_dictionary = Dict(self.yaml_data)
             except yaml.YAMLError as e:
+                # TODO Report error back to caller
                 logger.error(f"The following ERROR occurred while reading YAML file '{self.yaml_file}', '{e}'")
         if standard_output:
             return self.yaml_data

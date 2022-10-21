@@ -89,9 +89,9 @@ class GoogleBucketResource(object):
                 bucket = self.client.get_bucket(self.bucket_name)
                 return bucket
             except google.cloud.exceptions.NotFound:
-                logger.error("Sorry, that bucket {} does not exist!".format(self.bucket_name))
+                logger.error("Bucket '{}' NOT FOUND".format(self.bucket_name))
             except exceptions.Forbidden:
-                logger.error(" ERROR: GCS forbidden access, path={}".format(self.bucket_name))
+                logger.error("Google Cloud Storage, FORBIDDEN access, path '{}'".format(self.bucket_name))
         return None
 
     # For instance you can call the method
@@ -147,7 +147,7 @@ class GoogleBucketResource(object):
         """
         return self.list_blobs(self.object_path, include=included_pattern)
 
-    # WARNING - UNUSED - REMOVE - DEPRECATE
+    # TODO - UNUSED method, REMOVE
     def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
         bucket_link = self.get_bucket()
         if bucket_link is None:
@@ -158,7 +158,7 @@ class GoogleBucketResource(object):
             object_path = object_path + '/' + gs_specific_output_dir
 
         blob = bucket_link.blob(object_path + '/' + dest_filename)
-        logger.info('Copy the file %s to the bucket %s', original_filename, bucket_link)
+        logger.debug('Copy the file %s to the bucket %s', original_filename, bucket_link)
         if ".gz" in original_filename:
             blob.content_type = "application/x-gzip"
         else:
@@ -203,7 +203,7 @@ class GoogleBucketResource(object):
                     else:
                         # it is spark dir. Check if it is the same dir
                         if os.path.dirname(filename) != os.path.dirname(last_recent_file):
-                            logger.info("'{}' vs '{}'".format(filename, last_recent_file))
+                            logger.debug("'{}' vs '{}'".format(filename, last_recent_file))
                             possible_recent_date_collision = True
                 if date_file > recent_date:
                     possible_recent_date_collision = False
@@ -277,6 +277,7 @@ class GoogleBucketResource(object):
             return self.download_dir(download_descriptor["file"], download_descriptor["output"])
         return self.download_file(download_descriptor["file"], download_descriptor["output"])
 
+    # TODO - UNUSED method, REMOVE
     def blob_metadata(self, blob_name):
         """
         Prints out a blob's metadata for the given BLOB name

@@ -27,8 +27,10 @@ class SO(IPlugin):
         :param output: output information object for the results of this pipeline step
         :param cmd_conf: command line tools configuration object
         """
+        self._logger.info("[STEP] BEGIN, so")
         riot = Riot(cmd_conf)
         filename_input = Downloads.download_staging_http(output.staging_dir, conf.etl)
         file_ouput_path = os.path.join(output.prod_dir, conf.etl.path)
         create_folder(file_ouput_path)
         riot.convert_owl_to_jsonld(filename_input, file_ouput_path, conf.etl.owl_jq)
+        self._logger.info("[STEP] END, so")

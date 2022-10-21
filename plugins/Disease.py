@@ -115,8 +115,10 @@ class Disease(IPlugin):
         :param output: output folder for collected and pre-processed data
         :param cmd_conf: command line tools configuration
         """
+        self._logger.info("[STEP] BEGIN, Disease")
         riot = Riot(cmd_conf)
         self.get_ontology_EFO(conf, output, riot)
         self.get_ontology_mondo(conf, output, riot)
         self.get_ontology_hpo(conf, output, riot)
         self.get_hpo_phenotypes(conf, output)
+        self._logger.info("[STEP] END, Disease")
