@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 # Remove excessive logging for Elastic Search Library
 es_logger = logging.getLogger('elasticsearch')
 es_logger.setLevel(logging.WARNING)
+# Remove excessive logging from urllib3 used by Elastic Search Library
+urllib_logger = logging.getLogger('urllib3.connectionpool')
+urllib_logger.setLevel(logging.WARNING)
 
 
 class ElasticsearchInstance(object):
