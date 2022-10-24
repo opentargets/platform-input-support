@@ -293,7 +293,7 @@ target:
   - uri: https://cog.sanger.ac.uk/cmp/download/gene_identifiers_latest.csv.gz
     output_filename: gene_identifiers_latest.csv.gz
     path: target-inputs/project-scores
-  - uri: https://rest.uniprot.org/uniprotkb/stream\?compressed\=true\&format\=txt\&query\=%28%28reviewed%3Atrue%29%29%20AND%20%28model_organism%3A9606%29
+  - uri: https://rest.uniprot.org/uniprotkb/stream?compressed=true&format=txt&query=%28%28reviewed%3Atrue%29%29%20AND%20%28model_organism%3A9606%29
     output_filename: uniprot.txt.gz
     path: target-inputs/uniprot
   - uri: https://rest.uniprot.org/locations/stream?compressed=true&fields=id%2Cname%2Ccategory&format=tsv&query=%28%2A%29
