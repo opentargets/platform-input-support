@@ -221,7 +221,7 @@ optional arguments:
   -c CONFIG, --config CONFIG
                         path to config file (YAML) [env var: CONFIG] (default:
                         None)
-  -gkey GOOGLE_CREDENTIAL_KEY, --google_credential_key GOOGLE_CREDENTIAL_KEY
+  -gkey GOOGLE_CREDENTIAL_KEY, --gcp_credentials GOOGLE_CREDENTIAL_KEY
                         The path were the JSON credential file is stored. [env
                         var: GOOGLE_APPLICATION_CREDENTIALS] (default: None)
   -gb GOOGLE_BUCKET, --google_bucket GOOGLE_BUCKET
@@ -275,13 +275,13 @@ In both case, the log output file is store under **"log"**
 
 # Google bucket requirements
 To copy the files in a specific google storage bucket valid credentials must be used.
-The required parameter -gkey (--google_credential_key) allows the specification of Google storage JSON credential.
+The required parameter -gkey (--gcp_credentials) allows the specification of Google storage JSON credential.
 Eg.
 ```
 python platform-input-support.py -gkey /path/open-targets-gac.json -gb bucket/object_path
 or
 python platform-input-support.py
-         --google_credential_key /path/open-targets-gac.json
+         --gcp_credentials /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
 ```
 
@@ -290,11 +290,11 @@ python platform-input-support.py
 ```
 python platform-input-support.py
          --skip
-         --google_credential_key /path/open-targets-gac.json
+         --gcp_credentials /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
 or  
 python platform-input-support.py
-         --google_credential_key /path/open-targets-gac.json
+         --gcp_credentials /path/open-targets-gac.json
          --google_bucket ot-snapshots/es5-sufentanil/tmp
          -steps annotations evidence
          -exclude drug
