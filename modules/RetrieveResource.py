@@ -32,11 +32,11 @@ class RetrieveResource(object):
         """
         Check that valid Google Cloud Platform credentials are present
         """
-        if self.args.google_credential_key is None:
+        if self.args.gcp_credentials is None:
             logger.warning("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
                            "Eg. Evidence")
         # We may still have the default user credentials
-        if not GoogleBucketResource.has_valid_auth_key(self.args.google_credential_key):
+        if not GoogleBucketResource.has_valid_auth_key(self.args.gcp_credentials):
             raise ValueError("Google credential is not valid!")
 
     def copy_to_gs(self):
@@ -106,7 +106,7 @@ class RetrieveResource(object):
         for plugin_name in steps_to_execute:
             plugin = self.simplePluginManager.getPluginByName(plugin_name)
             plugin_configuration = self.yaml[plugin_name.lower()]
-            plugin_configuration['google_credential_key'] = self.args.google_credential_key
+            plugin_configuration['gcp_credentials'] = self.args.gcp_credentials
             try:
                 plugin.plugin_object.process(plugin_configuration, self.yaml.outputs, self.yaml.config)
             except Exception as e:
