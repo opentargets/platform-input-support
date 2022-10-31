@@ -13,7 +13,7 @@ disease:
     output_filename: hpo-phenotypes.jsonl
     path: ontology-inputs
    efo:
-    uri: https://github.com/EBISPOT/efo/releases/download/v3.45.0/efo_otar_slim.owl
+    uri: https://github.com/EBISPOT/efo/releases/download/v3.47.0/efo_otar_slim.owl
     output_filename: ontology-efo.jsonl
     path: ontology-inputs
     owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
@@ -215,7 +215,7 @@ go:
 homologues:
   uri: https://ftp.ensembl.org/pub/release-{release}/json/
   path: target-inputs/homologue
-  release: 107
+  release: 108
   jq: ".genes[] | [.id, .name] | @tsv"
   resources:
       - 'caenorhabditis_elegans'
@@ -247,7 +247,7 @@ interactions:
   - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
     output_filename: string-interactions.json.gz
     path: interactions-inputs
-  - uri: https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.107.chr.gtf.gz
+  - uri: https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.108.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
 mousephenotypes:
@@ -329,10 +329,10 @@ target:
   - uri: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz
     output_filename: gencode.gff3.gz
     path: target-inputs/gencode
-  - uri: https://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.protein_default.homologies.tsv.gz
+  - uri: https://ftp.ensembl.org/pub/release-108/tsv/ensembl-compara/homologies/homo_sapiens/Compara.108.protein_default.homologies.tsv.gz
     output_filename: cpd.tsv.gz
     path: target-inputs/homologue
-  - uri: https://ftp.ensembl.org/pub/release-107/tsv/ensembl-compara/homologies/homo_sapiens/Compara.107.ncrna_default.homologies.tsv.gz
+  - uri: https://ftp.ensembl.org/pub/release-108/tsv/ensembl-compara/homologies/homo_sapiens/Compara.108.ncrna_default.homologies.tsv.gz
     output_filename: crna.tsv.gz
     path: target-inputs/homologue
   - uri: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
@@ -347,7 +347,7 @@ target:
   - uri: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: https://ftp.ensembl.org/pub/release-107/species_EnsemblVertebrates.txt
+  - uri: https://ftp.ensembl.org/pub/release-108/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
   - uri: https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -367,7 +367,7 @@ target:
       output_filename: essentiality_matrices.zip
       path: target-inputs/project-scores
     ensembl:
-      release: 107
+      release: 108
       uri: https://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
