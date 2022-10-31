@@ -18,7 +18,7 @@ def setup_parser():
     p.add('-c', '--config', is_config_file=True,
           env_var="PIS_CONFIG", help='path to config file (YAML)')
 
-    p.add('-gkey', '--google_credential_key',
+    p.add('-gkey', '--gcp_credentials',
           env_var="GOOGLE_APPLICATION_CREDENTIALS", help='The path were the JSON credential file is stored.')
 
     p.add('-gb', '--google_bucket',

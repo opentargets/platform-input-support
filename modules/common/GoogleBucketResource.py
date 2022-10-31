@@ -24,17 +24,17 @@ class GoogleBucketResource(object):
         logger.debug('Destroyed instance of %s', __name__)
 
     @staticmethod
-    def has_valid_auth_key(google_credential_key=None):
+    def has_valid_auth_key(gcp_credentials=None):
         """
         Check whether the available Google Cloud Access key is valid or not
 
-        :param google_credential_key: Google Cloud access credentials file
+        :param gcp_credentials: Google Cloud access credentials file
         :return: True if valid, False otherwise
         """
-        if google_credential_key is None:
+        if gcp_credentials is None:
             logger.info("gsutil will use the default credential for the user.")
         else:
-            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_credential_key
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = gcp_credentials
         try:
             credentials, project = google.auth.default()
         except Exception as error:

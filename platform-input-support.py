@@ -20,9 +20,13 @@ def print_list_steps(keys_list):
 
 # This procedure reads the config file and the args and runs the plugins requested.
 def main():
+    logger.debug("Setting up configuration parser")
     cfg.setup_parser()
+    logger.debug("Get command line arguments")
     args = cfg.get_args()
+    logger.debug("Prepare YAML reader for configuration file")
     yaml = YAMLReader(args.config)
+    logger.debug(f"Read configuration file")
     yaml_dict = yaml.read_yaml()
     print_list_steps(yaml.get_list_keys())
     cfg.set_up_logging(args)

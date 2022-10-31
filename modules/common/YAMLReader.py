@@ -28,6 +28,7 @@ class YAMLReader(object):
         :return: text representation of yaml data if standard_output is set to True, a dictionary object otherwise
         """
         # print("Config file: " + self.yaml_file )
+        logger.debug(f"Reading configuration file '{self.yaml_file}'")
         with open(self.yaml_file, 'r') as stream:
             try:
                 self.yaml_data = yaml.load(stream, yaml.SafeLoader)

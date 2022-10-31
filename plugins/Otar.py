@@ -18,7 +18,7 @@ class Otar(IPlugin):
 
     def process(self, conf, output, cmd_conf=None):
         self._logger.info("[STEP] BEGIN, otar")
-        gcp_credentials = conf.google_credential_key
+        gcp_credentials = conf.gcp_credentials
         dst_folder = os.path.join(output.prod_dir, conf.gs_output_dir)
         self.logger.debug("Prepare destination folder at '{}'".format(dst_folder))
         create_folder(dst_folder)
