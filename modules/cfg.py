@@ -19,10 +19,10 @@ def setup_parser():
           env_var="PIS_CONFIG", help='path to config file (YAML)')
 
     p.add('-gkey', '--gcp_credentials',
-          env_var="GOOGLE_APPLICATION_CREDENTIALS", help='The path were the JSON credential file is stored.')
+          env_var="GCP_CREDENTIALS", help='The path were the JSON credential file is stored.')
 
-    p.add('-gb', '--google_bucket',
-          env_var="GOOGLE_BUCKET", help='Copy the files from the output directory to a specific google bucket')
+    p.add('-gb', '--gcp_bucket',
+          env_var="GCP_BUCKET", help='Copy the files from the output directory to a specific google bucket')
 
     p.add('-o', '--output_dir',
           env_var="OT_OUTPUT_DIR", help='By default, the files are generated in the root directory')

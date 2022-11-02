@@ -207,8 +207,8 @@ conda activate pis-py3.8
 cd your_path_application
 python platform-input-support -h
 usage: platform-input-support.py [-h] [-c CONFIG]
-                                 [-gkey GOOGLE_CREDENTIAL_KEY]
-                                 [-gb GOOGLE_BUCKET] [-o OUTPUT_DIR] [-t]
+                                 [-gkey GCP_CREDENTIALS]
+                                 [-gb GCP_BUCKET] [-o OUTPUT_DIR] [-t]
                                  [-s SUFFIX] [-steps STEPS [STEPS ...]]
                                  [-exclude EXCLUDE [EXCLUDE ...]] [--skip]
                                  [-l] [--log-level LOG_LEVEL]
@@ -223,8 +223,8 @@ optional arguments:
                         None)
   -gkey GOOGLE_CREDENTIAL_KEY, --gcp_credentials GOOGLE_CREDENTIAL_KEY
                         The path were the JSON credential file is stored. [env
-                        var: GOOGLE_APPLICATION_CREDENTIALS] (default: None)
-  -gb GOOGLE_BUCKET, --google_bucket GOOGLE_BUCKET
+                        var: GCP_CREDENTIALS] (default: None)
+  -gb GCP_BUCKET, --gcp_bucket GCP_BUCKET
                         Copy the files from the output directory to a specific
                         google bucket (default: None)
   -o OUTPUT_DIR, --output OUTPUT_DIR
@@ -282,7 +282,7 @@ python platform-input-support.py -gkey /path/open-targets-gac.json -gb bucket/ob
 or
 python platform-input-support.py
          --gcp_credentials /path/open-targets-gac.json
-         --google_bucket ot-snapshots/es5-sufentanil/tmp
+         --gcp_bucket ot-snapshots/es5-sufentanil/tmp
 ```
 
 # More examples
@@ -291,11 +291,11 @@ python platform-input-support.py
 python platform-input-support.py
          --skip
          --gcp_credentials /path/open-targets-gac.json
-         --google_bucket ot-snapshots/es5-sufentanil/tmp
+         --gcp_bucket ot-snapshots/es5-sufentanil/tmp
 or  
 python platform-input-support.py
          --gcp_credentials /path/open-targets-gac.json
-         --google_bucket ot-snapshots/es5-sufentanil/tmp
+         --gcp_bucket ot-snapshots/es5-sufentanil/tmp
          -steps annotations evidence
          -exclude drug
 or

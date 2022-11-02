@@ -34,7 +34,7 @@ class GoogleBucketResource(object):
         if gcp_credentials is None:
             logger.info("gsutil will use the default credential for the user.")
         else:
-            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = gcp_credentials
+            os.environ['GCP_CREDENTIALS'] = gcp_credentials
         try:
             credentials, project = google.auth.default()
         except Exception as error:
