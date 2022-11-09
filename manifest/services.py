@@ -103,12 +103,9 @@ class ManifestService():
         pass
 
     def persist(self):
-        self._logger.info(f"Writing manifest file '{self.path_manifest}', session '{self.manifest.session}'")
         try:
             with open(self.path_manifest, 'w') as fmanifest:
-                json.dump(
-                    jsonpickle.encode(self.manifest),
-                    fmanifest
-                )
+                fmanifest.write(jsonpickle.encode(self.manifest))
         except EnvironmentError as e:
             self._logger.error(f"COULD NOT write manifest file '{self.path_manifest}'")
+        self._logger.info(f"WROTE manifest file '{self.path_manifest}', session '{self.manifest.session}'")
