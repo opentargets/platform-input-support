@@ -102,6 +102,9 @@ class ManifestService():
     def create_resource(self) -> ManifestResource:
         pass
 
+    def append_resource_to_step(self, step: str):
+        pass
+
     def persist(self):
         try:
             with open(self.path_manifest, 'w') as fmanifest:
