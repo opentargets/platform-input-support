@@ -15,12 +15,18 @@ class RetrieveResource(object):
         self.args = args
         self.yaml = yaml
         self._simplePluginManager = None
+        self.__is_done_create_output_structure = False
 
     @property
     def output_dir(self):
         if self.args.output_dir is not None:
             return self.args.output_dir
         return PIS_OUTPUT_DIR
+
+    @property
+    def output_dir_prod(self):
+        self.create_output_structure()
+        return self.yaml.outputs.prod_dir
 
     @property
     def simplePluginManager(self):
@@ -113,19 +119,23 @@ class RetrieveResource(object):
                 logger.error("A problem occurred while running step '{}'".format(plugin_name))
                 logger.error(e)
 
-    def create_output_structure(self, output_dir):
+    def create_output_structure(self):
         """
         Prepare pipeline output folder including an area for staging results ('staging') and another one for final
         results ('prod').
 
         :param output_dir: destination path for the pipeline output filetree structure
         """
-        if self.args.force_clean:
-            recursive_remove_folder(output_dir)
-        else:
-            logger.warning("Output folder NOT CLEANED UP.")
-        self.yaml.outputs.prod_dir = create_folder(os.path.join(output_dir, 'prod'))
-        self.yaml.outputs.staging_dir = create_folder(os.path.join(output_dir, 'staging'))
+        if not self.__is_done_create_output_structure:
+            logger.debug(f"Setting output structure")
+            if self.args.force_clean:
+                recursive_remove_folder(self.output_dir)
+            else:
+                logger.warning("Output folder NOT CLEANED UP.")
+            self.yaml.outputs.prod_dir = create_folder(os.path.join(self.output_dir, 'prod'))
+            self.yaml.outputs.staging_dir = create_folder(os.path.join(self.output_dir, 'staging'))
+            self.__is_done_create_output_structure = True
+        logger.debug(f"Output structure has been created")
 
     def run(self):
         """
@@ -137,7 +147,7 @@ class RetrieveResource(object):
             - Run the effective pipeline steps as requested
             - And conditionally copy the results to the GCP bucket destination
         """
-        self.create_output_structure(self.output_dir)
+        self.create_output_structure()
         self.init_plugins()
         self.checks_gc_service_account()
         self.run_plugins()
