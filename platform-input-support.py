@@ -31,11 +31,14 @@ def main():
     print_list_steps(yaml.get_list_keys())
     cfg.set_up_logging(args)
 
-    # Session's Manifest
-    manifest_service = manifest.get_manifest_service(args, yaml_dict)
     # Resources retriever
     resources = RetrieveResource(args, yaml_dict)
+    # Session's Manifest
+    manifest_config = yaml_dict
+    manifest_config.update({"output_dir": resources.output_dir_prod})
+    manifest_service = manifest.get_manifest_service(args, manifest_config)
     resources.run()
+    manifest_service.persist()
 
 
 if __name__ == '__main__':
