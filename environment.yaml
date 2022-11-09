@@ -18,6 +18,7 @@ dependencies:
  - pyyaml
  - yapsy
  - tqdm
+ - jsonpickle
  - pip:
    - future==0.18.2
    - opentargets-urlzsource==1.0.0
