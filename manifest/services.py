@@ -49,13 +49,19 @@ class ManifestService():
         self.session_timestamp: str = get_timestamp_iso_utc_now()
         self._logger = logging.getLogger(__name__)
         self.__manifest: ManifestDocument = None
+        self.__is_manifest_loaded = False
 
     def __create_manifest(self) -> ManifestDocument:
         manifest_document = ManifestDocument(self.session_timestamp)
         return manifest_document
 
+    def __create_manifest_step(self) -> ManifestStep:
+        return ManifestStep(self.session_timestamp)
+
     def __load_manifest(self) -> ManifestDocument:
         # Load and modify the 'modified' timestamp
+        self.__is_manifest_loaded = True
+        # TODO
         raise NotImplementedError("Loading a manifest document from a file is not supported yet")
 
     @abstractmethod
@@ -96,14 +102,19 @@ class ManifestService():
             self.__manifest = self._produce_manifest()
         return self.__manifest
 
-    def get_step(self, step_name: str) -> ManifestStep:
-        pass
+    def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
+        if step_name not in self.manifest.steps:
+            self.manifest[step_name] = self.__create_manifest_step()
+        if self.__is_manifest_loaded:
+            self.manifest[step_name].modified = get_timestamp_iso_utc_now()
+        return self.manifest[step_name]
 
-    def create_resource(self) -> ManifestResource:
-        pass
+    def new_resource(self) -> ManifestResource:
+        return ManifestResource(get_timestamp_iso_utc_now())
 
-    def append_resource_to_step(self, step: str):
-        pass
+    def add_resource_to_step(self, step_name: str, resource: ManifestResource):
+        manifest_step = self.get_step(step_name)
+        manifest_step.resources.append(resource)
 
     def persist(self):
         try:
