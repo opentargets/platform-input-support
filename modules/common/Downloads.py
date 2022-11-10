@@ -1,8 +1,12 @@
 import os
 import datetime
 import logging
+
+from typing import List
+
 from modules.common.Utils import Utils
 from modules.common import create_folder
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 from modules.common.DownloadResource import DownloadResource
 from modules.common.GoogleBucketResource import GoogleBucketResource
 
@@ -24,6 +28,7 @@ class Downloads(object):
         """
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.path_root = output_dir
+        self.downloaded_resources = list()
 
     def prepare_gs_download(self, gs_info, resource):
         """
@@ -60,13 +65,14 @@ class Downloads(object):
                 logger.warning(f"The path={google_resource.bucket_name} does not contain any recent file")
         return latest_filename
 
-    def exec(self, resources_info):
+    def exec(self, resources_info) -> List[ManifestResource]:
         """
         Download the resources according to their provided information.
 
         :param resources_info: information on the resources to download
         """
         # TODO Those places where the download was not possible, need to report back to the caller.
+        downloaded_resources = list()
         for resource in resources_info.ftp_downloads:
             try:
                 path = create_folder(os.path.join(self.path_root, resource.path))
@@ -77,7 +83,7 @@ class Downloads(object):
 
         for resource in resources_info.http_downloads:
             try:
-                self.single_http_download(resource)
+                downloaded_resources.append(self.single_http_download(resource))
             except Exception as e:
                 logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
@@ -90,8 +96,9 @@ class Downloads(object):
                 google_resource.download(download_info)
             except Exception as e:
                 logger.error(f"COULD NOT DOWNLOAD resource '{resource.bucket}', due to '{e}'")
+        return downloaded_resources
 
-    def single_http_download(self, resource):
+    def single_http_download(self, resource) -> ManifestResource:
         """
         Perform a single HTTP download
 
