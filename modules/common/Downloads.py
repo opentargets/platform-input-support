@@ -77,14 +77,16 @@ class Downloads(object):
             try:
                 path = create_folder(os.path.join(self.path_root, resource.path))
                 download = DownloadResource(path)
-                download.ftp_download(resource)
+                downloaded_resources.append(download.ftp_download(resource))
             except Exception as e:
+                # TODO - Check that we should never find ourselves in this 'except', otherwise it escapes reporting
                 logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
         for resource in resources_info.http_downloads:
             try:
                 downloaded_resources.append(self.single_http_download(resource))
             except Exception as e:
+                # TODO - Check that we should never find ourselves in this 'except', otherwise it escapes reporting
                 logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
 
         for resource in resources_info.gs_downloads_latest:
