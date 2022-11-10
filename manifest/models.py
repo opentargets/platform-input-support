@@ -21,10 +21,11 @@ class ManifestDocument(object):
         self.created: str = timestamp
         self.modified: str = timestamp
         self.steps: typing.Dict[str, ManifestStep] = dict()
-        self.status_completion: str = ManifestStatus.UNKNOWN
-        self.status_validation: str = ManifestStatus.UNKNOWN
-        self.msg_completion: str = ManifestStatus.UNKNOWN
-        self.msg_validation: str = ManifestStatus.NOT_VALIDATED
+        self.status: str = ManifestStatus.FAILED
+        self.status_completion: str = ManifestStatus.NOT_COMPLETED
+        self.status_validation: str = ManifestStatus.NOT_VALIDATED
+        self.msg_completion: str = ManifestStatus.NOT_SET
+        self.msg_validation: str = ManifestStatus.NOT_SET
 
 
 # TODO - Step Data model
@@ -36,10 +37,10 @@ class ManifestStep(object):
         self.modified: str = timestamp
         self.name: str = ManifestStatus.NO_NAME
         self.resources: list = list()
-        self.status_completion: str = ManifestStatus.UNKNOWN
-        self.status_validation: str = ManifestStatus.UNKNOWN
-        self.msg_completion: str = ManifestStatus.UNKNOWN
-        self.msg_validation: str = ManifestStatus.NOT_VALIDATED
+        self.status_completion: str = ManifestStatus.NOT_COMPLETED
+        self.status_validation: str = ManifestStatus.NOT_VALIDATED
+        self.msg_completion: str = ManifestStatus.NOT_SET
+        self.msg_validation: str = ManifestStatus.NOT_SET
 
 
 # TODO - Resource data model
@@ -48,15 +49,14 @@ class ManifestResource(object):
         if timestamp is None:
             timestamp = get_timestamp_iso_utc_now()
         self.created: str = timestamp
-        self.modified: str = timestamp
         self.source_url: str = ManifestStatus.NOT_SET
         self.path_destination: str = ManifestStatus.NOT_SET
         self.sha1sum: str = ManifestStatus.NOT_SET
         self.md5sum: str = ManifestStatus.NOT_SET
-        self.status_completion: str = ManifestStatus.UNKNOWN
-        self.status_validation: str = ManifestStatus.UNKNOWN
-        self.msg_completion: str = ManifestStatus.UNKNOWN
-        self.msg_validation: str = ManifestStatus.NOT_VALIDATED
+        self.status_completion: str = ManifestStatus.NOT_COMPLETED
+        self.status_validation: str = ManifestStatus.NOT_VALIDATED
+        self.msg_completion: str = ManifestStatus.NOT_SET
+        self.msg_validation: str = ManifestStatus.NOT_SET
 
 
 class ManifestStatus(StrEnum):
@@ -67,5 +67,7 @@ class ManifestStatus(StrEnum):
     SUCCESS = auto()
     INVALID = auto()
     NOT_SET = auto()
+    COMPLETED = auto()
     NOT_PROVIDED = auto()
+    NOT_COMPLETED = auto()
     NOT_VALIDATED = auto()
