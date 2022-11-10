@@ -2,10 +2,10 @@ import os
 import json
 import logging
 import jsonpickle
-from abc import abstractmethod, ABC
+from strenum import StrEnum
 from modules.common.GoogleBucketResource import GoogleBucketResource
 from modules.common.TimeUtils import get_timestamp_iso_utc_now
-from .models import ManifestStep, ManifestResource, ManifestDocument
+from .models import ManifestStep, ManifestResource, ManifestDocument, ManifestStatus
 
 # Logging
 logger = logging.getLogger(__name__)
@@ -24,12 +24,24 @@ def get_manifest_service(args=None, configuration=None):
             msg = "The Manifest subsystem has not been initialized and no configuration has been provided"
             logger.error(msg)
             raise ManifestServiceException(msg)
-        else:
-            manifest_config = configuration.config.manifest
-            manifest_config.update({"output_dir": configuration.output_dir, "gcp_bucket": args.gcp_bucket})
-            logger.debug("Initializing Manifest service, configuration: {}".format(json.dumps(manifest_config)))
-            __manifestServiceInstance = ManifestService(manifest_config)
+        manifest_config = configuration.config.manifest
+        manifest_config.update({"output_dir": configuration.output_dir, "gcp_bucket": args.gcp_bucket})
+        logger.debug("Initializing Manifest service, configuration: {}".format(json.dumps(manifest_config)))
+        __manifestServiceInstance = ManifestService(manifest_config)
     return __manifestServiceInstance
+
+
+# Handler for ManifestStatus Enum
+class JsonEnumHandler(jsonpickle.handlers.BaseHandler):
+    def restore(self, obj):
+        pass
+
+    def flatten(self, obj: StrEnum, data):
+        return obj.name
+
+
+# Register the handler
+jsonpickle.handlers.registry.register(ManifestStatus, JsonEnumHandler)
 
 
 class ManifestServiceException(Exception):
@@ -59,12 +71,11 @@ class ManifestService():
         return ManifestStep(self.session_timestamp)
 
     def __load_manifest(self) -> ManifestDocument:
+        # TODO
         # Load and modify the 'modified' timestamp
         self.__is_manifest_loaded = True
-        # TODO
         raise NotImplementedError("Loading a manifest document from a file is not supported yet")
 
-    @abstractmethod
     def _produce_manifest(self) -> ManifestDocument:
         """
         This method will produce the manifest file with the following precedence rules: local, GCP or create new one
@@ -104,10 +115,13 @@ class ManifestService():
 
     def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
         if step_name not in self.manifest.steps:
-            self.manifest[step_name] = self.__create_manifest_step()
+            self.manifest.steps[step_name] = self.__create_manifest_step()
+            self.manifest.steps[step_name].name = step_name
         if self.__is_manifest_loaded:
-            self.manifest[step_name].modified = get_timestamp_iso_utc_now()
-        return self.manifest[step_name]
+            # TODO - When the manifest file has been loaded from a file, we need to empty the resources in a given step
+            #  the first time that step's metadata is accessed
+            self.manifest.steps[step_name].modified = get_timestamp_iso_utc_now()
+        return self.manifest.steps[step_name]
 
     def new_resource(self) -> ManifestResource:
         return ManifestResource(get_timestamp_iso_utc_now())
@@ -119,7 +133,7 @@ class ManifestService():
     def persist(self):
         try:
             with open(self.path_manifest, 'w') as fmanifest:
-                fmanifest.write(jsonpickle.encode(self.manifest))
+                fmanifest.write(jsonpickle.encode(self.manifest, make_refs=False))
         except EnvironmentError as e:
             self._logger.error(f"COULD NOT write manifest file '{self.path_manifest}'")
         self._logger.info(f"WROTE manifest file '{self.path_manifest}', session '{self.manifest.session}'")
