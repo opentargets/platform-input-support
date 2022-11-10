@@ -20,19 +20,20 @@ class ManifestDocument(object):
         self.steps :typing.Dict[str, ManifestStep] = dict()
 
 # TODO - Step Data model
-class ManifestStep:
+class ManifestStep(object):
     def __init__(self):
         timestamp :str = get_timestamp_iso_utc_now()
         self.created :str = timestamp
         self.modified :str = timestamp
-        self.step :str = "NONAME"
+        self.name :str = "NONAME"
 
 # TODO - Resource data model
-class ManifestResource:
+class ManifestResource(object):
     def __init__(self):
         timestamp :str = get_timestamp_iso_utc_now()
         self.created :str = timestamp
         self.modified :str = timestamp
         self.source_url :str = "NOT SPECIFIED"
         self.path_destination :str = "NOT SPECIFIED"
-        self.checksum :str = "NOT SPECIFIED"
+        self.sha1sum :str = "NOT SPECIFIED"
+        self.md5sum : str = "NOT SPECIFIED"
