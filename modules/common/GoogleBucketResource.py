@@ -2,8 +2,12 @@ import os
 import logging
 import google.auth
 from datetime import datetime
+
+from typing import List
+
 from google.cloud import storage, exceptions
 from modules.common import extract_date_from_file
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -235,7 +239,7 @@ class GoogleBucketResource(object):
         latest_filename_info = self.extract_latest_file(list_blobs)
         return latest_filename_info
 
-    def download_dir(self, dir_to_download, local_dir):
+    def download_dir(self, dir_to_download, local_dir) -> List[ManifestResource]:
         """
         Download the files from a given folder in the current bucket into the given local folder
 
@@ -249,11 +253,20 @@ class GoogleBucketResource(object):
         for blob in self.get_bucket().list_blobs(prefix=dir_name):
             folder, filename = os.path.split(blob.name)
             filename_destination = os.path.join(local_dir, filename)
+            # Resource Manifest
+            download_manifest = get_manifest_service().new_resource()
+            download_manifest.source_url = blob.path
+            download_manifest.path_destination = filename_destination
+            # Do download the data
             blob.download_to_filename(filename_destination)
-            list_files.append(filename_destination)
+            # TODO - Handle possible errors
+            download_manifest.status_completion = ManifestStatus.COMPLETED
+            download_manifest.msg_completion = "No error signaling mechanism has been implemented, " \
+                                               "so completion just means the download method worked"
+            list_files.append(download_manifest)
         return list_files
 
-    def download_file(self, src_path_file, dst_path_file):
+    def download_file(self, src_path_file, dst_path_file) -> ManifestResource:
         """
         Download a specific file from the current bucket
 
@@ -261,12 +274,20 @@ class GoogleBucketResource(object):
         :param dst_path_file: destination file path for the downloaded file
         :return: destination file path of the downloaded file
         """
-        self.get_bucket()\
-            .blob(src_path_file)\
+        downloaded_file = get_manifest_service().new_resource()
+        downloaded_file.source_url = src_path_file
+        downloaded_file.path_destination = dst_path_file
+        # WARNING - No error condition signaling mechanism is specified in the documentation
+        self.get_bucket() \
+            .blob(src_path_file) \
             .download_to_filename(dst_path_file)
-        return dst_path_file
+        # TODO - Handle possible errors
+        downloaded_file.status_completion = ManifestStatus.COMPLETED
+        downloaded_file.msg_completion = "No error signaling mechanism has been implemented, " \
+                                         "so completion just means the download method worked"
+        return downloaded_file
 
-    def download(self, download_descriptor):
+    def download(self, download_descriptor) -> List[ManifestResource]:
         """
         Download 'something', it could be an entire folder or just a file, described by the given download descriptor
 
@@ -275,7 +296,7 @@ class GoogleBucketResource(object):
         """
         if download_descriptor["is_dir"]:
             return self.download_dir(download_descriptor["file"], download_descriptor["output"])
-        return self.download_file(download_descriptor["file"], download_descriptor["output"])
+        return [self.download_file(download_descriptor["file"], download_descriptor["output"])]
 
     # TODO - UNUSED method, REMOVE
     def blob_metadata(self, blob_name):

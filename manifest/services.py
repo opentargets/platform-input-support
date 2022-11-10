@@ -2,8 +2,9 @@ import os
 import json
 import logging
 import jsonpickle
+import google.auth
 from strenum import StrEnum
-from modules.common.GoogleBucketResource import GoogleBucketResource
+from google.cloud import storage, exceptions
 from modules.common.TimeUtils import get_timestamp_iso_utc_now
 from .models import ManifestStep, ManifestResource, ManifestDocument, ManifestStatus
 
@@ -42,6 +43,41 @@ class JsonEnumHandler(jsonpickle.handlers.BaseHandler):
 
 # Register the handler
 jsonpickle.handlers.registry.register(ManifestStatus, JsonEnumHandler)
+
+
+class GcpBucketService(object):
+    def __init__(self, bucket_name=None, path=None):
+        self._logger = logging.getLogger(__name__)
+        self.bucket_name = bucket_name
+        self.path = path
+        self.client = storage.Client()
+
+    def get_bucket(self):
+        if self.bucket_name is None:
+            logger.error("No bucket name has been provided for this resource instance")
+        else:
+            try:
+                bucket = self.client.get_bucket(self.bucket_name)
+                return bucket
+            except google.cloud.exceptions.NotFound:
+                logger.error("Bucket '{}' NOT FOUND".format(self.bucket_name))
+            except exceptions.Forbidden:
+                logger.error("Google Cloud Storage, FORBIDDEN access, path '{}'".format(self.bucket_name))
+        return None
+
+    def download_file(self, src_path_file, dst_path_file):
+        # WARNING - No error condition signaling mechanism is specified in the documentation
+        self.get_bucket() \
+            .blob(src_path_file) \
+            .download_to_filename(dst_path_file)
+        # TODO - Handle possible errors
+
+    @staticmethod
+    def get_bucket_and_path(google_bucket_param):
+        if google_bucket_param is None:
+            return None, None
+        split = google_bucket_param.split('/', 1) + [None]
+        return split[0], split[1]
 
 
 class ManifestServiceException(Exception):
@@ -85,9 +121,9 @@ class ManifestService():
             self._logger.info(f"Loading existing manifest file at '{self.path_manifest}'")
             return self.__load_manifest()
         if self.config.gcp_bucket is not None:
-            gcp_bucket, gcp_path = GoogleBucketResource.get_bucket_and_path(self.config.gcp_bucket)
+            gcp_bucket, gcp_path = GcpBucketService.get_bucket_and_path(self.config.gcp_bucket)
             gcp_path_manifest = f"{gcp_path}/{self.config.file_name}"
-            gcp_client = GoogleBucketResource(gcp_bucket, gcp_path_manifest)
+            gcp_client = GcpBucketService(gcp_bucket, gcp_path_manifest)
             gcp_bucket_full_path_manifest = f"{gcp_bucket}/{gcp_path_manifest}"
             try:
                 logger.debug(f"GCP manifest file path '{gcp_bucket_full_path_manifest}'")
