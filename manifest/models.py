@@ -21,16 +21,19 @@ class ManifestDocument(object):
 
 # TODO - Step Data model
 class ManifestStep(object):
-    def __init__(self):
-        timestamp :str = get_timestamp_iso_utc_now()
+    def __init__(self, timestamp :str =None):
+        if timestamp is None:
+            timestamp = get_timestamp_iso_utc_now()
         self.created :str = timestamp
         self.modified :str = timestamp
         self.name :str = "NONAME"
+        self.resources :list = list()
 
 # TODO - Resource data model
 class ManifestResource(object):
-    def __init__(self):
-        timestamp :str = get_timestamp_iso_utc_now()
+    def __init__(self, timestamp :str =None):
+        if timestamp is None:
+            timestamp = get_timestamp_iso_utc_now()
         self.created :str = timestamp
         self.modified :str = timestamp
         self.source_url :str = "NOT SPECIFIED"
