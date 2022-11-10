@@ -29,5 +29,5 @@ class GO(IPlugin):
         self._logger.info("[STEP] BEGIN, GO")
         manifest_service = get_manifest_service()
         manifest_step = manifest_service.get_step(self.step_name)
-        manifest_step.resources.append(Downloads(output.prod_dir).exec(conf))
+        manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         self._logger.info("[STEP] END, GO")
