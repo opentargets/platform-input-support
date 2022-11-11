@@ -60,6 +60,9 @@ class GoogleBucketResource(object):
         split = google_bucket_param.split('/', 1) + [None]
         return split[0], split[1]
 
+    def get_gs_path_for_bucket_path(self, path=""):
+        return f"gs://{self.bucket_name}/{path}"
+
     def get_full_path(self):
         """
         Get the full Google Storage Bucket Path, including the bucket name
@@ -255,7 +258,8 @@ class GoogleBucketResource(object):
             filename_destination = os.path.join(local_dir, filename)
             # Resource Manifest
             download_manifest = get_manifest_service().new_resource()
-            download_manifest.source_url = blob.path
+            download_manifest.source_url = self.get_gs_path_for_bucket_path(blob.path)
+            logger.debug(f"FULL download dir PATH -> '{download_manifest.source_url}'")
             download_manifest.path_destination = filename_destination
             # Do download the data
             blob.download_to_filename(filename_destination)
@@ -275,7 +279,7 @@ class GoogleBucketResource(object):
         :return: destination file path of the downloaded file
         """
         downloaded_file = get_manifest_service().new_resource()
-        downloaded_file.source_url = src_path_file
+        downloaded_file.source_url = self.get_gs_path_for_bucket_path(src_path_file)
         downloaded_file.path_destination = dst_path_file
         # WARNING - No error condition signaling mechanism is specified in the documentation
         self.get_bucket() \
