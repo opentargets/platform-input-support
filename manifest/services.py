@@ -1,5 +1,6 @@
 import os
 import json
+import copy
 import logging
 import jsonpickle
 import google.auth
@@ -161,6 +162,10 @@ class ManifestService():
 
     def new_resource(self) -> ManifestResource:
         return ManifestResource(get_timestamp_iso_utc_now())
+
+    @staticmethod
+    def clone_resource(resource: ManifestResource) -> ManifestResource:
+        return copy.copy(resource)
 
     def add_resource_to_step(self, step_name: str, resource: ManifestResource):
         manifest_step = self.get_step(step_name)
