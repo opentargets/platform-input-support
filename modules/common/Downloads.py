@@ -110,13 +110,13 @@ class Downloads(object):
         return download.execute_download(resource)
 
     @staticmethod
-    def download_staging_http(staging_dir, resource):
+    def download_staging_http(staging_dir, resource) -> ManifestResource:
         download = DownloadResource(staging_dir)
         stage_resource = Utils.resource_for_stage(resource)
         return download.execute_download(stage_resource)
 
     @staticmethod
-    def download_staging_ftp(staging_dir, resource):
+    def download_staging_ftp(staging_dir, resource) -> ManifestResource:
         download = DownloadResource(staging_dir)
         stage_resource = Utils.resource_for_stage(resource)
         return download.ftp_download(stage_resource)
