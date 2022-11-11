@@ -95,7 +95,7 @@ class Downloads(object):
                 google_resource = GoogleBucketResource(bucket_name, path)
                 latest_resource = self.get_latest(google_resource, resource)
                 download_info = self.prepare_gs_download(latest_resource, resource)
-                google_resource.download(download_info)
+                downloaded_resources.append(google_resource.download(download_info))
             except Exception as e:
                 logger.error(f"COULD NOT DOWNLOAD resource '{resource.bucket}', due to '{e}'")
         return downloaded_resources

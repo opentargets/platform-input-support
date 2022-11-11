@@ -1,7 +1,7 @@
 import logging
 from yapsy.IPlugin import IPlugin
 from modules.common.Downloads import Downloads
-from manifest import ManifestStep, get_manifest_service
+from manifest import ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -30,4 +30,6 @@ class GO(IPlugin):
         manifest_service = get_manifest_service()
         manifest_step = manifest_service.get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
+        manifest_step.status_completion = ManifestStatus.COMPLETED
+        manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, GO")
