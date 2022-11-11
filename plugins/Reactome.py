@@ -26,8 +26,7 @@ class Reactome(IPlugin):
         :param cmd_conf: NOT USED
         """
         self._logger.info("[STEP] BEGIN, reactome")
-        manifest_service = get_manifest_service()
-        manifest_step = manifest_service.get_step(self.step_name)
+        manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(outputs.prod_dir).exec(conf))
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
