@@ -97,6 +97,9 @@ class RetrieveResource(object):
         #  stages behavior, so this could probably go somewhere else, maybe as an environment variable. On another
         #  thought, we may just want to make this a constant somewhere, probably the application itself, so its value is
         #  specified in a single place.
+        # Turn the volume down for the yapsy logger
+        logger_yapsy = logging.getLogger('yapsy')
+        logger_yapsy.setLevel(logging.INFO)
         self.simplePluginManager.setPluginPlaces(["plugins"])
         # Load all plugins
         self.simplePluginManager.collectPlugins()
