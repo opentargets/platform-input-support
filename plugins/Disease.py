@@ -1,5 +1,7 @@
 import os
 import logging
+from typing import List
+
 from yapsy.IPlugin import IPlugin
 from plugins.helpers.HPO import HPO
 from modules.common.Riot import Riot
@@ -8,6 +10,7 @@ from modules.common import create_folder
 from plugins.helpers.EFO import EFO as EFO
 from modules.common.Downloads import Downloads
 from plugins.helpers.HPOPhenotypes import HPOPhenotypes
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +25,7 @@ class Disease(IPlugin):
         Constructor, prepare the logging subsystem
         """
         self._logger = logging.getLogger(__name__)
+        self.step_name = "Disease"
 
     def owl_to_json(self, filename_input, output_dir, resource, riot):
         """
@@ -37,7 +41,7 @@ class Disease(IPlugin):
         create_folder(file_output_path)
         return riot.convert_owl_to_jsonld(filename_input, file_output_path, resource.owl_jq)
 
-    def download_and_convert_file(self, resource, output, riot):
+    def download_and_convert_file(self, resource, output, riot) -> ManifestResource:
         """
         Download, convert and filter the given ontology file into the specified output folder
 
@@ -46,8 +50,12 @@ class Disease(IPlugin):
         :param riot: Apache RIOT helper
         :return: destination file path for the converted + filtered data
         """
-        return self.owl_to_json(Downloads.download_staging_http(output.staging_dir, resource),
+        download_manifest = Downloads.download_staging_http(output.staging_dir, resource)
+        download_manifest.path_destination = self.owl_to_json(download_manifest.path_destination,
                                 output.staging_dir, resource, riot)
+        download_manifest.msg_completion = f"OWL to JSON + JQ filtering with '{resource.owl_jq}'"
+        download_manifest.status_completion = ManifestStatus.COMPLETED
+        return download_manifest
 
     def get_hpo_phenotypes(self, conf, output):
         """
@@ -90,7 +98,7 @@ class Disease(IPlugin):
         mondo.generate()
         return mondo.save_mondo(os.path.join(output.prod_dir, conf.etl.mondo.path, conf.etl.mondo.output_filename))
 
-    def get_ontology_EFO(self, conf, output, riot):
+    def get_ontology_EFO(self, conf, output, riot) -> List[ManifestResource]:
         """
         Collect and process EFO ontology data into the specified destination path
 
@@ -100,12 +108,22 @@ class Disease(IPlugin):
         :return: destination file path for EFO ontology collected and processed data
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.efo.path))
-        efo = EFO(self.download_and_convert_file(conf.etl.efo, output, riot))
+        conversion_manifest = self.download_and_convert_file(conf.etl.efo, output, riot)
+        efo = EFO(conversion_manifest.path_destination)
         efo.generate()
-        efo.save_static_disease_file(os.path.join(output.prod_dir,
+        static_disease_manifest = get_manifest_service().clone_resource(conversion_manifest)
+        static_disease_manifest.path_destination = os.path.join(output.prod_dir,
                                                   conf.etl.efo.path,
-                                                  conf.etl.efo.diseases_static_file))
-        return efo.save_diseases(os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename))
+                                                  conf.etl.efo.diseases_static_file)
+        efo.save_static_disease_file(static_disease_manifest.path_destination)
+        static_disease_manifest.msg_completion += \
+            " and then processed by the pipeline into the resulting static disease dataset"
+        conversion_manifest.path_destination = \
+            os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename)
+        efo.save_diseases(conversion_manifest.path_destination)
+        conversion_manifest.msg_completion += \
+            " and some processing via EFO helper to produce this resulting diseases dataset"
+        return [conversion_manifest, static_disease_manifest]
 
     def process(self, conf, output, cmd_conf):
         """
@@ -117,8 +135,11 @@ class Disease(IPlugin):
         """
         self._logger.info("[STEP] BEGIN, Disease")
         riot = Riot(cmd_conf)
-        self.get_ontology_EFO(conf, output, riot)
+        manifest_step = get_manifest_service().get_step(self.step_name)
+        manifest_step.resources.extend(self.get_ontology_EFO(conf, output, riot))
         self.get_ontology_mondo(conf, output, riot)
         self.get_ontology_hpo(conf, output, riot)
         self.get_hpo_phenotypes(conf, output)
+        manifest_step.status_completion = ManifestStatus.COMPLETED
+        manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Disease")
