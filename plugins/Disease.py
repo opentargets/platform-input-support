@@ -57,7 +57,7 @@ class Disease(IPlugin):
         download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
-    def get_hpo_phenotypes(self, conf, output):
+    def get_hpo_phenotypes(self, conf, output) -> ManifestResource:
         """
         Collect and process HPO Phenotypes data into the given output folder
 
@@ -66,10 +66,17 @@ class Disease(IPlugin):
         :return: destination file path for the processed collected information
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path))
-        return HPOPhenotypes(Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)) \
-            .run(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path, conf.etl.hpo_phenotypes.output_filename))
+        download_manifest = Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)
+        download_manifest.path_destination = \
+            HPOPhenotypes(download_manifest.path_destination)\
+                .run(os.path.join(output.prod_dir,
+                                  conf.etl.hpo_phenotypes.path,
+                                  conf.etl.hpo_phenotypes.output_filename))
+        download_manifest.msg_completion = "Resulting dataset from HPO Phenotypes data"
+        download_manifest.status_completion = ManifestStatus.COMPLETED
+        return download_manifest
 
-    def get_ontology_hpo(self, conf, output, riot):
+    def get_ontology_hpo(self, conf, output, riot) -> ManifestResource:
         """
         Collect and process HPO ontology into the specified destination path
 
@@ -79,12 +86,19 @@ class Disease(IPlugin):
         :return: destination file path for HPO collected and processed data
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo.path))
-        hpo = HPO(self.download_and_convert_file(conf.etl.hpo, output, riot))
+        conversion_manifest = self.download_and_convert_file(conf.etl.hpo, output, riot)
+        hpo = HPO(conversion_manifest.path_destination)
         hpo.generate()
-        return hpo.save_hpo(os.path.join(output.prod_dir, conf.etl.hpo.path, conf.etl.hpo.output_filename))
+        conversion_manifest.path_destination = os.path.join(output.prod_dir,
+                                                            conf.etl.hpo.path,
+                                                            conf.etl.hpo.output_filename)
+        hpo.save_hpo(conversion_manifest.path_destination)
+        conversion_manifest.status_completion = ManifestStatus.COMPLETED
+        conversion_manifest.msg_completion = "HPO processed data source"
+        return conversion_manifest
 
     # Download mondo.owl and create a JSON output with a subset of info.
-    def get_ontology_mondo(self, conf, output, riot):
+    def get_ontology_mondo(self, conf, output, riot) -> ManifestResource:
         """
         Collect and process MONDO data into the specified destination path
 
@@ -94,9 +108,16 @@ class Disease(IPlugin):
         :return: destination file path for MONDO collected and processed data
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.mondo.path))
-        mondo = MONDO(self.download_and_convert_file(conf.etl.mondo, output, riot))
+        conversion_manifest = self.download_and_convert_file(conf.etl.mondo, output, riot)
+        mondo = MONDO(conversion_manifest.path_destination)
         mondo.generate()
-        return mondo.save_mondo(os.path.join(output.prod_dir, conf.etl.mondo.path, conf.etl.mondo.output_filename))
+        conversion_manifest.path_destination = os.path.join(output.prod_dir,
+                                                            conf.etl.mondo.path,
+                                                            conf.etl.mondo.output_filename)
+        mondo.save_mondo()
+        conversion_manifest.status_completion = ManifestStatus.COMPLETED
+        conversion_manifest.msg_completion = "MONDO processed data source"
+        return conversion_manifest
 
     def get_ontology_EFO(self, conf, output, riot) -> List[ManifestResource]:
         """
@@ -137,9 +158,9 @@ class Disease(IPlugin):
         riot = Riot(cmd_conf)
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(self.get_ontology_EFO(conf, output, riot))
-        self.get_ontology_mondo(conf, output, riot)
-        self.get_ontology_hpo(conf, output, riot)
-        self.get_hpo_phenotypes(conf, output)
+        manifest_step.resources.append(self.get_ontology_mondo(conf, output, riot))
+        manifest_step.resources.append(self.get_ontology_hpo(conf, output, riot))
+        manifest_step.resources.append(self.get_hpo_phenotypes(conf, output))
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Disease")
