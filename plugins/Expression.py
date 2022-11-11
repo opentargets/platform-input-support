@@ -8,6 +8,7 @@ from modules.common import create_folder
 from opentargets_urlzsource import URLZSource
 from modules.common.Downloads import Downloads
 from modules.common import make_unzip_single_file, make_gzip
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,9 @@ class Expression(IPlugin):
         """
         self._logger = logging.getLogger(__name__)
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
+        self.step_name = "Expression"
 
-    def save_tissue_translation_map(self, output_path, resource, filename):
+    def save_tissue_translation_map(self, output_path, resource, download_manifest) -> ManifestResource:
         """
         Persist tissue translation map information
 
@@ -32,8 +34,10 @@ class Expression(IPlugin):
         :param resource: resource information object on the persisting data
         :param filename: source file
         """
+        # TODO - Check whether the download manifest signals completion
         tissues_json = {}
-        with URLZSource(filename).open(mode='rb') as r_file:
+        # TODO - Check for errors happening when processing the file
+        with URLZSource(download_manifest.path_destination).open(mode='rb') as r_file:
             tissues_json['tissues'] = json.load(r_file)['tissues']
         # NOTE The following should have been performed by the context handler when exiting the 'with' block
         r_file.close()
@@ -45,29 +49,48 @@ class Expression(IPlugin):
                 entry = {k: v for k, v in tissues_json['tissues'][item].items()}
                 entry['tissue_id'] = item
                 writer.write(entry)
+        download_resource.path_destination = filename_tissue
+        self._logger.debug(
+            f"Tissue translation map download manifest destination path set to '{download_manifest.path_destination}', "
+            f"which is the destination for the extracted tissue translation data"
+        )
+        download_manifest.msg_completion = f"The destination file contains the tissue translation map extracted from" \
+                                           f" the data source"
+        download_manifest.status_completion = ManifestStatus.COMPLETED
+        return download_manifest
 
-    def get_tissue_map(self, output, resource):
+    def get_tissue_map(self, output, resource) -> ManifestResource:
         """
         Collect and persist tissue map information
 
         :param output: output folder information
         :param resource: download resource information object
         """
-        self.save_tissue_translation_map(output.prod_dir,
+        return self.save_tissue_translation_map(output.prod_dir,
                                          resource,
                                          Downloads.download_staging_http(output.staging_dir, resource))
 
-    def get_normal_tissues(self, output, resource):
+    def get_normal_tissues(self, output, resource) -> ManifestResource:
         """
         Collect normal tissue data, gzip compressed.
 
         :param output: output folder information object
         :param resource: download resource information object
         """
-        filename_unzip = make_unzip_single_file(Downloads.download_staging_http(output.staging_dir, resource))
+        download_manifest = Downloads.download_staging_http(output.staging_dir, resource)
+        filename_unzip = make_unzip_single_file(download_manifest.path_destination)
         gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, resource.path)),
                                      resource.output_filename.replace('{suffix}', self.suffix))
-        make_gzip(filename_unzip, gzip_filename)
+        download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
+        self._logger.debug(
+            f"Normal tissues' data download manifest destination path"
+            f" set to '{download_manifest.path_destination}',"
+            f" which is the result of compression format conversion from original file"
+        )
+        download_manifest.msg_completion = \
+            "The source file was converted from its original compression format to gzip format"
+        download_manifest.status_completion = ManifestStatus.COMPLETED
+        return download_manifest
 
     def process(self, conf, output, cmd_conf=None):
         """
@@ -78,7 +101,11 @@ class Expression(IPlugin):
         :param cmd_conf: NOT USED
         """
         self._logger.info("[STEP] BEGIN, Expression")
-        Downloads(output.prod_dir).exec(conf)
-        self.get_tissue_map(output, conf.etl.tissue_translation_map)
-        self.get_normal_tissues(output, conf.etl.normal_tissues)
+        manifest_service = get_manifest_service()
+        manifest_step = manifest_service.get_step(self.step_name)
+        manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
+        manifest_step.resources.append(self.get_tissue_map(output, conf.etl.tissue_translation_map))
+        manifest_step.resources.append(self.get_normal_tissues(output, conf.etl.normal_tissues))
+        manifest_step.status_completion = ManifestStatus.COMPLETED
+        manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Expression")
