@@ -71,7 +71,6 @@ class Downloads(object):
 
         :param resources_info: information on the resources to download
         """
-        # TODO Those places where the download was not possible, need to report back to the caller.
         downloaded_resources = list()
         for resource in resources_info.ftp_downloads:
             try:
