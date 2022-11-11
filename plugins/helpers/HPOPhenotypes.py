@@ -58,6 +58,7 @@ class HPOPhenotypes(object):
         :param filename: destination file path with 'suffix' placeholder for the new data model
         :return: file path where the new data model has been persisted
         """
+        # WARNING - This helper should not be changing the output file name
         hpo_filename = set_suffix_timestamp(filename)
         with jsonlines.open(hpo_filename, mode='w') as writer:
             with open(self.hpo_phenotypes_input) as input:
