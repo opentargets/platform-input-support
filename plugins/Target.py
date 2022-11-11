@@ -8,7 +8,6 @@ from modules.common.Downloads import Downloads
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
 from modules.common import extract_file_from_zip, create_folder, make_gunzip, make_gzip, make_unzip_single_file
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -16,6 +15,7 @@ class Target(IPlugin):
     """
     Target pipeline step
     """
+
     def __init__(self):
         """
         Constructor, prepare logging subsystem
@@ -39,7 +39,8 @@ class Target(IPlugin):
             f" set to '{download_manifest.path_destination}',"
             f" which is the result of compression format conversion from original file"
         )
-        download_manifest.msg_completion = "The source file was converted from its compression format to gzip format"
+        download_manifest.msg_completion = \
+            "The source file was converted from its original compression format to gzip format"
         download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
@@ -62,10 +63,10 @@ class Target(IPlugin):
             f" set to '{download_manifest.path_destination}',"
             f" which is the result of compression format conversion from original file"
         )
-        download_manifest.msg_completion = "The source file was converted from its compression format to gzip format"
+        download_manifest.msg_completion = \
+            "The source file was converted from its original compression format to gzip format"
         download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
-
 
     def extract_ensembl(self, ensembl, output, cmd) -> ManifestResource:
         """
@@ -123,7 +124,6 @@ class Target(IPlugin):
         download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
-
     def process(self, conf, output, cmd_conf):
         """
         Target data collection pipeline step implementation
@@ -133,8 +133,7 @@ class Target(IPlugin):
         :param cmd_conf: command line tools configuration object
         """
         self._logger.info("[STEP] BEGIN, target")
-        manifest_service = get_manifest_service()
-        manifest_step = manifest_service.get_step(self.step_name)
+        manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         manifest_step.resources.append(self.get_project_scores(conf.etl.project_scores, output))
         manifest_step.resources.append(self.extract_ensembl(conf.etl.ensembl, output, cmd_conf))
