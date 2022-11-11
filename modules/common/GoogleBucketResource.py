@@ -259,7 +259,6 @@ class GoogleBucketResource(object):
             # Resource Manifest
             download_manifest = get_manifest_service().new_resource()
             download_manifest.source_url = self.get_gs_path_for_bucket_path(blob.path)
-            logger.debug(f"FULL download dir PATH -> '{download_manifest.source_url}'")
             download_manifest.path_destination = filename_destination
             # Do download the data
             blob.download_to_filename(filename_destination)
