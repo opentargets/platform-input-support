@@ -49,7 +49,7 @@ class Expression(IPlugin):
                 entry = {k: v for k, v in tissues_json['tissues'][item].items()}
                 entry['tissue_id'] = item
                 writer.write(entry)
-        download_resource.path_destination = filename_tissue
+        download_manifest.path_destination = filename_tissue
         self._logger.debug(
             f"Tissue translation map download manifest destination path set to '{download_manifest.path_destination}', "
             f"which is the destination for the extracted tissue translation data"
@@ -77,10 +77,13 @@ class Expression(IPlugin):
         :param output: output folder information object
         :param resource: download resource information object
         """
+        self._logger.debug("[START] Normal tissue download")
         download_manifest = Downloads.download_staging_http(output.staging_dir, resource)
         filename_unzip = make_unzip_single_file(download_manifest.path_destination)
+        self._logger.debug(f"[NORMAL_TISSUE] Filename unzip - '{filename_unzip}'")
         gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, resource.path)),
                                      resource.output_filename.replace('{suffix}', self.suffix))
+        self._logger.debug(f"[NORMAL_TISSUE] Filename gzip - '{gzip_filename}'")
         download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
         self._logger.debug(
             f"Normal tissues' data download manifest destination path"
