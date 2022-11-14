@@ -28,7 +28,7 @@ class DownloadResource(object):
     This class implements a URI download helper
     """
 
-    def __init__(self, output_dir):
+    def __init__(self, output_dir, manifest_service=None):
         """
         Constructor.
 
@@ -36,6 +36,13 @@ class DownloadResource(object):
         """
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.output_dir = output_dir
+        self.__manifest_service = manifest_service
+
+    @property
+    def manifest_service(self):
+        if self.__manifest_service is None:
+            self.__manifest_service = get_manifest_service()
+        return self.__manifest_service
 
     def replace_suffix(self, args):
         if args.suffix:
@@ -59,7 +66,7 @@ class DownloadResource(object):
         """
         # TODO - Change in return type breaks the unit test, although the return value wasn't used anywhere but in tests
         logger.debug("Start to download\n\t{} ".format(resource_info.uri))
-        downloaded_resource = get_manifest_service().new_resource()
+        downloaded_resource = self.manifest_service.new_resource()
         downloaded_resource.source_url = resource_info.uri
         destination_filename = self.set_filename(resource_info.output_filename)
         downloaded_resource.path_destination = destination_filename
@@ -115,7 +122,7 @@ class DownloadResource(object):
         """
         print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         filename = self.set_filename(resource_info.output_filename)
-        downloaded_resource = get_manifest_service().new_resource()
+        downloaded_resource = self.manifest_service.new_resource()
         downloaded_resource.source_url = resource_info.uri
         downloaded_resource.path_destination = filename
         errors = list()
