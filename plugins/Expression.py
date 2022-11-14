@@ -104,8 +104,7 @@ class Expression(IPlugin):
         :param cmd_conf: NOT USED
         """
         self._logger.info("[STEP] BEGIN, Expression")
-        manifest_service = get_manifest_service()
-        manifest_step = manifest_service.get_step(self.step_name)
+        manifest_step = get_manifest_service().manifest_service.get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         manifest_step.resources.append(self.get_tissue_map(output, conf.etl.tissue_translation_map))
         manifest_step.resources.append(self.get_normal_tissues(output, conf.etl.normal_tissues))
