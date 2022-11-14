@@ -114,7 +114,7 @@ class Disease(IPlugin):
         conversion_manifest.path_destination = os.path.join(output.prod_dir,
                                                             conf.etl.mondo.path,
                                                             conf.etl.mondo.output_filename)
-        mondo.save_mondo()
+        mondo.save_mondo(conversion_manifest.path_destination)
         conversion_manifest.status_completion = ManifestStatus.COMPLETED
         conversion_manifest.msg_completion = "MONDO processed data source"
         return conversion_manifest
