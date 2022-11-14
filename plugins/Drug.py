@@ -2,10 +2,13 @@ import os
 import logging
 import warnings
 from datetime import datetime
+
+from typing import List
 from yapsy.IPlugin import IPlugin
 from modules.common import create_folder
 from modules.common.Downloads import Downloads
 from modules.common.ElasticsearchHelper import ElasticsearchInstance
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +23,9 @@ class Drug(IPlugin):
         Constructor, prepare logging subsystem and time stamp
         """
         self._logger = logging.getLogger(__name__)
+        self.step_name = "Drug"
 
-    def _download_elasticsearch_data(self, output_dir, url, indices):
+    def _download_elasticsearch_data(self, output_dir, url, indices) -> List[ManifestResource]:
         """
         Query elasticsearchReader for each index specified in indices and saves results as jsonl files at output_dir.
 
@@ -30,32 +34,36 @@ class Drug(IPlugin):
         :param indices: indices for querying Elastic Search
         :return: list of files successfully saved.
         """
-        results = []
+        download_manifest = []
         elasticsearch_reader = ElasticsearchInstance(url)
         if elasticsearch_reader.is_reachable():
             # TODO Easy point of improvement, parallelize indexes data collection by using one process per index
             for index in list(indices.values()):
                 index_name = index['name']
                 outfile = os.path.join(output_dir, "{}.jsonl".format(index_name))
-
                 logger.info("Downloading Elasticsearch data from index {}, to file '{}'".format(index_name, outfile))
+                index_manifest = get_manifest_service().new_resource()
+                index_manifest.source_url = f"{url}/{index_name}"
+                index_manifest.path_destination = outfile
                 docs_saved = elasticsearch_reader.get_fields_on_index(index_name, outfile, index['fields'])
                 # docs = elasticsearch_reader.get_fields_on_index(index_name, index['fields'])
                 # elasticsearch_reader.write_elasticsearch_docs_as_jsonl(docs, outfile)
                 if docs_saved > 0:
                     logger.info("Successfully downloaded {} documents from index {}".format(docs_saved, index_name))
+                    index_manifest.status_completion = ManifestStatus.COMPLETED
                 else:
                     logger.warning("Failed to download all records from {}.".format(index_name))
-                results.append(outfile)
+                index_manifest.msg_completion = f"Selected fields: {','.join(index['fields'])}, #{docs_saved} documents"
+                download_manifest.append(index_manifest)
         else:
             logger.error("Unable to reach ChEMBL Elasticsearch! "
                          "at URL '{}', Cannot collect necessary data.".format(url))
             warnings.warn("ChEMBL Elasticsearch is unreachable: "
                           "URL '{}', check network settings.".format(url))
-        return results
+        return download_manifest
 
     # TODO We should refactor this out into a generic Elastic Search Helper
-    def _handle_elasticsearch(self, source, output_dir):
+    def _handle_elasticsearch(self, source, output_dir) -> List[ManifestResource]:
         """
         Helper function to handle datasources which use Elasticsearch and returns list of files downloaded.
 
@@ -70,7 +78,7 @@ class Drug(IPlugin):
         logger.error("Unable to validate host and port for Elasticsearch connection.")
         return []
 
-    def download_indices(self, conf, output):
+    def download_indices(self, conf, output) -> List[ManifestResource]:
         """
         Download the specified indices from Elastic Search into the given output folder
 
@@ -93,6 +101,9 @@ class Drug(IPlugin):
         """
         # TODO - Handle errors in the process and report back
         self._logger.info("[STEP] BEGIN, Drug")
-        Downloads(output.prod_dir).exec(conf)
-        self.download_indices(conf, output)
+        manifest_step = get_manifest_service().get_step(self.step_name)
+        manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
+        manifest_step.resources.extend(self.download_indices(conf, output))
+        manifest_step.status_completion = ManifestStatus.COMPLETED
+        manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Drug")
