@@ -51,12 +51,18 @@ class ManifestResource(object):
         self.created: str = timestamp
         self.source_url: str = ManifestStatus.NOT_SET
         self.path_destination: str = ManifestStatus.NOT_SET
-        self.sha1sum: str = ManifestStatus.NOT_SET
-        self.md5sum: str = ManifestStatus.NOT_SET
         self.status_completion: str = ManifestStatus.NOT_COMPLETED
         self.status_validation: str = ManifestStatus.NOT_VALIDATED
         self.msg_completion: str = ManifestStatus.NOT_SET
         self.msg_validation: str = ManifestStatus.NOT_SET
+        self.source_checksums = ManifestResourceChecksums()
+        self.destination_checksums = ManifestResourceChecksums()
+
+class ManifestResourceChecksums(object):
+    def __init__(self):
+        self.crc = ManifestStatus.NOT_SET
+        self.md5sum = ManifestStatus.NOT_SET
+        self.sha256sum = ManifestStatus.NOT_SET
 
 
 class ManifestStatus(StrEnum):

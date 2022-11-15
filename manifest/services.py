@@ -1,11 +1,16 @@
+import hashlib
+import itertools
 import os
 import json
 import copy
 import logging
 import jsonpickle
 import google.auth
+import multiprocessing as mp
 from strenum import StrEnum
 from google.cloud import storage, exceptions
+from typing import List, Tuple
+
 from modules.common.TimeUtils import get_timestamp_iso_utc_now
 from .models import ManifestStep, ManifestResource, ManifestDocument, ManifestStatus
 
@@ -31,7 +36,6 @@ def get_manifest_service(args=None, configuration=None):
         logger.debug("Initializing Manifest service, configuration: {}".format(json.dumps(manifest_config)))
         __manifestServiceInstance = ManifestService(manifest_config)
     return __manifestServiceInstance
-
 
 # Handler for ManifestStatus Enum
 class JsonEnumHandler(jsonpickle.handlers.BaseHandler):
@@ -151,8 +155,10 @@ class ManifestService():
         return self.__manifest
 
     def make_paths_relative(self):
-        if self.manifest is not None:
+        self._logger.debug("Converting PATHs, relative to output dir")
+        if self.manifest:
             for step in self.manifest.steps.values():
+                self._logger.debug(f"Converting step '{step.name}' PATHs")
                 for resource in step.resources:
                     index_relative_path = resource.path_destination.rfind(self.config.output_dir)
                     if index_relative_path != -1:
@@ -173,14 +179,58 @@ class ManifestService():
         return ManifestResource(get_timestamp_iso_utc_now())
 
     @staticmethod
+    def _get_checksum_compute_chain():
+        return {
+            'md5sum': hashlib.md5(),
+            'sha256sum': hashlib.sha256()
+        }
+
+    @staticmethod
     def clone_resource(resource: ManifestResource) -> ManifestResource:
         return copy.copy(resource)
+
+    def _compute_checksums_for_resource(self, resource: ManifestResource) -> Tuple[bool, List[str], ManifestResource]:
+        self._logger.debug(f"Computing checksums for '{resource.path_destination}'")
+        success = False
+        errors = []
+        BUF_SIZE = 65536
+        hashers = self._get_checksum_compute_chain()
+        # TODO - Handle possible errors
+        with open(resource.path_destination, 'rb') as f:
+            while True:
+                data = f.read(BUF_SIZE)
+                if not data:
+                    break
+                for hasher_key, hasher in hashers.items():
+                    hasher.update(data)
+        for hasher_key, hasher in hashers.items():
+            setattr(resource.destination_checksums, hasher_key, hasher.hexdigest())
+            self._logger.debug(
+                f"{resource.path_destination} -> {hasher_key}({getattr(resource.destination_checksums, hasher_key)})"
+            )
+        success = True
+        return (success, errors, resource)
+
+    def compute_checksums(self, resources: List[ManifestResource]) -> int:
+        self._logger.debug(f"[CHECKSUMS] Computing for {len(resources)} resources")
+        n_success = 0
+        for resource in resources:
+            # TODO - Handle errors
+            success, errors, _ = self._compute_checksums_for_resource(resource)
+            if success:
+                n_success += 1
+        self._logger.debug(f"[CHECKSUMS] Completed")
+        return n_success
 
     def add_resource_to_step(self, step_name: str, resource: ManifestResource):
         manifest_step = self.get_step(step_name)
         manifest_step.resources.append(resource)
 
     def persist(self):
+        # TODO - Checksums computation should be triggered by each step, so they are available for validators
+        self.compute_checksums(
+            list(itertools.chain.from_iterable([step.resources for step in self.manifest.steps.values()]))
+        )
         self.make_paths_relative()
         try:
             with open(self.path_manifest, 'w') as fmanifest:
