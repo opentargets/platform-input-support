@@ -91,6 +91,7 @@ class Openfda(IPlugin):
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         # TODO Check whether we could retrieve the Bill Of Materials for downloading the OpenFDA dataset
         manifest_step.resources.extend(self._download_openfda_faers(conf.etl.downloads, output))
+        get_manifest_service().compute_checksums(manifest_step.resources)
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, openfda")

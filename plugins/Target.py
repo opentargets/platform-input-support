@@ -139,6 +139,7 @@ class Target(IPlugin):
         manifest_step.resources.append(self.extract_ensembl(conf.etl.ensembl, output, cmd_conf))
         manifest_step.resources.append(self.get_subcellular_location(conf.etl.subcellular_location, output))
         manifest_step.resources.append(self.get_gnomad(conf.etl.gnomad, output))
+        get_manifest_service().compute_checksums(manifest_step.resources)
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, target")

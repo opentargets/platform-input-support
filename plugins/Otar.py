@@ -44,6 +44,7 @@ class Otar(IPlugin):
             download_manifest.path_destination = path_dst
             download_manifest.msg_completion = f"Source URL is the Spreadsheet," \
                                                f" data downloaded from its worksheet with name '{sheet.worksheet_name}'"
+            get_manifest_service().compute_checksums(manifest_step.resources)
             download_manifest.status_completion = ManifestStatus.COMPLETED
             manifest_step.resources.append(download_manifest)
         self._logger.info("[STEP] END, otar")

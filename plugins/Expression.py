@@ -108,6 +108,7 @@ class Expression(IPlugin):
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         manifest_step.resources.append(self.get_tissue_map(output, conf.etl.tissue_translation_map))
         manifest_step.resources.append(self.get_normal_tissues(output, conf.etl.normal_tissues))
+        get_manifest_service().compute_checksums(manifest_step.resources)
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Expression")

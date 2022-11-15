@@ -111,6 +111,7 @@ class Homologues(IPlugin):
                 f"Homologue '{species}' data"
             download_manifest.status_completion = ManifestStatus.COMPLETED
             manifest_step.resources.append(download_manifest)
+        get_manifest_service().compute_checksums(manifest_step.resources)
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Homologues")

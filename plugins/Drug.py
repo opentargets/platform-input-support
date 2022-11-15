@@ -104,6 +104,7 @@ class Drug(IPlugin):
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         manifest_step.resources.extend(self.download_indices(conf, output))
+        get_manifest_service().compute_checksums(manifest_step.resources)
         manifest_step.status_completion = ManifestStatus.COMPLETED
         manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Drug")

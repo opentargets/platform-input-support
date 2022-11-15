@@ -227,10 +227,6 @@ class ManifestService():
         manifest_step.resources.append(resource)
 
     def persist(self):
-        # TODO - Checksums computation should be triggered by each step, so they are available for validators
-        self.compute_checksums(
-            list(itertools.chain.from_iterable([step.resources for step in self.manifest.steps.values()]))
-        )
         self.make_paths_relative()
         try:
             with open(self.path_manifest, 'w') as fmanifest:
