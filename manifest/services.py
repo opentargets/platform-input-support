@@ -150,6 +150,15 @@ class ManifestService():
             self.__manifest = self._produce_manifest()
         return self.__manifest
 
+    def make_paths_relative(self):
+        if self.manifest is not None:
+            for step in self.manifest.steps.values():
+                for resource in step.resources:
+                    index_relative_path = resource.path_destination.rfind(self.config.output_dir)
+                    if index_relative_path != -1:
+                        index_relative_path += len(self.config.output_dir) + 1
+                        resource.path_destination = resource.path_destination[index_relative_path:]
+
     def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
         if step_name not in self.manifest.steps:
             self.manifest.steps[step_name] = self.__create_manifest_step()
@@ -172,6 +181,7 @@ class ManifestService():
         manifest_step.resources.append(resource)
 
     def persist(self):
+        self.make_paths_relative()
         try:
             with open(self.path_manifest, 'w') as fmanifest:
                 fmanifest.write(jsonpickle.encode(self.manifest, make_refs=False))
