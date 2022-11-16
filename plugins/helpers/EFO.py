@@ -395,7 +395,7 @@ class EFO(object):
                             # @Type: Restriction
                             if 'someValuesFrom' in disease:
                                 self.parent_child_tuples.append((disease["@id"], disease["someValuesFrom"]))
-        except EnvironmentError as e:
+        except Exception as e:
             raise EFOException(f"Error computing EFO ID dictionary information due to '{e}'")
         else:
             self.get_obsolete_info()
@@ -419,7 +419,7 @@ class EFO(object):
                     del (entry["label"])
 
                     writer.write(entry)
-        except EnvironmentError as e:
+        except Exception as e:
             raise EFOException(f"COULD NOT save static disease file to '{output_filename}', due to '{e}'")
 
     def save_diseases(self, output_filename):
@@ -436,7 +436,7 @@ class EFO(object):
                     if 'locationIds' in self.diseases[disease]:
                         self.diseases[disease]['locationIds'] = list(self.diseases[disease]['locationIds'])
                     writer.write(self.diseases[disease])
-        except EnvironmentError as e:
+        except Exception as e:
             raise EFOException(f"COULD NOT diseases file to '{output_filename}', due to '{e}'")
 
         return output_filename

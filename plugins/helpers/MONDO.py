@@ -179,7 +179,7 @@ class MONDO(object):
                         self.set_obsoleted_term(id, mondo)
                         self.get_subClassOf(id, mondo)
                         self.set_mapping(id, mondo)
-        except EnvironmentError as e:
+        except Exception as e:
             raise MONDOException(f"COULD NOT process MONDO input data from '{self.mondo_input}'")
         else:
             self.set_phenotype()
@@ -195,6 +195,6 @@ class MONDO(object):
             with jsonlines.open(output_filename, mode='w') as writer:
                 for elem in self.mondo:
                     writer.write(self.mondo[elem])
-        except EnvironmentError as e:
+        except Exception as e:
             raise MONDOException(f"COULD NOT save MONDO data to '{output_filename}' due to '{e}'")
         return output_filename
