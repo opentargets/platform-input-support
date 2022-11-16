@@ -213,7 +213,7 @@ class ManifestService():
                 f"{resource.path_destination} -> {hasher_key}({getattr(resource.destination_checksums, hasher_key)})"
             )
         success = True
-        return (success, errors, resource)
+        return success, errors, resource
 
     def compute_checksums(self, resources: List[ManifestResource]) -> int:
         self._logger.debug(f"[CHECKSUMS] Computing for {len(resources)} resources")
