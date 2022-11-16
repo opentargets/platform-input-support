@@ -79,18 +79,17 @@ class Riot(object):
             raise RiotException(msg_err)
         return path_output
 
+    def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
+        """
+        Convert a given OWL file to JSON-LD filtering its content by the given JQ filter
 
-def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
-    """
-    Convert a given OWL file to JSON-LD filtering its content by the given JQ filter
-
-    :param owl_file: source OWL file
-    :param output_dir: destination folder for JSON-LD conversion
-    :param owl_jq: JQ filter to apply to JSON-LD converted content
-    :return: destination file path for the converted and filtered OWL content
-    """
-    path, filename = os.path.split(owl_file)
-    dst_filename = filename.replace(".owl", ".json")
-    logger.debug("RIOT OWL file '{}' to JSON, output folder '{}', destination file name '{}', JQ filter '{}'"
-                 .format(owl_file, output_dir, dst_filename, owl_jq))
-    return self.run_riot(owl_file, output_dir, dst_filename, owl_jq)
+        :param owl_file: source OWL file
+        :param output_dir: destination folder for JSON-LD conversion
+        :param owl_jq: JQ filter to apply to JSON-LD converted content
+        :return: destination file path for the converted and filtered OWL content
+        """
+        path, filename = os.path.split(owl_file)
+        dst_filename = filename.replace(".owl", ".json")
+        logger.debug("RIOT OWL file '{}' to JSON, output folder '{}', destination file name '{}', JQ filter '{}'"
+                     .format(owl_file, output_dir, dst_filename, owl_jq))
+        return self.run_riot(owl_file, output_dir, dst_filename, owl_jq)
