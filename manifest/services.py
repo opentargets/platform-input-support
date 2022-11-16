@@ -189,6 +189,10 @@ class ManifestService():
     def clone_resource(resource: ManifestResource) -> ManifestResource:
         return copy.copy(resource)
 
+    @staticmethod
+    def are_all_status_complete(resources: List[ManifestResource]):
+        return all(resource.status_completion == ManifestStatus.COMPLETED for resource in resources)
+
     def _compute_checksums_for_resource(self, resource: ManifestResource) -> Tuple[bool, List[str], ManifestResource]:
         self._logger.debug(f"Computing checksums for '{resource.path_destination}'")
         success = False
