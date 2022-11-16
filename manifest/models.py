@@ -60,7 +60,7 @@ class ManifestResource(object):
 
 class ManifestResourceChecksums(object):
     def __init__(self):
-        self.crc = ManifestStatus.NOT_SET
+        self.crc32 = ManifestStatus.NOT_SET
         self.md5sum = ManifestStatus.NOT_SET
         self.sha256sum = ManifestStatus.NOT_SET
 
