@@ -100,8 +100,8 @@ class DownloadResource(object):
                 logger.error(errors[-1])
             else:
                 downloaded_resource.status_completion = ManifestStatus.COMPLETED
-                downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempts"
-                logger.info(f"[DOWNLOAD] END, ({attempt + 1} attempts): '{resource_info.uri}' -> '{destination_filename}'")
+                downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempt(s)"
+                logger.info(f"[DOWNLOAD] END, ({attempt + 1} attempt(s)): '{resource_info.uri}' -> '{destination_filename}'")
                 break
         if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
             downloaded_resource.status_completion = ManifestStatus.FAILED
@@ -136,7 +136,7 @@ class DownloadResource(object):
                 logger.warning(errors[-1])
             else:
                 downloaded_resource.status_completion = ManifestStatus.COMPLETED
-                downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempts"
+                downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempt(s)"
                 break
             finally:
                 urllib.request.urlcleanup()
@@ -166,12 +166,12 @@ class DownloadResource(object):
                     timeout += int(timeout / 2)
                 else:
                     downloaded_resource.status_completion = ManifestStatus.COMPLETED
-                    downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempts"
+                    downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempt(s)"
                     break
             if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
                 downloaded_resource.status_completion = ManifestStatus.FAILED
                 downloaded_resource.msg_completion = " -E- ".join(errors)
-                logger.error(f"[FTP] FAILED ({attempt + 1} attempts): '{resource_info.uri}' -> '{filename}'")
+                logger.error(f"[FTP] FAILED ({attempt + 1} attempt(s)): '{resource_info.uri}' -> '{filename}'")
             else:
-                logger.info(f"[FTP] END ({attempt + 1} attempts): '{resource_info.uri}' -> '{filename}'")
+                logger.info(f"[FTP] END ({attempt + 1} attempt(s)): '{resource_info.uri}' -> '{filename}'")
         return downloaded_resource
