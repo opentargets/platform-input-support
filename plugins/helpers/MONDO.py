@@ -6,6 +6,10 @@ import jsonlines
 logger = logging.getLogger(__name__)
 
 
+class MONDOException(Exception):
+    pass
+
+
 class MONDO(object):
 
     def __init__(self, mondo_input):
@@ -163,19 +167,22 @@ class MONDO(object):
         """
         Process MONDO input data and compute the MONDO data model instance
         """
-        with open(self.mondo_input) as input:
-            for line in input:
-                mondo = json.loads(line)
-                id = self.get_id(mondo)
-                if self.is_valid(mondo):
-                    self.init_mondo(id)
-                    self.set_label(id, mondo)
-                    self.set_dbXRefs(id, mondo)
-                    self.set_obsoleted_term(id, mondo)
-                    self.get_subClassOf(id, mondo)
-                    self.set_mapping(id, mondo)
-
-        self.set_phenotype()
+        try:
+            with open(self.mondo_input) as input:
+                for line in input:
+                    mondo = json.loads(line)
+                    id = self.get_id(mondo)
+                    if self.is_valid(mondo):
+                        self.init_mondo(id)
+                        self.set_label(id, mondo)
+                        self.set_dbXRefs(id, mondo)
+                        self.set_obsoleted_term(id, mondo)
+                        self.get_subClassOf(id, mondo)
+                        self.set_mapping(id, mondo)
+        except EnvironmentError as e:
+            raise MONDOException(f"COULD NOT process MONDO input data from '{self.mondo_input}'")
+        else:
+            self.set_phenotype()
 
     def save_mondo(self, output_filename):
         """
@@ -184,7 +191,10 @@ class MONDO(object):
         :param output_filename: destination file path
         :return: file path where the data model has been persisted
         """
-        with jsonlines.open(output_filename, mode='w') as writer:
-            for elem in self.mondo:
-                writer.write(self.mondo[elem])
+        try:
+            with jsonlines.open(output_filename, mode='w') as writer:
+                for elem in self.mondo:
+                    writer.write(self.mondo[elem])
+        except EnvironmentError as e:
+            raise MONDOException(f"COULD NOT save MONDO data to '{output_filename}' due to '{e}'")
         return output_filename
