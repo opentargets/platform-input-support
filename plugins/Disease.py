@@ -215,7 +215,12 @@ class Disease(IPlugin):
         manifest_step.resources.append(self.get_ontology_mondo(conf, output, riot))
         manifest_step.resources.append(self.get_ontology_hpo(conf, output, riot))
         manifest_step.resources.append(self.get_hpo_phenotypes(conf, output))
-        get_manifest_service().compute_checksums(manifest_step.resources)
-        manifest_step.status_completion = ManifestStatus.COMPLETED
-        manifest_step.msg_completion = "The step has completed its execution"
+        if not get_manifest_service().are_all_status_complete(manifest_step.resources):
+            manifest_step.status_completion = ManifestStatus.FAILED
+            manifest_step.msg_completion = "COULD NOT retrieve some resources"
+        # TODO - Validation
+        if manifest_step.status_completion != ManifestStatus.FAILED:
+            get_manifest_service().compute_checksums(manifest_step.resources)
+            manifest_step.status_completion = ManifestStatus.COMPLETED
+            manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Disease")
