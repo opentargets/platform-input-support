@@ -220,9 +220,10 @@ class ManifestService():
         n_success = 0
         for resource in resources:
             # TODO - Handle errors
-            success, errors, _ = self._compute_checksums_for_resource(resource)
-            if success:
-                n_success += 1
+            if resource.status_completion == ManifestStatus.COMPLETED:
+                success, errors, _ = self._compute_checksums_for_resource(resource)
+                if success:
+                    n_success += 1
         self._logger.debug(f"[CHECKSUMS] Completed")
         return n_success
 
