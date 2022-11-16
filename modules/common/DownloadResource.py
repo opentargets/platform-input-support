@@ -82,15 +82,16 @@ class DownloadResource(object):
                 # WARNING - Funny thing is that some URLs won't give you an error, but random data
                 urllib.request.urlretrieve(resource_info.uri, destination_filename)
             except urllib.error.URLError as e:
-                errors.append(f"[DOWNLOAD] ERROR: {e.reason}")
-                logger.error(errors[-1])
                 try:
-                    # TODO - This is useful information to report back to the caller
                     if 500 <= e.code < 600:
+                        errors.append(f"[DOWNLOAD] ERROR: {e.reason}, status code {e.code}")
+                        logger.error(errors[-1])
                         continue
-                    break
                 except AttributeError:
                     pass
+                errors.append(f"[DOWNLOAD] ERROR: {e.reason}")
+                logger.error(errors[-1])
+                break
             except IOError as io_error:
                 errors.append("IOError: {}".format(io_error))
                 logger.error(errors[-1])
@@ -99,8 +100,8 @@ class DownloadResource(object):
                 logger.error(errors[-1])
             else:
                 downloaded_resource.status_completion = ManifestStatus.COMPLETED
-                downloaded_resource.msg_completion = "At least one download attempt finished with no errors"
-                logger.info(f"[DOWNLOAD] END: '{resource_info.uri}' -> '{destination_filename}'")
+                downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempts"
+                logger.info(f"[DOWNLOAD] END, ({attempt + 1} attempts): '{resource_info.uri}' -> '{destination_filename}'")
                 break
         if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
             downloaded_resource.status_completion = ManifestStatus.FAILED
@@ -131,11 +132,11 @@ class DownloadResource(object):
             try:
                 urllib.request.urlretrieve(resource_info.uri, filename)
             except Exception as e:
-                errors.append(f"FAILED Attempt #{attempt + 1} to download '{resource_info.uri}'")
+                errors.append(f"FAILED Attempt #{attempt + 1} to download '{resource_info.uri}', reason '{e}'")
                 logger.warning(errors[-1])
             else:
                 downloaded_resource.status_completion = ManifestStatus.COMPLETED
-                downloaded_resource.msg_completion = "At least one download attempt finished with no errors"
+                downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempts"
                 break
             finally:
                 urllib.request.urlcleanup()
@@ -165,12 +166,12 @@ class DownloadResource(object):
                     timeout += int(timeout / 2)
                 else:
                     downloaded_resource.status_completion = ManifestStatus.COMPLETED
-                    downloaded_resource.msg_completion = "At least one download attempt finished with no errors"
+                    downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempts"
                     break
-        if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
-            downloaded_resource.status_completion = ManifestStatus.FAILED
-            downloaded_resource.msg_completion = " -E- ".join(errors)
-            logger.error(f"[FTP] FAILED: '{resource_info.uri}' -> '{filename}'")
-        else:
-            logger.info(f"[FTP] END: '{resource_info.uri}' -> '{filename}'")
+            if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
+                downloaded_resource.status_completion = ManifestStatus.FAILED
+                downloaded_resource.msg_completion = " -E- ".join(errors)
+                logger.error(f"[FTP] FAILED ({attempt + 1} attempts): '{resource_info.uri}' -> '{filename}'")
+            else:
+                logger.info(f"[FTP] END ({attempt + 1} attempts): '{resource_info.uri}' -> '{filename}'")
         return downloaded_resource
