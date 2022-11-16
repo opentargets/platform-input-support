@@ -3,7 +3,7 @@ import logging
 from typing import List
 
 from yapsy.IPlugin import IPlugin
-from plugins.helpers.HPO import HPO
+from plugins.helpers.HPO import HPO, HPOException
 from modules.common.Riot import Riot, RiotException
 from plugins.helpers.MONDO import MONDO, MONDOException
 from modules.common import create_folder
@@ -92,14 +92,25 @@ class Disease(IPlugin):
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo.path))
         conversion_manifest = self.download_and_convert_file(conf.etl.hpo, output, riot)
-        hpo = HPO(conversion_manifest.path_destination)
-        hpo.generate()
-        conversion_manifest.path_destination = os.path.join(output.prod_dir,
-                                                            conf.etl.hpo.path,
-                                                            conf.etl.hpo.output_filename)
-        hpo.save_hpo(conversion_manifest.path_destination)
-        conversion_manifest.status_completion = ManifestStatus.COMPLETED
-        conversion_manifest.msg_completion = "HPO processed data source"
+        if conversion_manifest.status_completion == ManifestStatus.COMPLETED:
+            hpo = HPO(conversion_manifest.path_destination)
+            try:
+                hpo.generate()
+            except HPOException as e:
+                conversion_manifest.msg_completion = f"COULD NOT produce HPO dataset due to '{e}'"
+                conversion_manifest.status_completion = ManifestStatus.FAILED
+            else:
+                conversion_manifest.path_destination = os.path.join(output.prod_dir,
+                                                                conf.etl.hpo.path,
+                                                                conf.etl.hpo.output_filename)
+                try:
+                    hpo.save_hpo(conversion_manifest.path_destination)
+                except HPOException as e:
+                    conversion_manifest.msg_completion = f"COULD NOT produce HPO dataset due to '{e}'"
+                    conversion_manifest.status_completion = ManifestStatus.FAILED
+                else:
+                    conversion_manifest.status_completion = ManifestStatus.COMPLETED
+                    conversion_manifest.msg_completion = "HPO processed data source"
         return conversion_manifest
 
     # Download mondo.owl and create a JSON output with a subset of info.
