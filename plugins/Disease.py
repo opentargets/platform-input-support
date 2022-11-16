@@ -219,7 +219,7 @@ class Disease(IPlugin):
         manifest_step.resources.append(self.get_hpo_phenotypes(conf, output))
         if not get_manifest_service().are_all_status_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
-            manifest_step.msg_completion = "COULD NOT retrieve some resources"
+            manifest_step.msg_completion = "COULD NOT retrieve all the resources"
         # TODO - Validation
         if manifest_step.status_completion != ManifestStatus.FAILED:
             get_manifest_service().compute_checksums(manifest_step.resources)
