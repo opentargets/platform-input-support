@@ -1,5 +1,7 @@
 import os
+import base64
 import logging
+import binascii
 import google.auth
 from datetime import datetime
 
@@ -59,6 +61,10 @@ class GoogleBucketResource(object):
             return None, None
         split = google_bucket_param.split('/', 1) + [None]
         return split[0], split[1]
+
+    @staticmethod
+    def gcp_checksum_to_hex(checksum):
+        return binascii.hexlify(base64.urlsafe_b64decode(checksum)).decode()
 
     def get_gs_path_for_bucket_path(self, path=""):
         return f"gs://{self.bucket_name}/{path}"
@@ -242,6 +248,20 @@ class GoogleBucketResource(object):
         latest_filename_info = self.extract_latest_file(list_blobs)
         return latest_filename_info
 
+    @staticmethod
+    def _set_blob_download_manifest_status(blob, download_manifest: ManifestResource):
+        if not blob.crc32c and not blob.md5_hash:
+            download_manifest.status_completion = ManifestStatus.FAILED
+            download_manifest.msg_completion = "No checksums received back from GCS client, ergo it failed"
+        else:
+            if blob.crc32c:
+                download_manifest.source_checksums.crc32 = GoogleBucketResource.gcp_checksum_to_hex(blob.crc32c)
+            if blob.md5_hash:
+                download_manifest.source_checksums.md5sum = GoogleBucketResource.gcp_checksum_to_hex(blob.md5_hash)
+            download_manifest.status_completion = ManifestStatus.COMPLETED
+            download_manifest.msg_completion = "Download completed"
+        return download_manifest
+
     def download_dir(self, dir_to_download, local_dir) -> List[ManifestResource]:
         """
         Download the files from a given folder in the current bucket into the given local folder
@@ -260,13 +280,11 @@ class GoogleBucketResource(object):
             download_manifest = get_manifest_service().new_resource()
             download_manifest.source_url = self.get_gs_path_for_bucket_path(blob.path)
             download_manifest.path_destination = filename_destination
-            # Do download the data
+            # According to Google's documentation, no exception is raised
             blob.download_to_filename(filename_destination)
-            # TODO - Handle possible errors
-            download_manifest.status_completion = ManifestStatus.COMPLETED
-            download_manifest.msg_completion = "No error signaling mechanism has been implemented, " \
-                                               "so completion just means the download method worked"
-            list_files.append(download_manifest)
+            list_files.append(
+                self._set_blob_download_manifest_status(blob, download_manifest)
+            )
         return list_files
 
     def download_file(self, src_path_file, dst_path_file) -> ManifestResource:
@@ -277,18 +295,14 @@ class GoogleBucketResource(object):
         :param dst_path_file: destination file path for the downloaded file
         :return: destination file path of the downloaded file
         """
-        downloaded_file = get_manifest_service().new_resource()
-        downloaded_file.source_url = self.get_gs_path_for_bucket_path(src_path_file)
-        downloaded_file.path_destination = dst_path_file
+        download_manifest = get_manifest_service().new_resource()
+        download_manifest.source_url = self.get_gs_path_for_bucket_path(src_path_file)
+        download_manifest.path_destination = dst_path_file
         # WARNING - No error condition signaling mechanism is specified in the documentation
-        self.get_bucket() \
-            .blob(src_path_file) \
-            .download_to_filename(dst_path_file)
-        # TODO - Handle possible errors
-        downloaded_file.status_completion = ManifestStatus.COMPLETED
-        downloaded_file.msg_completion = "No error signaling mechanism has been implemented, " \
-                                         "so completion just means the download method worked"
-        return downloaded_file
+        blob = self.get_bucket().blob(src_path_file)
+        # According to Google's documentation, no exception is raised
+        blob.download_to_filename(dst_path_file)
+        return self._set_blob_download_manifest_status(blob, download_manifest)
 
     def download(self, download_descriptor) -> List[ManifestResource]:
         """
