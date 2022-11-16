@@ -54,7 +54,7 @@ class Disease(IPlugin):
         try:
             download_manifest.path_destination = self.owl_to_json(download_manifest.path_destination,
                                     output.staging_dir, resource, riot)
-        except RiotException as e:
+        except Exception as e:
             download_manifest.status_completion = ManifestStatus.FAILED
             download_manifest.msg_completion = str(e)
         else:
@@ -80,7 +80,7 @@ class Disease(IPlugin):
                                  conf.etl.hpo_phenotypes.path,
                                  conf.etl.hpo_phenotypes.output_filename)
                 )
-            except HPOPhenotypesException as e:
+            except Exception as e:
                 download_manifest.msg_completion = f"COULD NOT produce HPO Phenotypes data due to '{e}'"
                 download_manifest.status_completion = ManifestStatus.FAILED
             else:
@@ -103,7 +103,7 @@ class Disease(IPlugin):
             hpo = HPO(conversion_manifest.path_destination)
             try:
                 hpo.generate()
-            except HPOException as e:
+            except Exception as e:
                 conversion_manifest.msg_completion = f"COULD NOT produce HPO dataset due to '{e}'"
                 conversion_manifest.status_completion = ManifestStatus.FAILED
             else:
@@ -112,7 +112,7 @@ class Disease(IPlugin):
                                                                 conf.etl.hpo.output_filename)
                 try:
                     hpo.save_hpo(conversion_manifest.path_destination)
-                except HPOException as e:
+                except Exception as e:
                     conversion_manifest.msg_completion = f"COULD NOT produce HPO dataset due to '{e}'"
                     conversion_manifest.status_completion = ManifestStatus.FAILED
                 else:
@@ -136,7 +136,7 @@ class Disease(IPlugin):
             mondo = MONDO(conversion_manifest.path_destination)
             try:
                 mondo.generate()
-            except MONDOException as e:
+            except Exception as e:
                 conversion_manifest.msg_completion = f"Unable to produce MONDO dataset due to '{e}'"
                 conversion_manifest.status_completion = ManifestStatus.FAILED
             else:
@@ -145,7 +145,7 @@ class Disease(IPlugin):
                                                                     conf.etl.mondo.output_filename)
                 try:
                     mondo.save_mondo(conversion_manifest.path_destination)
-                except MONDOException as e:
+                except Exception as e:
                     conversion_manifest.msg_completion = f"Unable to produce MONDO dataset due to '{e}'"
                     conversion_manifest.status_completion = ManifestStatus.FAILED
                 else:
@@ -172,16 +172,16 @@ class Disease(IPlugin):
             efo = EFO(conversion_manifest.path_destination)
             try:
                 efo.generate()
-            except EFOException as e:
-                self._logger.error(e)
-                static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
+            except Exception as e:
+                static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}', Exception of type -> '{type(e)}'"
+                self._logger.error(static_disease_manifest.msg_completion)
                 static_disease_manifest.status_completion = ManifestStatus.FAILED
             else:
                 try:
                     efo.save_static_disease_file(static_disease_manifest.path_destination)
-                except EFOException as e:
-                    self._logger.error(e)
+                except Exception as e:
                     static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
+                    self._logger.error(static_disease_manifest.msg_completion)
                     static_disease_manifest.status_completion = ManifestStatus.FAILED
                 else:
                     static_disease_manifest.msg_completion += \
@@ -190,8 +190,9 @@ class Disease(IPlugin):
                         os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename)
                     try:
                         efo.save_diseases(conversion_manifest.path_destination)
-                    except EFOException as e:
+                    except Exception as e:
                         static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
+                        self._logger.error(static_disease_manifest.msg_completion)
                         static_disease_manifest.status_completion = ManifestStatus.FAILED
                     else:
                         conversion_manifest.msg_completion += \
@@ -211,6 +212,7 @@ class Disease(IPlugin):
         self._logger.info("[STEP] BEGIN, Disease")
         riot = Riot(cmd_conf)
         manifest_step = get_manifest_service().get_step(self.step_name)
+        # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.extend(self.get_ontology_EFO(conf, output, riot))
         manifest_step.resources.append(self.get_ontology_mondo(conf, output, riot))
         manifest_step.resources.append(self.get_ontology_hpo(conf, output, riot))

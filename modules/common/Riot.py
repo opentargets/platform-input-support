@@ -63,8 +63,8 @@ class Riot(object):
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE) as jq_process:
                 json_output.write(jq_process.stdout.read())
-                logger.error(f"RIOT stderr -> '{riot_process.stderr}'")
-                logger.error(f"JQ stderr -> '{jq_process.stderr}'")
+                logger.error(f"RIOT stderr -> '{riot_process.stderr.read()}'")
+                logger.error(f"JQ stderr -> '{jq_process.stderr.read()}'")
         except EnvironmentError as e:
             msg_err = "When running RIOT for OWL file '{}', "
             "with destination path '{}' and JQ filter '{}', "

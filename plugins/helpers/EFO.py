@@ -396,7 +396,8 @@ class EFO(object):
                             if 'someValuesFrom' in disease:
                                 self.parent_child_tuples.append((disease["@id"], disease["someValuesFrom"]))
         except Exception as e:
-            raise EFOException(f"Error computing EFO ID dictionary information due to '{e}'")
+            # TODO - Find out why AttributeError is not caught here and it keeps going up the chain, breaking the pipeline
+            raise EFOException(f"Error computing EFO ID dictionary information due to '{e}'") from e
         else:
             self.get_obsolete_info()
             self.get_locationIds()
@@ -417,10 +418,10 @@ class EFO(object):
                     del (entry["parents"])
                     entry["name"] = entry["label"]
                     del (entry["label"])
-
                     writer.write(entry)
         except Exception as e:
-            raise EFOException(f"COULD NOT save static disease file to '{output_filename}', due to '{e}'")
+            # TODO - Find out why AttributeError is not caught here and it keeps going up the chain, breaking the pipeline
+            raise EFOException(f"COULD NOT save static disease file to '{output_filename}', due to '{e}'") from e
 
     def save_diseases(self, output_filename):
         """
@@ -437,6 +438,7 @@ class EFO(object):
                         self.diseases[disease]['locationIds'] = list(self.diseases[disease]['locationIds'])
                     writer.write(self.diseases[disease])
         except Exception as e:
-            raise EFOException(f"COULD NOT diseases file to '{output_filename}', due to '{e}'")
+            # TODO - Find out why AttributeError is not caught here and it keeps going up the chain, breaking the pipeline
+            raise EFOException(f"COULD NOT diseases file to '{output_filename}', due to '{e}'") from e
 
         return output_filename
