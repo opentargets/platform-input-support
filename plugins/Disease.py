@@ -5,7 +5,7 @@ from typing import List
 from yapsy.IPlugin import IPlugin
 from plugins.helpers.HPO import HPO
 from modules.common.Riot import Riot, RiotException
-from plugins.helpers.MONDO import MONDO
+from plugins.helpers.MONDO import MONDO, MONDOException
 from modules.common import create_folder
 from plugins.helpers.EFO import EFO, EFOException
 from modules.common.Downloads import Downloads
@@ -116,14 +116,23 @@ class Disease(IPlugin):
         conversion_manifest = self.download_and_convert_file(conf.etl.mondo, output, riot)
         if conversion_manifest.status_completion == ManifestStatus.COMPLETED:
             mondo = MONDO(conversion_manifest.path_destination)
-            # TODO - Check for error in helper
-            mondo.generate()
-            conversion_manifest.path_destination = os.path.join(output.prod_dir,
-                                                                conf.etl.mondo.path,
-                                                                conf.etl.mondo.output_filename)
-            mondo.save_mondo(conversion_manifest.path_destination)
-            conversion_manifest.status_completion = ManifestStatus.COMPLETED
-            conversion_manifest.msg_completion = f"MONDO processed data source, JQ filter '{conf.etl.mondo.owl_jq}'"
+            try:
+                mondo.generate()
+            except MONDOException as e:
+                conversion_manifest.msg_completion = f"Unable to produce MONDO dataset due to '{e}'"
+                conversion_manifest.status_completion = ManifestStatus.FAILED
+            else:
+                conversion_manifest.path_destination = os.path.join(output.prod_dir,
+                                                                    conf.etl.mondo.path,
+                                                                    conf.etl.mondo.output_filename)
+                try:
+                    mondo.save_mondo(conversion_manifest.path_destination)
+                except MONDOException as e:
+                    conversion_manifest.msg_completion = f"Unable to produce MONDO dataset due to '{e}'"
+                    conversion_manifest.status_completion = ManifestStatus.FAILED
+                else:
+                    conversion_manifest.status_completion = ManifestStatus.COMPLETED
+                    conversion_manifest.msg_completion = f"MONDO processed data source, JQ filter '{conf.etl.mondo.owl_jq}'"
         return conversion_manifest
 
     def get_ontology_EFO(self, conf, output, riot) -> List[ManifestResource]:
@@ -147,14 +156,14 @@ class Disease(IPlugin):
                 efo.generate()
             except EFOException as e:
                 self._logger.error(e)
-                static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}"
+                static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
                 static_disease_manifest.status_completion = ManifestStatus.FAILED
             else:
                 try:
                     efo.save_static_disease_file(static_disease_manifest.path_destination)
                 except EFOException as e:
                     self._logger.error(e)
-                    static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}"
+                    static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
                     static_disease_manifest.status_completion = ManifestStatus.FAILED
                 else:
                     static_disease_manifest.msg_completion += \
@@ -164,7 +173,7 @@ class Disease(IPlugin):
                     try:
                         efo.save_diseases(conversion_manifest.path_destination)
                     except EFOException as e:
-                        static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}"
+                        static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
                         static_disease_manifest.status_completion = ManifestStatus.FAILED
                     else:
                         conversion_manifest.msg_completion += \
