@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 class HPOException(Exception):
     pass
 
+
 class HPO(object):
 
     def __init__(self, hpo_input):
