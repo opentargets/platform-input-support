@@ -70,6 +70,7 @@ class Disease(IPlugin):
         :param output: output folder
         :return: destination file path for the processed collected information
         """
+        # TODO - Error handling
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path))
         download_manifest = Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)
         download_manifest.path_destination = \

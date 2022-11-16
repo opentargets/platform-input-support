@@ -180,7 +180,7 @@ class MONDO(object):
                         self.get_subClassOf(id, mondo)
                         self.set_mapping(id, mondo)
         except Exception as e:
-            raise MONDOException(f"COULD NOT process MONDO input data from '{self.mondo_input}'")
+            raise MONDOException(f"COULD NOT process MONDO input data from '{self.mondo_input}' due to '{e}'")
         else:
             self.set_phenotype()
 
