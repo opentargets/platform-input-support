@@ -9,7 +9,7 @@ from plugins.helpers.MONDO import MONDO, MONDOException
 from modules.common import create_folder
 from plugins.helpers.EFO import EFO, EFOException
 from modules.common.Downloads import Downloads
-from plugins.helpers.HPOPhenotypes import HPOPhenotypes
+from plugins.helpers.HPOPhenotypes import HPOPhenotypes, HPOPhenotypesException
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
@@ -70,16 +70,22 @@ class Disease(IPlugin):
         :param output: output folder
         :return: destination file path for the processed collected information
         """
-        # TODO - Error handling
         create_folder(os.path.join(output.prod_dir, conf.etl.hpo_phenotypes.path))
         download_manifest = Downloads.download_staging_http(output.staging_dir, conf.etl.hpo_phenotypes)
-        download_manifest.path_destination = \
-            HPOPhenotypes(download_manifest.path_destination)\
-                .run(os.path.join(output.prod_dir,
-                                  conf.etl.hpo_phenotypes.path,
-                                  conf.etl.hpo_phenotypes.output_filename))
-        download_manifest.msg_completion = "Resulting dataset from HPO Phenotypes data"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.COMPLETED:
+            hpo_phenotypes = HPOPhenotypes(download_manifest.path_destination)
+            try:
+                download_manifest.path_destination = hpo_phenotypes.run(
+                    os.path.join(output.prod_dir,
+                                 conf.etl.hpo_phenotypes.path,
+                                 conf.etl.hpo_phenotypes.output_filename)
+                )
+            except HPOPhenotypesException as e:
+                download_manifest.msg_completion = f"COULD NOT produce HPO Phenotypes data due to '{e}'"
+                download_manifest.status_completion = ManifestStatus.FAILED
+            else:
+                download_manifest.msg_completion = "Resulting dataset from HPO Phenotypes data"
+                download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
     def get_ontology_hpo(self, conf, output, riot) -> ManifestResource:
