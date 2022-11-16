@@ -4,10 +4,10 @@ from typing import List
 
 from yapsy.IPlugin import IPlugin
 from plugins.helpers.HPO import HPO
-from modules.common.Riot import Riot
+from modules.common.Riot import Riot, RiotException
 from plugins.helpers.MONDO import MONDO
 from modules.common import create_folder
-from plugins.helpers.EFO import EFO as EFO
+from plugins.helpers.EFO import EFO, EFOException
 from modules.common.Downloads import Downloads
 from plugins.helpers.HPOPhenotypes import HPOPhenotypes
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
@@ -51,10 +51,15 @@ class Disease(IPlugin):
         :return: destination file path for the converted + filtered data
         """
         download_manifest = Downloads.download_staging_http(output.staging_dir, resource)
-        download_manifest.path_destination = self.owl_to_json(download_manifest.path_destination,
-                                output.staging_dir, resource, riot)
-        download_manifest.msg_completion = f"OWL to JSON + JQ filtering with '{resource.owl_jq}'"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        try:
+            download_manifest.path_destination = self.owl_to_json(download_manifest.path_destination,
+                                    output.staging_dir, resource, riot)
+        except RiotException as e:
+            download_manifest.status_completion = ManifestStatus.FAILED
+            download_manifest.msg_completion = str(e)
+        else:
+            download_manifest.msg_completion = f"OWL to JSON + JQ filtering with '{resource.owl_jq}'"
+            download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
     def get_hpo_phenotypes(self, conf, output) -> ManifestResource:
@@ -109,14 +114,16 @@ class Disease(IPlugin):
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.mondo.path))
         conversion_manifest = self.download_and_convert_file(conf.etl.mondo, output, riot)
-        mondo = MONDO(conversion_manifest.path_destination)
-        mondo.generate()
-        conversion_manifest.path_destination = os.path.join(output.prod_dir,
-                                                            conf.etl.mondo.path,
-                                                            conf.etl.mondo.output_filename)
-        mondo.save_mondo(conversion_manifest.path_destination)
-        conversion_manifest.status_completion = ManifestStatus.COMPLETED
-        conversion_manifest.msg_completion = "MONDO processed data source"
+        if conversion_manifest.status_completion == ManifestStatus.COMPLETED:
+            mondo = MONDO(conversion_manifest.path_destination)
+            # TODO - Check for error in helper
+            mondo.generate()
+            conversion_manifest.path_destination = os.path.join(output.prod_dir,
+                                                                conf.etl.mondo.path,
+                                                                conf.etl.mondo.output_filename)
+            mondo.save_mondo(conversion_manifest.path_destination)
+            conversion_manifest.status_completion = ManifestStatus.COMPLETED
+            conversion_manifest.msg_completion = f"MONDO processed data source, JQ filter '{conf.etl.mondo.owl_jq}'"
         return conversion_manifest
 
     def get_ontology_EFO(self, conf, output, riot) -> List[ManifestResource]:
@@ -130,20 +137,40 @@ class Disease(IPlugin):
         """
         create_folder(os.path.join(output.prod_dir, conf.etl.efo.path))
         conversion_manifest = self.download_and_convert_file(conf.etl.efo, output, riot)
-        efo = EFO(conversion_manifest.path_destination)
-        efo.generate()
         static_disease_manifest = get_manifest_service().clone_resource(conversion_manifest)
         static_disease_manifest.path_destination = os.path.join(output.prod_dir,
                                                   conf.etl.efo.path,
                                                   conf.etl.efo.diseases_static_file)
-        efo.save_static_disease_file(static_disease_manifest.path_destination)
-        static_disease_manifest.msg_completion += \
-            " and then processed by the pipeline into the resulting static disease dataset"
-        conversion_manifest.path_destination = \
-            os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename)
-        efo.save_diseases(conversion_manifest.path_destination)
-        conversion_manifest.msg_completion += \
-            " and some processing via EFO helper to produce this resulting diseases dataset"
+        if conversion_manifest.status_completion == ManifestStatus.COMPLETED:
+            efo = EFO(conversion_manifest.path_destination)
+            try:
+                efo.generate()
+            except EFOException as e:
+                self._logger.error(e)
+                static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}"
+                static_disease_manifest.status_completion = ManifestStatus.FAILED
+            else:
+                try:
+                    efo.save_static_disease_file(static_disease_manifest.path_destination)
+                except EFOException as e:
+                    self._logger.error(e)
+                    static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}"
+                    static_disease_manifest.status_completion = ManifestStatus.FAILED
+                else:
+                    static_disease_manifest.msg_completion += \
+                        " and then processed by the pipeline into the resulting static disease dataset"
+                    conversion_manifest.path_destination = \
+                        os.path.join(output.prod_dir, conf.etl.efo.path, conf.etl.efo.output_filename)
+                    try:
+                        efo.save_diseases(conversion_manifest.path_destination)
+                    except EFOException as e:
+                        static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}"
+                        static_disease_manifest.status_completion = ManifestStatus.FAILED
+                    else:
+                        conversion_manifest.msg_completion += \
+                            " and some processing via EFO helper to produce this resulting diseases dataset"
+        else:
+            static_disease_manifest.msg_completion = f"FAILED due to an error converting and processing source file"
         return [conversion_manifest, static_disease_manifest]
 
     def process(self, conf, output, cmd_conf):
