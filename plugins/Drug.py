@@ -34,33 +34,43 @@ class Drug(IPlugin):
         :param indices: indices for querying Elastic Search
         :return: list of files successfully saved.
         """
-        download_manifest = []
+        download_manifests = []
         elasticsearch_reader = ElasticsearchInstance(url)
-        if elasticsearch_reader.is_reachable():
-            # TODO Easy point of improvement, parallelize indexes data collection by using one process per index
-            for index in list(indices.values()):
-                index_name = index['name']
-                outfile = os.path.join(output_dir, "{}.jsonl".format(index_name))
-                logger.info("Downloading Elasticsearch data from index {}, to file '{}'".format(index_name, outfile))
-                index_manifest = get_manifest_service().new_resource()
-                index_manifest.source_url = f"{url}/{index_name}"
-                index_manifest.path_destination = outfile
-                docs_saved = elasticsearch_reader.get_fields_on_index(index_name, outfile, index['fields'])
-                # docs = elasticsearch_reader.get_fields_on_index(index_name, index['fields'])
-                # elasticsearch_reader.write_elasticsearch_docs_as_jsonl(docs, outfile)
-                if docs_saved > 0:
-                    logger.info("Successfully downloaded {} documents from index {}".format(docs_saved, index_name))
-                    index_manifest.status_completion = ManifestStatus.COMPLETED
+        # TODO Easy point of improvement, parallelize indexes data collection by using one process per index
+        for index in list(indices.values()):
+            index_name = index['name']
+            outfile = os.path.join(output_dir, "{}.jsonl".format(index_name))
+            logger.info("Downloading Elasticsearch data from index {}, to file '{}'".format(index_name, outfile))
+            index_manifest = get_manifest_service().new_resource()
+            index_manifest.source_url = f"{url}/{index_name}"
+            index_manifest.path_destination = outfile
+            if not elasticsearch_reader.is_reachable():
+                index_manifest.status_completion = ManifestStatus.FAILED
+                index_manifest.msg_completion = \
+                    f"FAILED to retrieve index '{index_name}', UNREACHABLE Elastic Search Service at '{url}'"
+                logger.error(index_manifest.msg_completion)
+            else:
+                docs_saved = 0
+                try:
+                    docs_saved = elasticsearch_reader.get_fields_on_index(index_name, outfile, index['fields'])
+                except Exception as e:
+                    index_manifest.status_completion = ManifestStatus.FAILED
+                    index_manifest.msg_completion = f"FAILED to retrieve index '{index_name}' due to '{e}'"
+                    logger.error(index_manifest.msg_completion)
                 else:
-                    logger.warning("Failed to download all records from {}.".format(index_name))
-                index_manifest.msg_completion = f"Selected fields: {','.join(index['fields'])}, #{docs_saved} documents"
-                download_manifest.append(index_manifest)
-        else:
-            logger.error("Unable to reach ChEMBL Elasticsearch! "
-                         "at URL '{}', Cannot collect necessary data.".format(url))
-            warnings.warn("ChEMBL Elasticsearch is unreachable: "
-                          "URL '{}', check network settings.".format(url))
-        return download_manifest
+                    if docs_saved > 0:
+                        logger.info("Successfully downloaded {} documents from index {}"
+                                    .format(docs_saved, index_name)
+                                    )
+                    else:
+                        logger.warning("EMPTY INDEX with name {}.".format(index_name))
+                    # There could be an empty index, which means its corresponding file is empty,
+                    # or maybe non-existent
+                    index_manifest.status_completion = ManifestStatus.COMPLETED
+                    index_manifest.msg_completion = f"Selected fields: {','.join(index['fields'])}," \
+                                                    f" #{docs_saved} documents"
+            download_manifests.append(index_manifest)
+        return download_manifests
 
     # TODO We should refactor this out into a generic Elastic Search Helper
     def _handle_elasticsearch(self, source, output_dir) -> List[ManifestResource]:
@@ -102,9 +112,16 @@ class Drug(IPlugin):
         # TODO - Handle errors in the process and report back
         self._logger.info("[STEP] BEGIN, Drug")
         manifest_step = get_manifest_service().get_step(self.step_name)
+        # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         manifest_step.resources.extend(self.download_indices(conf, output))
+        # We try to compute checksums for whatever was collected
         get_manifest_service().compute_checksums(manifest_step.resources)
-        manifest_step.status_completion = ManifestStatus.COMPLETED
-        manifest_step.msg_completion = "The step has completed its execution"
+        if not get_manifest_service().are_all_status_complete(manifest_step.resources):
+            manifest_step.status_completion = ManifestStatus.FAILED
+            manifest_step.msg_completion = "COULD NOT retrieve all the resources"
+        # TODO - Validation
+        if manifest_step.status_completion != ManifestStatus.FAILED:
+            manifest_step.status_completion = ManifestStatus.COMPLETED
+            manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Drug")
