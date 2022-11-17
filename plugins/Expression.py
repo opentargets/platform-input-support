@@ -95,20 +95,38 @@ class Expression(IPlugin):
         """
         self._logger.debug("[START] Normal tissue download")
         download_manifest = Downloads.download_staging_http(output.staging_dir, resource)
-        filename_unzip = make_unzip_single_file(download_manifest.path_destination)
-        self._logger.debug(f"[NORMAL_TISSUE] Filename unzip - '{filename_unzip}'")
-        gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, resource.path)),
-                                     resource.output_filename.replace('{suffix}', self.suffix))
-        self._logger.debug(f"[NORMAL_TISSUE] Filename gzip - '{gzip_filename}'")
-        download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
-        self._logger.debug(
-            f"Normal tissues' data download manifest destination path"
-            f" set to '{download_manifest.path_destination}',"
-            f" which is the result of compression format conversion from original file"
-        )
-        download_manifest.msg_completion = \
-            "The source file was converted from its original compression format to gzip format"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.COMPLETED:
+            try:
+                filename_unzip = make_unzip_single_file(download_manifest.path_destination)
+            except Exception as e:
+                download_manifest.status_completion = ManifestStatus.FAILED
+                download_manifest.msg_completion = f"COULD NOT extract normal tissue data" \
+                                                   f" from '{download_manifest.path_destination}'" \
+                                                   f" due to '{e}'"
+                self._logger.error(download_manifest.msg_completion)
+            else:
+                self._logger.debug(f"[NORMAL_TISSUE] Filename unzip - '{filename_unzip}'")
+                gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, resource.path)),
+                                             resource.output_filename.replace('{suffix}', self.suffix))
+                self._logger.debug(f"[NORMAL_TISSUE] Filename gzip - '{gzip_filename}'")
+                try:
+                    download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
+                except Exception as e:
+                    download_manifest.status_completion = ManifestStatus.FAILED
+                    download_manifest.msg_completion = f"COULD NOT gzip normal tissue data" \
+                                                       f" from '{filename_unzip}'" \
+                                                       f" to '{gzip_filename}'" \
+                                                       f" due to '{e}'"
+                    self._logger.error(download_manifest.msg_completion)
+                else:
+                    self._logger.debug(
+                        f"Normal tissues' data download manifest destination path"
+                        f" set to '{download_manifest.path_destination}',"
+                        f" which is the result of compression format conversion from original file"
+                    )
+                    download_manifest.msg_completion = \
+                        "The source file was converted from its original compression format to gzip format"
+                    download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
     def process(self, conf, output, cmd_conf=None):
