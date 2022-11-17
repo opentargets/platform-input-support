@@ -106,7 +106,7 @@ class Openfda(IPlugin):
             manifest_step.msg_completion = "COULD NOT retrieve the OpenFDA FAERS dataset metadata for event selection"
         # TODO - Validation
         get_manifest_service().compute_checksums(manifest_step.resources)
-        if manifest_step.status_completion != ManifestStatus.COMPLETED:
+        if manifest_step.status_completion == ManifestStatus.COMPLETED:
             manifest_step.msg_completion = "The step has completed its data collection"
         else:
             self._logger.error(manifest_step.msg_completion)
