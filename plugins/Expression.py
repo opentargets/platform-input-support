@@ -34,29 +34,45 @@ class Expression(IPlugin):
         :param resource: resource information object on the persisting data
         :param filename: source file
         """
-        # TODO - Check whether the download manifest signals completion
-        tissues_json = {}
-        # TODO - Check for errors happening when processing the file
-        with URLZSource(download_manifest.path_destination).open(mode='rb') as r_file:
-            tissues_json['tissues'] = json.load(r_file)['tissues']
-        # NOTE The following should have been performed by the context handler when exiting the 'with' block
-        r_file.close()
-        create_folder(os.path.join(output_path, resource.path))
-        filename_tissue = os.path.join(output_path, resource.path,
-                                       resource.output_filename.replace('{suffix}', self.suffix))
-        with jsonlines.open(filename_tissue, mode='w') as writer:
-            for item in tissues_json['tissues']:
-                entry = {k: v for k, v in tissues_json['tissues'][item].items()}
-                entry['tissue_id'] = item
-                writer.write(entry)
-        download_manifest.path_destination = filename_tissue
-        self._logger.debug(
-            f"Tissue translation map download manifest destination path set to '{download_manifest.path_destination}', "
-            f"which is the destination for the extracted tissue translation data"
-        )
-        download_manifest.msg_completion = f"The destination file contains the tissue translation map extracted from" \
-                                           f" the data source"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if not download_manifest.status_completion == ManifestStatus.FAILED:
+            tissues_json = {}
+            try:
+                with URLZSource(download_manifest.path_destination).open(mode='rb') as r_file:
+                    tissues_json['tissues'] = json.load(r_file)['tissues']
+                # NOTE The following should have been performed by the context handler when exiting the 'with' block
+                #r_file.close()
+            except Exception as e:
+                download_manifest.status_completion = ManifestStatus.FAILED
+                download_manifest.msg_completion = f"COULD NOT extract tissue mapping data" \
+                                                   f" from file '{download_manifest.path_destination}'," \
+                                                   f" due to '{e}'"
+            else:
+                path_folder = os.path.join(output_path, resource.path)
+                create_folder(path_folder)
+                path_filename_tissue = os.path.join(path_folder, resource.output_filename.replace('{suffix}', self.suffix))
+                try:
+                    with jsonlines.open(path_filename_tissue, mode='w') as writer:
+                        for item in tissues_json['tissues']:
+                            entry = {k: v for k, v in tissues_json['tissues'][item].items()}
+                            entry['tissue_id'] = item
+                            writer.write(entry)
+                except Exception as e:
+                    download_manifest.status_completion = ManifestStatus.FAILED
+                    download_manifest.msg_completion = f"COULD NOT persist tissue mapping data" \
+                                                       f" to file '{download_manifest.path_destination}'," \
+                                                       f" due to '{e}'"
+                else:
+                    download_manifest.path_destination = path_filename_tissue
+                    self._logger.debug(
+                        f"Tissue translation map download manifest destination path set to '{download_manifest.path_destination}', "
+                        f"which is the destination for the extracted tissue translation data"
+                    )
+                    download_manifest.msg_completion = f"The destination file contains the tissue translation map extracted from" \
+                                                       f" the data source"
+                    download_manifest.status_completion = ManifestStatus.COMPLETED
+        else:
+            self._logger.error(f"COULD NOT produce tissue translation mapping data, "
+                               f"because source data file at '{download_manifest.source_url}' could not be retrieved")
         return download_manifest
 
     def get_tissue_map(self, output, resource) -> ManifestResource:
@@ -106,6 +122,7 @@ class Expression(IPlugin):
         self._logger.info("[STEP] BEGIN, Expression")
         manifest_step = get_manifest_service().manifest_service.get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
+        # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.append(self.get_tissue_map(output, conf.etl.tissue_translation_map))
         manifest_step.resources.append(self.get_normal_tissues(output, conf.etl.normal_tissues))
         get_manifest_service().compute_checksums(manifest_step.resources)
