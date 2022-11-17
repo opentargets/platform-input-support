@@ -111,17 +111,23 @@ class Target(IPlugin):
         # we only want one file from a zipped archive
         file_of_interest = 'EssentialityMatrices/04_binaryDepScores.tsv'
         download_manifest = Downloads.download_staging_http(output.staging_dir, project_score_entry)
-        # TODO - Check whether the download was completed or not
-        output_dir = os.path.join(output.prod_dir, project_score_entry.path)
-        create_folder(output_dir)
-        extract_file_from_zip(file_of_interest, download_manifest.path_destination, output_dir)
-        download_manifest.path_destination = os.path.join(output_dir, os.path.basename(file_of_interest))
-        self._logger.debug(
-            f"Project Score download manifest destination path set to '{download_manifest.path_destination}', "
-            f"which is the extracted file of interest"
-        )
-        download_manifest.msg_completion = f"From original file, '{file_of_interest}' was the one used"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.COMPLETED:
+            output_dir = os.path.join(output.prod_dir, project_score_entry.path)
+            create_folder(output_dir)
+            try:
+                extract_file_from_zip(file_of_interest, download_manifest.path_destination, output_dir)
+            except Exception as e:
+                download_manifest.status_completion = ManifestStatus.FAILED
+                download_manifest.msg_completion = f"FAILED to extract '{file_of_interest}'" \
+                                                   f" from '{download_manifest.path_destination}' due to '{e}'"
+            else:
+                download_manifest.path_destination = os.path.join(output_dir, os.path.basename(file_of_interest))
+                self._logger.debug(
+                    f"Project Score download manifest destination path set to '{download_manifest.path_destination}', "
+                    f"which is the extracted file of interest"
+                )
+                download_manifest.msg_completion = f"From within original file, '{file_of_interest}' was the one used"
+                download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
     def process(self, conf, output, cmd_conf):
@@ -135,6 +141,7 @@ class Target(IPlugin):
         self._logger.info("[STEP] BEGIN, target")
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
+        # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.append(self.get_project_scores(conf.etl.project_scores, output))
         manifest_step.resources.append(self.extract_ensembl(conf.etl.ensembl, output, cmd_conf))
         manifest_step.resources.append(self.get_subcellular_location(conf.etl.subcellular_location, output))
