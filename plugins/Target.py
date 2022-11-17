@@ -31,17 +31,30 @@ class Target(IPlugin):
         :param output: output configuration object for collected data
         """
         download_manifest = Downloads.download_staging_http(output.staging_dir, gnomad)
-        filename_unzip = make_gunzip(download_manifest.path_destination)
-        gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, gnomad.path)), gnomad.output_filename)
-        download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
-        self._logger.debug(
-            f"gnomeAD data download manifest destination path"
-            f" set to '{download_manifest.path_destination}',"
-            f" which is the result of compression format conversion from original file"
-        )
-        download_manifest.msg_completion = \
-            "The source file was converted from its original compression format to gzip format"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.COMPLETED:
+            download_manifest.status_completion = ManifestStatus.FAILED
+            try:
+                filename_unzip = make_gunzip(download_manifest.path_destination)
+            except Exception as e:
+                download_manifest.msg_completion = f"COULD NOT unzip file '{download_manifest.path_destination}'" \
+                                                   f" due to '{e}'"
+            else:
+                gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, gnomad.path)), gnomad.output_filename)
+                try:
+                    download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
+                except Exception as e:
+                    download_manifest.msg_completion = f"COULD NOT gzip file '{filename_unzip}'" \
+                                                       f" into '{gzip_filename}'" \
+                                                       f" due to '{e}'"
+                else:
+                    self._logger.debug(
+                        f"gnomeAD data download manifest destination path"
+                        f" set to '{download_manifest.path_destination}',"
+                        f" which is the result of compression format conversion from original file"
+                    )
+                    download_manifest.msg_completion = \
+                        "The source file was converted from its original compression format to gzip format"
+                    download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
     def get_subcellular_location(self, sub_location, output) -> ManifestResource:
