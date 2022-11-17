@@ -112,8 +112,8 @@ class Drug(IPlugin):
         # TODO - Handle errors in the process and report back
         self._logger.info("[STEP] BEGIN, Drug")
         manifest_step = get_manifest_service().get_step(self.step_name)
-        # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
+        # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.extend(self.download_indices(conf, output))
         # We try to compute checksums for whatever was collected
         get_manifest_service().compute_checksums(manifest_step.resources)
