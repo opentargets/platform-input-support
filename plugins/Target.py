@@ -52,20 +52,34 @@ class Target(IPlugin):
         :param output: output configuration object for the collected data
         """
         download_manifest = Downloads.download_staging_http(output.staging_dir, sub_location)
-        # TODO - Handle possible download errors
-        filename_unzip = make_unzip_single_file(download_manifest.path_destination)
-        gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, sub_location.path)),
-                                     sub_location.output_filename)
-        # TODO - Handle possible errors when unzipping / gzipping the file
-        download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
-        self._logger.debug(
-            f"Subcellular location data download manifest destination path"
-            f" set to '{download_manifest.path_destination}',"
-            f" which is the result of compression format conversion from original file"
-        )
-        download_manifest.msg_completion = \
-            "The source file was converted from its original compression format to gzip format"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.COMPLETED:
+            download_manifest.status_completion = ManifestStatus.FAILED
+            try:
+                filename_unzip = make_unzip_single_file(download_manifest.path_destination)
+            except Exception as e:
+                download_manifest.msg_completion = f"COULD NOT unzip" \
+                                                   f" '{download_manifest.path_destination}'" \
+                                                   f" due to '{e}'"
+            else:
+                gzip_filename = os.path.join(create_folder(os.path.join(output.prod_dir, sub_location.path)),
+                                             sub_location.output_filename)
+                try:
+                    download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
+                except Exception as e:
+                    download_manifest.msg_completion = f"COULD NOT gzip" \
+                                                       f" '{filename_unzip}' into '{gzip_filename}'" \
+                                                       f" due to '{e}'"
+                else:
+                    self._logger.debug(
+                        f"Subcellular location data download manifest destination path"
+                        f" set to '{download_manifest.path_destination}',"
+                        f" which is the result of compression format conversion from original file"
+                    )
+                    download_manifest.msg_completion = \
+                        "The source file was converted from its original compression format to gzip format"
+                    download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.FAILED:
+            self._logger.error(download_manifest.msg_completion)
         return download_manifest
 
     def extract_ensembl(self, ensembl, output, cmd) -> ManifestResource:
