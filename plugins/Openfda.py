@@ -89,9 +89,25 @@ class Openfda(IPlugin):
         self._logger.info("[STEP] BEGIN, openfda")
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
-        # TODO Check whether we could retrieve the Bill Of Materials for downloading the OpenFDA dataset
-        manifest_step.resources.extend(self._download_openfda_faers(conf.etl.downloads, output))
+        # TODO - Should I halt the step as soon as I face the first problem?
+        # Check whether we could retrieve the Bill Of Materials for downloading the OpenFDA dataset
+        manifest_step.status_completion = ManifestStatus.FAILED
+        if get_manifest_service().are_all_status_complete(manifest_step.resources):
+            try:
+                manifest_step.resources.extend(self._download_openfda_faers(conf.etl.downloads, output))
+            except Exception as e:
+                manifest_step.msg_completion = f"OpenFDA FAERS events could not be retrieved due to '{e}'"
+            else:
+                if get_manifest_service().are_all_status_complete(manifest_step.resources):
+                    manifest_step.status_completion = ManifestStatus.COMPLETED
+                else:
+                    manifest_step.msg_completion = f"COULD NOT retrieve all OpenFDA FAERS events of interest"
+        else:
+            manifest_step.msg_completion = "COULD NOT retrieve the OpenFDA FAERS dataset metadata for event selection"
+        # TODO - Validation
         get_manifest_service().compute_checksums(manifest_step.resources)
-        manifest_step.status_completion = ManifestStatus.COMPLETED
-        manifest_step.msg_completion = "The step has completed its execution"
+        if manifest_step.status_completion != ManifestStatus.COMPLETED:
+            manifest_step.msg_completion = "The step has completed its data collection"
+        else:
+            self._logger.error(manifest_step.msg_completion)
         self._logger.info("[STEP] END, openfda")

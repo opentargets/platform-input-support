@@ -91,6 +91,7 @@ class Homologues(IPlugin):
         """
         self._logger.info("[STEP] BEGIN, Homologues")
         download = DownloadResource(output.staging_dir)
+        # TODO - Should I halt the step as soon as I face the first problem?
         uri_release = conf.uri.replace("{release}", str(conf.release))
         create_folder(os.path.join(output.prod_dir, conf.path, str(conf.release)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
