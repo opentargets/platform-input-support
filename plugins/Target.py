@@ -81,24 +81,35 @@ class Target(IPlugin):
         resource_stage = Dict()
         resource_stage.uri = ensembl.uri.replace('{release}', str(ensembl.release))
         download_manifest = Downloads.download_staging_ftp(output.staging_dir, resource_stage)
-        # TODO - Check whether the download was completed or not
-        output_dir = os.path.join(output.prod_dir, ensembl.path)
-        output_file = os.path.join(create_folder(output_dir), ensembl.output_filename)
-        with open(output_file, "wb") as jsonwrite:
-            # TODO - Change this to subprocess.run, and modify the command to write the data straight away, instead of
-            #  piping it back to the caller
-            jqp = subprocess.Popen(
-                [jq_cmd, "-c", ensembl.jq, download_manifest.path_destination],
-                stdout=subprocess.PIPE)
-            jsonwrite.write(jqp.stdout.read())
-        download_manifest.path_destination = output_file
-        self._logger.debug(
-            f"Ensembl data extraction download manifest destination path set to '{download_manifest.path_destination}',"
-            f" which is the result of processing the original data source"
-        )
-        download_manifest.msg_completion = f"The following 'jq' filter has been used for ensembl data extraction," \
-                                           f" '{ensembl.jq}'"
-        download_manifest.status_completion = ManifestStatus.COMPLETED
+        if download_manifest.status_completion == ManifestStatus.COMPLETED:
+            output_dir = os.path.join(output.prod_dir, ensembl.path)
+            output_file = os.path.join(create_folder(output_dir), ensembl.output_filename)
+            try:
+                with open(output_file, "wb") as jsonwrite:
+                    # TODO - Change this to subprocess.run, and modify the command to write the data straight away, instead of
+                    #  piping it back to the caller
+                    jqp = subprocess.Popen(
+                        [jq_cmd, "-c", ensembl.jq, download_manifest.path_destination],
+                        stdout=subprocess.PIPE)
+                    jsonwrite.write(jqp.stdout.read())
+                    self._logger.debug(f"---------------> Running 'JQ' command, return code -> '{jqp.returncode}'")
+            except Exception as e:
+                download_manifest.status_completion = ManifestStatus.FAILED
+                download_manifest.msg_completion = f"FAILED to extract ensembl data from" \
+                                                   f" '{download_manifest.path_destination}'" \
+                                                   f" into '{output_file}'" \
+                                                   f" using JQ filter '{ensembl.jq}'" \
+                                                   f" due to '{e}'"
+                self._logger.error(download_manifest.msg_completion)
+            else:
+                download_manifest.path_destination = output_file
+                self._logger.debug(
+                    f"Ensembl data extraction download manifest destination path set to '{download_manifest.path_destination}',"
+                    f" which is the result of processing the original data source"
+                )
+                download_manifest.msg_completion = f"The following 'jq' filter has been used for ensembl data extraction," \
+                                                   f" '{ensembl.jq}'"
+                download_manifest.status_completion = ManifestStatus.COMPLETED
         return download_manifest
 
     def get_project_scores(self, project_score_entry, output) -> ManifestResource:
