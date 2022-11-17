@@ -138,7 +138,7 @@ class Expression(IPlugin):
         :param cmd_conf: NOT USED
         """
         self._logger.info("[STEP] BEGIN, Expression")
-        manifest_step = get_manifest_service().manifest_service.get_step(self.step_name)
+        manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step.resources.append(self.get_tissue_map(output, conf.etl.tissue_translation_map))
