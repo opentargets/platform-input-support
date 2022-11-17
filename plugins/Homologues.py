@@ -78,9 +78,7 @@ class Homologues(IPlugin):
                 if e.errno == errno.ENOENT:
                     # handle file not found error.
                     self._logger.error(e)
-                else:
-                    # Something else went wrong
-                    raise
+                raise
         return output_file
 
     def process(self, conf, output, cmd_conf):
@@ -100,18 +98,32 @@ class Homologues(IPlugin):
         for species in conf.resources:
             self._logger.debug(f'Downloading files for {species}')
             download_manifest = self.download_species(uri_release, conf.release, output.staging_dir, download, species)
-            download_manifest.path_destination = \
-                self.extract_fields_from_json(download_manifest.path_destination, conf, output, jq_cmd)
-            self._logger.debug(
-                f"Homologue '{species}' data download manifest destination path"
-                f" set to '{download_manifest.path_destination}',"
-                f" as final recipient for the sub-dataset"
-            )
-            download_manifest.msg_completion = \
-                f"Homologue '{species}' data"
-            download_manifest.status_completion = ManifestStatus.COMPLETED
+            if download_manifest.status_completion == ManifestStatus.COMPLETED:
+                download_manifest.status_completion = ManifestStatus.FAILED
+                try:
+                    download_manifest.path_destination = \
+                        self.extract_fields_from_json(download_manifest.path_destination, conf, output, jq_cmd)
+                except Exception as e:
+                    download_manifest.msg_completion = f"COULD NOT extract fields from Homologues dataset at " \
+                                                       f"'{download_manifest.path_destination}'" \
+                                                       f" using JQ command '{jq_cmd}'"
+                    self._logger.error(download_manifest.msg_completion)
+                else:
+                    self._logger.debug(
+                        f"Homologue '{species}' data download manifest destination path"
+                        f" set to '{download_manifest.path_destination}',"
+                        f" as final recipient for the sub-dataset"
+                    )
+                    download_manifest.msg_completion = \
+                        f"Homologue '{species}' data, JQ filtered with '{conf.jq}'"
+                    download_manifest.status_completion = ManifestStatus.COMPLETED
             manifest_step.resources.append(download_manifest)
         get_manifest_service().compute_checksums(manifest_step.resources)
-        manifest_step.status_completion = ManifestStatus.COMPLETED
-        manifest_step.msg_completion = "The step has completed its execution"
+        if not get_manifest_service().are_all_status_complete(manifest_step.resources):
+            manifest_step.status_completion = ManifestStatus.FAILED
+            manifest_step.msg_completion = "COULD NOT retrieve all the resources"
+        # TODO - Validation
+        if manifest_step.status_completion != ManifestStatus.FAILED:
+            manifest_step.status_completion = ManifestStatus.COMPLETED
+            manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Homologues")
