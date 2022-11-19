@@ -99,17 +99,18 @@ class ManifestService():
 
     def __init__(self, config):
         self.config = config
+        # TODO - Remove unused property
         self.session_timestamp: str = get_timestamp_iso_utc_now()
         self._logger = logging.getLogger(__name__)
         self.__manifest: ManifestDocument = None
         self.__is_manifest_loaded = False
 
     def __create_manifest(self) -> ManifestDocument:
-        manifest_document = ManifestDocument(self.session_timestamp)
+        manifest_document = ManifestDocument(get_timestamp_iso_utc_now())
         return manifest_document
 
     def __create_manifest_step(self) -> ManifestStep:
-        return ManifestStep(self.session_timestamp)
+        return ManifestStep(get_timestamp_iso_utc_now())
 
     def __load_manifest(self) -> ManifestDocument:
         # TODO
@@ -190,8 +191,13 @@ class ManifestService():
         return copy.copy(resource)
 
     @staticmethod
-    def are_all_status_complete(resources: List[ManifestResource]):
+    def are_all_resources_complete(resources: List[ManifestResource]) -> bool:
         return all(resource.status_completion == ManifestStatus.COMPLETED for resource in resources)
+
+    @staticmethod
+    def are_all_steps_complete(steps: List[ManifestStep]) -> bool:
+        # TODO - Refactor into a single method that accepts either ManifestResource or ManifestStatus
+        return all(step.status_completion == ManifestStatus.COMPLETED for step in steps)
 
     def _compute_checksums_for_resource(self, resource: ManifestResource) -> Tuple[bool, List[str], ManifestResource]:
         self._logger.debug(f"Computing checksums for '{resource.path_destination}'")

@@ -185,7 +185,7 @@ class Target(IPlugin):
         manifest_step.resources.append(self.get_subcellular_location(conf.etl.subcellular_location, output))
         manifest_step.resources.append(self.get_gnomad(conf.etl.gnomad, output))
         get_manifest_service().compute_checksums(manifest_step.resources)
-        if not get_manifest_service().are_all_status_complete(manifest_step.resources):
+        if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
             manifest_step.msg_completion = "COULD NOT retrieve all the resources"
         # TODO - Validation

@@ -45,7 +45,7 @@ class Otar(IPlugin):
             download_manifest.msg_completion = f"Source URL is the Spreadsheet," \
                                                f" data downloaded from its worksheet with name '{sheet.worksheet_name}'"
             get_manifest_service().compute_checksums(manifest_step.resources)
-            if not get_manifest_service().are_all_status_complete(manifest_step.resources):
+            if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
                 manifest_step.status_completion = ManifestStatus.FAILED
                 manifest_step.msg_completion = "COULD NOT retrieve all the resources"
             # TODO - Validation

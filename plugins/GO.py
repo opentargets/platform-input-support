@@ -30,7 +30,7 @@ class GO(IPlugin):
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         get_manifest_service().compute_checksums(manifest_step.resources)
-        if not get_manifest_service().are_all_status_complete(manifest_step.resources):
+        if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
             manifest_step.msg_completion = "COULD NOT retrieve all the resources"
         # TODO - Validation

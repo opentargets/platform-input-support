@@ -92,13 +92,13 @@ class Openfda(IPlugin):
         # TODO - Should I halt the step as soon as I face the first problem?
         # Check whether we could retrieve the Bill Of Materials for downloading the OpenFDA dataset
         manifest_step.status_completion = ManifestStatus.FAILED
-        if get_manifest_service().are_all_status_complete(manifest_step.resources):
+        if get_manifest_service().are_all_resources_complete(manifest_step.resources):
             try:
                 manifest_step.resources.extend(self._download_openfda_faers(conf.etl.downloads, output))
             except Exception as e:
                 manifest_step.msg_completion = f"OpenFDA FAERS events could not be retrieved due to '{e}'"
             else:
-                if get_manifest_service().are_all_status_complete(manifest_step.resources):
+                if get_manifest_service().are_all_resources_complete(manifest_step.resources):
                     manifest_step.status_completion = ManifestStatus.COMPLETED
                 else:
                     manifest_step.msg_completion = f"COULD NOT retrieve all OpenFDA FAERS events of interest"
