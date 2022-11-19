@@ -3,7 +3,7 @@ import logging.config
 
 # Custom modules
 import modules.cfg as cfg
-import manifest
+from manifest import get_manifest_service, ManifestStatus
 from modules.common.YAMLReader import YAMLReader
 from modules.RetrieveResource import RetrieveResource
 
@@ -36,8 +36,16 @@ def main():
     # Session's Manifest
     manifest_config = yaml_dict
     manifest_config.update({"output_dir": resources.output_dir_prod})
-    manifest_service = manifest.get_manifest_service(args, manifest_config)
-    resources.run()
+    manifest_service = get_manifest_service(args, manifest_config)
+    try:
+        resources.run()
+    except Exception as e:
+        manifest_service.manifest.status_completion = ManifestStatus.FAILED
+        manifest_service.manifest.msg_completion = f"COULD NOT complete the data collection session due to '{e}'"
+    if not manifest_service.are_all_steps_complete(manifest_service.manifest.steps.values()):
+        manifest_service.manifest.status_completion = ManifestStatus.FAILED
+        manifest_service.manifest.msg_completion = f"COULD NOT complete data collection for one or more steps"
+    # TODO - Pipeline level VALIDATION
     manifest_service.persist()
 
 
