@@ -46,6 +46,11 @@ def main():
         manifest_service.manifest.status_completion = ManifestStatus.FAILED
         manifest_service.manifest.msg_completion = f"COULD NOT complete data collection for one or more steps"
     # TODO - Pipeline level VALIDATION
+    if manifest_service.manifest.status_completion != ManifestStatus.FAILED:
+        manifest_service.manifest.status_completion = ManifestStatus.COMPLETED
+        manifest_service.manifest.msg_completion = f"All steps completed their data collection"
+    else:
+        logger.error(manifest_service.manifest.msg_completion)
     manifest_service.persist()
 
 
