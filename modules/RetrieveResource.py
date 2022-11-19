@@ -121,6 +121,7 @@ class RetrieveResource(object):
             except Exception as e:
                 logger.error("A problem occurred while running step '{}'".format(plugin_name))
                 logger.error(e)
+                raise
 
     def create_output_structure(self):
         """
