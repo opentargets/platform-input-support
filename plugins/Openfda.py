@@ -52,7 +52,7 @@ class Openfda(IPlugin):
             download_pool_chunksize = int(
                 len(repo_metadata['results']['drug']['event']['partitions']) / download_pool_nprocesses
             )
-            with mp.Pool() as download_pool:
+            with mp.Pool(processes=download_pool_nprocesses) as download_pool:
                 try:
                     return list(itertools.chain.from_iterable(download_pool.map(fda.do_download_openfda_event_file,
                                                                                 repo_metadata['results']['drug'][
