@@ -47,7 +47,7 @@ class Openfda(IPlugin):
             fda_output = create_folder(os.path.join(output.prod_dir, "fda-inputs"))
             fda = OpenfdaHelper(fda_output, manifest_service=get_manifest_service())
             # Parallel data gathering
-            self._logger.debug("Download processes pool -- {}".format(mp.cpu_count()))
+            self._logger.debug(f"Download processes pool -- {mp.cpu_count()}")
             download_pool_nprocesses = mp.cpu_count() * 2
             download_pool_chunksize = int(
                 len(repo_metadata['results']['drug']['event']['partitions']) / download_pool_nprocesses
