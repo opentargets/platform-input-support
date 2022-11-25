@@ -106,14 +106,24 @@ class ManifestService():
         self.__is_manifest_loaded = False
 
     def __create_manifest(self) -> ManifestDocument:
+        """
+        This method will create a new ManifestDocument object
+        """
         manifest_document = ManifestDocument(get_timestamp_iso_utc_now())
         return manifest_document
 
     def __create_manifest_step(self) -> ManifestStep:
+        """
+        This method will create a new ManifestStep object
+        """
         return ManifestStep(get_timestamp_iso_utc_now())
 
     def __load_manifest(self) -> ManifestDocument:
         # TODO
+        # 1. Check if the manifest file exists
+        # 2. If it does, load it
+        # 3. If it doesn't, create a new one
+        # 4. Return the manifest
         # Load and modify the 'modified' timestamp
         self.__is_manifest_loaded = True
         raise NotImplementedError("Loading a manifest document from a file is not supported yet")
@@ -147,6 +157,9 @@ class ManifestService():
 
     @property
     def path_manifest(self) -> str:
+        """
+        This property will return the path to the manifest file
+        """
         return os.path.join(self.config.output_dir, self.config.file_name)
 
     @property

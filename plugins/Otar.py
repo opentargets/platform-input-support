@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 This module gathers all data related to OTAR Projects (metadata and mapping)
 """
 
+
 class Otar(IPlugin):
     def __init__(self):
         self._logger = logging.getLogger(__name__)
