@@ -251,6 +251,9 @@ class ManifestService():
         manifest_step.resources.append(resource)
 
     def persist(self):
+        """
+        This method will persist the manifest file to the output directory
+        """
         self.make_paths_relative()
         try:
             with open(self.path_manifest, 'w') as fmanifest:
