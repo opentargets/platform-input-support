@@ -1,11 +1,13 @@
 # Open Targets: Platform-input-support overview
 
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
-The input files are copied in a local hard disk and eventually in a specific google storage bucket 
+The input files are copied in a local hard disk and eventually in a specific google storage bucket
 
-Currently, the application executes 11 steps and finally it generates the input resources for the ETL pipeline (https://github.com/opentargets/data_pipeline)
+Currently, the application executes 11 steps and finally it generates the input resources for the ETL
+pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
+
 - Disease
 - Drug
 - Evidence
@@ -21,8 +23,9 @@ List of available steps:
 - Literature
 - Otar
 
-Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the file can be processed in order to generate a new resource.
-The final files are located under the output directory while the files used for the computation are saved under stages. 
+Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the
+file can be processed in order to generate a new resource.
+The final files are located under the output directory while the files used for the computation are saved under stages.
 
 Below more details about how to execute the script.
 
@@ -37,20 +40,23 @@ Below more details about how to execute the script.
 ## Conda for Linux/MAC
 
 Download Conda3 for Mac here: <br>
- https://www.anaconda.com/products/individual <br>
+https://www.anaconda.com/products/individual <br>
 [download Anaconda3-2021.05-MacOSX-x86_64.sh]
 
 Download Conda3 for Linux x86_84 <br>
- https://www.anaconda.com/products/individual <br>
+https://www.anaconda.com/products/individual <br>
 [download Anaconda3-2021.05-Linux-x86_64.sh]
 
 Conda: installation commands
+
 ```
 bash path_where_downloaded_the_file/Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 conda update
 ```
+
 Eg. for linux
+
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash Anaconda3-2020.07-Linux-x86_64.sh
@@ -58,9 +64,11 @@ source ~/.bashrc
 ```
 
 ## Running PIS via Docker image
+
 Platform input support is available as docker image, a _Dockerfile_ is provided for building the container image.
 
 For instance
+
 ```
 mkdir /tmp/pis
 sudo docker run 
@@ -72,71 +80,31 @@ sudo docker run
  -gb ot-team/pis_output/docker
 ```
 
-When providing a Google Cloud key file, please, make sure that it is mounted within the container at this exact mount point
+When providing a Google Cloud key file, please, make sure that it is mounted within the container at this exact mount
+point
+
 ```
 /srv/credentials/open-targets-gac.json
 ```
-This allows the activation of the service account when running the container image, so _gcloud-sdk_ can work with the destination Google Cloud Storage Bucket.
+
+This allows the activation of the service account when running the container image, so _gcloud-sdk_ can work with the
+destination Google Cloud Storage Bucket.
 
 For using an external config file, simply add the option -c and the path where the config file is available
 
-
-
 ## Conda in Docker (for PyCharm)
 
-If you would rather run a containerised version of Conda use the provided Dockerfile. 
+If you would rather run a containerised version of Conda use the provided Dockerfile.
 
 ```
 # build the image
 docker build --tag pis-py3.8 <path to Dockerfile>
 ```
+
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
-
-## Singularity 
-This is an example how to run singularity using the docker image.
-``` shell
-singularity exec \
-   -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
-   docker://quay.io/opentargets/platform-input-support:cm_singularity \
-   conda run --no-capture-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py -steps drug
-  
-```
-
-## Run PIS inside EBI infrastructure
-In order to run PIS inside the current EBI infrastructure the best praticse is to use Singularity and LSF.
-
-First of all check the google cloud account rights for the proper project.
-```shell
-ls -la /homes/$USER/.config/gcloud/application_default_credentials.json
-```
-
-Eventually run the following command to generate the file above:
-```shell
-gcloud config set project open-targets-eu-dev
-or
-gcloud config set project open-targets-prod
-
-gcloud auth application-default login
-```
-You can use `singularity/ebi.sh` to run PIS inside the EBI infrastructure.
-```
- ./singularity docker_tag_image step google_storage_path 
-```
-where 
-* docker_tag_image: docker image tag (quay.io) (**under review**)
-* step : Eg. drug 
-* google_storage_path: gs bucket [not mandatory]
-
-```shell
- ./singularity/ebi.sh 21.04 drug 
- 
- ./singularity/ebi.sh 21.04 drug ot-snapshots/21.04/input
-
-```
-
-
 ## Apache-Jena : Install Riot
+
 ```
 cd ~
 wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-4.2.0.tar.gz
@@ -149,17 +117,18 @@ export PATH="$PATH:/your_path/apache-jena/bin"
 source .bashrc
 
 ```
+
 # Overview of config.yaml
 
-The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download, 
+The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download,
 to extract and to manipulate the input and generate the proper output.
 
 ## Overview of configuration file sections:
 
 ### Config
 
-The section **config** can be used for specify where utility programs `riot` and `jq` are installed on the system. 
-If the command shutil.which fails during PIS execution double check these configurations. 
+The section **config** can be used for specify where utility programs `riot` and `jq` are installed on the system.
+If the command shutil.which fails during PIS execution double check these configurations.
 
 _**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command `riot`.
 
@@ -167,16 +136,17 @@ _**"java_vm"**_ parameter will set up the JVM heap environment variable for the 
 
 The majority of the configuration file is specifying metadata for the execution
 of individual steps, eg `tep`, `ensembl` or `drug`. These can be recognised as they
-all have a `gs_output_dir` key which indicates where the files will be saved in GCP. 
+all have a `gs_output_dir` key which indicates where the files will be saved in GCP.
 
 There is inconsistency between keys in different steps, as they accommodate very different
-input types and required levels of configuration. See [step guides](#step-guides) for 
+input types and required levels of configuration. See [step guides](#step-guides) for
 configuration requirements for specific steps.
-The section **config** can be used for specify where `riot` or `jq` are installed. 
+The section **config** can be used for specify where `riot` or `jq` are installed.
 
 ## A note on zip files
 
-We are only building the functionality which we need which introduces some limitations. At present if a zip file is downloaded 
+We are only building the functionality which we need which introduces some limitations. At present if a zip file is
+downloaded
 we only extract _1_ file from the archive. To configure a zip file create an entry in the config such as:
 
 ```yaml
@@ -185,12 +155,15 @@ we only extract _1_ file from the archive. To configure a zip file create an ent
     unzip_file: true
     resource: probeminer
 ```
+
 The _unzip\_file_ flag tells `RetrieveResource.py` to treat the file as an archive.
 
 The `uri` field indicates from where to download the data. The archive will be saved under `output_filename`. The first
-element of the archive will be extracted under `output_filename` with the suffix '[gz|zip]' removed, so in this case, _probeminer-datadump-{suffix}.tsv_.
+element of the archive will be extracted under `output_filename` with the suffix '[gz|zip]' removed, so in this case, _
+probeminer-datadump-{suffix}.tsv_.
 
 # Set up application (first time)
+
 ```
 git clone https://github.com/opentargets/platform-input-support
 cd platform-input-support
@@ -254,29 +227,31 @@ optional arguments:
 If you want to run PIS in a Docker container follow these steps:
 
 1. Get the code
-   `git clone https://github.com/opentargets/platform-input-support` 
+   `git clone https://github.com/opentargets/platform-input-support`
 1. create container
    `docker build --tag <image tag> <path to Dockerfile>`
 2. start container mounting the cloned code as a volume (here I assume you cloned the code into your home directory)
-  `docker run -v ~/platform-input-support:/usr/src/app --rm -it --entrypoint bash <image tag>`
+   `docker run -v ~/platform-input-support:/usr/src/app --rm -it --entrypoint bash <image tag>`
    This command will drop you into a bash shell inside the container, where you can execute the code.
-   
+
 3 activate environment
-  `conda activate pis-py3.8`
+`conda activate pis-py3.8`
 
 4. execute code
-  `python platform-input-support.py -steps <step> --log-level=DEBUG`
-   
+   `python platform-input-support.py -steps <step> --log-level=DEBUG`
+
 # Logging.ini
+
 The directory **"resources"** contains the file logging.ini with a list of default value.
 If the logging.ini is not available or the user removes it than the code sets up a list of default parameters.
 In both case, the log output file is store under **"log"**
 
-
 # Google bucket requirements
+
 To copy the files in a specific google storage bucket valid credentials must be used.
 The required parameter -gkey (--gcp_credentials) allows the specification of Google storage JSON credential.
 Eg.
+
 ```
 python platform-input-support.py -gkey /path/open-targets-gac.json -gb bucket/object_path
 or
@@ -306,16 +281,20 @@ python platform-input-support.py
 ```
 
 ### Check if the files generated are corrupted
+
 The zip files generated might be corrupted. The follow command checks if the files are correct.
 sh check_corrupted_files.sh
 
 ### Installation command for Google Cloud or Amazon Azure
+
 Create a linux VM server and run the following commands
+
 ```
 sudo apt update
 sudo apt install git
 sudo apt-get install bzip2 wget
 ```
+
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash Anaconda3-2020.07-Linux-x86_64.sh
@@ -346,16 +325,18 @@ nohup python platform-input-support.py
 
 # Step guides
 
-The program is broken into steps such as `drug`, `interactions`, etc. Each step can be configured as necessary in the 
-config file and run using command line arguments. 
+The program is broken into steps such as `drug`, `interactions`, etc. Each step can be configured as necessary in the
+config file and run using command line arguments.
 
 ## EFO step (disease)
 
 The EFO step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend).
 
-The scope of EFO is to support the annotation, analysis and visualization of data handled by the core ontology for Open Targets. 
+The scope of EFO is to support the annotation, analysis and visualization of data handled by the core ontology for Open
+Targets.
 
 This step downloads and manipulates the input files and it generates the following output:
+
 * ontology-efo-v3.xx.yy.jsonl : list of EFO terms
 * ontology-mondo.jsonl : list of MONDO terms
 * ontology-hpo.jsonl : list of HPO terms
@@ -363,17 +344,19 @@ This step downloads and manipulates the input files and it generates the followi
 
 ## Drug step
 
-The Drug step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend).
+The Drug step is used to gather the raw data for the [platform ETL](https://github.com/opentargets/platform-etl-backend)
+.
 
-ChEMBL have made an Elasticsearch instance available for querying. To keep data volumes and running times down specify the
+ChEMBL have made an Elasticsearch instance available for querying. To keep data volumes and running times down specify
+the
 index and fields which are required in the config file.
 
 ## Homology Step
 
-This step is used to download raw json data from the ENSEMBL [ftp server](https://ftp.ensembl.org/pub/current_json/) for 
-specified species. These inputs are then processed with `jq` to extract the id and name fields which are required by the 
+This step is used to download raw json data from the ENSEMBL [ftp server](https://ftp.ensembl.org/pub/current_json/) for
+specified species. These inputs are then processed with `jq` to extract the id and name fields which are required by the
 ETL. The downloaded json files approach 30GB in size, and we only extract ~10MB from them. It is worth considering if we
-want to retain these files long-term. 
+want to retain these files long-term.
 
 ## Hpa Expression Step
 
@@ -385,24 +368,29 @@ All the files generated are required by the ETL.
 
 This step collects adversed events of interest from [OpenFDA FAERS](https://open.fda.gov/data/faers/).
 It requires two input parameters via the configuation file:
+
 - URL of the events black list.
 - URL where to find OpenFDA FAERS repository metadata in JSON format.
 
 ## OTAR
 
 This step collects two kinds of information on OTAR Projects, used in the internal platform:
+
 1. **Metadata** information on the projects.
 2. **Mapping Information**, between the projects and diseases
 
 # Application architecture
 
 - `platform-input-support` is the entrypoint to the program; it loads the `config.yaml` which specifies the available
-steps and any necessary configuration which goes with them. This configuration is represented internally as a dictionary. 
-Platform input support configures a `RetrieveResource` object and calls the `run` method triggering the selected steps.
+  steps and any necessary configuration which goes with them. This configuration is represented internally as a
+  dictionary.
+  Platform input support configures a `RetrieveResource` object and calls the `run` method triggering the selected
+  steps.
 - `RetrieveResource` will consult the steps selected and trigger a method for each selected step. Most steps will defer
-to a helper object in `Modules` to retrieve the selected resources.  
+  to a helper object in `Modules` to retrieve the selected resources.
 
 # Troubleshooting
+
 ```
 sudo apt-get install autoconf libtool
 ```
