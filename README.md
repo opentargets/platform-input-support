@@ -1,10 +1,10 @@
 # Open Targets: Platform-input-support overview
 
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
-The input files are copied in a local hard disk and eventually in a specific google storage bucket
+The input files are copied in a local hard disk and eventually in a specific google storage bucket.
 
-Currently, the application executes 11 steps and finally it generates the input resources for the ETL
-pipeline (https://github.com/opentargets/data_pipeline)
+Currently, the application executes 11 steps and finally it generates the input resources for
+the [ETL pipeline](https://github.com/opentargets/platform-etl-backend).
 
 List of available steps:
 
@@ -25,58 +25,82 @@ List of available steps:
 
 Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the
 file can be processed in order to generate a new resource.
+
 The final files are located under the output directory while the files used for the computation are saved under stages.
 
-Below more details about how to execute the script.
+# Installation
 
-# Installation Requirements
+There are two recommended ways to run PIS: either with a local installation or via a Docker container.
+
+## VM installation
+
+The following utilities must be installed:
 
 * Conda
 * Apache-Jena
 * git
 * jq
+* curl
 * Google Cloud SDK
 
-## Conda for Linux/MAC
+## Install dependencies
 
-Download Conda3 for Mac here: <br>
-https://www.anaconda.com/products/individual <br>
-[download Anaconda3-2021.05-MacOSX-x86_64.sh]
+### Conda for Linux/MAC
 
-Download Conda3 for Linux x86_84 <br>
-https://www.anaconda.com/products/individual <br>
-[download Anaconda3-2021.05-Linux-x86_64.sh]
+Conda provides an isolated environment for Python dependencies. Download Conda3
+for [Mac](download Anaconda3-2021.05-MacOSX-x86_64.sh) or [Linux](download Anaconda3-2021.05-Linux-x86_64.sh) as
+appropriate.
 
-Conda: installation commands
+Conda can be installed with the following commands:
 
-```
+```bash
+wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 bash path_where_downloaded_the_file/Anaconda3-2020.07-Linux-x86_64.sh
 source ~/.bashrc
 conda update
 ```
 
-Eg. for linux
+Now that Conda is installed we need to create the environment which holds the necessary Python dependencies:
 
-```
-wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
-bash Anaconda3-2020.07-Linux-x86_64.sh
-source ~/.bashrc
+```bash
+git clone https://github.com/opentargets/platform-input-support
+cd platform-input-support
+conda env create -f environment.yaml
+conda activate pis-py3.8
 ```
 
-## Running PIS via Docker image
+### Other utilities
+
+The following command will install the required utilities:
+
+```bash
+    apt install -y curl jq openjdk-11-jre-headless apt-transport-https ca-certificates gnupg; \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list ; \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg ; \
+    apt update; \
+    apt install -y google-cloud-cli; \
+    mkdir /tmp && cd /tmp; \
+    wget --no-check-certificate -O apache-jena.tar.gz https://archive.apache.org/dist/jena/binaries/apache-jena-4.4.0.tar.gz; \
+    tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1 -C /usr/share/
+```
+
+## Docker
+
+Running via Docker image does not require the installation of any dependencies apart from Docker.
 
 Platform input support is available as docker image, a _Dockerfile_ is provided for building the container image.
 
-For instance
+Running PIS using Docker requires the specification of where the container should save the (a) outputs and optionally (
+b) logs, as well as where to find the (c) credentials key.
 
-```
+```bash
 mkdir /tmp/pis
 sudo docker run 
- -v path_with_credentials:/usr/src/app/cred 
- -v /tmp/pis:/usr/src/app/output 
+ -v path_with_credentials:/usr/src/app/cred #(c)
+ -v /tmp/pis:/usr/src/app/output #(a)
  pis_docker_image 
  -steps Evidence 
- -gkey /usr/src/app/cred/open-targets-gac.json 
+ -gkey /usr/src/app/cred/open-targets-gac.json # note this references (c)
  -gb ot-team/pis_output/docker
 ```
 
@@ -92,9 +116,10 @@ destination Google Cloud Storage Bucket.
 
 For using an external config file, simply add the option -c and the path where the config file is available
 
-## Conda in Docker (for PyCharm)
+### Conda in Docker (for PyCharm)
 
-If you would rather run a containerised version of Conda use the provided Dockerfile.
+A Docker container can be used to provide a local development environment which will match what is going to be used in
+production.
 
 ```
 # build the image
@@ -103,79 +128,11 @@ docker build --tag pis-py3.8 <path to Dockerfile>
 
 You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
-## Apache-Jena : Install Riot
+# Usage
 
-```
-cd ~
-wget -O apache-jena.tar.gz https://www.mirrorservice.org/sites/ftp.apache.org/jena/binaries/apache-jena-4.2.0.tar.gz
-tar xvf apache-jena.tar.gz --one-top-level=apache-jena --strip-components 1 -C /usr/share/
+The program `platform-input-support` includes a detailed help message (see with `python platform-input-support.py -h`):
 
-Add ~/apache-jena/bi to .bashrc
-EG.
-export PATH="$PATH:/your_path/apache-jena/bin"
-
-source .bashrc
-
-```
-
-# Overview of config.yaml
-
-The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download,
-to extract and to manipulate the input and generate the proper output.
-
-## Overview of configuration file sections:
-
-### Config
-
-The section **config** can be used for specify where utility programs `riot` and `jq` are installed on the system.
-If the command shutil.which fails during PIS execution double check these configurations.
-
-_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command `riot`.
-
-### Data sources
-
-The majority of the configuration file is specifying metadata for the execution
-of individual steps, eg `tep`, `ensembl` or `drug`. These can be recognised as they
-all have a `gs_output_dir` key which indicates where the files will be saved in GCP.
-
-There is inconsistency between keys in different steps, as they accommodate very different
-input types and required levels of configuration. See [step guides](#step-guides) for
-configuration requirements for specific steps.
-The section **config** can be used for specify where `riot` or `jq` are installed.
-
-## A note on zip files
-
-We are only building the functionality which we need which introduces some limitations. At present if a zip file is
-downloaded
-we only extract _1_ file from the archive. To configure a zip file create an entry in the config such as:
-
-```yaml
-  - uri: https://probeminer.icr.ac.uk/probeminer_datadump.zip
-    output_filename: probeminer-datadump-{suffix}.tsv.zip
-    unzip_file: true
-    resource: probeminer
-```
-
-The _unzip\_file_ flag tells `RetrieveResource.py` to treat the file as an archive.
-
-The `uri` field indicates from where to download the data. The archive will be saved under `output_filename`. The first
-element of the archive will be extracted under `output_filename` with the suffix '[gz|zip]' removed, so in this case, _
-probeminer-datadump-{suffix}.tsv_.
-
-# Set up application (first time)
-
-```
-git clone https://github.com/opentargets/platform-input-support
-cd platform-input-support
-conda env create -f environment.yaml
-conda activate pis-py3.8
-
-python platform-input-support.py -h
-```
-
-## Usage
-
-```
+```bash
 conda activate pis-py3.8
 cd your_path_application
 python platform-input-support -h
@@ -222,106 +179,96 @@ optional arguments:
 
 ```
 
-## Using Docker to run PIS during development
-
-If you want to run PIS in a Docker container follow these steps:
-
-1. Get the code
-   `git clone https://github.com/opentargets/platform-input-support`
-1. create container
-   `docker build --tag <image tag> <path to Dockerfile>`
-2. start container mounting the cloned code as a volume (here I assume you cloned the code into your home directory)
-   `docker run -v ~/platform-input-support:/usr/src/app --rm -it --entrypoint bash <image tag>`
-   This command will drop you into a bash shell inside the container, where you can execute the code.
-
-3 activate environment
-`conda activate pis-py3.8`
-
-4. execute code
-   `python platform-input-support.py -steps <step> --log-level=DEBUG`
-
-# Logging.ini
-
-The directory **"resources"** contains the file logging.ini with a list of default value.
-If the logging.ini is not available or the user removes it than the code sets up a list of default parameters.
-In both case, the log output file is store under **"log"**
-
-# Google bucket requirements
+## Google bucket requirements
 
 To copy the files in a specific google storage bucket valid credentials must be used.
 The required parameter -gkey (--gcp_credentials) allows the specification of Google storage JSON credential.
 Eg.
 
-```
+```bash
 python platform-input-support.py -gkey /path/open-targets-gac.json -gb bucket/object_path
-or
+# or
 python platform-input-support.py
          --gcp_credentials /path/open-targets-gac.json
          --gcp_bucket ot-snapshots/es5-sufentanil/tmp
 ```
 
-# More examples
+## More examples
 
-```
+```bash
+# run all steps and ignore failures
 python platform-input-support.py
          --skip
          --gcp_credentials /path/open-targets-gac.json
          --gcp_bucket ot-snapshots/es5-sufentanil/tmp
-or  
+ # run all steps except drug
+ python platform-input-support.py
+         --skip
+         --gcp_credentials /path/open-targets-gac.json
+         --gcp_bucket ot-snapshots/es5-sufentanil/tmp
+         --exclude drug        
+
+# run only steps annotations and evidence
 python platform-input-support.py
          --gcp_credentials /path/open-targets-gac.json
          --gcp_bucket ot-snapshots/es5-sufentanil/tmp
          -steps annotations evidence
-         -exclude drug
-or
+# run specific step with log level set to debug
 python platform-input-support.py
          -gkey /path/open-targets-gac.json
          -gb bucket/object_path -steps drug
-         --log-level DEBUG > log.txt
+         --log-level DEBUG
 ```
 
-### Check if the files generated are corrupted
+# Configuration
 
-The zip files generated might be corrupted. The follow command checks if the files are correct.
-sh check_corrupted_files.sh
+The *config.yaml* file contains several sections. Most of the sections are used by the steps in order to download,
+to extract and to manipulate the input and generate the proper output.
 
-### Installation command for Google Cloud or Amazon Azure
+## Overview of configuration file sections:
 
-Create a linux VM server and run the following commands
+### Config
 
+The section **config** can be used for specify where utility programs `riot` and `jq` are installed on the system.
+If the command shutil.which fails during PIS execution double check these configurations.
+
+_**"java_vm"**_ parameter will set up the JVM heap environment variable for the execution of the command `riot`.
+
+### Data sources
+
+The majority of the configuration file is specifying metadata for the execution
+of individual steps, eg `tep`, `ensembl` or `drug`. These can be recognised as they
+all have a `gs_output_dir` key which indicates where the files will be saved in GCP.
+
+There is inconsistency between keys in different steps, as they accommodate very different
+input types and required levels of configuration. See [step guides](#step-guides) for
+configuration requirements for specific steps.
+The section **config** can be used for specify where `riot` or `jq` are installed.
+
+## A note on zip files
+
+We are only building the functionality which we need which introduces some limitations. At present if a zip file is
+downloaded
+we only extract _1_ file from the archive. To configure a zip file create an entry in the config such as:
+
+```yaml
+  - uri: https://probeminer.icr.ac.uk/probeminer_datadump.zip
+    output_filename: probeminer-datadump-{suffix}.tsv.zip
+    unzip_file: true
+    resource: probeminer
 ```
-sudo apt update
-sudo apt install git
-sudo apt-get install bzip2 wget
-```
 
-```
-wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
-bash Anaconda3-2020.07-Linux-x86_64.sh
-source ~/.bashrc
+The _unzip\_file_ flag tells `RetrieveResource.py` to treat the file as an archive.
 
-```
+The `uri` field indicates from where to download the data. The archive will be saved under `output_filename`. The first
+element of the archive will be extracted under `output_filename` with the suffix '[gz|zip]' removed, so in this case, _
+probeminer-datadump-{suffix}.tsv_.
 
-```
-mkdir gitRepo
-cd gitRepo
-git clone https://github.com/opentargets/platform-input-support.git
-cd platform-input-support
-conda env create -f environment.yaml
-conda activate pis-py3.8
-python platform-input-support.py -l
-```
+## Logging
 
-Use nohup to avoid that the process hang up.
-
-```nohup python platform-input-support.py [options] &
-
-Eg.
-nohup python platform-input-support.py
-         -gkey /path/open-targets-gac.json
-         -gb bucket/object_path -steps drug
-         --log-level DEBUG > log.txt &
-```
+The directory **"resources"** contains the file `logging.ini` with a list of default value.
+If the `logging.ini` is not available or the user removes it than the code sets up a list of default parameters.
+In both case, the log output file is store under **"log"**.
 
 # Step guides
 
@@ -389,8 +336,33 @@ This step collects two kinds of information on OTAR Projects, used in the intern
 - `RetrieveResource` will consult the steps selected and trigger a method for each selected step. Most steps will defer
   to a helper object in `Modules` to retrieve the selected resources.
 
-# Troubleshooting
+# Internal OT release recipe
 
+- Start a VM on GCP - recommended `n2-standard-16`
+- Clone repository
+- Get credentials file
+- Set `gcloud auth login <pis_profile>`
+- Update `config.yaml` with latest release values.
+    - ensembl id
+    - efo version
+    - See `git log -p --stat -- config.yaml` for how file has been updated in the past.
+- start tmux session so we can detach shell and do other things `tmux a -t pis`
+- Run with Docker, configuring the output, log and credential volumes:
+
+```bash
+`docker run \
+  -v $(pwd)/tmp/output:/srv/output \
+  -v $(pwd)/logs:/usr/src/app/log \
+  -v $HOME/data/credentials/open-targets-gac.json:/srv/credentials/open-targets-gac.json \
+  otpis -0 /srv/output --log-level=DEBUG \
+  -gkey /srv/credentials/open-targets-gsc.json \
+  -gb open-targets-pre-data-releases/22.12-docker \
+  -exclude otar
 ```
-sudo apt-get install autoconf libtool
-```
+
+## Beware
+
+- Find out the Ensembl and EFO versions to use from the data team. They are _not_ necessarily the latest.
+- String interactions (interactions-inputs) `9606.protein.links.full_w_homology.v11.5.txt.gz` needs to be collected
+  manually. Confirm with the data team whether this has been updated. Typically, we use the file from the previous
+  release.
