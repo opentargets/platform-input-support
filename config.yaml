@@ -250,6 +250,10 @@ interactions:
   - uri: https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.108.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
+  gs_downloads_latest:
+  - bucket: otar001-core/Interactions
+    output_filename: 9606_protein_links.txt.gz
+    path: interactions-inputs
 mousephenotypes:
   gs_downloads_latest:
   - bucket: otar001-core/MousePhenotypes

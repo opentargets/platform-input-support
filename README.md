@@ -363,6 +363,3 @@ This step collects two kinds of information on OTAR Projects, used in the intern
 ## Beware
 
 - Find out the Ensembl and EFO versions to use from the data team. They are _not_ necessarily the latest.
-- String interactions (interactions-inputs) `9606.protein.links.full_w_homology.v11.5.txt.gz` needs to be collected
-  manually. Confirm with the data team whether this has been updated. Typically, we use the file from the previous
-  release.
