@@ -119,23 +119,32 @@ class ManifestService():
         return ManifestStep(get_timestamp_iso_utc_now())
 
     def __load_manifest(self) -> ManifestDocument:
-        # TODO
-        # 1. Check if the manifest file exists
-        # 2. If it does, load it
-        # 3. If it doesn't, create a new one
-        # 4. Return the manifest
-        # Load and modify the 'modified' timestamp
-        self.__is_manifest_loaded = True
-        raise NotImplementedError("Loading a manifest document from a file is not supported yet")
+        """
+        This method will load the manifest file if it exists, otherwise it will return None
+        :param manifest_file_path: The path to the manifest file
+        :return: The manifest file object, None in case the file does not exist
+        """
+        # Check if the manifest file exists
+        manifest_document = None
+        if os.path.isfile(self.path_manifest):
+            try:
+                with open(self.path_manifest, "r") as manifest_file:
+                    manifest_document = jsonpickle.decode(manifest_file.read())
+                    self._logger.debug(f"Manifest file loaded from disk at {self.path_manifest}")
+            except Exception as e:
+                self._logger.error(f"Error loading manifest file from disk at {self.path_manifest}, error: {e}")
+            else:
+                self.__is_manifest_loaded = True
+                # Load and modify the 'modified' timestamp
+                manifest_document.modified = get_timestamp_iso_utc_now()
+        # Return the manifest
+        return manifest_document
 
     def _produce_manifest(self) -> ManifestDocument:
         """
         This method will produce the manifest file with the following precedence rules: local, GCP or create new one
         """
-        self._logger.debug(f"Local manifest file path '{self.path_manifest}'")
-        if os.path.isfile(self.path_manifest):
-            self._logger.info(f"Loading existing manifest file at '{self.path_manifest}'")
-            return self.__load_manifest()
+        self._logger.debug(f"Local manifest file path at '{self.path_manifest}'")
         if self.config.gcp_bucket is not None:
             gcp_bucket, gcp_path = GcpBucketService.get_bucket_and_path(self.config.gcp_bucket)
             gcp_path_manifest = f"{gcp_path}/{self.config.file_name}"
@@ -152,8 +161,12 @@ class ManifestService():
             else:
                 self._logger.debug(f"Loading existing manifest file at '{gcp_bucket_full_path_manifest}'")
                 return self.__load_manifest()
-        self._logger.info("using NEW Manifest Document")
-        return self.__create_manifest()
+        manifest_document = self.__load_manifest()
+        if manifest_document is None:
+            self._logger.info("using NEW Manifest Document")
+            manifest_document = self.__create_manifest()
+        return manifest_document
+
 
     @property
     def path_manifest(self) -> str:
