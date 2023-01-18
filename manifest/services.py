@@ -104,6 +104,7 @@ class ManifestService():
         self._logger = logging.getLogger(__name__)
         self.__manifest: ManifestDocument = None
         self.__is_manifest_loaded = False
+        self.__resetted_manifest_steps = set()
 
     def __create_manifest(self) -> ManifestDocument:
         """
@@ -192,14 +193,22 @@ class ManifestService():
                         index_relative_path += len(self.config.output_dir) + 1
                         resource.path_destination = resource.path_destination[index_relative_path:]
 
+    def __reset_manifest_step(self, step_name: str):
+        if step_name not in self.__resetted_manifest_steps:
+            self._logger.debug(f"Resetting step '{step_name}'")
+            new_manifest_step = self.__create_manifest_step()
+            new_manifest_step.created = self.manifest.steps[step_name].created
+            self.manifest.steps[step_name] = new_manifest_step
+            self.__resetted_manifest_steps.add(step_name)
+
     def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
         if step_name not in self.manifest.steps:
             self.manifest.steps[step_name] = self.__create_manifest_step()
             self.manifest.steps[step_name].name = step_name
-        if self.__is_manifest_loaded:
-            # TODO - When the manifest file has been loaded from a file, we need to empty the resources in a given step
+        elif self.__is_manifest_loaded:
+            # When the manifest file has been loaded from a file, we need to empty the resources in a given step
             #  the first time that step's metadata is accessed
-            self.manifest.steps[step_name].modified = get_timestamp_iso_utc_now()
+            self.__reset_manifest_step(step_name)
         return self.manifest.steps[step_name]
 
     def new_resource(self) -> ManifestResource:
