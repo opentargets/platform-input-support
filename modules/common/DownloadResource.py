@@ -150,7 +150,6 @@ class DownloadResource(object):
             for attempt in range(retry_count):
                 logger.warning(f"[FTP] Attempt #{attempt} Re-try Command '{cmd}'")
                 # TODO We need to handle the completion of this command, I think it would be worth writing a handler helper
-                # TODO There is neither a timed wait nor a re-try strategy for this command
                 try:
                     cmd_result = subprocess.run(cmd, shell=True, capture_output=True, timeout=timeout, check=True)
                 except subprocess.CalledProcessError as e:
