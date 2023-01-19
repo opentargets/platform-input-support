@@ -197,7 +197,8 @@ class ManifestService():
         self._logger.debug(f"Reset request for step name '{step_name}'")
         if step_name not in self.__resetted_manifest_steps:
             self._logger.debug(f"Resetting step '{step_name}'")
-            new_manifest_step = self.__create_manifest_step(step_name)
+            new_manifest_step = self.__create_manifest_step()
+            new_manifest_step.name = step_name
             new_manifest_step.created = self.manifest.steps[step_name].created
             self.manifest.steps[step_name] = new_manifest_step
             self.__resetted_manifest_steps.add(step_name)
