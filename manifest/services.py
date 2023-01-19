@@ -194,6 +194,7 @@ class ManifestService():
                         resource.path_destination = resource.path_destination[index_relative_path:]
 
     def __reset_manifest_step(self, step_name: str):
+        self._logger.debug(f"Reset request for step name '{step_name}'")
         if step_name not in self.__resetted_manifest_steps:
             self._logger.debug(f"Resetting step '{step_name}'")
             new_manifest_step = self.__create_manifest_step()
