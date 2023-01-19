@@ -36,22 +36,9 @@ def main():
     # Session's Manifest
     manifest_config = yaml_dict
     manifest_config.update({"output_dir": resources.output_dir_prod})
-    manifest_service = get_manifest_service(args, manifest_config)
-    try:
-        resources.run()
-    except Exception as e:
-        manifest_service.manifest.status_completion = ManifestStatus.FAILED
-        manifest_service.manifest.msg_completion = f"COULD NOT complete the data collection session due to '{e}'"
-    if not manifest_service.are_all_steps_complete(manifest_service.manifest.steps.values()):
-        manifest_service.manifest.status_completion = ManifestStatus.FAILED
-        manifest_service.manifest.msg_completion = f"COULD NOT complete data collection for one or more steps"
-    # TODO - Pipeline level VALIDATION
-    if manifest_service.manifest.status_completion != ManifestStatus.FAILED:
-        manifest_service.manifest.status_completion = ManifestStatus.COMPLETED
-        manifest_service.manifest.msg_completion = f"All steps completed their data collection"
-    else:
-        logger.error(manifest_service.manifest.msg_completion)
-    manifest_service.persist()
+    # Initialize the manifest service
+    _ = get_manifest_service(args, manifest_config)
+    resources.run()
 
 
 if __name__ == '__main__':
