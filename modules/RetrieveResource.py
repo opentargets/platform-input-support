@@ -165,6 +165,8 @@ class RetrieveResource(object):
             manifest_service.manifest.status_completion = ManifestStatus.FAILED
             manifest_service.manifest.msg_completion = f"COULD NOT complete data collection for one or more steps"
         # TODO - Pipeline level VALIDATION
+        # WARNING - Temporarily match status_completion to status
+        manifest_service.manifest.status = manifest_service.manifest.status_completion
         if manifest_service.manifest.status_completion != ManifestStatus.FAILED:
             manifest_service.manifest.status_completion = ManifestStatus.COMPLETED
             manifest_service.manifest.msg_completion = f"All steps completed their data collection"
