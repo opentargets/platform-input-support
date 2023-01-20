@@ -243,6 +243,9 @@ interactions:
   - uri : https://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
     output_filename: intact-interactors.json
     path: interactions-inputs
+  - uri : https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/22.11/input/interactions-inputs/9606.protein.links.full_w_homology.v11.5.txt.gz
+    output_filename: 9606_protein_links.txt.gz
+    path: interactions-inputs
   http_downloads:
   - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
     output_filename: string-interactions.json.gz
