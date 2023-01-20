@@ -1,12 +1,13 @@
-from yapsy.IPlugin import IPlugin
-import logging
 import os
 import errno
+import logging
 import subprocess
 from addict import Dict
-from modules.common.DownloadResource import DownloadResource
+from yapsy.IPlugin import IPlugin
 from modules.common.Utils import Utils
 from modules.common import create_folder
+from modules.common.DownloadResource import DownloadResource
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +36,10 @@ class Homologues(IPlugin):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
+        self.step_name = "Homologues"
 
     @staticmethod
-    def download_species(uri, release, staging, download, species: str):
+    def download_species(uri, release, staging, download, species: str) -> ManifestResource:
         """
         Download protein homology for species and suffix if file does not already exist.
 
@@ -76,9 +78,7 @@ class Homologues(IPlugin):
                 if e.errno == errno.ENOENT:
                     # handle file not found error.
                     self._logger.error(e)
-                else:
-                    # Something else went wrong
-                    raise
+                raise
         return output_file
 
     def process(self, conf, output, cmd_conf):
@@ -91,11 +91,40 @@ class Homologues(IPlugin):
         """
         self._logger.info("[STEP] BEGIN, Homologues")
         download = DownloadResource(output.staging_dir)
+        # TODO - Should I halt the step as soon as I face the first problem?
         uri_release = conf.uri.replace("{release}", str(conf.release))
         create_folder(os.path.join(output.prod_dir, conf.path, str(conf.release)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
+        manifest_step = get_manifest_service().get_step(self.step_name)
         for species in conf.resources:
             self._logger.debug(f'Downloading files for {species}')
-            filename_json = self.download_species(uri_release, conf.release, output.staging_dir, download, species)
-            self.extract_fields_from_json(filename_json, conf, output, jq_cmd)
+            download_manifest = self.download_species(uri_release, conf.release, output.staging_dir, download, species)
+            if download_manifest.status_completion == ManifestStatus.COMPLETED:
+                download_manifest.status_completion = ManifestStatus.FAILED
+                try:
+                    download_manifest.path_destination = \
+                        self.extract_fields_from_json(download_manifest.path_destination, conf, output, jq_cmd)
+                except Exception as e:
+                    download_manifest.msg_completion = f"COULD NOT extract fields from Homologues dataset at " \
+                                                       f"'{download_manifest.path_destination}'" \
+                                                       f" using JQ command '{jq_cmd}'"
+                    self._logger.error(download_manifest.msg_completion)
+                else:
+                    self._logger.debug(
+                        f"Homologue '{species}' data download manifest destination path"
+                        f" set to '{download_manifest.path_destination}',"
+                        f" as final recipient for the sub-dataset"
+                    )
+                    download_manifest.msg_completion = \
+                        f"Homologue '{species}' data, JQ filtered with '{conf.jq}'"
+                    download_manifest.status_completion = ManifestStatus.COMPLETED
+            manifest_step.resources.append(download_manifest)
+        get_manifest_service().compute_checksums(manifest_step.resources)
+        if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
+            manifest_step.status_completion = ManifestStatus.FAILED
+            manifest_step.msg_completion = "COULD NOT retrieve all the resources"
+        # TODO - Validation
+        if manifest_step.status_completion != ManifestStatus.FAILED:
+            manifest_step.status_completion = ManifestStatus.COMPLETED
+            manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, Homologues")

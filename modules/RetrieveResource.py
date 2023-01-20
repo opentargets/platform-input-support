@@ -3,6 +3,7 @@ import logging
 from modules.common.Utils import Utils
 from definitions import PIS_OUTPUT_DIR
 from yapsy.PluginManager import PluginManager
+from manifest import get_manifest_service, ManifestStatus
 from modules.common import create_folder, recursive_remove_folder
 from modules.common.GoogleBucketResource import GoogleBucketResource
 
@@ -15,12 +16,18 @@ class RetrieveResource(object):
         self.args = args
         self.yaml = yaml
         self._simplePluginManager = None
+        self.__is_done_create_output_structure = False
 
     @property
     def output_dir(self):
         if self.args.output_dir is not None:
             return self.args.output_dir
         return PIS_OUTPUT_DIR
+
+    @property
+    def output_dir_prod(self):
+        self.create_output_structure()
+        return self.yaml.outputs.prod_dir
 
     @property
     def simplePluginManager(self):
@@ -115,20 +122,25 @@ class RetrieveResource(object):
             except Exception as e:
                 logger.error("A problem occurred while running step '{}'".format(plugin_name))
                 logger.error(e)
+                raise
 
-    def create_output_structure(self, output_dir):
+    def create_output_structure(self):
         """
         Prepare pipeline output folder including an area for staging results ('staging') and another one for final
         results ('prod').
 
         :param output_dir: destination path for the pipeline output filetree structure
         """
-        if self.args.force_clean:
-            recursive_remove_folder(output_dir)
-        else:
-            logger.warning("Output folder NOT CLEANED UP.")
-        self.yaml.outputs.prod_dir = create_folder(os.path.join(output_dir, 'prod'))
-        self.yaml.outputs.staging_dir = create_folder(os.path.join(output_dir, 'staging'))
+        if not self.__is_done_create_output_structure:
+            logger.debug(f"Setting output structure")
+            if self.args.force_clean:
+                recursive_remove_folder(self.output_dir)
+            else:
+                logger.warning("Output folder NOT CLEANED UP.")
+            self.yaml.outputs.prod_dir = create_folder(os.path.join(self.output_dir, 'prod'))
+            self.yaml.outputs.staging_dir = create_folder(os.path.join(self.output_dir, 'staging'))
+            self.__is_done_create_output_structure = True
+        logger.debug(f"Output structure has been created")
 
     def run(self):
         """
@@ -140,8 +152,26 @@ class RetrieveResource(object):
             - Run the effective pipeline steps as requested
             - And conditionally copy the results to the GCP bucket destination
         """
-        self.create_output_structure(self.output_dir)
-        self.init_plugins()
-        self.checks_gc_service_account()
-        self.run_plugins()
+        manifest_service = get_manifest_service()
+        try:
+            self.create_output_structure()
+            self.init_plugins()
+            self.checks_gc_service_account()
+            self.run_plugins()
+        except Exception as e:
+            manifest_service.manifest.status_completion = ManifestStatus.FAILED
+            manifest_service.manifest.msg_completion = f"COULD NOT complete the data collection session due to '{e}'"
+        if not manifest_service.are_all_steps_complete(manifest_service.manifest.steps.values()):
+            manifest_service.manifest.status_completion = ManifestStatus.FAILED
+            manifest_service.manifest.msg_completion = f"COULD NOT complete data collection for one or more steps"
+        # TODO - Pipeline level VALIDATION
+        # WARNING - Temporarily match status_completion to status
+        manifest_service.manifest.status = manifest_service.manifest.status_completion
+        if manifest_service.manifest.status_completion != ManifestStatus.FAILED:
+            manifest_service.manifest.status_completion = ManifestStatus.COMPLETED
+            manifest_service.manifest.msg_completion = f"All steps completed their data collection"
+        else:
+            logger.error(manifest_service.manifest.msg_completion)
+        # Prepare the manifest file before copying to GCP
+        manifest_service.persist()
         self.copy_to_gs()

@@ -7,6 +7,10 @@ from modules.common.Utils import Utils
 logger = logging.getLogger(__name__)
 
 
+class RiotException(Exception):
+    pass
+
+
 class Riot(object):
 
     def __init__(self, yaml):
@@ -52,16 +56,27 @@ class Riot(object):
         try:
             with open(path_output, "wb") as json_output, \
                     subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env,
-                                     stdout=subprocess.PIPE) as riot_process, \
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE) as riot_process, \
                     subprocess.Popen([self.jq_cmd, "-r", owl_jq], env=run_env,
                                      stdin=riot_process.stdout,
-                                     stdout=subprocess.PIPE) as jq_process:
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE) as jq_process:
                 json_output.write(jq_process.stdout.read())
+                logger.error(f"RIOT stderr -> '{riot_process.stderr.read()}'")
+                logger.error(f"JQ stderr -> '{jq_process.stderr.read()}'")
         except EnvironmentError as e:
-            # TODO - Report back to caller
-            logger.error("When running RIOT for OWL file '{}', "
-                         "with destination path '{}' and JQ filter '{}', "
-                         "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e))
+            msg_err = "When running RIOT for OWL file '{}', "
+            "with destination path '{}' and JQ filter '{}', "
+            "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
+            logger.error(msg_err)
+            raise RiotException(msg_err)
+        except Exception as e:
+            msg_err = "When running RIOT for OWL file '{}', "
+            "with destination path '{}' and JQ filter '{}', "
+            "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
+            logger.error(msg_err)
+            raise RiotException(msg_err)
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):

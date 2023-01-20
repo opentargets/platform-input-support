@@ -6,6 +6,10 @@ import jsonlines
 logger = logging.getLogger(__name__)
 
 
+class HPOException(Exception):
+    pass
+
+
 class HPO(object):
 
     def __init__(self, hpo_input):
@@ -190,18 +194,21 @@ class HPO(object):
         """
         Compute the HPO data model instance for the given input data file
         """
-        with open(self.hpo_input) as input:
-            for line in input:
-                hp = json.loads(line)
-                id = self.get_id(hp)
-                if self.is_not_obsolete(id, hp):
-                    self.init_hp(id)
-                    self.set_obsoleted_term(id, hp)
-                    self.set_namespace(id, hp)
-                    self.set_description(id, hp)
-                    self.set_label(id, hp)
-                    self.set_parents(id, hp)
-                    self.set_phenotypes(id, hp)
+        try:
+            with open(self.hpo_input) as input:
+                for line in input:
+                    hp = json.loads(line)
+                    id = self.get_id(hp)
+                    if self.is_not_obsolete(id, hp):
+                        self.init_hp(id)
+                        self.set_obsoleted_term(id, hp)
+                        self.set_namespace(id, hp)
+                        self.set_description(id, hp)
+                        self.set_label(id, hp)
+                        self.set_parents(id, hp)
+                        self.set_phenotypes(id, hp)
+        except Exception as e:
+            raise HPOException(f"COULD NOT read HPO input dataset from '{self.hpo_input}' due to '{e}'")
 
     def save_hpo(self, output_filename):
         """
@@ -209,7 +216,10 @@ class HPO(object):
 
         :param output_filename: destination file path for persisting the current HPO data model
         """
-        with jsonlines.open(output_filename, mode='w') as writer:
-            for hp in self.hpo:
-                writer.write(self.hpo[hp])
+        try:
+            with jsonlines.open(output_filename, mode='w') as writer:
+                for hp in self.hpo:
+                    writer.write(self.hpo[hp])
+        except Exception as e:
+            raise HPOException(f"COULD NOT save HPO data to '{output_filename}' due to '{e}'")
         return output_filename

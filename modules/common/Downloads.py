@@ -1,8 +1,12 @@
 import os
 import datetime
 import logging
+
+from typing import List
+
 from modules.common.Utils import Utils
 from modules.common import create_folder
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 from modules.common.DownloadResource import DownloadResource
 from modules.common.GoogleBucketResource import GoogleBucketResource
 
@@ -24,6 +28,7 @@ class Downloads(object):
         """
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.path_root = output_dir
+        self.downloaded_resources = list()
 
     def prepare_gs_download(self, gs_info, resource):
         """
@@ -60,38 +65,54 @@ class Downloads(object):
                 logger.warning(f"The path={google_resource.bucket_name} does not contain any recent file")
         return latest_filename
 
-    def exec(self, resources_info):
+    def exec(self, resources_info) -> List[ManifestResource]:
         """
         Download the resources according to their provided information.
 
         :param resources_info: information on the resources to download
         """
-        # TODO Those places where the download was not possible, need to report back to the caller.
+        downloaded_resources = list()
         for resource in resources_info.ftp_downloads:
+            download_manifest = get_manifest_service().new_resource()
+            download_manifest.source_url = resource.uri
             try:
                 path = create_folder(os.path.join(self.path_root, resource.path))
-                download = DownloadResource(path)
-                download.ftp_download(resource)
+                download_manifest = DownloadResource(path).ftp_download(resource)
             except Exception as e:
-                logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
+                download_manifest.msg_completion = f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'"
+                download_manifest.status_completion = ManifestStatus.FAILED
+                logger.error(download_manifest.msg_completion)
+            finally:
+                downloaded_resources.append(download_manifest)
 
         for resource in resources_info.http_downloads:
+            download_manifest = get_manifest_service().new_resource()
+            download_manifest.source_url = resource.uri
             try:
-                self.single_http_download(resource)
+                download_manifest = self.single_http_download(resource)
             except Exception as e:
-                logger.error(f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'")
+                download_manifest.msg_completion = f"COULD NOT DOWNLOAD resource '{resource.uri}', due to '{e}'"
+                download_manifest.status_completion = ManifestStatus.FAILED
+                logger.error(download_manifest.msg_completion)
+            finally:
+                downloaded_resources.append(download_manifest)
 
         for resource in resources_info.gs_downloads_latest:
+            bucket_name, path = GoogleBucketResource.get_bucket_and_path(resource.bucket)
+            google_resource = GoogleBucketResource(bucket_name, path)
             try:
-                bucket_name, path = GoogleBucketResource.get_bucket_and_path(resource.bucket)
-                google_resource = GoogleBucketResource(bucket_name, path)
                 latest_resource = self.get_latest(google_resource, resource)
                 download_info = self.prepare_gs_download(latest_resource, resource)
-                google_resource.download(download_info)
+                downloaded_resources.extend(google_resource.download(download_info))
             except Exception as e:
-                logger.error(f"COULD NOT DOWNLOAD resource '{resource.bucket}', due to '{e}'")
+                download_manifest = get_manifest_service().new_resource()
+                download_manifest.source_url = resource.bucket
+                download_manifest.msg_completion = f"COULD NOT DOWNLOAD resource '{resource.bucket}', due to '{e}'"
+                download_manifest.status_completion = ManifestStatus.FAILED
+                logger.error(download_manifest.msg_completion)
+        return downloaded_resources
 
-    def single_http_download(self, resource):
+    def single_http_download(self, resource) -> ManifestResource:
         """
         Perform a single HTTP download
 
@@ -101,13 +122,13 @@ class Downloads(object):
         return download.execute_download(resource)
 
     @staticmethod
-    def download_staging_http(staging_dir, resource):
+    def download_staging_http(staging_dir, resource) -> ManifestResource:
         download = DownloadResource(staging_dir)
         stage_resource = Utils.resource_for_stage(resource)
         return download.execute_download(stage_resource)
 
     @staticmethod
-    def download_staging_ftp(staging_dir, resource):
+    def download_staging_ftp(staging_dir, resource) -> ManifestResource:
         download = DownloadResource(staging_dir)
         stage_resource = Utils.resource_for_stage(resource)
         return download.ftp_download(stage_resource)

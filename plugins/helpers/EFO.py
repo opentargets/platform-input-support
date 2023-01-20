@@ -15,6 +15,10 @@ The locationIds are generated retrieving the structure parent/child and recursiv
 """
 
 
+class EFOException(Exception):
+    pass
+
+
 class EFO(object):
     """
     EFO Data modeling
@@ -379,20 +383,24 @@ class EFO(object):
         """
         For any term, compute the dictionary ID information for the current EFO data model instance
         """
-        with open(self.efo_input) as input:
-            for line in input:
-                disease = json.loads(line)
-                disease_id = self.get_id(disease['@id'])
-                if not self.is_obsolete(disease, disease_id):
-                    if disease["@type"] == "Class":
-                        self.load_type_class(disease, disease_id)
-                    else:
-                        # @Type: Restriction
-                        if 'someValuesFrom' in disease:
-                            self.parent_child_tuples.append((disease["@id"], disease["someValuesFrom"]))
-
-        self.get_obsolete_info()
-        self.get_locationIds()
+        try:
+            with open(self.efo_input) as input:
+                for line in input:
+                    disease = json.loads(line)
+                    disease_id = self.get_id(disease['@id'])
+                    if not self.is_obsolete(disease, disease_id):
+                        if disease["@type"] == "Class":
+                            self.load_type_class(disease, disease_id)
+                        else:
+                            # @Type: Restriction
+                            if 'someValuesFrom' in disease:
+                                self.parent_child_tuples.append((disease["@id"], disease["someValuesFrom"]))
+        except Exception as e:
+            # TODO - Find out why AttributeError is not caught here and it keeps going up the chain, breaking the pipeline
+            raise EFOException(f"Error computing EFO ID dictionary information due to '{e}'") from e
+        else:
+            self.get_obsolete_info()
+            self.get_locationIds()
 
     # Static file for alpha and production
     def save_static_disease_file(self, output_filename):
@@ -402,15 +410,18 @@ class EFO(object):
         :param output_filename: output file path
         """
         valid_keys = ["parents", "id", "label"]
-        with jsonlines.open(output_filename, mode='w') as writer:
-            for id in self.diseases:
-                entry = {k: v for k, v in self.diseases[id].items() if k in valid_keys}
-                entry["parentIds"] = entry["parents"]
-                del (entry["parents"])
-                entry["name"] = entry["label"]
-                del (entry["label"])
-
-                writer.write(entry)
+        try:
+            with jsonlines.open(output_filename, mode='w') as writer:
+                for id in self.diseases:
+                    entry = {k: v for k, v in self.diseases[id].items() if k in valid_keys}
+                    entry["parentIds"] = entry["parents"]
+                    del (entry["parents"])
+                    entry["name"] = entry["label"]
+                    del (entry["label"])
+                    writer.write(entry)
+        except Exception as e:
+            # TODO - Find out why AttributeError is not caught here and it keeps going up the chain, breaking the pipeline
+            raise EFOException(f"COULD NOT save static disease file to '{output_filename}', due to '{e}'") from e
 
     def save_diseases(self, output_filename):
         """
@@ -419,12 +430,15 @@ class EFO(object):
         :param output_filename: output file path
         :return: the output file path where the data has been persisted
         """
-        with jsonlines.open(output_filename, mode='w') as writer:
-            for disease in self.diseases:
-                # Set cannot be transform in Json. Transform into list.
-                if 'locationIds' in self.diseases[disease]:
-                    self.diseases[disease]['locationIds'] = list(self.diseases[disease]['locationIds'])
-
-                writer.write(self.diseases[disease])
+        try:
+            with jsonlines.open(output_filename, mode='w') as writer:
+                for disease in self.diseases:
+                    # Set cannot be transform in Json. Transform into list.
+                    if 'locationIds' in self.diseases[disease]:
+                        self.diseases[disease]['locationIds'] = list(self.diseases[disease]['locationIds'])
+                    writer.write(self.diseases[disease])
+        except Exception as e:
+            # TODO - Find out why AttributeError is not caught here and it keeps going up the chain, breaking the pipeline
+            raise EFOException(f"COULD NOT diseases file to '{output_filename}', due to '{e}'") from e
 
         return output_filename

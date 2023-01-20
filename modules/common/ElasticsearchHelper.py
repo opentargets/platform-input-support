@@ -109,7 +109,8 @@ class ElasticsearchInstance(object):
             doc_count += len(doc_buffer)
         return doc_count
 
-    def write_elasticsearch_docs_as_jsonl(self, docs, filename):
+    @staticmethod
+    def write_elasticsearch_docs_as_jsonl(docs, filename):
         """
         Write list of elasticsearch objects to file as jsonl format.
 

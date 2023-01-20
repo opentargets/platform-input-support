@@ -1,9 +1,15 @@
 import os
+import base64
 import logging
+import binascii
 import google.auth
 from datetime import datetime
+
+from typing import List
+
 from google.cloud import storage, exceptions
 from modules.common import extract_date_from_file
+from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +61,13 @@ class GoogleBucketResource(object):
             return None, None
         split = google_bucket_param.split('/', 1) + [None]
         return split[0], split[1]
+
+    @staticmethod
+    def gcp_checksum_to_hex(checksum):
+        return binascii.hexlify(base64.urlsafe_b64decode(checksum)).decode()
+
+    def get_gs_path_for_bucket_path(self, path=""):
+        return f"gs://{self.bucket_name}/{path}"
 
     def get_full_path(self):
         """
@@ -235,7 +248,21 @@ class GoogleBucketResource(object):
         latest_filename_info = self.extract_latest_file(list_blobs)
         return latest_filename_info
 
-    def download_dir(self, dir_to_download, local_dir):
+    @staticmethod
+    def _set_blob_download_manifest_status(blob, download_manifest: ManifestResource):
+        if not blob.crc32c and not blob.md5_hash:
+            download_manifest.status_completion = ManifestStatus.FAILED
+            download_manifest.msg_completion = "No checksums received back from GCS client, ergo it failed"
+        else:
+            if blob.crc32c:
+                download_manifest.source_checksums.crc32 = GoogleBucketResource.gcp_checksum_to_hex(blob.crc32c)
+            if blob.md5_hash:
+                download_manifest.source_checksums.md5sum = GoogleBucketResource.gcp_checksum_to_hex(blob.md5_hash)
+            download_manifest.status_completion = ManifestStatus.COMPLETED
+            download_manifest.msg_completion = "Download completed"
+        return download_manifest
+
+    def download_dir(self, dir_to_download, local_dir) -> List[ManifestResource]:
         """
         Download the files from a given folder in the current bucket into the given local folder
 
@@ -249,11 +276,18 @@ class GoogleBucketResource(object):
         for blob in self.get_bucket().list_blobs(prefix=dir_name):
             folder, filename = os.path.split(blob.name)
             filename_destination = os.path.join(local_dir, filename)
+            # Resource Manifest
+            download_manifest = get_manifest_service().new_resource()
+            download_manifest.source_url = self.get_gs_path_for_bucket_path(blob.path)
+            download_manifest.path_destination = filename_destination
+            # According to Google's documentation, no exception is raised
             blob.download_to_filename(filename_destination)
-            list_files.append(filename_destination)
+            list_files.append(
+                self._set_blob_download_manifest_status(blob, download_manifest)
+            )
         return list_files
 
-    def download_file(self, src_path_file, dst_path_file):
+    def download_file(self, src_path_file, dst_path_file) -> ManifestResource:
         """
         Download a specific file from the current bucket
 
@@ -261,12 +295,16 @@ class GoogleBucketResource(object):
         :param dst_path_file: destination file path for the downloaded file
         :return: destination file path of the downloaded file
         """
-        self.get_bucket()\
-            .blob(src_path_file)\
-            .download_to_filename(dst_path_file)
-        return dst_path_file
+        download_manifest = get_manifest_service().new_resource()
+        download_manifest.source_url = self.get_gs_path_for_bucket_path(src_path_file)
+        download_manifest.path_destination = dst_path_file
+        # WARNING - No error condition signaling mechanism is specified in the documentation
+        blob = self.get_bucket().blob(src_path_file)
+        # According to Google's documentation, no exception is raised
+        blob.download_to_filename(dst_path_file)
+        return self._set_blob_download_manifest_status(blob, download_manifest)
 
-    def download(self, download_descriptor):
+    def download(self, download_descriptor) -> List[ManifestResource]:
         """
         Download 'something', it could be an entire folder or just a file, described by the given download descriptor
 
@@ -275,7 +313,7 @@ class GoogleBucketResource(object):
         """
         if download_descriptor["is_dir"]:
             return self.download_dir(download_descriptor["file"], download_descriptor["output"])
-        return self.download_file(download_descriptor["file"], download_descriptor["output"])
+        return [self.download_file(download_descriptor["file"], download_descriptor["output"])]
 
     # TODO - UNUSED method, REMOVE
     def blob_metadata(self, blob_name):
