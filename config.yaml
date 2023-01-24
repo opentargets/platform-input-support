@@ -316,15 +316,9 @@ target:
   - bucket: otar001-core/ChemicalProbes/annotation
     output_filename: chemicalprobes.json.gz
     path: target-inputs/chemicalprobes
-  - bucket: otar001-core/TargetSafety/data_files/adverse_events
-    output_filename: adverse_event_safety.json
-    path: target-inputs/safety/adverse_events
-  - bucket: otar001-core/TargetSafety/data_files/safety_risk/
-    output_filename: sr.json
-    path: target-inputs/safety/safety_risk
-  - bucket: otar001-core/TargetSafety/data_files/toxcast/
-    output_filename: ToxCast.tsv
-    path: target-inputs/safety/toxcast
+  - bucket: otar001-core/TargetSafety/json
+    output_filename: safetyLiabilities.json.gz
+    path: target-inputs/safety
   - bucket: otar001-core/Tractability
     output_filename: tractability.tsv
     path: target-inputs/tractability
