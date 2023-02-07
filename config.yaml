@@ -314,7 +314,7 @@ target:
     output_filename: tep.json.gz
     path: target-inputs/tep
   - bucket: otar001-core/ChemicalProbes/annotation
-    output_filename: chemicalprobes.json.gz
+    output_filename: chemicalprobes.json
     path: target-inputs/chemicalprobes
   - bucket: otar001-core/TargetSafety/json
     output_filename: safetyLiabilities.json.gz
