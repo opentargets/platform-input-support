@@ -387,11 +387,11 @@ otar:
       worksheet_name: Project2Disease
       output_format: csv
       output_filename: otar_project_to_efo.tsv
-targetEngine:
+targetengine:
   http_downloads:
-    - uri: https://www.proteinatlas.org/download/proteinatlas.json.gz
-      output_filename: proteinatlas.json.gz
-      path: targetEngine-inputs/proteinatlas.json.gz
-    - uri: https://rest.uniprot.org/locations/stream?compressed=true&fields=id%2Cname%2Ccategory%2Cgene_ontologies%2Cpart_of%2Cis_a&format=tsv&query=%28%2A%29
-      output_filename: uniprot_locations.tsv.gz
-      path: targetEngine-inputs/uniprot_locations.tsv.gz
+  - uri: https://www.proteinatlas.org/download/proteinatlas.json.gz
+    output_filename: proteinatlas.json.gz
+    path: targetEngine-inputs
+  - uri: https://rest.uniprot.org/locations/stream?compressed=true&fields=id%2Cname%2Ccategory%2Cgene_ontologies%2Cpart_of%2Cis_a&format=tsv&query=%28%2A%29
+    output_filename: uniprot_locations.tsv.gz
+    path: targetEngine-inputs
