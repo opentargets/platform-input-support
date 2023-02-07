@@ -16,7 +16,7 @@ class TargetEngine(IPlugin):
         self._logger = logging.getLogger(__name__)
         self.step_name = "TargetEngine"
 
-    def process(self, conf, output, cmd_conf):
+    def process(self, conf, output, cmd_conf=None):
         """
         TargetEngine data collection pipeline step implementation
 
