@@ -382,11 +382,11 @@ otar:
     - id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
       worksheet_name: MetaData
       output_format: csv
-      output_filename: otar_meta.tsv
+      output_filename: otar_meta.csv
     - id_spreadsheet: 1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs
       worksheet_name: Project2Disease
       output_format: csv
-      output_filename: otar_project_to_efo.tsv
+      output_filename: otar_project_to_efo.csv
 targetengine:
   http_downloads:
   - uri: https://www.proteinatlas.org/download/proteinatlas.json.gz
