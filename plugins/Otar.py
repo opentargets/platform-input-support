@@ -18,10 +18,6 @@ class Otar(IPlugin):
         self._logger = logging.getLogger(__name__)
         self.step_name = "OTAR"
 
-    @staticmethod
-    def __get_spreadsheet_url(spreadsheet_id: str = ""):
-        return f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}"
-
     def process(self, conf, output, cmd_conf=None):
         self._logger.info("[STEP] BEGIN, otar")
         manifest_step = get_manifest_service().get_step(self.step_name)
@@ -39,18 +35,13 @@ class Otar(IPlugin):
                                               path_dst,
                                               sheet.output_format,
                                               gcp_credentials)
-            handler.download()
-            download_manifest = get_manifest_service().new_resource()
-            download_manifest.source_url = self.__get_spreadsheet_url(sheet.id_spreadsheet)
-            download_manifest.path_destination = path_dst
-            download_manifest.msg_completion = f"Source URL is the Spreadsheet," \
-                                               f" data downloaded from its worksheet with name '{sheet.worksheet_name}'"
-            get_manifest_service().compute_checksums(manifest_step.resources)
-            if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
-                manifest_step.status_completion = ManifestStatus.FAILED
-                manifest_step.msg_completion = "COULD NOT retrieve all the resources"
-            # TODO - Validation
-            if manifest_step.status_completion != ManifestStatus.FAILED:
-                manifest_step.status_completion = ManifestStatus.COMPLETED
-                manifest_step.msg_completion = "The step has completed its execution"
+            manifest_step.resources.append(handler.download())
+        get_manifest_service().compute_checksums(manifest_step.resources)
+        if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
+            manifest_step.status_completion = ManifestStatus.FAILED
+            manifest_step.msg_completion = "COULD NOT retrieve all the resources"
+        # TODO - Validation
+        if manifest_step.status_completion != ManifestStatus.FAILED:
+            manifest_step.status_completion = ManifestStatus.COMPLETED
+            manifest_step.msg_completion = "The step has completed its execution"
         self._logger.info("[STEP] END, otar")
