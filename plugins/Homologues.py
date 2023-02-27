@@ -119,8 +119,13 @@ class Homologues(IPlugin):
         return mapping_data_manifest
 
     def download_homology_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
+        create_folder(os.path.join(output.prod_dir, conf.path, str(conf.path_homologies)))
         uri_homologies = conf.uri_homologies.replace("{release}", str(conf.release))
-        pass
+        homology_data_manifest = []
+        # TODO - Iterate over the species of interest to download the homology data, which is a pair of files like
+        # Compara.<release>.protein_default.homologies.tsv.gz -> cpd-<species>.tsv.gz
+        # Compara.<release>.ncrna_default.homologies.tsv.gz -> ncrna-<species>.tsv.gz
+        return homology_data_manifest
 
 
     def process(self, conf, output, cmd_conf):
