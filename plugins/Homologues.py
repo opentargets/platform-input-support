@@ -2,6 +2,8 @@ import os
 import errno
 import logging
 import subprocess
+from typing import List
+
 from addict import Dict
 from yapsy.IPlugin import IPlugin
 from modules.common.Utils import Utils
@@ -54,6 +56,9 @@ class Homologues(IPlugin):
         resource_stage.output_dir = staging
         return download.ftp_download(resource_stage)
 
+    def download_homologies_per_species(self, uri_homologues, release, output, species: str) -> List[ManifestResource]:
+        pass
+
 
     def extract_fields_from_json(self, input_file, conf, output, jq_cmd) -> str:
         """
@@ -93,7 +98,7 @@ class Homologues(IPlugin):
         download = DownloadResource(output.staging_dir)
         # TODO - Should I halt the step as soon as I face the first problem?
         uri_release = conf.uri.replace("{release}", str(conf.release))
-        create_folder(os.path.join(output.prod_dir, conf.path, str(conf.release)))
+        create_folder(os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         manifest_step = get_manifest_service().get_step(self.step_name)
         for species in conf.resources:
