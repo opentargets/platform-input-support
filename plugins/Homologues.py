@@ -41,7 +41,7 @@ class Homologues(IPlugin):
         self.step_name = "Homologues"
 
     @staticmethod
-    def download_species(uri, release, staging, download, species: str) -> ManifestResource:
+    def download_protein_mapping_for_species(uri, staging, download, species: str) -> ManifestResource:
         """
         Download protein homology for species and suffix if file does not already exist.
 
@@ -52,11 +52,12 @@ class Homologues(IPlugin):
         # Create the resource info.
         resource_stage = Dict()
         resource_stage.uri = protein_uri
-        resource_stage.output_filename = f'{release}-{species}.json'
+        resource_stage.output_filename = f'{species}.json'
         resource_stage.output_dir = staging
         return download.ftp_download(resource_stage)
 
-    def download_homologies_per_species(self, uri_homologues, release, output, species: str) -> List[ManifestResource]:
+    @staticmethod
+    def download_homologies_for_species(uri_homologues, release, output, species: str) -> ManifestResource:
         pass
 
 
@@ -86,24 +87,15 @@ class Homologues(IPlugin):
                 raise
         return output_file
 
-    def process(self, conf, output, cmd_conf):
-        """
-        Homologues pipeline step implementation
-
-        :param conf: step configuration object
-        :param output: output information object for results from this step
-        :param cmd_conf: command line configuration object for external tools
-        """
-        self._logger.info("[STEP] BEGIN, Homologues")
-        download = DownloadResource(output.staging_dir)
-        # TODO - Should I halt the step as soon as I face the first problem?
-        uri_release = conf.uri.replace("{release}", str(conf.release))
+    def download_protein_mapping_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
         create_folder(os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping)))
-        jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
-        manifest_step = get_manifest_service().get_step(self.step_name)
+        uri_release = conf.uri.replace("{release}", str(conf.release))
+        mapping_data_manifest = []
         for species in conf.resources:
-            self._logger.debug(f'Downloading files for {species}')
-            download_manifest = self.download_species(uri_release, conf.release, output.staging_dir, download, species)
+            """ Download the protein files for each species"""
+            self._logger.debug(f'Downloading protein files for {species}')
+            download_manifest = self.download_protein_mapping_for_species(uri_release, output.staging_dir, download,
+                                                                          species)
             if download_manifest.status_completion == ManifestStatus.COMPLETED:
                 download_manifest.status_completion = ManifestStatus.FAILED
                 try:
@@ -123,7 +115,31 @@ class Homologues(IPlugin):
                     download_manifest.msg_completion = \
                         f"Homologue '{species}' data, JQ filtered with '{conf.jq}'"
                     download_manifest.status_completion = ManifestStatus.COMPLETED
-            manifest_step.resources.append(download_manifest)
+            mapping_data_manifest.resources.append(download_manifest)
+        return mapping_data_manifest
+
+    def download_homology_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
+        uri_homologies = conf.uri_homologies.replace("{release}", str(conf.release))
+        pass
+
+
+    def process(self, conf, output, cmd_conf):
+        """
+        Homologues pipeline step implementation
+
+        :param conf: step configuration object
+        :param output: output information object for results from this step
+        :param cmd_conf: command line configuration object for external tools
+        """
+        self._logger.info("[STEP] BEGIN, Homologues")
+        download = DownloadResource(output.staging_dir)
+        # TODO - Should I halt the step as soon as I face the first problem?
+        jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
+        manifest_step = get_manifest_service().get_step(self.step_name)
+        # Download protein mapping data
+        manifest_step.resources.extend(self.download_protein_mapping_data(conf, output, cmd_conf))
+        # Download homology data
+        manifest_step.resources.extend(self.download_homology_data(conf, output, cmd_conf))
         get_manifest_service().compute_checksums(manifest_step.resources)
         if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
