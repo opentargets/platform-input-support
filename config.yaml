@@ -217,6 +217,9 @@ homologues:
   path_protein_mapping: 'protein_mapping'
   uri_homologues: https://ftp.ensembl.org/pub/release-{release}/tsv/ensembl-compara/homologies
   path_homologues: 'homologies'
+  types_homologues:
+    - 'protein'
+    - 'ncrna'
   path: target-inputs/homologue
   release: 108
   jq: ".genes[] | [.id, .name] | @tsv"

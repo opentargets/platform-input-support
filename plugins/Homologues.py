@@ -97,6 +97,7 @@ class Homologues(IPlugin):
     def download_protein_mapping_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
         create_folder(os.path.join(output.prod_dir, conf.path,
                       str(conf.path_protein_mapping)))
+        jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         uri_release = conf.uri.replace("{release}", str(conf.release))
         mapping_data_manifest = []
         for species in conf.resources:
@@ -127,25 +128,33 @@ class Homologues(IPlugin):
             mapping_data_manifest.resources.append(download_manifest)
         return mapping_data_manifest
 
-    def download_homology_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
-        create_folder(os.path.join(output.prod_dir,
-                      conf.path, str(conf.path_homologies)))
+    def download_homology_data(self, conf, output, download) -> List[ManifestResource]:
+        """
+        Download the homology data for the species of interest.
+
+        Files look like:
+            Compara.<release>.[type]+_default.homologies.tsv.gz -> <type>-<species>.tsv.gz
+        where <species> is the species of interest and <type> is one of the specified in conf.types_homologues
+        :param conf: configuration object
+        :param output: information on where the output result should be place
+        :param download: download object
+        """
+        output_folder = os.path.join(output.prod_dir,
+                      conf.path, str(conf.path_homologies))
+        create_folder(output_folder)
         uri_homologies = conf.uri_homologies.replace(
             "{release}", str(conf.release))
-        homology_data_manifest = []
+        homology_data_manifests = []
         # TODO - Iterate over the species of interest to download the homology data, which is a pair of files like
-        # Compara.<release>.protein_default.homologies.tsv.gz -> cpd-<species>.tsv.gz
-        # Compara.<release>.ncrna_default.homologies.tsv.gz -> ncrna-<species>.tsv.gz
         for species in conf.resources:
             """ Download the homology files for each species"""
             self._logger.debug(f'Downloading the homology files for {species}')
-            download_manifest_ncrna = self.download_homologies_for_species(
-                uri_homologies, conf.release, output, "ncrna", species, download)
-            download_manifest_protein = self.download_homologies_for_species(
-                uri_homologies, conf.release, output, "protein", species, download)
-            homology_data_manifest.resources.append(download_manifest_ncrna)
-            homology_data_manifest.resources.append(download_manifest_protein)
-        return homology_data_manifest
+            for type in conf.types_homologues:
+                homology_data_manifests.append(
+                    self.download_homologies_for_species(
+                    uri_homologies, conf.release, output_folder, type, species, download)
+                )
+        return homology_data_manifests
 
     def process(self, conf, output, cmd_conf):
         """
@@ -158,14 +167,13 @@ class Homologues(IPlugin):
         self._logger.info("[STEP] BEGIN, Homologues")
         download = DownloadResource(output.staging_dir)
         # TODO - Should I halt the step as soon as I face the first problem?
-        jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         manifest_step = get_manifest_service().get_step(self.step_name)
         # Download protein mapping data
         manifest_step.resources.extend(
             self.download_protein_mapping_data(conf, output, cmd_conf, download))
         # Download homology data
         manifest_step.resources.extend(
-            self.download_homology_data(conf, output, cmd_conf, download))
+            self.download_homology_data(conf, output, download))
         get_manifest_service().compute_checksums(manifest_step.resources)
         if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
