@@ -57,9 +57,15 @@ class Homologues(IPlugin):
         return download.ftp_download(resource_stage)
 
     @staticmethod
-    def download_homologies_for_species(uri_homologues, release, output, species: str) -> ManifestResource:
-        pass
-
+    def download_homologies_for_species(uri_homologues, release, output, type, species: str, download) -> ManifestResource:
+        # TODO - create download logic
+        protein_uri = f"{uri_homologues}{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
+        # Create the resource info.
+        resource_stage = Dict()
+        resource_stage.uri = protein_uri
+        resource_stage.output_filename = f'{type}-{species}.tsv.gz'
+        resource_stage.output_dir = output
+        return download.ftp_download(resource_stage)
 
     def extract_fields_from_json(self, input_file, conf, output, jq_cmd) -> str:
         """
@@ -72,7 +78,8 @@ class Homologues(IPlugin):
         :return: destination file path of the extracted data content
         """
         head, tail = os.path.split(input_file)
-        output_file = os.path.join(output.prod_dir, conf.path, str(conf.release), tail.replace('json', 'tsv'))
+        output_file = os.path.join(output.prod_dir, conf.path, str(
+            conf.release), tail.replace('json', 'tsv'))
         self._logger.info(f"Extracting id and name from: {input_file}")
         with open(output_file, "ba+") as tsv:
             try:
@@ -87,8 +94,9 @@ class Homologues(IPlugin):
                 raise
         return output_file
 
-    def download_protein_mapping_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
-        create_folder(os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping)))
+    def download_protein_mapping_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
+        create_folder(os.path.join(output.prod_dir, conf.path,
+                      str(conf.path_protein_mapping)))
         uri_release = conf.uri.replace("{release}", str(conf.release))
         mapping_data_manifest = []
         for species in conf.resources:
@@ -100,7 +108,8 @@ class Homologues(IPlugin):
                 download_manifest.status_completion = ManifestStatus.FAILED
                 try:
                     download_manifest.path_destination = \
-                        self.extract_fields_from_json(download_manifest.path_destination, conf, output, jq_cmd)
+                        self.extract_fields_from_json(
+                            download_manifest.path_destination, conf, output, jq_cmd)
                 except Exception as e:
                     download_manifest.msg_completion = f"COULD NOT extract fields from Homologues dataset at " \
                                                        f"'{download_manifest.path_destination}'" \
@@ -118,15 +127,25 @@ class Homologues(IPlugin):
             mapping_data_manifest.resources.append(download_manifest)
         return mapping_data_manifest
 
-    def download_homology_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
-        create_folder(os.path.join(output.prod_dir, conf.path, str(conf.path_homologies)))
-        uri_homologies = conf.uri_homologies.replace("{release}", str(conf.release))
+    def download_homology_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
+        create_folder(os.path.join(output.prod_dir,
+                      conf.path, str(conf.path_homologies)))
+        uri_homologies = conf.uri_homologies.replace(
+            "{release}", str(conf.release))
         homology_data_manifest = []
         # TODO - Iterate over the species of interest to download the homology data, which is a pair of files like
         # Compara.<release>.protein_default.homologies.tsv.gz -> cpd-<species>.tsv.gz
         # Compara.<release>.ncrna_default.homologies.tsv.gz -> ncrna-<species>.tsv.gz
+        for species in conf.resources:
+            """ Download the homology files for each species"""
+            self._logger.debug(f'Downloading the homology files for {species}')
+            download_manifest_ncrna = self.download_homologies_for_species(
+                uri_homologies, conf.release, output, "ncrna", species, download)
+            download_manifest_protein = self.download_homologies_for_species(
+                uri_homologies, conf.release, output, "protein", species, download)
+            homology_data_manifest.resources.append(download_manifest_ncrna)
+            homology_data_manifest.resources.append(download_manifest_protein)
         return homology_data_manifest
-
 
     def process(self, conf, output, cmd_conf):
         """
@@ -142,9 +161,11 @@ class Homologues(IPlugin):
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         manifest_step = get_manifest_service().get_step(self.step_name)
         # Download protein mapping data
-        manifest_step.resources.extend(self.download_protein_mapping_data(conf, output, cmd_conf))
+        manifest_step.resources.extend(
+            self.download_protein_mapping_data(conf, output, cmd_conf, download))
         # Download homology data
-        manifest_step.resources.extend(self.download_homology_data(conf, output, cmd_conf))
+        manifest_step.resources.extend(
+            self.download_homology_data(conf, output, cmd_conf, download))
         get_manifest_service().compute_checksums(manifest_step.resources)
         if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
