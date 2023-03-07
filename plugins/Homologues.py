@@ -58,11 +58,10 @@ class Homologues(IPlugin):
 
     @staticmethod
     def download_homologies_for_species(uri_homologues, release, output, type, species: str, download) -> ManifestResource:
-        # TODO - create download logic
-        protein_uri = f"{uri_homologues}/{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
+        download_uri = f"{uri_homologues}/{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
         # Create the resource info.
         resource_stage = Dict()
-        resource_stage.uri = protein_uri
+        resource_stage.uri = download_uri
         resource_stage.output_filename = f'{type}-{species}.tsv.gz'
         resource_stage.output_dir = output
         return download.ftp_download(resource_stage)
@@ -133,7 +132,7 @@ class Homologues(IPlugin):
         Download the homology data for the species of interest.
 
         Files look like:
-            Compara.<release>.[type]+_default.homologies.tsv.gz -> <type>-<species>.tsv.gz
+            Compara.<release>.[type]_default.homologies.tsv.gz -> <type>-<species>.tsv.gz
         where <species> is the species of interest and <type> is one of the specified in conf.types_homologues
         :param conf: configuration object
         :param output: information on where the output result should be place
@@ -145,7 +144,7 @@ class Homologues(IPlugin):
         uri_homologies = conf.uri_homologues.replace(
             "{release}", str(conf.release))
         homology_data_manifests = []
-        # TODO - Iterate over the species of interest to download the homology data, which is a pair of files like
+        # Iterate over the species of interest to download the homology data, which is a pair of files like
         for species in conf.resources:
             """ Download the homology files for each species"""
             self._logger.debug(f'Downloading the homology files for {species}')
