@@ -59,7 +59,7 @@ class Homologues(IPlugin):
     @staticmethod
     def download_homologies_for_species(uri_homologues, release, output, type, species: str, download) -> ManifestResource:
         # TODO - create download logic
-        protein_uri = f"{uri_homologues}{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
+        protein_uri = f"{uri_homologues}/{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
         # Create the resource info.
         resource_stage = Dict()
         resource_stage.uri = protein_uri
@@ -99,7 +99,7 @@ class Homologues(IPlugin):
                       str(conf.path_protein_mapping)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         uri_release = conf.uri.replace("{release}", str(conf.release))
-        mapping_data_manifest = []
+        mapping_data_manifests = []
         for species in conf.resources:
             """ Download the protein files for each species"""
             self._logger.debug(f'Downloading protein files for {species}')
@@ -125,8 +125,8 @@ class Homologues(IPlugin):
                     download_manifest.msg_completion = \
                         f"Homologue '{species}' data, JQ filtered with '{conf.jq}'"
                     download_manifest.status_completion = ManifestStatus.COMPLETED
-            mapping_data_manifest.resources.append(download_manifest)
-        return mapping_data_manifest
+            mapping_data_manifests.append(download_manifest)
+        return mapping_data_manifests
 
     def download_homology_data(self, conf, output, download) -> List[ManifestResource]:
         """
@@ -140,9 +140,9 @@ class Homologues(IPlugin):
         :param download: download object
         """
         output_folder = os.path.join(output.prod_dir,
-                      conf.path, str(conf.path_homologies))
+                      conf.path, str(conf.path_homologues))
         create_folder(output_folder)
-        uri_homologies = conf.uri_homologies.replace(
+        uri_homologies = conf.uri_homologues.replace(
             "{release}", str(conf.release))
         homology_data_manifests = []
         # TODO - Iterate over the species of interest to download the homology data, which is a pair of files like
