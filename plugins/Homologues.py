@@ -88,24 +88,21 @@ class Homologues(IPlugin):
         head, tail = os.path.split(input_file)
         output_file = os.path.join(path_output, tail.replace('json', 'tsv'))
         self._logger.info(f"Extracting id and name from: '{input_file}' to '{output_file}'")
-        #with open(output_file, "ba+") as tsv:
         try:
             jqp = subprocess.run(f"{jq_cmd} '{conf.jq}' {input_file} > {output_file}",
                                  capture_output=True,
                                  shell=True
                                  )
-            # jqp = subprocess.Popen(f"{jq_cmd} '{conf.jq}' {input_file}",
-            #                        stdout=subprocess.PIPE,
-            #                        shell=True)
-            # tsv.write(jqp.stdout.read())
             jqp.check_returncode()
         except OSError as e:
-            if e.errno == errno.ENOENT:
-                # handle file not found error.
-                self._logger.error(e)
+            self._logger.error(f"JQ filter '{conf.jq}' failed on file '{input_file}', destination file '{output_file}', "
+                               f"error code {e.errno}, error message: {e.strerror}")
             raise
         except subprocess.CalledProcessError as e:
-            self._logger.error(e)
+            self._logger.error(f"JQ filter '{conf.jq}' failed on file '{input_file}', destination file '{output_file}' "
+                               f"with error code {e.returncode}, "
+                               f"command standard output: {e.output}, "
+                               f"command standard error output: {jqp.stderr}")
             raise
         return output_file
 
