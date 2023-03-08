@@ -149,7 +149,7 @@ class Homologues(IPlugin):
             mapping_data_manifests.append(download_manifest)
         return mapping_data_manifests
 
-    def download_homology_data(self, conf, output, download) -> List[ManifestResource]:
+    def download_homology_data(self, conf, output) -> List[ManifestResource]:
         """
         Download the homology data for the species of interest.
 
@@ -158,11 +158,11 @@ class Homologues(IPlugin):
         where <species> is the species of interest and <type> is one of the specified in conf.types_homologues
         :param conf: configuration object
         :param output: information on where the output result should be place
-        :param download: download object
         """
         output_folder = os.path.join(output.prod_dir,
                                      conf.path, str(conf.path_homologues))
         create_folder(output_folder)
+        download_service = DownloadResource(output_folder)
         ensembl_base_uri = conf.uri_homologues.replace("{release}", str(conf.release))
         homology_data_manifests = []
         # Iterate over the species of interest to download the homology data, which is a pair of files like
@@ -171,7 +171,7 @@ class Homologues(IPlugin):
             for type in conf.types_homologues:
                 homology_data_manifests.append(
                     self.download_homologies_for_species(
-                        ensembl_base_uri, conf.release, output_folder, type, species, download)
+                        ensembl_base_uri, conf.release, output_folder, type, species, download_service)
                 )
         return homology_data_manifests
 
@@ -184,8 +184,7 @@ class Homologues(IPlugin):
         :param cmd_conf: command line configuration object for external tools
         """
         self._logger.info("[STEP] BEGIN, Homologues")
-        staging_download_service = DownloadResource(output.staging_dir)
-        production_download_service = DownloadResource(output.prod_dir)
+        #staging_download_service = DownloadResource(output.staging_dir)
         # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step = get_manifest_service().get_step(self.step_name)
         # Download protein mapping data
@@ -193,7 +192,7 @@ class Homologues(IPlugin):
         #    self.download_protein_mapping_data(conf, output, cmd_conf, staging_download_service))
         # Download homology data
         manifest_step.resources.extend(
-            self.download_homology_data(conf, output, production_download_service))
+            self.download_homology_data(conf, output))
         get_manifest_service().compute_checksums(manifest_step.resources)
         if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
