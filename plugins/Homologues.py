@@ -48,23 +48,31 @@ class Homologues(IPlugin):
         Most entries do not require suffix to be provided, but some such as sus_scrofa_usmarc have no standard ftp
         entries requiring a custom suffix.
         """
-        protein_uri = f"{uri}{species}/{species}.json"
         # Create the resource info.
-        resource_stage = Dict()
-        resource_stage.uri = protein_uri
-        resource_stage.output_filename = f'{species}.json'
-        resource_stage.output_dir = staging
-        return download.ftp_download(resource_stage)
+        download_resource = Dict()
+        download_resource.uri = f"{uri}{species}/{species}.json"
+        download_resource.output_filename = f'{species}.json'
+        download_resource.output_dir = staging
+        return download.ftp_download(download_resource)
 
     @staticmethod
-    def download_homologies_for_species(uri_homologues, release, output, type, species: str, download) -> ManifestResource:
-        download_uri = f"{uri_homologues}/{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
+    def download_homologies_for_species(uri_homologues: str, release, output, type: str, species: str, download) -> ManifestResource:
+        """
+        Download homology data for the given species and type.
+
+        :param uri_homologues: base URI to the homology data
+        :param release: Ensembl release number
+        :param output: output directory information
+        :param type: type of homology data to download
+        :param species: species to download homology data for
+        :param download: download service
+        """
         # Create the resource info.
-        resource_stage = Dict()
-        resource_stage.uri = download_uri
-        resource_stage.output_filename = f'{type}-{species}.tsv.gz'
-        resource_stage.output_dir = output
-        return download.ftp_download(resource_stage)
+        download_resource = Dict()
+        download_resource.uri = f"{uri_homologues}/{species}/Compara.{release}.{type}_default.homologies.tsv.gz"
+        download_resource.output_filename = f'{type}-{species}.tsv.gz'
+        download_resource.output_dir = output
+        return download.ftp_download(download_resource)
 
     def extract_fields_from_json(self, input_file, conf, output, jq_cmd) -> str:
         """
