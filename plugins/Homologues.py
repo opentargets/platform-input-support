@@ -56,7 +56,8 @@ class Homologues(IPlugin):
         return download.ftp_download(download_resource)
 
     @staticmethod
-    def download_homologies_for_species(uri_homologues: str, release, output, type: str, species: str, download) -> ManifestResource:
+    def download_homologies_for_species(uri_homologues: str, release, output, type: str, species: str,
+                                        download) -> ManifestResource:
         """
         Download homology data for the given species and type.
 
@@ -102,15 +103,24 @@ class Homologues(IPlugin):
         return output_file
 
     def download_protein_mapping_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
+        """
+        Download the protein mapping data for the species of interest, as defined in the configuration file.
+
+        :param conf: configuration object
+        :param output: information on where the output result should be place
+        :param cmd_conf: configuration for the command line
+        :param download: download service
+        """
         create_folder(os.path.join(output.prod_dir, conf.path,
-                      str(conf.path_protein_mapping)))
+                                   str(conf.path_protein_mapping)))
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
-        uri_release = conf.uri.replace("{release}", str(conf.release))
+        ensembl_base_uri = conf.uri.replace("{release}", str(conf.release))
         mapping_data_manifests = []
         for species in conf.resources:
-            """ Download the protein files for each species"""
-            self._logger.debug(f'Downloading protein files for {species}')
-            download_manifest = self.download_protein_mapping_for_species(uri_release, output.staging_dir, download,
+            # Download the protein files for each species of interest
+            self._logger.debug(f'Downloading protein mapping files for {species}')
+            download_manifest = self.download_protein_mapping_for_species(ensembl_base_uri, output.staging_dir,
+                                                                          download,
                                                                           species)
             if download_manifest.status_completion == ManifestStatus.COMPLETED:
                 download_manifest.status_completion = ManifestStatus.FAILED
@@ -147,19 +157,17 @@ class Homologues(IPlugin):
         :param download: download object
         """
         output_folder = os.path.join(output.prod_dir,
-                      conf.path, str(conf.path_homologues))
+                                     conf.path, str(conf.path_homologues))
         create_folder(output_folder)
-        uri_homologies = conf.uri_homologues.replace(
-            "{release}", str(conf.release))
+        ensembl_base_uri = conf.uri_homologues.replace("{release}", str(conf.release))
         homology_data_manifests = []
         # Iterate over the species of interest to download the homology data, which is a pair of files like
         for species in conf.resources:
-            """ Download the homology files for each species"""
-            self._logger.debug(f'Downloading the homology files for {species}')
+            self._logger.debug(f'Downloading homology files for {species}')
             for type in conf.types_homologues:
                 homology_data_manifests.append(
                     self.download_homologies_for_species(
-                    uri_homologies, conf.release, output_folder, type, species, download)
+                        ensembl_base_uri, conf.release, output_folder, type, species, download)
                 )
         return homology_data_manifests
 
