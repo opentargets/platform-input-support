@@ -121,6 +121,7 @@ class DownloadResource(object):
         :param resource_info: information on the resource to download
         :return: the download destination path when successful, empty path if not
         """
+        # WARNING - TODO - resource_info.output_dir is NOT BEING used anywhere, it should be used instead of self.output_dir, if set.
         print("Start to download\n\t{uri} ".format(uri=resource_info.uri))
         filename = self.set_filename(resource_info.output_filename)
         downloaded_resource = self.manifest_service.new_resource()

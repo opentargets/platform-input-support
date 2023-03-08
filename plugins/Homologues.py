@@ -184,15 +184,16 @@ class Homologues(IPlugin):
         :param cmd_conf: command line configuration object for external tools
         """
         self._logger.info("[STEP] BEGIN, Homologues")
-        download = DownloadResource(output.staging_dir)
+        staging_download_service = DownloadResource(output.staging_dir)
+        production_download_service = DownloadResource(output.prod_dir)
         # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step = get_manifest_service().get_step(self.step_name)
         # Download protein mapping data
-        manifest_step.resources.extend(
-            self.download_protein_mapping_data(conf, output, cmd_conf, download))
+        #manifest_step.resources.extend(
+        #    self.download_protein_mapping_data(conf, output, cmd_conf, staging_download_service))
         # Download homology data
         manifest_step.resources.extend(
-            self.download_homology_data(conf, output, download))
+            self.download_homology_data(conf, output, production_download_service))
         get_manifest_service().compute_checksums(manifest_step.resources)
         if not get_manifest_service().are_all_resources_complete(manifest_step.resources):
             manifest_step.status_completion = ManifestStatus.FAILED
