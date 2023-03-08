@@ -106,16 +106,17 @@ class Homologues(IPlugin):
             raise
         return output_file
 
-    def download_protein_mapping_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
+    def download_protein_mapping_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
         """
         Download the protein mapping data for the species of interest, as defined in the configuration file.
 
         :param conf: configuration object
         :param output: information on where the output result should be place
         :param cmd_conf: configuration for the command line
-        :param download: download service
         """
         path_output = os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping))
+        path_staging = os.path.join(output.staging_dir, conf.path, str(conf.path_protein_mapping))
+        download_service = DownloadResource(path_staging)
         create_folder(path_output)
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         ensembl_base_uri = conf.uri.replace("{release}", str(conf.release))
@@ -124,7 +125,7 @@ class Homologues(IPlugin):
             # Download the protein files for each species of interest
             self._logger.debug(f'Downloading protein mapping files for {species}')
             download_manifest = self.download_protein_mapping_for_species(ensembl_base_uri, output.staging_dir,
-                                                                          download,
+                                                                          download_service,
                                                                           species)
             if download_manifest.status_completion == ManifestStatus.COMPLETED:
                 download_manifest.status_completion = ManifestStatus.FAILED
@@ -184,12 +185,11 @@ class Homologues(IPlugin):
         :param cmd_conf: command line configuration object for external tools
         """
         self._logger.info("[STEP] BEGIN, Homologues")
-        #staging_download_service = DownloadResource(output.staging_dir)
         # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step = get_manifest_service().get_step(self.step_name)
         # Download protein mapping data
-        #manifest_step.resources.extend(
-        #    self.download_protein_mapping_data(conf, output, cmd_conf, staging_download_service))
+        manifest_step.resources.extend(
+            self.download_protein_mapping_data(conf, output, cmd_conf))
         # Download homology data
         manifest_step.resources.extend(
             self.download_homology_data(conf, output))
