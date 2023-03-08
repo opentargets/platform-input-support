@@ -116,8 +116,9 @@ class Homologues(IPlugin):
         """
         path_output = os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping))
         path_staging = os.path.join(output.staging_dir, conf.path, str(conf.path_protein_mapping))
-        download_service = DownloadResource(path_staging)
+        create_folder(path_staging)
         create_folder(path_output)
+        download_service = DownloadResource(path_staging)
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         ensembl_base_uri = conf.uri.replace("{release}", str(conf.release))
         mapping_data_manifests = []
