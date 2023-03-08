@@ -129,13 +129,13 @@ class Homologues(IPlugin):
                         self.extract_fields_from_json(
                             download_manifest.path_destination, conf, output, jq_cmd)
                 except Exception as e:
-                    download_manifest.msg_completion = f"COULD NOT extract fields from Homologues dataset at " \
+                    download_manifest.msg_completion = f"COULD NOT extract fields from Protein dataset at " \
                                                        f"'{download_manifest.path_destination}'" \
-                                                       f" using JQ command '{jq_cmd}'"
+                                                       f" using JQ command '{jq_cmd}', due to error: {str(e)}"
                     self._logger.error(download_manifest.msg_completion)
                 else:
                     self._logger.debug(
-                        f"Homologue '{species}' data download manifest destination path"
+                        f"Protein mapping data for '{species}' download manifest destination path"
                         f" set to '{download_manifest.path_destination}',"
                         f" as final recipient for the sub-dataset"
                     )
