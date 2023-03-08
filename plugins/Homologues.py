@@ -88,17 +88,25 @@ class Homologues(IPlugin):
         head, tail = os.path.split(input_file)
         output_file = os.path.join(path_output, tail.replace('json', 'tsv'))
         self._logger.info(f"Extracting id and name from: '{input_file}' to '{output_file}'")
-        with open(output_file, "ba+") as tsv:
-            try:
-                jqp = subprocess.Popen(f"{jq_cmd} '{conf.jq}' {input_file}",
-                                       stdout=subprocess.PIPE,
-                                       shell=True)
-                tsv.write(jqp.stdout.read())
-            except OSError as e:
-                if e.errno == errno.ENOENT:
-                    # handle file not found error.
-                    self._logger.error(e)
-                raise
+        #with open(output_file, "ba+") as tsv:
+        try:
+            jqp = subprocess.run(f"{jq_cmd} '{conf.jq}' {input_file} > {output_file}",
+                                 capture_output=True,
+                                 shell=True
+                                 )
+            # jqp = subprocess.Popen(f"{jq_cmd} '{conf.jq}' {input_file}",
+            #                        stdout=subprocess.PIPE,
+            #                        shell=True)
+            # tsv.write(jqp.stdout.read())
+            jqp.check_returncode()
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                # handle file not found error.
+                self._logger.error(e)
+            raise
+        except subprocess.CalledProcessError as e:
+            self._logger.error(e)
+            raise
         return output_file
 
     def download_protein_mapping_data(self, conf, output, cmd_conf, download) -> List[ManifestResource]:
