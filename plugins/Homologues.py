@@ -88,7 +88,7 @@ class Homologues(IPlugin):
         head, tail = os.path.split(input_file)
         output_file = os.path.join(output.prod_dir, conf.path, str(
             conf.release), tail.replace('json', 'tsv'))
-        self._logger.info(f"Extracting id and name from: {input_file}")
+        self._logger.info(f"Extracting id and name from: '{input_file}' to '{output_file}'")
         with open(output_file, "ba+") as tsv:
             try:
                 jqp = subprocess.Popen(f"{jq_cmd} '{conf.jq}' {input_file}",
