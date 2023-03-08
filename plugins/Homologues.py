@@ -75,7 +75,7 @@ class Homologues(IPlugin):
         download_resource.output_dir = output
         return download.ftp_download(download_resource)
 
-    def extract_fields_from_json(self, input_file, conf, output, jq_cmd) -> str:
+    def extract_fields_from_json(self, input_file, conf, path_output, jq_cmd) -> str:
         """
         Extract the data defined by the JQ filter from the given input file
 
@@ -86,8 +86,7 @@ class Homologues(IPlugin):
         :return: destination file path of the extracted data content
         """
         head, tail = os.path.split(input_file)
-        output_file = os.path.join(output.prod_dir, conf.path, str(
-            conf.release), tail.replace('json', 'tsv'))
+        output_file = os.path.join(path_output, tail.replace('json', 'tsv'))
         self._logger.info(f"Extracting id and name from: '{input_file}' to '{output_file}'")
         with open(output_file, "ba+") as tsv:
             try:
@@ -111,8 +110,8 @@ class Homologues(IPlugin):
         :param cmd_conf: configuration for the command line
         :param download: download service
         """
-        create_folder(os.path.join(output.prod_dir, conf.path,
-                                   str(conf.path_protein_mapping)))
+        path_output = os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping))
+        create_folder(path_output)
         jq_cmd = Utils.check_path_command("jq", cmd_conf.jq)
         ensembl_base_uri = conf.uri.replace("{release}", str(conf.release))
         mapping_data_manifests = []
@@ -127,7 +126,7 @@ class Homologues(IPlugin):
                 try:
                     download_manifest.path_destination = \
                         self.extract_fields_from_json(
-                            download_manifest.path_destination, conf, output, jq_cmd)
+                            download_manifest.path_destination, conf, path_output, jq_cmd)
                 except Exception as e:
                     download_manifest.msg_completion = f"COULD NOT extract fields from Protein dataset at " \
                                                        f"'{download_manifest.path_destination}'" \
