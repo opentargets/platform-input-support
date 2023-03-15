@@ -14,20 +14,10 @@ before_install:
   - export PATH=/home/travis/miniconda3/bin:$PATH
   - conda update --yes conda
 install:
-
   # We just set up a conda environment with the right Python version. This
   # should not need changing.
-
   - conda env create --force -f environment.yaml python=$TRAVIS_PYTHON_VERSION
-#  - conda env create -f environment.yaml
   - source activate otpis
-#  - conda skeleton pypi opentargets-urlzsource
-#  - conda build opentargets-urlzsource
-#  - conda build purge
-#  - conda install -y --use-local opentargets-urlzsource
-#  - source activate platform-input-support-py2.7
-#  - pip install -r requirements.txt
-
 script:
    - python -m pytest --cov=modules --cov-report term tests/ --fulltrace
 after_success:

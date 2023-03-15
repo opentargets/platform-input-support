@@ -19,6 +19,7 @@ dependencies:
  - yapsy
  - tqdm
  - jsonpickle
+ - munch
  - pip:
    - future==0.18.2
    - opentargets-urlzsource==1.0.0
