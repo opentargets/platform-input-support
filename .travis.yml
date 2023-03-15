@@ -14,27 +14,18 @@ before_install:
   - export PATH=/home/travis/miniconda3/bin:$PATH
   - conda update --yes conda
 install:
-  # We just set up a conda environment with the right Python version. This
+  # set up a conda environment with the right Python version. This
   # should not need changing.
   - conda env create --force -f environment.yaml python=$TRAVIS_PYTHON_VERSION
   - source activate otpis
 script:
    - python -m pytest --cov=modules --cov-report term tests/ --fulltrace
+   - codecov
+notifications:
+  email:
+    recipients:
+    - ops@opentargets.org
+    on_success: never
+    on_failure: always
 after_success:
-  - codecov
-  - docker pull "${QUAY_REPO}:${TRAVIS_BRANCH}" || true
-  #pull the previous built image to use as a cache if possible
-  - docker build --pull --cache-from "${QUAY_REPO}:${TRAVIS_BRANCH}" --tag "${QUAY_REPO}" .
-  - docker login -u="${QUAY_USER}" -p="${QUAY_PASSWORD}" quay.io
-  - git_sha="${TRAVIS_COMMIT}"
-  - docker tag "${QUAY_REPO}" "${QUAY_REPO}:${TRAVIS_BRANCH}"
-  - docker tag "${QUAY_REPO}" "${QUAY_REPO}:${git_sha}-${TRAVIS_BRANCH}"
-  #only push non-PRs
-  - |
-    if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-      docker push "${QUAY_REPO}:${TRAVIS_BRANCH}" && docker push "${QUAY_REPO}:${git_sha}-${TRAVIS_BRANCH}"
-      if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        docker tag "${QUAY_REPO}:${TRAVIS_BRANCH}" "${QUAY_REPO}:latest"
-        docker push "${QUAY_REPO}:latest"
-      fi
-    fi
+  - ./deploy_quay.sh
