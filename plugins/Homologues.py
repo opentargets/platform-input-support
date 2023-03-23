@@ -43,7 +43,7 @@ class Homologues(IPlugin):
     @staticmethod
     def download_gene_dictionary_for_species(uri, staging, download, species: str) -> ManifestResource:
         """
-        Download protein homology for species and suffix if file does not already exist.
+        Download gene dictionary for species and suffix if file does not already exist.
 
         Most entries do not require suffix to be provided, but some such as sus_scrofa_usmarc have no standard ftp
         entries requiring a custom suffix.
@@ -124,7 +124,7 @@ class Homologues(IPlugin):
         mapping_data_manifests = []
         for species in conf.resources:
             # Download the protein files for each species of interest
-            self._logger.debug(f'Downloading protein mapping files for {species}')
+            self._logger.debug(f'Downloading gene dictionary files for {species}')
             download_manifest = self.download_gene_dictionary_for_species(ensembl_base_uri, output.staging_dir,
                                                                           download_service,
                                                                           species)
@@ -135,18 +135,18 @@ class Homologues(IPlugin):
                         self.extract_fields_from_json(
                             download_manifest.path_destination, conf, path_output, jq_cmd)
                 except Exception as e:
-                    download_manifest.msg_completion = f"COULD NOT extract fields from Protein dataset at " \
+                    download_manifest.msg_completion = f"COULD NOT extract fields from gene dictionary dataset at " \
                                                        f"'{download_manifest.path_destination}'" \
                                                        f" using JQ command '{jq_cmd}', due to error: {str(e)}"
                     self._logger.error(download_manifest.msg_completion)
                 else:
                     self._logger.debug(
-                        f"Protein mapping data for '{species}' download manifest destination path"
+                        f"Gene dictionary data for '{species}' download manifest destination path"
                         f" set to '{download_manifest.path_destination}',"
                         f" as final recipient for the sub-dataset"
                     )
                     download_manifest.msg_completion = \
-                        f"Homologue '{species}' data, JQ filtered with '{conf.jq}'"
+                        f"Gene dictionary data for '{species}', JQ filtered with '{conf.jq}'"
                     download_manifest.status_completion = ManifestStatus.COMPLETED
             mapping_data_manifests.append(download_manifest)
         return mapping_data_manifests
