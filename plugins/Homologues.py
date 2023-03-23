@@ -41,7 +41,7 @@ class Homologues(IPlugin):
         self.step_name = "Homologues"
 
     @staticmethod
-    def download_protein_mapping_for_species(uri, staging, download, species: str) -> ManifestResource:
+    def download_gene_dictionary_for_species(uri, staging, download, species: str) -> ManifestResource:
         """
         Download protein homology for species and suffix if file does not already exist.
 
@@ -106,16 +106,16 @@ class Homologues(IPlugin):
             raise
         return output_file
 
-    def download_protein_mapping_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
+    def download_gene_dictionary_data(self, conf, output, cmd_conf) -> List[ManifestResource]:
         """
-        Download the protein mapping data for the species of interest, as defined in the configuration file.
+        Download the gene dictionary data for the species of interest, as defined in the configuration file.
 
         :param conf: configuration object
         :param output: information on where the output result should be place
         :param cmd_conf: configuration for the command line
         """
-        path_output = os.path.join(output.prod_dir, conf.path, str(conf.path_protein_mapping))
-        path_staging = os.path.join(output.staging_dir, conf.path, str(conf.path_protein_mapping))
+        path_output = os.path.join(output.prod_dir, conf.path, str(conf.path_gene_dictionary))
+        path_staging = os.path.join(output.staging_dir, conf.path, str(conf.path_gene_dictionary))
         create_folder(path_staging)
         create_folder(path_output)
         download_service = DownloadResource(path_staging)
@@ -125,7 +125,7 @@ class Homologues(IPlugin):
         for species in conf.resources:
             # Download the protein files for each species of interest
             self._logger.debug(f'Downloading protein mapping files for {species}')
-            download_manifest = self.download_protein_mapping_for_species(ensembl_base_uri, output.staging_dir,
+            download_manifest = self.download_gene_dictionary_for_species(ensembl_base_uri, output.staging_dir,
                                                                           download_service,
                                                                           species)
             if download_manifest.status_completion == ManifestStatus.COMPLETED:
@@ -188,9 +188,9 @@ class Homologues(IPlugin):
         self._logger.info("[STEP] BEGIN, Homologues")
         # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step = get_manifest_service().get_step(self.step_name)
-        # Download protein mapping data
+        # Download gene dictionary data
         manifest_step.resources.extend(
-            self.download_protein_mapping_data(conf, output, cmd_conf))
+            self.download_gene_dictionary_data(conf, output, cmd_conf))
         # Download homology data
         manifest_step.resources.extend(
             self.download_homology_data(conf, output))

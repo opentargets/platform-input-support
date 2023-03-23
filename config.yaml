@@ -214,7 +214,7 @@ go:
     path: gene-ontology-inputs
 homologues:
   uri: https://ftp.ensembl.org/pub/release-{release}/json/
-  path_protein_mapping: 'protein_mapping'
+  path_gene_dictionary: 'gene_dictionary'
   uri_homologues: https://ftp.ensembl.org/pub/release-{release}/tsv/ensembl-compara/homologies
   path_homologues: 'homologies'
   types_homologues:
