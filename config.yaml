@@ -214,7 +214,7 @@ go:
     path: gene-ontology-inputs
 homologues:
   uri: https://ftp.ensembl.org/pub/release-{release}/json/
-  path_protein_mapping: 'protein_mapping'
+  path_gene_dictionary: 'gene_dictionary'
   uri_homologues: https://ftp.ensembl.org/pub/release-{release}/tsv/ensembl-compara/homologies
   path_homologues: 'homologies'
   types_homologues:
@@ -332,12 +332,6 @@ target:
   - uri: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz
     output_filename: gencode.gff3.gz
     path: target-inputs/gencode
-  - uri: https://ftp.ensembl.org/pub/release-108/tsv/ensembl-compara/homologies/homo_sapiens/Compara.108.protein_default.homologies.tsv.gz
-    output_filename: cpd.tsv.gz
-    path: target-inputs/homologue
-  - uri: https://ftp.ensembl.org/pub/release-108/tsv/ensembl-compara/homologies/homo_sapiens/Compara.108.ncrna_default.homologies.tsv.gz
-    output_filename: crna.tsv.gz
-    path: target-inputs/homologue
   - uri: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
     output_filename: ensembl.tsv
     path: target-inputs/go
