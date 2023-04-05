@@ -13,7 +13,7 @@ disease:
     output_filename: hpo-phenotypes.jsonl
     path: ontology-inputs
    efo:
-    uri: https://github.com/EBISPOT/efo/releases/download/v3.50.0/efo_otar_slim.owl
+    uri: https://github.com/EBISPOT/efo/releases/download/v3.52.0/efo_otar_slim.owl
     output_filename: ontology-efo.jsonl
     path: ontology-inputs
     owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
@@ -31,7 +31,7 @@ disease:
   miniset: yes
 drug:
   http_downloads:
-   - uri: https://go.drugbank.com/releases/5-1-9/downloads/all-drugbank-vocabulary
+   - uri: https://go.drugbank.com/releases/5-1-10/downloads/all-drugbank-vocabulary
      path: chembl-inputs
      output_filename: 'drugbank_vocabulary.csv'
   gs_downloads_latest:
@@ -45,7 +45,7 @@ drug:
       path: chembl-inputs
       indices:
         chembl-indication:
-          name: chembl_31_drug_indication
+          name: chembl_32_drug_indication
           fields:
             - '_metadata'
             - 'molecule_chembl_id'
@@ -53,7 +53,7 @@ drug:
             - 'max_phase_for_ind'
             - 'indication_refs'
         chembl-mechanism:
-          name: chembl_31_mechanism
+          name: chembl_32_mechanism
           fields:
             - 'molecule_chembl_id'
             - 'target_chembl_id'
@@ -64,7 +64,7 @@ drug:
             - 'parent_molecule_chembl_id'
             - '_metadata'
         chembl-molecule:
-          name: chembl_31_molecule
+          name: chembl_32_molecule
           fields:
             - 'molecule_chembl_id'
             - 'molecule_hierarchy'
@@ -83,7 +83,7 @@ drug:
             - 'chebi_par_id'
             - 'molecule_structures'
         chembl-target:
-          name: chembl_31_target
+          name: chembl_32_target
           fields:
             - '_metadata'
             - 'target_chembl_id'
@@ -91,7 +91,7 @@ drug:
             - 'target_type'
             - 'pref_name'
         chembl-drug-warning:
-          name: chembl_31_drug_warning
+          name: chembl_32_drug_warning
           fields:
             - '_metadata'
             - 'molecule_chembl_id'
@@ -221,7 +221,7 @@ homologues:
     - 'protein'
     - 'ncrna'
   path: target-inputs/homologue
-  release: 108
+  release: 109
   jq: ".genes[] | [.id, .name] | @tsv"
   resources:
       - 'caenorhabditis_elegans'
@@ -256,7 +256,7 @@ interactions:
   - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
     output_filename: string-interactions.json.gz
     path: interactions-inputs
-  - uri: https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.108.chr.gtf.gz
+  - uri: https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.109.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
 mousephenotypes:
@@ -344,7 +344,7 @@ target:
   - uri: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: https://ftp.ensembl.org/pub/release-108/species_EnsemblVertebrates.txt
+  - uri: https://ftp.ensembl.org/pub/release-109/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
   - uri: https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -364,7 +364,7 @@ target:
       output_filename: essentiality_matrices.zip
       path: target-inputs/project-scores
     ensembl:
-      release: 108
+      release: 109
       uri: https://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
