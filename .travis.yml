@@ -15,7 +15,7 @@ before_install:
   - conda update --yes conda
 install:
   # Set up a conda environment with the right Python version.
-  - conda env create --force -f environment.yaml python=$TRAVIS_PYTHON_VERSION
+  - conda create --force -f environment.yaml python=$TRAVIS_PYTHON_VERSION
   - source activate otpis
 script:
    - python -m pytest --cov=modules --cov-report term tests/ --fulltrace
