@@ -167,6 +167,10 @@ evidence:
     output_filename: impc.json.gz
     output_spark_dir: impc
     path: evidence-files
+  - bucket: otar000-evidence_input/Crispr_screens/json
+    output_filename: crispr_screen.json.gz
+    output_spark_dir: crispr_screen
+    path: evidence-files
   - bucket: otar000-evidence_input/PROGENy/json
     output_filename: progeny.json.gz
     output_spark_dir: progeny
