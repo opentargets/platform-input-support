@@ -71,9 +71,8 @@ class Riot(object):
             logger.error(msg_err)
             raise RiotException(msg_err)
         except Exception as e:
-            msg_err = "When running RIOT for OWL file '{}', "
-            "with destination path '{}' and JQ filter '{}', "
-            "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
+            msg_err = "When running RIOT for OWL file '{}', with destination path '{}' and JQ filter '{}', \
+                the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
             logger.error(msg_err)
             raise RiotException(msg_err)
         return path_output
