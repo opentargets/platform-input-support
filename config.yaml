@@ -311,6 +311,9 @@ target:
     output_filename: uniprot-ssl.tsv.gz
     path: target-inputs/uniprot
   gs_downloads_latest:
+  - bucket: otar000-evidence_input/Essentiality/json
+    output_filename: essentiality.json.gz
+    path: target-inputs/gene-essentiality
   - bucket: otar001-core/subcellularLocations
     output_filename: subcellular_locations_ssl.tsv
     path: target-inputs/hpa
