@@ -45,7 +45,7 @@ drug:
       path: chembl-inputs
       indices:
         chembl-indication:
-          name: chembl_31_drug_indication
+          name: chembl_32_drug_indication
           fields:
             - '_metadata'
             - 'molecule_chembl_id'
@@ -53,7 +53,7 @@ drug:
             - 'max_phase_for_ind'
             - 'indication_refs'
         chembl-mechanism:
-          name: chembl_31_mechanism
+          name: chembl_32_mechanism
           fields:
             - 'molecule_chembl_id'
             - 'target_chembl_id'
@@ -64,7 +64,7 @@ drug:
             - 'parent_molecule_chembl_id'
             - '_metadata'
         chembl-molecule:
-          name: chembl_31_molecule
+          name: chembl_32_molecule
           fields:
             - 'molecule_chembl_id'
             - 'molecule_hierarchy'
@@ -79,7 +79,7 @@ drug:
             - 'chebi_par_id'
             - 'molecule_structures'
         chembl-target:
-          name: chembl_31_target
+          name: chembl_32_target
           fields:
             - '_metadata'
             - 'target_chembl_id'
@@ -87,7 +87,7 @@ drug:
             - 'target_type'
             - 'pref_name'
         chembl-drug-warning:
-          name: chembl_31_drug_warning
+          name: chembl_32_drug_warning
           fields:
             - '_metadata'
             - 'molecule_chembl_id'
