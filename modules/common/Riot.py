@@ -66,9 +66,8 @@ class Riot(object):
                 logger.error(f"RIOT stderr -> '{riot_process.stderr.read()}'")
                 logger.error(f"JQ stderr -> '{jq_process.stderr.read()}'")
         except EnvironmentError as e:
-            msg_err = "When running RIOT for OWL file '{}', "
-            "with destination path '{}' and JQ filter '{}', "
-            "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
+            msg_err = "When running RIOT for OWL file '{}', with destination path '{}' and JQ filter '{}', \
+                the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
             logger.error(msg_err)
             raise RiotException(msg_err)
         except Exception as e:
