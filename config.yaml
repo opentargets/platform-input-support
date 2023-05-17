@@ -224,7 +224,7 @@ homologues:
     - 'protein'
     - 'ncrna'
   path: target-inputs/homologue
-  release: 108
+  release: 109
   jq: ".genes[] | [.id, .name] | @tsv"
   resources:
       - 'caenorhabditis_elegans'
@@ -258,7 +258,7 @@ interactions:
   - uri: https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
     output_filename: string-interactions.json.gz
     path: interactions-inputs
-  - uri: https://ftp.ensembl.org/pub/release-108/gtf/homo_sapiens/Homo_sapiens.GRCh38.108.chr.gtf.gz
+  - uri: https://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.chr.gtf.gz
     output_filename: Homo_sapiens.GRCh38.chr.gtf.gz
     path: interactions-inputs
 mousephenotypes:
@@ -349,7 +349,7 @@ target:
   - uri: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
     output_filename: goa_human_eco.gpa.gz
     path: target-inputs/go
-  - uri: https://ftp.ensembl.org/pub/release-108/species_EnsemblVertebrates.txt
+  - uri: https://ftp.ensembl.org/pub/release-109/species_EnsemblVertebrates.txt
     output_filename: species_EnsemblVertebrates.txt
     path: target-inputs/homologue
   - uri: https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -369,7 +369,7 @@ target:
       output_filename: essentiality_matrices.zip
       path: target-inputs/project-scores
     ensembl:
-      release: 108
+      release: 109
       uri: https://ftp.ensembl.org/pub/release-{release}/json/homo_sapiens/homo_sapiens.json
       output_filename: homo_sapiens.jsonl
       path: target-inputs/ensembl
