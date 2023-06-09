@@ -31,8 +31,6 @@ def setup_parser():
           env_var="OT_CLEAN_OUTPUT",
           help='By default, the output directory is deleted. To not delete the files use this flag.')
 
-    # argument to run the script using thread
-
     p.add('-s', '--suffix', env_var="OT_SUFFIX_INPUT",
           action='store', help='The default suffix is yyyy-mm-dd')
 
