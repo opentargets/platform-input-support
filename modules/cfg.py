@@ -31,9 +31,6 @@ def setup_parser():
           env_var="OT_CLEAN_OUTPUT",
           help='By default, the output directory is deleted. To not delete the files use this flag.')
 
-    # argument to run the script using thread
-    p.add('-t', '--thread', env_var="OT_THREAD", action='store_true', help='Run the script with thread')
-
     p.add('-s', '--suffix', env_var="OT_SUFFIX_INPUT",
           action='store', help='The default suffix is yyyy-mm-dd')
 
@@ -44,8 +41,6 @@ def setup_parser():
     p.add('-exclude', action='store', nargs='+', default=[],
           help='Exclude a specific list of sections of the config file. Eg\n annotations annotations_from_buckets'
           )
-
-    p.add('--skip', action='store_true', help='Skip the errors and just report them')
 
     # logging
     p.add("--log-level", help="set the log level",

@@ -210,7 +210,7 @@ usage: platform-input-support.py [-h] [-c CONFIG]
                                  [-gkey GCP_CREDENTIALS]
                                  [-gb GCP_BUCKET] [-o OUTPUT_DIR] [-t]
                                  [-s SUFFIX] [-steps STEPS [STEPS ...]]
-                                 [-exclude EXCLUDE [EXCLUDE ...]] [--skip]
+                                 [-exclude EXCLUDE [EXCLUDE ...]]
                                  [-l] [--log-level LOG_LEVEL]
                                  [--log-config LOG_CONFIG]
 
@@ -230,8 +230,6 @@ optional arguments:
   -o OUTPUT_DIR, --output OUTPUT_DIR
                         By default, the files are generated in the root
                         directory [env var: OT_OUTPUT_DIR] (default: None)
-  -t, --thread          Run the script with thread [env var: OT_THREAD]
-                        (default: False)
   -s SUFFIX, --suffix SUFFIX
                         The default suffix is yyyy-mm-dd [env var:
                         OT_SUFFIX_INPUT] (default: None)
@@ -242,7 +240,6 @@ optional arguments:
                         Exclude a specific list of sections of the config
                         file. Eg annotations annotations_from_buckets
                         (default: None)
-  --skip                Skip the errors and just report them (default: False)
   -l, --list_steps      List of steps callable (default: False)
   --log-level LOG_LEVEL
                         set the log level [env var: LOG_LEVEL] (default: INFO)
@@ -289,7 +286,6 @@ python platform-input-support.py
 
 ```
 python platform-input-support.py
-         --skip
          --gcp_credentials /path/open-targets-gac.json
          --gcp_bucket ot-snapshots/es5-sufentanil/tmp
 or  
