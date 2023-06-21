@@ -102,7 +102,11 @@ class Homologues(IPlugin):
             self._logger.error(f"JQ filter '{conf.jq}' failed on file '{input_file}', destination file '{output_file}' "
                                f"with error code {e.returncode}, "
                                f"command standard output: {e.output}, "
-                               f"command standard error output: {jqp.stderr}")
+                               f"command standard error output: {e.stderr}")
+            if (e.returncode == 137):
+                self._logger.error("JQ command was killed, possibly due to out of memory. \
+                                   You may need to increase your VM's memory.")
+
             raise
         return output_file
 
