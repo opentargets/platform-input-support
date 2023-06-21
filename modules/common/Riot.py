@@ -55,48 +55,34 @@ class Riot(object):
         run_env["_JAVA_OPTIONS"] = "-Xms4096m -Xmx8192m"
 
         try:
+            logger.info(f"running Riot on {owl_file} ...")
             riot_output = subprocess.run([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env, capture_output=True)
-            riot_output.check_returncode()
-            if len(riot_output.stdout) == 0:
-               logger.error(f"Riot command failed on the file {owl_file},  " 
-                             f"Riot output is empty!")
-               raise RiotException()
-               
-            else:
+            riot_output.check_returncode()               
                                 
-                # jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
-                #                 stdout=open(path_output, "wb"), stderr=subprocess.PIPE)
-                jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
-                                        capture_output= True)
-                # print(f"---------> {jq_output.stdout[0:1000]}")
-                # print(f"---------> {jq_output.stdout.decode('utf-8')[0:1000]}")
-                if len(jq_output.stdout):
-                    with open(path_output, "wb") as json_output:
-                        json_output.write(jq_output.stdout.decode('utf-8'))
-                else:
-                    logger.error(f"JQ filter '{owl_jq}' failed on the Riot output file, " 
-                                f"JQ output is empty!")  
-                    raise Exception()              
-                
-                jq_output.check_returncode()
+            # jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
+            #                 stdout=open(path_output, "wb"), stderr=subprocess.PIPE)
+            logger.info(f"running JQ on Riot output ...")
+            jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
+                                    capture_output= True)
+            jq_output.check_returncode()
+            with open(path_output, "wb") as json_output:
+                json_output.write(jq_output.stdout)
 
-                logger.info(f"jq_output size: {os.path.getsize(path_output)}")
-                if os.path.getsize(path_output) == 0:
-                    logger.error(f"JQ filter '{owl_jq}' failed on the Riot output file, " 
-                                f"destination file '{path_output}' is empty!")
-                    raise Exception
-                        
+            logger.info(f"--->jq_output size: {os.path.getsize(path_output)}")
+            
         except subprocess.CalledProcessError as e:
-            logger.error(f"Error in running command {riot_output.args}: {e.stderr.decode('utf-8')} and this code: {e.returncode}")
+            # logger.error(f"Error in running command {riot_output.args}: {e.stderr.decode('utf-8')} and this code: {e.returncode}")
             msg = "When running RIOT for OWL file '{}', \
-                    with destination path '{}' and JQ filter '{}', \
+                with destination path '{}' and JQ filter '{}', \
                     the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
-            logger.error(f"Error no: {e.returncode}, Error str: {e.stderr.decode('utf-8')}, Msg: {msg}")
+            if (e.returncode == 137):
+                self._logger.error("Command was killed, possibly due to out of memory. \
+                                   You may need to increase your VM's memory.")
             raise
         
         except OSError as e:            
             msg = "When running RIOT for OWL file '{}', \
-                    with destination path '{}' and JQ filter '{}', \
+                with destination path '{}' and JQ filter '{}', \
                     the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
             logger.error(f"Error no: {e.errno}, Error str: {e.strerror}, Msg: {msg}")
             raise
