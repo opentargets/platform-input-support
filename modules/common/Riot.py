@@ -55,29 +55,26 @@ class Riot(object):
         run_env["_JAVA_OPTIONS"] = "-Xms4096m -Xmx8192m"
 
         try:
-            logger.info(f"running Riot on {owl_file} ...")
+            logger.info(f"running Riot on {owl_file}")
             riot_output = subprocess.run([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env, capture_output=True)
             riot_output.check_returncode()               
                                 
             # jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
             #                 stdout=open(path_output, "wb"), stderr=subprocess.PIPE)
-            logger.info(f"running JQ on Riot output ...")
+            logger.info(f"running JQ on Riot output...")
             jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
                                     capture_output= True)
             jq_output.check_returncode()
             with open(path_output, "wb") as json_output:
                 json_output.write(jq_output.stdout)
-
-            logger.info(f"--->jq_output size: {os.path.getsize(path_output)}")
             
         except subprocess.CalledProcessError as e:
-            # logger.error(f"Error in running command {riot_output.args}: {e.stderr.decode('utf-8')} and this code: {e.returncode}")
             msg = "When running RIOT for OWL file '{}', \
                 with destination path '{}' and JQ filter '{}', \
                     the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
+            logger.error(msg)
             if (e.returncode == 137):
-                self._logger.error("Command was killed, possibly due to out of memory. \
-                                   You may need to increase your VM's memory.")
+                self._logger.error(f"Command {riot_output.args[0]} was killed, possibly due to out of memory. You may need to increase your VM's memory.")
             raise
         
         except OSError as e:            
