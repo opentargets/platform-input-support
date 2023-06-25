@@ -58,14 +58,14 @@ class Riot(object):
             logger.info(f"running Riot and JQ command on {owl_file}")
             # riot_output = subprocess.run([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env, capture_output=True)
             riot_jq_cmd = f"{self.riot_cmd} --output 'JSON-LD' {owl_file} | {self.jq_cmd} -r '{owl_jq}' > {path_output}"
-            cmd_output = subprocess.run(riot_jq_cmd, env=run_env, shell=True, capture_output=True)
+            cmd_output = subprocess.run(riot_jq_cmd, env=run_env, shell=True, capture_output=True, check=True)
             
             print(f"---> cmd_output: {cmd_output}")
             print(f"---> cmd_output return code: {cmd_output.returncode}")
             print(f"---> cmd_output Standard Output: {cmd_output.stdout.decode()}")
             print(f"---> cmd_output Standard Error: {cmd_output.stderr.decode()}")
         
-            cmd_output.check_returncode()
+            # cmd_output.check_returncode()
                                 
             # jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
             #                 stdout=open(path_output, "wb"), stderr=subprocess.PIPE)
@@ -92,6 +92,11 @@ class Riot(object):
             logger.error(f"Error no: {e.errno}, Error str: {e.strerror}, Msg: {msg}")
             raise
 
+        except EnvironmentError as e:
+            logger.error(f"When running RIOT for OWL file '{owl_file}', RIOT command '{riot_jq_cmd}'"
+                         f"with destination path '{path_output}' "
+                         f"the following error occurred: '{e}'")
+                         
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
