@@ -1,6 +1,7 @@
+import os
 import errno
 import logging
-import os
+
 import subprocess
 from modules.common.Utils import Utils
 
@@ -53,20 +54,28 @@ class Riot(object):
         # Set JVM memory limits
         run_env = os.environ.copy()
         run_env["_JAVA_OPTIONS"] = "-Xms4096m -Xmx8192m"
-
+        print(f"{run_env=}")
         try:
-            logger.info(f"running Riot on {owl_file}")
-            riot_output = subprocess.run([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env, capture_output=True)
-            riot_output.check_returncode()               
+            logger.info(f"running Riot and JQ command on {owl_file}")
+            # riot_output = subprocess.run([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env, capture_output=True)
+            riot_jq_cmd = f"{self.riot_cmd} --output 'JSON-LD' {owl_file} | {self.jq_cmd} -r '{owl_jq}' > {path_output}"
+            cmd_output = subprocess.run(riot_jq_cmd, env=run_env, shell=True, capture_output=True)
+            
+            print(f"---> cmd_output: {cmd_output}")
+            print(f"---> cmd_output return code: {cmd_output.returncode}")
+            print(f"---> cmd_output Standard Output: {cmd_output.stdout.decode()}")
+            print(f"---> cmd_output Standard Error: {cmd_output.stderr.decode()}")
+        
+            cmd_output.check_returncode()
                                 
             # jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
             #                 stdout=open(path_output, "wb"), stderr=subprocess.PIPE)
-            logger.info(f"running JQ on Riot output...")
-            jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
-                                    capture_output= True)
-            jq_output.check_returncode()
-            with open(path_output, "wb") as json_output:
-                json_output.write(jq_output.stdout)
+            # logger.info(f"running JQ on Riot output...")
+            # jq_output = subprocess.run([self.jq_cmd, "-r", owl_jq], input=riot_output.stdout, 
+            #                         capture_output= True)
+            # jq_output.check_returncode()
+            # with open(path_output, "wb") as json_output:
+            #     json_output.write(jq_output.stdout)
             
         except subprocess.CalledProcessError as e:
             msg = "When running RIOT for OWL file '{}', \
@@ -74,7 +83,7 @@ class Riot(object):
                     the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
             logger.error(msg)
             if (e.returncode == 137):
-                self._logger.error(f"Command {riot_output.args[0]} was killed, possibly due to out of memory. You may need to increase your VM's memory.")
+                self._logger.error(f"JQ Command was killed, possibly due to out of memory. You may need to increase your VM's memory.")
             raise
         
         except OSError as e:            
