@@ -54,7 +54,6 @@ class Riot(object):
         # Set JVM memory limits
         run_env = os.environ.copy()
         run_env["_JAVA_OPTIONS"] = "-Xms4096m -Xmx8192m"
-        print(f"{run_env=}")
         try:
             logger.info(f"running Riot and JQ command on {owl_file}")
             # riot_output = subprocess.run([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env, capture_output=True)
