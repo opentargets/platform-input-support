@@ -13,10 +13,10 @@ disease:
     output_filename: hpo-phenotypes.jsonl
     path: ontology-inputs
    efo:
-    uri: https://github.com/EBISPOT/efo/releases/download/v3.52.0/efo_otar_slim.owl
+    uri: https://github.com/EBISPOT/efo/releases/download/v3.56.0/efo_otar_slim.owl
     output_filename: ontology-efo.jsonl
     path: ontology-inputs
-    owl_jq: '.["@graph"][] | select (.["@type"] == ("Class","Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
+    owl_jq: '.["@graph"][] | select (.["@type"] == ("owl:Class","owl:Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
     diseases_static_file: diseases_efo.jsonl
    hpo:
     uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2021-10-10/hp.owl
