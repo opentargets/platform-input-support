@@ -6,26 +6,16 @@ services:
 env:
   global:
     - QUAY_REPO="quay.io/opentargets/platform-input-support"
-before_install:
-  # Install Miniconda
-  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda3/bin:$PATH
-  - conda update --yes conda
 install:
-  # Set up a conda environment with the right Python version.
-  - conda env create --force -f environment.yaml
-  - source activate otpis
+  # build docker image
+  - docker build --pull --cache-from "${QUAY_REPO}:${TRAVIS_BRANCH}" --tag "${QUAY_REPO}" .
 script:
-   - python -m pytest --cov=modules --cov-report term tests/ --fulltrace
+   - docker run -it --entrypoint python3.8 "${QUAY_REPO}" -m pytest --cov=modules --cov-report term tests/ --fulltrace
 after_success:
   - codecov
   - |
     if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
       echo "--- Building and pushing Docker image ---"
-      docker pull "${QUAY_REPO}:${TRAVIS_BRANCH}" || true
-      docker build --pull --cache-from "${QUAY_REPO}:${TRAVIS_BRANCH}" --tag "${QUAY_REPO}" .
       docker login -u="${QUAY_USER}" -p="${QUAY_PASSWORD}" quay.io
       git_sha="${TRAVIS_COMMIT}"
       docker tag "${QUAY_REPO}" "${QUAY_REPO}:${TRAVIS_BRANCH}"
