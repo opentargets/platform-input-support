@@ -32,10 +32,17 @@ def get_manifest_service(args=None, configuration=None):
             logger.error(msg)
             raise ManifestServiceException(msg)
         manifest_config = configuration.config.manifest
-        manifest_config.update({"output_dir": configuration.output_dir, "gcp_bucket": args.gcp_bucket})
-        logger.debug("Initializing Manifest service, configuration: {}".format(json.dumps(manifest_config)))
+        manifest_config.update(
+            {"output_dir": configuration.output_dir, "gcp_bucket": args.gcp_bucket}
+        )
+        logger.debug(
+            "Initializing Manifest service, configuration: {}".format(
+                json.dumps(manifest_config)
+            )
+        )
         __manifestServiceInstance = ManifestService(manifest_config)
     return __manifestServiceInstance
+
 
 # Handler for ManifestStatus Enum
 class JsonEnumHandler(jsonpickle.handlers.BaseHandler):
@@ -67,21 +74,23 @@ class GcpBucketService(object):
             except google.cloud.exceptions.NotFound:
                 logger.error("Bucket '{}' NOT FOUND".format(self.bucket_name))
             except exceptions.Forbidden:
-                logger.error("Google Cloud Storage, FORBIDDEN access, path '{}'".format(self.bucket_name))
+                logger.error(
+                    "Google Cloud Storage, FORBIDDEN access, path '{}'".format(
+                        self.bucket_name
+                    )
+                )
         return None
 
     def download_file(self, src_path_file, dst_path_file):
         # WARNING - No error condition signaling mechanism is specified in the documentation
-        self.get_bucket() \
-            .blob(src_path_file) \
-            .download_to_filename(dst_path_file)
+        self.get_bucket().blob(src_path_file).download_to_filename(dst_path_file)
         # TODO - Handle possible errors
 
     @staticmethod
     def get_bucket_and_path(google_bucket_param):
         if google_bucket_param is None:
             return None, None
-        split = google_bucket_param.split('/', 1) + [None]
+        split = google_bucket_param.split("/", 1) + [None]
         return split[0], split[1]
 
 
@@ -89,10 +98,11 @@ class ManifestServiceException(Exception):
     """
     Exception type for errors dealing with the manifest file
     """
+
     pass
 
 
-class ManifestService():
+class ManifestService:
     """
     This service manages the session's Manifest file
     """
@@ -131,9 +141,13 @@ class ManifestService():
             try:
                 with open(self.path_manifest, "r") as manifest_file:
                     manifest_document = jsonpickle.decode(manifest_file.read())
-                    self._logger.debug(f"Manifest file loaded from disk at {self.path_manifest}")
+                    self._logger.debug(
+                        f"Manifest file loaded from disk at {self.path_manifest}"
+                    )
             except Exception as e:
-                self._logger.error(f"Error loading manifest file from disk at {self.path_manifest}, error: {e}")
+                self._logger.error(
+                    f"Error loading manifest file from disk at {self.path_manifest}, error: {e}"
+                )
             else:
                 self.__is_manifest_loaded = True
                 # Load and modify the 'modified' timestamp
@@ -147,27 +161,33 @@ class ManifestService():
         """
         self._logger.debug(f"Local manifest file path at '{self.path_manifest}'")
         if self.config.gcp_bucket is not None:
-            gcp_bucket, gcp_path = GcpBucketService.get_bucket_and_path(self.config.gcp_bucket)
+            gcp_bucket, gcp_path = GcpBucketService.get_bucket_and_path(
+                self.config.gcp_bucket
+            )
             gcp_path_manifest = f"{gcp_path}/{self.config.file_name}"
             gcp_client = GcpBucketService(gcp_bucket, gcp_path_manifest)
             gcp_bucket_full_path_manifest = f"{gcp_bucket}/{gcp_path_manifest}"
             try:
-                logger.debug(f"GCP manifest file path '{gcp_bucket_full_path_manifest}'")
+                logger.debug(
+                    f"GCP manifest file path '{gcp_bucket_full_path_manifest}'"
+                )
                 gcp_client.download_file(gcp_path_manifest, self.path_manifest)
             except Exception as e:
                 self._logger.warning(
                     f"GCP information provided, "
                     f"but manifest file NOT FOUND at '{gcp_bucket_full_path_manifest}', "
-                    f"due to '{e}'")
+                    f"due to '{e}'"
+                )
             else:
-                self._logger.debug(f"Loading existing manifest file at '{gcp_bucket_full_path_manifest}'")
+                self._logger.debug(
+                    f"Loading existing manifest file at '{gcp_bucket_full_path_manifest}'"
+                )
                 return self.__load_manifest()
         manifest_document = self.__load_manifest()
         if manifest_document is None:
             self._logger.info("using NEW Manifest Document")
             manifest_document = self.__create_manifest()
         return manifest_document
-
 
     @property
     def path_manifest(self) -> str:
@@ -188,10 +208,14 @@ class ManifestService():
             for step in self.manifest.steps.values():
                 self._logger.debug(f"Converting step '{step.name}' PATHs")
                 for resource in step.resources:
-                    index_relative_path = resource.path_destination.rfind(self.config.output_dir)
+                    index_relative_path = resource.path_destination.rfind(
+                        self.config.output_dir
+                    )
                     if index_relative_path != -1:
                         index_relative_path += len(self.config.output_dir) + 1
-                        resource.path_destination = resource.path_destination[index_relative_path:]
+                        resource.path_destination = resource.path_destination[
+                            index_relative_path:
+                        ]
 
     def __reset_manifest_step(self, step_name: str):
         self._logger.debug(f"Reset request for step name '{step_name}'")
@@ -202,6 +226,12 @@ class ManifestService():
             new_manifest_step.created = self.manifest.steps[step_name].created
             self.manifest.steps[step_name] = new_manifest_step
             self.__resetted_manifest_steps.add(step_name)
+
+    def _reset_manifest_document_statuses(self) -> None:
+        """Reset manifest document statuses to defaults."""
+        self.manifest.status = ManifestStatus.FAILED
+        self.manifest.status_completion = ManifestStatus.NOT_COMPLETED
+        self.manifest.msg_completion = ManifestStatus.NOT_SET
 
     def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
         if step_name not in self.manifest.steps:
@@ -218,10 +248,7 @@ class ManifestService():
 
     @staticmethod
     def _get_checksum_compute_chain():
-        return {
-            'md5sum': hashlib.md5(),
-            'sha256sum': hashlib.sha256()
-        }
+        return {"md5sum": hashlib.md5(), "sha256sum": hashlib.sha256()}
 
     @staticmethod
     def clone_resource(resource: ManifestResource) -> ManifestResource:
@@ -229,21 +256,26 @@ class ManifestService():
 
     @staticmethod
     def are_all_resources_complete(resources: List[ManifestResource]) -> bool:
-        return all(resource.status_completion == ManifestStatus.COMPLETED for resource in resources)
+        return all(
+            resource.status_completion == ManifestStatus.COMPLETED
+            for resource in resources
+        )
 
     @staticmethod
     def are_all_steps_complete(steps: List[ManifestStep]) -> bool:
         # TODO - Refactor into a single method that accepts either ManifestResource or ManifestStatus
         return all(step.status_completion == ManifestStatus.COMPLETED for step in steps)
 
-    def _compute_checksums_for_resource(self, resource: ManifestResource) -> Tuple[bool, List[str], ManifestResource]:
+    def _compute_checksums_for_resource(
+        self, resource: ManifestResource
+    ) -> Tuple[bool, List[str], ManifestResource]:
         self._logger.debug(f"Computing checksums for '{resource.path_destination}'")
         success = False
         errors = []
         BUF_SIZE = 65536
         hashers = self._get_checksum_compute_chain()
         # TODO - Handle possible errors
-        with open(resource.path_destination, 'rb') as f:
+        with open(resource.path_destination, "rb") as f:
             while True:
                 data = f.read(BUF_SIZE)
                 if not data:
@@ -280,8 +312,32 @@ class ManifestService():
         """
         self.make_paths_relative()
         try:
-            with open(self.path_manifest, 'w') as fmanifest:
+            with open(self.path_manifest, "w") as fmanifest:
                 fmanifest.write(jsonpickle.encode(self.manifest, make_refs=False))
         except EnvironmentError as e:
             self._logger.error(f"COULD NOT write manifest file '{self.path_manifest}'")
-        self._logger.info(f"WROTE manifest file '{self.path_manifest}', session '{self.manifest.session}'")
+        self._logger.info(
+            f"WROTE manifest file '{self.path_manifest}', session '{self.manifest.session}'"
+        )
+
+    def update_manifest_after_run(self) -> None:
+        """Update the manifest document after all the steps have run.
+        Evaluate the statuses based on the manifest steps statuses.
+        """
+        # Reset statuses
+        self._reset_manifest_document_statuses()
+        # Evaluate statuses
+        self.manifest.msg_completion = ManifestStatus.NOT_SET
+        if not self.are_all_steps_complete(self.manifest.steps.values()):
+            self.manifest.status_completion = ManifestStatus.FAILED
+            self.manifest.msg_completion = (
+                "COULD NOT complete data collection for one or more steps"
+            )
+        # TODO - Pipeline level VALIDATION
+        self.manifest.status = self.manifest.status_completion
+        if self.manifest.status_completion != ManifestStatus.FAILED:
+            self.manifest.status_completion = ManifestStatus.COMPLETED
+            self.manifest.status = ManifestStatus.COMPLETED
+            self.manifest.msg_completion = "All steps completed their data collection"
+        else:
+            logger.error(self.manifest.msg_completion)
