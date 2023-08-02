@@ -1,12 +1,10 @@
 import hashlib
-import itertools
 import os
 import json
 import copy
 import logging
 import jsonpickle
 import google.auth
-import multiprocessing as mp
 from strenum import StrEnum
 from google.cloud import storage, exceptions
 from typing import List, Tuple
@@ -229,9 +227,10 @@ class ManifestService:
 
     def _reset_manifest_document_statuses(self) -> None:
         """Reset manifest document statuses to defaults."""
-        self.manifest.status = ManifestStatus.FAILED
-        self.manifest.status_completion = ManifestStatus.NOT_COMPLETED
-        self.manifest.msg_completion = ManifestStatus.NOT_SET
+        if self.__is_manifest_loaded:
+            self.manifest.status = ManifestStatus.FAILED
+            self.manifest.status_completion = ManifestStatus.NOT_COMPLETED
+            self.manifest.msg_completion = ManifestStatus.NOT_SET
 
     def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
         if step_name not in self.manifest.steps:
@@ -320,10 +319,8 @@ class ManifestService:
             f"WROTE manifest file '{self.path_manifest}', session '{self.manifest.session}'"
         )
 
-    def update_manifest_after_run(self) -> None:
-        """Update the manifest document after all the steps have run.
-        Evaluate the statuses based on the manifest steps statuses.
-        """
+    def evaluate_manifest_document(self) -> None:
+        """Evaluate the statuses based on the manifest steps statuses."""
         # Reset statuses
         self._reset_manifest_document_statuses()
         # Evaluate statuses

@@ -3,7 +3,7 @@ import pathlib
 import pytest
 
 from modules.common.YAMLReader import YAMLReader
-from manifest.services import ManifestService, ManifestStatus
+from manifest.services import get_manifest_service, ManifestService, ManifestStatus
 
 
 @pytest.fixture()
@@ -27,17 +27,20 @@ class TestManifestService:
     """Test manifest service class"""
 
     def test_update_manifest_after_run(self, manifest_config) -> None:
-        ms = ManifestService(manifest_config)
+        ms = get_manifest_service(configuration=manifest_config)
         # add a failed manifest step
         disease_step = ms.get_step("disease")
         disease_step.status_completion = ManifestStatus.FAILED
         ms.manifest.status_completion = ManifestStatus.FAILED
         ms.manifest.status = ManifestStatus.FAILED
+        ms.evaluate_manifest_document()
+        assert ms.manifest.status_completion != ManifestStatus.COMPLETED
+        assert ms.manifest.status != ManifestStatus.COMPLETED
         # persist to file
         ms.persist()
         # set all step to complete
         disease_step.status_completion = ManifestStatus.COMPLETED
         # status shoule be COMPLETE after updating
-        ms.update_manifest_after_run()
+        ms.evaluate_manifest_document()
         assert ms.manifest.status_completion == ManifestStatus.COMPLETED
         assert ms.manifest.status == ManifestStatus.COMPLETED

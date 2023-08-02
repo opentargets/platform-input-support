@@ -3,7 +3,7 @@ import logging
 from modules.common.Utils import Utils
 from definitions import PIS_OUTPUT_DIR
 from yapsy.PluginManager import PluginManager
-from manifest import get_manifest_service, ManifestStatus, ManifestService
+from manifest import get_manifest_service, ManifestStatus
 from modules.common import create_folder, recursive_remove_folder
 from modules.common.GoogleBucketResource import GoogleBucketResource
 
@@ -184,6 +184,6 @@ class RetrieveResource(object):
             manifest_service.manifest.msg_completion = (
                 f"COULD NOT complete the data collection session due to '{e}'"
             )
-        manifest_service.update_manifest_after_run()
+        manifest_service.evaluate_manifest_document()
         manifest_service.persist()
         self.copy_to_gs()
