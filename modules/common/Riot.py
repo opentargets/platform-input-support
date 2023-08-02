@@ -1,5 +1,5 @@
 import os
-import errno
+from pathlib import Path
 import logging
 import subprocess
 from modules.common.Utils import Utils
@@ -12,12 +12,10 @@ class RiotException(Exception):
 
 
 class Riot(object):
-
     def __init__(self, yaml):
         self.yaml = yaml
         self._jq_cmd = None
         self._riot_cmd = None
-        self._jvm_args = None
 
     @property
     def riot_cmd(self):
@@ -31,15 +29,20 @@ class Riot(object):
             self._jq_cmd = Utils.check_path_command("jq", self.yaml.jq)
         return self._jq_cmd
 
-    @property
-    def jvm_args(self):
-        if self._jvm_args is None:
-            os.environ["JVM_ARGS"] = str(self.yaml.java_vm)
-            logger.info("JVM_ARGS: " + os.environ["JVM_ARGS"])
-            self._jvm_args = str(self.yaml.java_vm)
-        return self._jvm_args
+    def configure_jvm(self) -> None:
+        """Configure the JVM environment varaiables based on the
+        yaml file.
+        """
+        os.environ["_JAVA_OPTIONS"] = str(self.yaml.java_vm)
+        logger.info("_JAVA_OPTIONS: " + os.environ["_JAVA_OPTIONS"])
 
-    def run_riot(self, owl_file, dir_output, json_file, owl_jq):
+    def run_riot(
+        self,
+        owl_file: Path,
+        dir_output: Path,
+        json_file: Path,
+        owl_jq: str,
+    ):
         """
         Convert the given OWL file into JSON-LD with a filtering step on the produced JSON-LD by the given filter
 
@@ -51,32 +54,28 @@ class Riot(object):
         """
         path_output = os.path.join(dir_output, json_file)
         # Set JVM memory limits
-        run_env = os.environ.copy()
-        run_env["_JAVA_OPTIONS"] = "-Xms4096m -Xmx8192m"
+        self.configure_jvm()
+        riot_jq_cmd_string = (
+            f"{self.riot_cmd} -v --output JSON-LD {owl_file} | "
+            f"{self.jq_cmd} -r '{owl_jq}' > {path_output}"
+        )
         try:
-            with open(path_output, "wb") as json_output, \
-                    subprocess.Popen([self.riot_cmd, "--output", "JSON-LD", owl_file], env=run_env,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE) as riot_process, \
-                    subprocess.Popen([self.jq_cmd, "-r", owl_jq], env=run_env,
-                                     stdin=riot_process.stdout,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE) as jq_process:
-                json_output.write(jq_process.stdout.read())
-                logger.error(f"RIOT stderr -> '{riot_process.stderr.read()}'")
-                logger.error(f"JQ stderr -> '{jq_process.stderr.read()}'")
-        except EnvironmentError as e:
-            msg_err = "When running RIOT for OWL file '{}', "
-            "with destination path '{}' and JQ filter '{}', "
-            "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
+            riot_jq = subprocess.run(
+                riot_jq_cmd_string,
+                env=os.environ.copy(),
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            riot_jq.check_returncode()
+        except subprocess.CalledProcessError as err:
+            msg_err = f"The following error occurred: '{err}'"
             logger.error(msg_err)
             raise RiotException(msg_err)
-        except Exception as e:
-            msg_err = "When running RIOT for OWL file '{}', "
-            "with destination path '{}' and JQ filter '{}', "
-            "the following error occurred: '{}'".format(owl_file, path_output, owl_jq, e)
-            logger.error(msg_err)
-            raise RiotException(msg_err)
+        if "error" in riot_jq.stderr:
+            logger.error(riot_jq.stderr)
+            raise RiotException(riot_jq.stderr)
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
@@ -90,6 +89,9 @@ class Riot(object):
         """
         path, filename = os.path.split(owl_file)
         dst_filename = filename.replace(".owl", ".json")
-        logger.debug("RIOT OWL file '{}' to JSON, output folder '{}', destination file name '{}', JQ filter '{}'"
-                     .format(owl_file, output_dir, dst_filename, owl_jq))
+        logger.debug(
+            "RIOT OWL file '{}' to JSON, output folder '{}', destination file name '{}', JQ filter '{}'".format(
+                owl_file, output_dir, dst_filename, owl_jq
+            )
+        )
         return self.run_riot(owl_file, output_dir, dst_filename, owl_jq)
