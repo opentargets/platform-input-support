@@ -73,7 +73,7 @@ class Riot(object):
             msg_err = f"The following error occurred: '{err}'"
             logger.error(msg_err)
             raise RiotException(msg_err)
-        if "error" in riot_jq.stderr:
+        if "error" in riot_jq.stderr.lower():
             logger.error(riot_jq.stderr)
             raise RiotException(riot_jq.stderr)
         return path_output

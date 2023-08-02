@@ -19,9 +19,7 @@ def yaml():
     shutil.rmtree(test_output_dir)
 
 
-@pytest.mark.skip(
-    reason="Can not be run without riot, jq and a large efo sample owl file"
-)
+@pytest.mark.skip(reason="Can only with riot, jq and a large efo owl file")
 def test_run_riot_not_enough_memory(yaml):
     riot = Riot(yaml.config)
     # configure jvm with small memory
@@ -37,9 +35,7 @@ def test_run_riot_not_enough_memory(yaml):
         )
 
 
-@pytest.mark.skip(
-    reason="Can not be run without riot, jq and a large efo sample owl file"
-)
+@pytest.mark.skip(reason="Can only with riot, jq and a large efo owl file")
 def test_run_riot_with_enough_memory(yaml):
     riot = Riot(yaml.config)
     owl_test_file = "tests/resources/efo_sample.owl"
