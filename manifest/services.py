@@ -19,12 +19,21 @@ logger = logging.getLogger(__name__)
 __manifestServiceInstance = None
 
 
-def get_manifest_service(args=None, configuration=None):
-    """
-    Manifest Service factory method
+def get_manifest_service(args=None, configuration=None, force_new: bool = False):
+    """Manifest Service factory method
+
+
+    Keyword Arguments:
+        args -- configargparser args (default: {None})
+        configuration -- config (default: {None})
+        force_new -- force to create a new instance even if
+                     one already exists (default: {False})
+
+    Returns:
+        ManifestService instance
     """
     global __manifestServiceInstance
-    if __manifestServiceInstance is None:
+    if __manifestServiceInstance is None or force_new:
         if configuration is None:
             msg = "The Manifest subsystem has not been initialized and no configuration has been provided"
             logger.error(msg)
@@ -227,10 +236,10 @@ class ManifestService:
 
     def _reset_manifest_document_statuses(self) -> None:
         """Reset manifest document statuses to defaults."""
-        if self.__is_manifest_loaded:
-            self.manifest.status = ManifestStatus.FAILED
-            self.manifest.status_completion = ManifestStatus.NOT_COMPLETED
-            self.manifest.msg_completion = ManifestStatus.NOT_SET
+        self._logger.debug("resetting manifest defaults")
+        self.manifest.status = ManifestStatus.FAILED
+        self.manifest.status_completion = ManifestStatus.NOT_COMPLETED
+        self.manifest.msg_completion = ManifestStatus.NOT_SET
 
     def get_step(self, step_name: str = "ANONYMOUS") -> ManifestStep:
         if step_name not in self.manifest.steps:
@@ -321,9 +330,9 @@ class ManifestService:
 
     def evaluate_manifest_document(self) -> None:
         """Evaluate the statuses based on the manifest steps statuses."""
-        # Reset statuses
-        self._reset_manifest_document_statuses()
         # Evaluate statuses
+        if self.__is_manifest_loaded:
+            self._reset_manifest_document_statuses()
         self.manifest.msg_completion = ManifestStatus.NOT_SET
         if not self.are_all_steps_complete(self.manifest.steps.values()):
             self.manifest.status_completion = ManifestStatus.FAILED
@@ -331,7 +340,6 @@ class ManifestService:
                 "COULD NOT complete data collection for one or more steps"
             )
         # TODO - Pipeline level VALIDATION
-        self.manifest.status = self.manifest.status_completion
         if self.manifest.status_completion != ManifestStatus.FAILED:
             self.manifest.status_completion = ManifestStatus.COMPLETED
             self.manifest.status = ManifestStatus.COMPLETED
