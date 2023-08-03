@@ -22,7 +22,6 @@ class DownloadResourceTests(unittest.TestCase):
                     "output_dir": "/tmp",
                 }
             ),
-            force_new=True,
         )
 
     @mock.patch("urllib.request")

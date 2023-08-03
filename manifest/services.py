@@ -19,21 +19,19 @@ logger = logging.getLogger(__name__)
 __manifestServiceInstance = None
 
 
-def get_manifest_service(args=None, configuration=None, force_new: bool = False):
+def get_manifest_service(args=None, configuration=None):
     """Manifest Service factory method
 
 
     Keyword Arguments:
         args -- configargparser args (default: {None})
         configuration -- config (default: {None})
-        force_new -- force to create a new instance even if
-                     one already exists (default: {False})
 
     Returns:
         ManifestService instance
     """
     global __manifestServiceInstance
-    if __manifestServiceInstance is None or force_new:
+    if __manifestServiceInstance is None:
         if configuration is None:
             msg = "The Manifest subsystem has not been initialized and no configuration has been provided"
             logger.error(msg)
