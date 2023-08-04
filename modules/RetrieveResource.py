@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class RetrieveResource(object):
-
     def __init__(self, args, yaml):
         self.args = args
         self.yaml = yaml
@@ -40,8 +39,10 @@ class RetrieveResource(object):
         Check that valid Google Cloud Platform credentials are present
         """
         if self.args.gcp_credentials is None:
-            logger.warning("Some of the steps might be not work properly due the lack of permissions to access to GCS. "
-                           "Eg. Evidence")
+            logger.warning(
+                "Some of the steps might be not work properly due the lack of permissions to access to GCS. "
+                "Eg. Evidence"
+            )
         # We may still have the default user credentials
         if not GoogleBucketResource.has_valid_auth_key(self.args.gcp_credentials):
             raise ValueError("Google credential is not valid!")
@@ -52,9 +53,13 @@ class RetrieveResource(object):
         """
         if self.args.gcp_bucket is not None:
             logger.info(f"Copying files to GCP bucket '{self.args.gcp_bucket}'")
-            Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(self.args.gcp_bucket)
+            Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(
+                self.args.gcp_bucket
+            )
         else:
-            logger.warning("No GCP Bucket details provided, THE COLLECTED DATA WILL STAY LOCAL")
+            logger.warning(
+                "No GCP Bucket details provided, THE COLLECTED DATA WILL STAY LOCAL"
+            )
 
     def matching_steps(self, steps, all_plugins_available):
         """
@@ -70,7 +75,7 @@ class RetrieveResource(object):
                 matching_plugins.append(plugin)
                 lowercase_steps.remove(plugin.lower())
 
-        logger.warning("Steps NOT FOUND:\n" + ','.join(lowercase_steps))
+        logger.warning("Steps NOT FOUND:\n" + ",".join(lowercase_steps))
         return matching_plugins
 
     def steps(self):
@@ -78,15 +83,23 @@ class RetrieveResource(object):
         Compute the effective list of Pipeline Steps to run. This will take into account whether a particular list of
         steps was requested or not as well as the possibly excluded ones
         """
-        all_plugins_available_names = [plugin.name for plugin in self.simplePluginManager.getAllPlugins()]
-        steps_requested = self.matching_steps(self.args.steps, all_plugins_available_names)
-        excluded_requested = self.matching_steps(self.args.exclude, all_plugins_available_names)
+        all_plugins_available_names = [
+            plugin.name for plugin in self.simplePluginManager.getAllPlugins()
+        ]
+        steps_requested = self.matching_steps(
+            self.args.steps, all_plugins_available_names
+        )
+        excluded_requested = self.matching_steps(
+            self.args.exclude, all_plugins_available_names
+        )
         if len(self.args.steps) == 0:
-            plugins_to_run = list(set(all_plugins_available_names) - set(excluded_requested))
+            plugins_to_run = list(
+                set(all_plugins_available_names) - set(excluded_requested)
+            )
         else:
             plugins_to_run = list(set(steps_requested))
 
-        logger.info("SELECTED Steps:\n" + ','.join(plugins_to_run))
+        logger.info("SELECTED Steps:\n" + ",".join(plugins_to_run))
         return plugins_to_run
 
     def init_plugins(self):
@@ -99,7 +112,7 @@ class RetrieveResource(object):
         #  thought, we may just want to make this a constant somewhere, probably the application itself, so its value is
         #  specified in a single place.
         # Turn the volume down for the yapsy logger
-        logger_yapsy = logging.getLogger('yapsy')
+        logger_yapsy = logging.getLogger("yapsy")
         logger_yapsy.setLevel(logging.INFO)
         self.simplePluginManager.setPluginPlaces(["plugins"])
         # Load all plugins
@@ -116,11 +129,15 @@ class RetrieveResource(object):
         for plugin_name in steps_to_execute:
             plugin = self.simplePluginManager.getPluginByName(plugin_name)
             plugin_configuration = self.yaml[plugin_name.lower()]
-            plugin_configuration['gcp_credentials'] = self.args.gcp_credentials
+            plugin_configuration["gcp_credentials"] = self.args.gcp_credentials
             try:
-                plugin.plugin_object.process(plugin_configuration, self.yaml.outputs, self.yaml.config)
+                plugin.plugin_object.process(
+                    plugin_configuration, self.yaml.outputs, self.yaml.config
+                )
             except Exception as e:
-                logger.error("A problem occurred while running step '{}'".format(plugin_name))
+                logger.error(
+                    "A problem occurred while running step '{}'".format(plugin_name)
+                )
                 logger.error(e)
                 raise
 
@@ -137,8 +154,12 @@ class RetrieveResource(object):
                 recursive_remove_folder(self.output_dir)
             else:
                 logger.warning("Output folder NOT CLEANED UP.")
-            self.yaml.outputs.prod_dir = create_folder(os.path.join(self.output_dir, 'prod'))
-            self.yaml.outputs.staging_dir = create_folder(os.path.join(self.output_dir, 'staging'))
+            self.yaml.outputs.prod_dir = create_folder(
+                os.path.join(self.output_dir, "prod")
+            )
+            self.yaml.outputs.staging_dir = create_folder(
+                os.path.join(self.output_dir, "staging")
+            )
             self.__is_done_create_output_structure = True
         logger.debug(f"Output structure has been created")
 
@@ -160,18 +181,9 @@ class RetrieveResource(object):
             self.run_plugins()
         except Exception as e:
             manifest_service.manifest.status_completion = ManifestStatus.FAILED
-            manifest_service.manifest.msg_completion = f"COULD NOT complete the data collection session due to '{e}'"
-        if not manifest_service.are_all_steps_complete(manifest_service.manifest.steps.values()):
-            manifest_service.manifest.status_completion = ManifestStatus.FAILED
-            manifest_service.manifest.msg_completion = f"COULD NOT complete data collection for one or more steps"
-        # TODO - Pipeline level VALIDATION
-        # WARNING - Temporarily match status_completion to status
-        manifest_service.manifest.status = manifest_service.manifest.status_completion
-        if manifest_service.manifest.status_completion != ManifestStatus.FAILED:
-            manifest_service.manifest.status_completion = ManifestStatus.COMPLETED
-            manifest_service.manifest.msg_completion = f"All steps completed their data collection"
-        else:
-            logger.error(manifest_service.manifest.msg_completion)
-        # Prepare the manifest file before copying to GCP
+            manifest_service.manifest.msg_completion = (
+                f"COULD NOT complete the data collection session due to '{e}'"
+            )
+        manifest_service.evaluate_manifest_document()
         manifest_service.persist()
         self.copy_to_gs()
