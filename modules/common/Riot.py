@@ -76,10 +76,12 @@ class Riot(object):
             )
             logger.error(msg_err)
             raise RiotException(msg_err)
-        if "error" in riot_jq.stderr.lower():
+        error_keywords = ("error", "killed")
+        if any(e in riot_jq.stderr.lower() for e in error_keywords):
             logger.error(f"The STDERR was as follows: {riot_jq.stderr}")
             raise RiotException(riot_jq.stderr)
         logger.debug(f"riot-jq stderr: {riot_jq.stderr}")
+        logger.debug(f"riot-jq exit code: {riot_jq.returncode}")
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
