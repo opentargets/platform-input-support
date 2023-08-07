@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 # print(os.environ["PATH"])
 
-class Utils(object):
 
+class Utils(object):
     def __init__(self, config, outputs):
         self.config = config
         self.output_dir = outputs.prod_dir
@@ -28,7 +28,9 @@ class Utils(object):
         cmd_result = shutil.which(cmd)
         if cmd_result is None:
             cmd_result = yaml_cmd
-            logger.warning("Command '{}' NOT FOUND. Using the path from config.yaml".format(cmd))
+            logger.warning(
+                "Command '{}' NOT FOUND. Using the path from config.yaml".format(cmd)
+            )
         logger.debug(f"'{cmd}' path '{cmd_result}'")
         return cmd_result
 
@@ -42,15 +44,24 @@ class Utils(object):
         # cmd_result = shutil.which("gsutil")
         # cmd = "gsutil -q -m cp -r " + self.yaml.output_dir + "/* gs://" + destination_bucket + "/"
         # subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        logger.debug("gsutil_multi_copy_to - using gsutil for source '{}', destination '{}'"
-                     .format(os.path.join(self.output_dir, "*"), "gs://{}/".format(destination_bucket)))
-        proc = subprocess.Popen(["gsutil",
-                                 "-m",
-                                 "cp",
-                                 "-r",
-                                 os.path.join(self.output_dir, "*"),
-                                 "gs://{}/".format(destination_bucket)],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        logger.debug(
+            "gsutil_multi_copy_to - using gsutil for source '{}', destination '{}'".format(
+                os.path.join(self.output_dir, "*"),
+                "gs://{}/".format(destination_bucket),
+            )
+        )
+        proc = subprocess.Popen(
+            [
+                "gsutil",
+                "-m",
+                "cp",
+                "-r",
+                os.path.join(self.output_dir, "*"),
+                "gs://{}/".format(destination_bucket),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
         # I know, magic numbers
         completed = False
         for attempt in range(9):
@@ -62,18 +73,25 @@ class Utils(object):
                 continue
             except Exception as e:
                 proc.kill()
-                logger.error(f"There was a problem copying files to bucket {destination_bucket}, ERROR '{e}'")
+                logger.error(
+                    f"There was a problem copying files to bucket {destination_bucket}, ERROR '{e}'"
+                )
                 break
             else:
                 completed = True
-                logger.info("gsutil copy for source '{}', destination '{}' COMPLETED!"
-                            .format(os.path.join(self.output_dir, "*"), "gs://{}/".format(destination_bucket)))
+                logger.info(
+                    "gsutil copy for source '{}', destination '{}' COMPLETED!".format(
+                        os.path.join(self.output_dir, "*"),
+                        "gs://{}/".format(destination_bucket),
+                    )
+                )
                 break
         if not completed:
             proc.kill()
             _, err = proc.communicate()
             logger.error(
-                f"COULD NOT COMPLETE file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'")
+                f"COULD NOT COMPLETE file copy to GCP Bucket '{destination_bucket}', error output '{err.decode('utf-8')}'"
+            )
 
     @staticmethod
     def resource_for_stage(resource):
@@ -88,3 +106,31 @@ class Utils(object):
         resource_stage.uri = resource.uri
         resource_stage.output_filename = os.path.basename(resource.uri)
         return resource_stage
+
+
+class CustomSubProcException(Exception):
+    """Custom subprocess exception"""
+
+    pass
+
+
+def subproc(cmd: str, **kwargs) -> None:
+    """Run a cmd as a subprocess. This catches errors that are 'raised' in
+    the STDERR even if the command doesn't return a code > 0.
+
+    Arguments:
+        cmd -- command string to run
+
+    Raises:
+        CustomSubProcException
+    """
+    try:
+        sp = subprocess.run(
+            cmd, shell=True, text=True, capture_output=True, check=False, **kwargs
+        )
+        sp.check_returncode()
+    except subprocess.CalledProcessError as err:
+        raise CustomSubProcException(err) from err
+    error_keywords = ("error", "killed")
+    if any(e in sp.stderr.lower() for e in error_keywords):
+        raise CustomSubProcException(f"Caught error in STDERR: {sp.stderr}")

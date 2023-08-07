@@ -2,8 +2,7 @@ import os
 from pathlib import Path
 from typing import Dict
 import logging
-import subprocess
-from modules.common.Utils import Utils
+from modules.common.Utils import Utils, subproc, CustomSubProcException
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +43,7 @@ class Riot(object):
         dir_output: Path,
         json_file: Path,
         owl_jq: str,
+        riot_out: str = "riot_out.tmp",
     ):
         """
         Convert the given OWL file into JSON-LD with a filtering step on the produced JSON-LD by the given filter
@@ -54,34 +54,19 @@ class Riot(object):
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
         :return: destination file path of the conversion + filtering for the given OWL file
         """
-        path_output = os.path.join(dir_output, json_file)
-        riot_jq_cmd_string = (
-            f"{self.riot_cmd} --output JSON-LD {owl_file} | "
-            f"{self.jq_cmd} -r '{owl_jq}' > {path_output}"
-        )
-        logger.debug(f"riot-jq command: {riot_jq_cmd_string}")
+        path_output = Path(dir_output).joinpath(json_file)
+        riot_outfile = Path(dir_output).joinpath(riot_out)
+        riot_cmd = f"{self.riot_cmd} --output JSON-LD {owl_file} > {riot_outfile}"
+        jq_cmd = f"{self.jq_cmd} -r '{owl_jq}' {riot_outfile} > {path_output}"
         try:
-            riot_jq = subprocess.run(
-                riot_jq_cmd_string,
-                env=self.get_running_environment(),
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-            riot_jq.check_returncode()
-        except subprocess.CalledProcessError as err:
-            msg_err = (
-                f"The following error occurred: '{err}'.\nSTDERR:\n{riot_jq.stderr}"
-            )
+            subproc(cmd=riot_cmd, env=self.get_running_environment())
+            logger.debug("riot command completed.")
+            subproc(cmd=jq_cmd)
+            logger.debug("jq command completed.")
+        except CustomSubProcException as err:
+            msg_err = f"The following error occurred: '{err}'"
             logger.error(msg_err)
             raise RiotException(msg_err)
-        error_keywords = ("error", "killed")
-        if any(e in riot_jq.stderr.lower() for e in error_keywords):
-            logger.error(f"The STDERR was as follows: {riot_jq.stderr}")
-            raise RiotException(riot_jq.stderr)
-        logger.debug(f"riot-jq stderr: {riot_jq.stderr}")
-        logger.debug(f"riot-jq exit code: {riot_jq.returncode}")
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
