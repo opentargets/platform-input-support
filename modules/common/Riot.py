@@ -2,7 +2,10 @@ import os
 from pathlib import Path
 from typing import Dict
 import logging
-from modules.common.Utils import Utils, subproc, CustomSubProcException
+from modules.common.Utils import (Utils,
+                                  subproc,
+                                  CustomSubProcException,
+                                  random_temp_file_path)
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +38,7 @@ class Riot(object):
         """
         os.environ["_JAVA_OPTIONS"] = str(self.yaml.java_vm)
         logger.info("_JAVA_OPTIONS: " + os.environ["_JAVA_OPTIONS"])
-        return os.environ.copy()
+        return os.environ.copy()        
 
     def run_riot(
         self,
@@ -43,7 +46,6 @@ class Riot(object):
         dir_output: Path,
         json_file: Path,
         owl_jq: str,
-        riot_out: str = "riot_out.tmp",
     ):
         """
         Convert the given OWL file into JSON-LD with a filtering step on the produced JSON-LD by the given filter
@@ -55,7 +57,7 @@ class Riot(object):
         :return: destination file path of the conversion + filtering for the given OWL file
         """
         path_output = Path(dir_output).joinpath(json_file)
-        riot_outfile = Path(dir_output).joinpath(riot_out)
+        riot_outfile = random_temp_file_path(dir_output)
         riot_cmd = f"{self.riot_cmd} --output JSON-LD {owl_file} > {riot_outfile}"
         jq_cmd = f"{self.jq_cmd} -r '{owl_jq}' {riot_outfile} > {path_output}"
         try:
@@ -64,9 +66,11 @@ class Riot(object):
             subproc(cmd=jq_cmd)
             logger.debug("jq command completed.")
         except CustomSubProcException as err:
-            msg_err = f"The following error occurred: '{err}'"
+            msg_err = (f"FAILED to run RIOT on file '{owl_file}' "
+                       f"and JQ with filter '{owl_jq}' "
+                       f"due to the following error: '{err}'")
             logger.error(msg_err)
-            raise RiotException(msg_err)
+            raise RiotException(msg_err) from err
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):

@@ -1,7 +1,9 @@
 import os
 import shutil
 import logging
+from pathlib import Path
 import subprocess
+import uuid
 from addict import Dict
 
 logger = logging.getLogger(__name__)
@@ -111,8 +113,6 @@ class Utils(object):
 class CustomSubProcException(Exception):
     """Custom subprocess exception"""
 
-    pass
-
 
 def subproc(cmd: str, **kwargs) -> None:
     """Run a cmd as a subprocess. This catches errors that are 'raised' in
@@ -124,13 +124,32 @@ def subproc(cmd: str, **kwargs) -> None:
     Raises:
         CustomSubProcException
     """
+    def raise_exception(sp: subprocess.CompletedProcess, error: str) -> None:
+        err_msg = (f"FAILED to run command '{sp.args}', "
+                   f"with return code '{sp.returncode}', "
+                   f"error: '{error}'")
+        raise CustomSubProcException(err_msg)
     try:
         sp = subprocess.run(
             cmd, shell=True, text=True, capture_output=True, check=False, **kwargs
         )
         sp.check_returncode()
     except subprocess.CalledProcessError as err:
-        raise CustomSubProcException(err) from err
+        raise_exception(sp=sp, error=err)
     error_keywords = ("error", "killed")
     if any(e in sp.stderr.lower() for e in error_keywords):
-        raise CustomSubProcException(f"Caught error in STDERR: {sp.stderr}")
+        raise_exception(sp=sp, error=sp.stderr)
+
+
+def random_temp_file_path(par_dir: Path, ext: str = ".tmp", label_length: int = 8) -> Path:
+    """Create a random temp file path like:
+    <dir>/<random_id>.<ext>
+
+    Arguments:
+        par_dir -- parent directory
+
+    Returns:
+        Path
+    """
+    filename = Path(str(uuid.uuid4())[:label_length]).with_suffix(ext)
+    return Path(par_dir).joinpath(filename)
