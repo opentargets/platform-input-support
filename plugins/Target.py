@@ -110,7 +110,7 @@ class Target(IPlugin):
         if download_manifest.status_completion == ManifestStatus.COMPLETED:
             output_dir = os.path.join(output.prod_dir, ensembl.path)
             output_file = os.path.join(create_folder(output_dir), ensembl.output_filename)
-            cmd = f"{jq_cmd} -c {ensembl.jq} {download_manifest.path_destination} > {output_file}"
+            cmd = f"{jq_cmd} -c '{ensembl.jq}' {download_manifest.path_destination} > {output_file}"
             try:
                 subproc(cmd)
             except CustomSubProcException as e:
