@@ -1,9 +1,8 @@
 import os
 import logging
-import subprocess
 from addict import Dict
 from yapsy.IPlugin import IPlugin
-from modules.common.Utils import Utils
+from modules.common.Utils import Utils, subproc, CustomSubProcException
 from modules.common.Downloads import Downloads
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
 from modules.common import extract_file_from_zip, create_folder, make_gunzip, make_gzip, make_unzip_single_file
@@ -111,16 +110,10 @@ class Target(IPlugin):
         if download_manifest.status_completion == ManifestStatus.COMPLETED:
             output_dir = os.path.join(output.prod_dir, ensembl.path)
             output_file = os.path.join(create_folder(output_dir), ensembl.output_filename)
+            cmd = f"{jq_cmd} -c '{ensembl.jq}' {download_manifest.path_destination} > {output_file}"
             try:
-                with open(output_file, "wb") as jsonwrite:
-                    # TODO - Change this to subprocess.run, and modify the command to write the data straight away, instead of
-                    #  piping it back to the caller
-                    jqp = subprocess.Popen(
-                        [jq_cmd, "-c", ensembl.jq, download_manifest.path_destination],
-                        stdout=subprocess.PIPE)
-                    jsonwrite.write(jqp.stdout.read())
-                    self._logger.debug(f"---------------> Running 'JQ' command, return code -> '{jqp.returncode}'")
-            except Exception as e:
+                subproc(cmd)
+            except CustomSubProcException as e:
                 download_manifest.status_completion = ManifestStatus.FAILED
                 download_manifest.msg_completion = f"FAILED to extract ensembl data from" \
                                                    f" '{download_manifest.path_destination}'" \
