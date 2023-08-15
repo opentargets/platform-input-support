@@ -68,7 +68,7 @@ class HPOPhenotypes(object):
             with jsonlines.open(hpo_filename, mode='w') as writer:
                 with open(self.hpo_phenotypes_input) as input:
                     for line in input:
-                        if line[0] != '#':
+                        if line[0] != '#' and not line.startswith("database_id"):
                             data = {}
                             row = line.split('\t')
                             data['databaseId'] = row[0]
