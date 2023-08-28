@@ -56,7 +56,7 @@ class Riot(object):
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
         :return: destination file path of the conversion + filtering for the given OWL file
         """
-        path_output = Path(dir_output).joinpath(json_file)
+        path_output = os.path.join(dir_output, json_file)
         riot_outfile = random_temp_file_path(dir_output)
         riot_cmd = f"{self.riot_cmd} --output JSON-LD {owl_file} > {riot_outfile}"
         jq_cmd = f"{self.jq_cmd} -r '{owl_jq}' {riot_outfile} > {path_output}"
