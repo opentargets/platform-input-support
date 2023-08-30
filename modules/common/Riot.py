@@ -46,7 +46,7 @@ class Riot(object):
         dir_output: Path,
         json_file: Path,
         owl_jq: str,
-    ):
+    ) -> str:
         """
         Convert the given OWL file into JSON-LD with a filtering step on the produced JSON-LD by the given filter
 
@@ -54,7 +54,7 @@ class Riot(object):
         :param dir_output: destination folder for OWL conversion
         :param json_file: destination json file name for OWL conversion
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
-        :return: destination file path of the conversion + filtering for the given OWL file
+        :return: string repr of destination file path of the conversion + filtering for the given OWL file
         """
         path_output = Path(dir_output).joinpath(json_file)
         riot_outfile = random_temp_file_path(dir_output)
@@ -71,7 +71,7 @@ class Riot(object):
                        f"due to the following error: '{err}'")
             logger.error(msg_err)
             raise RiotException(msg_err) from err
-        return path_output
+        return str(path_output)
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
         """
