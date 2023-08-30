@@ -71,6 +71,9 @@ class Riot(object):
                        f"due to the following error: '{err}'")
             logger.error(msg_err)
             raise RiotException(msg_err) from err
+        finally:
+            # remove the riot temp outfile 
+            riot_outfile.unlink(missing_ok=True)
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
