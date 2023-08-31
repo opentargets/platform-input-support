@@ -1,9 +1,7 @@
 import os
 import shutil
 import logging
-from pathlib import Path
 import subprocess
-import uuid
 from addict import Dict
 
 logger = logging.getLogger(__name__)
@@ -139,17 +137,3 @@ def subproc(cmd: str, **kwargs) -> None:
     error_keywords = ("error", "killed")
     if any(e in sp.stderr.lower() for e in error_keywords):
         raise_exception(sp=sp, error=sp.stderr)
-
-
-def random_temp_file_path(par_dir: Path, ext: str = ".tmp", label_length: int = 8) -> Path:
-    """Create a random temp file path like:
-    <dir>/<random_id>.<ext>
-
-    Arguments:
-        par_dir -- parent directory
-
-    Returns:
-        Path
-    """
-    filename = Path(str(uuid.uuid4())[:label_length]).with_suffix(ext)
-    return Path(par_dir).joinpath(filename)

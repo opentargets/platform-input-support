@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
+import tempfile
 from typing import Dict
 import logging
 from modules.common.Utils import (Utils,
                                   subproc,
-                                  CustomSubProcException,
-                                  random_temp_file_path)
+                                  CustomSubProcException)
 
 logger = logging.getLogger(__name__)
 
@@ -57,23 +57,20 @@ class Riot(object):
         :return: destination file path of the conversion + filtering for the given OWL file
         """
         path_output = Path(dir_output).joinpath(json_file)
-        riot_outfile = random_temp_file_path(dir_output)
-        riot_cmd = f"{self.riot_cmd} --output JSON-LD {owl_file} > {riot_outfile}"
-        jq_cmd = f"{self.jq_cmd} -r '{owl_jq}' {riot_outfile} > {path_output}"
-        try:
-            subproc(cmd=riot_cmd, env=self.get_running_environment())
-            logger.debug("riot command completed.")
-            subproc(cmd=jq_cmd)
-            logger.debug("jq command completed.")
-        except CustomSubProcException as err:
-            msg_err = (f"FAILED to run RIOT on file '{owl_file}' "
-                       f"and JQ with filter '{owl_jq}' "
-                       f"due to the following error: '{err}'")
-            logger.error(msg_err)
-            raise RiotException(msg_err) from err
-        finally:
-            # remove the riot temp outfile 
-            riot_outfile.unlink(missing_ok=True)
+        with tempfile.NamedTemporaryFile() as riot_outfile:
+            riot_cmd = f"{self.riot_cmd} --output JSON-LD {owl_file} > {riot_outfile.name}"
+            jq_cmd = f"{self.jq_cmd} -r '{owl_jq}' {riot_outfile.name} > {path_output}"
+            try:
+                subproc(cmd=riot_cmd, env=self.get_running_environment())
+                logger.debug("riot command completed.")
+                subproc(cmd=jq_cmd)
+                logger.debug("jq command completed.")
+            except CustomSubProcException as err:
+                msg_err = (f"FAILED to run RIOT on file '{owl_file}' "
+                           f"and JQ with filter '{owl_jq}' "
+                           f"due to the following error: '{err}'")
+                logger.error(msg_err)
+                raise RiotException(msg_err) from err
         return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):

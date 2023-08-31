@@ -123,17 +123,3 @@ def test_convert_owl_to_jsonld_should_fail(riot_inputs: tuple):
             output_dir=yaml.config.output_dir,
             owl_jq=yaml.disease.etl.efo.owl_jq,
         )
-
-
-def test_run_riot_removes_temp_file(riot_inputs: tuple):
-    yaml, owl_test_file = riot_inputs
-    riot = Riot(yaml.config)
-    json_out = "efo_test.json"
-    riot.run_riot(
-        owl_file=owl_test_file,
-        dir_output=yaml.config.output_dir,
-        json_file=json_out,
-        owl_jq=yaml.disease.etl.efo.owl_jq,
-    )
-    tmp_files = [p for p in pathlib.Path(yaml.config.output_dir).glob("*.tmp")]
-    assert len(tmp_files) == 0
