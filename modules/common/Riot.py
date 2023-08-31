@@ -38,7 +38,7 @@ class Riot(object):
         """
         os.environ["_JAVA_OPTIONS"] = str(self.yaml.java_vm)
         logger.info("_JAVA_OPTIONS: " + os.environ["_JAVA_OPTIONS"])
-        return os.environ.copy()        
+        return os.environ.copy()
 
     def run_riot(
         self,
@@ -56,7 +56,7 @@ class Riot(object):
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
         :return: string repr of destination file path of the conversion + filtering for the given OWL file
         """
-        path_output = Path(dir_output).joinpath(json_file)
+        path_output = os.path.join(dir_output, json_file)
         riot_outfile = random_temp_file_path(dir_output)
         riot_cmd = f"{self.riot_cmd} --output JSON-LD {owl_file} > {riot_outfile}"
         jq_cmd = f"{self.jq_cmd} -r '{owl_jq}' {riot_outfile} > {path_output}"
@@ -71,7 +71,7 @@ class Riot(object):
                        f"due to the following error: '{err}'")
             logger.error(msg_err)
             raise RiotException(msg_err) from err
-        return str(path_output)
+        return path_output
 
     def convert_owl_to_jsonld(self, owl_file, output_dir, owl_jq):
         """
