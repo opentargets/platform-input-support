@@ -38,7 +38,7 @@ class Riot(object):
         """
         os.environ["_JAVA_OPTIONS"] = str(self.yaml.java_vm)
         logger.info("_JAVA_OPTIONS: " + os.environ["_JAVA_OPTIONS"])
-        return os.environ.copy()        
+        return os.environ.copy()
 
     def run_riot(
         self,
@@ -46,7 +46,7 @@ class Riot(object):
         dir_output: Path,
         json_file: Path,
         owl_jq: str,
-    ):
+    ) -> str:
         """
         Convert the given OWL file into JSON-LD with a filtering step on the produced JSON-LD by the given filter
 
@@ -54,7 +54,7 @@ class Riot(object):
         :param dir_output: destination folder for OWL conversion
         :param json_file: destination json file name for OWL conversion
         :param owl_jq: JQ filtering for the JSON-LD conversion of the OWL file
-        :return: destination file path of the conversion + filtering for the given OWL file
+        :return: string repr of destination file path of the conversion + filtering for the given OWL file
         """
         path_output = os.path.join(dir_output, json_file)
         riot_outfile = random_temp_file_path(dir_output)

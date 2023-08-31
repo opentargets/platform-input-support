@@ -25,7 +25,6 @@ def test_run_riot(riot_inputs: tuple):
     """Should not throw exceptions or errors"""
     yaml, owl_test_file = riot_inputs
     riot = Riot(yaml.config)
-    owl_test_file = owl_test_file
     json_out = "efo_test.json"
     assert riot.run_riot(
         owl_file=owl_test_file,
@@ -41,7 +40,6 @@ def test_run_riot_JNI_error(riot_inputs: tuple):
     riot = Riot(yaml.config)
     # configure jvm with small memory
     yaml.config.java_vm = "-Xms2m -Xmx2m"
-    owl_test_file = owl_test_file
     json_out = "efo_test.json"
     with pytest.raises(RiotException):
         riot.run_riot(
@@ -104,7 +102,6 @@ def test_run_riot_malformed_owl_file(riot_inputs: tuple):
 def test_convert_owl_to_jsonld_should_pass(riot_inputs: tuple):
     yaml, owl_test_file = riot_inputs
     riot = Riot(yaml.config)
-    owl_test_file = owl_test_file
     assert riot.convert_owl_to_jsonld(
         owl_file=owl_test_file,
         output_dir=yaml.config.output_dir,
