@@ -389,10 +389,10 @@ class EFO(object):
                     disease = json.loads(line)
                     disease_id = self.get_id(disease['@id'])
                     if not self.is_obsolete(disease, disease_id):
-                        if disease["@type"] == "Class":
+                        if disease["@type"] == "owl:Class":
                             self.load_type_class(disease, disease_id)
                         else:
-                            # @Type: Restriction
+                            # @Type: owl:Restriction
                             if 'someValuesFrom' in disease:
                                 self.parent_child_tuples.append((disease["@id"], disease["someValuesFrom"]))
         except Exception as e:
