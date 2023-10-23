@@ -146,7 +146,7 @@ evidence:
     output_filename: uniprot.json.gz
     output_spark_dir: uniprot
     path: evidence-files
-  - bucket: otar012-eva
+  - bucket: otar012-eva/disease-target-evidence
     output_filename: eva.json.gz
     output_spark_dir: eva
     path: evidence-files
