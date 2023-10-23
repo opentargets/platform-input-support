@@ -240,6 +240,11 @@ homologues:
       - 'sus_scrofa'
       - 'xenopus_tropicalis'
       - 'homo_sapiens'
+baselineexpression:
+  gs_downloads_latest:
+  - bucket: otar000-evidence_input/BaselineExpression/json
+    output_filename: baseline_expression.json.gz
+    path: expression-inputs
 interactions:
   gs_downloads_latest:
   - bucket: otar001-core/stringInteractions
