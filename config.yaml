@@ -269,6 +269,11 @@ mousephenotypes:
   - bucket: otar001-core/MousePhenotypes
     output_filename: mouse_phenotypes.json.gz
     path: mouse-phenotypes-inputs
+pharmacogenomics:
+  gs_downloads_latest:
+  - bucket: otar012-eva/pharmacogenomics
+    output_filename: pharmacogenomics.json.gz
+    path: pharmacogenomics-inputs
 openfda:
   http_downloads:
     - uri: 'https://raw.githubusercontent.com/opentargets/platform-etl-backend/master/src/main/resources/blacklisted_events.txt'
