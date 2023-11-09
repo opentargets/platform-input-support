@@ -408,3 +408,6 @@ targetengine:
   - uri: https://rest.uniprot.org/locations/stream?compressed=true&fields=id%2Cname%2Ccategory%2Cgene_ontologies%2Cpart_of%2Cis_a&format=tsv&query=%28%2A%29
     output_filename: uniprot_locations.tsv.gz
     path: targetEngine-inputs
+  - uri: https://raw.githubusercontent.com/opentargets/target_engine/main/src/data_flow/phenotypeScores/20230825_mousePheScores.csv
+    output_filename: mouse_pheno_scores.csv
+    path: targetEngine-inputs 
