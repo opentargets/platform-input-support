@@ -6,6 +6,7 @@ The input files are copied in a local hard disk and eventually in a specific goo
 Currently, the application executes 11 steps and finally it generates the input resources for the ETL pipeline (https://github.com/opentargets/data_pipeline)
 
 List of available steps:
+- BaselineExpression
 - Disease
 - Drug
 - Evidence
@@ -13,13 +14,15 @@ List of available steps:
 - Go
 - Homologues
 - Interactions
+- Literature
 - Mousephenotypes
 - OpenFDA
+- Otar
+- Pharmacogenomics
 - Reactome
 - SO
 - Target
-- Literature
-- Otar
+- TargetEngine
 
 Within this application you can simply download a file from FTP, HTTP or Google Cloud Bucket but at the same time the file can be processed in order to generate a new resource.
 The final files are located under the output directory while the files used for the computation are saved under stages. 
