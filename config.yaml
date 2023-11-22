@@ -102,6 +102,36 @@ drug:
             - 'warning_refs'
             - 'warning_type'
             - 'warning_year'
+        chembl-activity:
+          name: chembl_33_activity
+          fields:
+            - '_metadata'
+            - 'document_year'
+            - 'document_chembl_id'
+            - 'pchembl_value'
+            - 'target_chembl_id'
+            - 'molecule_chembl_id'
+            - 'assay_chembl_id'
+        chembl-assay:
+          name: chembl_33_assay
+          fields:
+            - '_metadata'
+            - 'confidence_score'
+            - 'assay_type'
+            - 'assay_cheml_id'
+        chembl-document:
+          name: chembl_33_document
+          fields:
+            - '_metadata'
+            - 'pubmed_id'
+            - 'year'
+            - 'document_chembl_id'
+        chembl-target-component:
+          name: chembl_33_target_component
+          fields:
+            - '_metadata'
+            - 'target_component_synonyms'
+            - 'component_id'
   miniset: yes
 evidence:
   gs_downloads_latest:
