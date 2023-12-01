@@ -108,17 +108,37 @@ drug:
             - '_metadata'
             - 'document_year'
             - 'document_chembl_id'
-            - 'pchembl_value'
             - 'target_chembl_id'
+            - 'target_organism'
+            - 'target_pref_name'
             - 'molecule_chembl_id'
             - 'assay_chembl_id'
+            - 'assay_type'
+            - 'pchembl_value'
+            - 'standard_type'
+            - 'standard_units'
+            - 'standard_value'
+            - 'standard_text_value'
+            - 'standard_relation'
+            - 'standard_flag'
+            - 'ligand_efficiency'
+            - 'assay_variant_mutation'
+            - 'assay_variant_accession'
+            - 'action_type'
+            - 'data_validity_comment'
+            - 'data_validity_description'
         chembl-assay:
           name: chembl_33_assay
           fields:
             - '_metadata'
             - 'confidence_score'
+            - 'confidence_description'
             - 'assay_type'
+            - 'assay_test_type'
+            - 'assay_organism'
+            - 'assay_category'
             - 'assay_cheml_id'
+            - 'variant_sequence'
         chembl-document:
           name: chembl_33_document
           fields:
@@ -132,6 +152,30 @@ drug:
             - '_metadata'
             - 'target_component_synonyms'
             - 'component_id'
+            - 'component_type'
+            - 'protein_classifications'
+            - 'description'
+        chembl-atc-class:
+          name: chembl_33_atc_class
+          fields:
+            - '_metadata'
+            - 'level1'
+            - 'level1_description'
+            - 'level2'
+            - 'level2_description'
+            - 'level3'
+            - 'level3_description'
+            - 'level4'
+            - 'level4_description'
+            - 'level5'
+            - 'who_name'
+        chembl-target-relation:
+          name: chembl_33_target_relation
+          fields:
+            - '_metadata'
+            - 'related_target_chembl_id'
+            - 'relationship'
+            - 'target_chembl_id'
   miniset: yes
 evidence:
   gs_downloads_latest:
