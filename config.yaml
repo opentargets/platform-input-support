@@ -279,11 +279,9 @@ pppevidence:
   - bucket: otar013-ppp/validation_lab/
     output_filename: validation_lab.json.gz
     path: evidence-files
-  gs_downloads_latest:
   - bucket: otar013-ppp/encore/
     output_filename: encore.json.gz
     path: evidence-files 
-  gs_downloads_latest:
   - bucket: otar013-ppp/ot_crispr/
     output_filename: ot_crispr.json.gz
     path: evidence-files
