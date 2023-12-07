@@ -137,7 +137,7 @@ drug:
             - 'assay_test_type'
             - 'assay_organism'
             - 'assay_category'
-            - 'assay_cheml_id'
+            - 'assay_chembl_id'
             - 'variant_sequence'
         chembl-document:
           name: chembl_33_document
@@ -155,6 +155,7 @@ drug:
             - 'component_type'
             - 'protein_classifications'
             - 'description'
+            - 'accession'
         chembl-atc-class:
           name: chembl_33_atc_class
           fields:
