@@ -31,34 +31,19 @@ Below more details about how to execute the script.
 
 # Installation Requirements
 
-* Conda
+* Python3.8
+* Poetry
 * Apache-Jena
 * git
 * jq
 * Google Cloud SDK
 
-## Conda for Linux/MAC
+## Poetry for Linux/MAC
 
-Download Conda3 for Mac here: <br>
- https://www.anaconda.com/products/individual <br>
-[download Anaconda3-2021.05-MacOSX-x86_64.sh]
+Installation:
 
-Download Conda3 for Linux x86_84 <br>
- https://www.anaconda.com/products/individual <br>
-[download Anaconda3-2021.05-Linux-x86_64.sh]
+`curl -sSL https://install.python-poetry.org | python3 -`
 
-Conda: installation commands
-```
-bash path_where_downloaded_the_file/Anaconda3-2020.07-Linux-x86_64.sh
-source ~/.bashrc
-conda update
-```
-Eg. for linux
-```
-wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
-bash Anaconda3-2020.07-Linux-x86_64.sh
-source ~/.bashrc
-```
 
 ## Running PIS via Docker image
 Platform input support is available as docker image, a _Dockerfile_ is provided for building the container image.
@@ -82,18 +67,6 @@ When providing a Google Cloud key file, please, make sure that it is mounted wit
 This allows the activation of the service account when running the container image, so _gcloud-sdk_ can work with the destination Google Cloud Storage Bucket.
 
 For using an external config file, simply add the option -c and the path where the config file is available
-
-
-
-## Conda in Docker (for PyCharm)
-
-If you would rather run a containerised version of Conda use the provided Dockerfile. 
-
-```
-# build the image
-docker build --tag pis-py3.8 <path to Dockerfile>
-```
-You can use the Docker image from within PyCharm by selecting 'Add Interpreter -> Docker -> <image>'
 
 
 ## Singularity 
@@ -197,18 +170,16 @@ element of the archive will be extracted under `output_filename` with the suffix
 ```
 git clone https://github.com/opentargets/platform-input-support
 cd platform-input-support
-conda env create -f environment.yaml
-conda activate pis-py3.8
+poetry install --no-root
 
-python platform-input-support.py -h
+poetry run python3 platform-input-support.py -h
 ```
 
 ## Usage
 
 ```
-conda activate pis-py3.8
 cd your_path_application
-python platform-input-support -h
+poetry run python3 platform-input-support -h
 usage: platform-input-support.py [-h] [-c CONFIG]
                                  [-gkey GCP_CREDENTIALS]
                                  [-gb GCP_BUCKET] [-o OUTPUT_DIR] [-t]
@@ -255,17 +226,13 @@ If you want to run PIS in a Docker container follow these steps:
 
 1. Get the code
    `git clone https://github.com/opentargets/platform-input-support` 
-1. create container
+2. create container
    `docker build --tag <image tag> <path to Dockerfile>`
-2. start container mounting the cloned code as a volume (here I assume you cloned the code into your home directory)
+3. start container mounting the cloned code as a volume (here I assume you cloned the code into your home directory)
   `docker run -v ~/platform-input-support:/usr/src/app --rm -it --entrypoint bash <image tag>`
    This command will drop you into a bash shell inside the container, where you can execute the code.
-   
-3 activate environment
-  `conda activate pis-py3.8`
-
 4. execute code
-  `python platform-input-support.py -steps <step> --log-level=DEBUG`
+  `poetry run python3 platform-input-support.py -steps <step> --log-level=DEBUG`
    
 # Logging.ini
 The directory **"resources"** contains the file logging.ini with a list of default value.
@@ -327,17 +294,17 @@ mkdir gitRepo
 cd gitRepo
 git clone https://github.com/opentargets/platform-input-support.git
 cd platform-input-support
-conda env create -f environment.yaml
-conda activate pis-py3.8
-python platform-input-support.py -l
+curl -sSL https://install.python-poetry.org | python3 -
+poetry install --no-root
+poetry run python3 platform-input-support.py -l
 ```
 
 Use nohup to avoid that the process hang up.
 
-```nohup python platform-input-support.py [options] &
+```nohup poetry run python3 platform-input-support.py [options] &
 
 Eg.
-nohup python platform-input-support.py
+nohup poetry run python3 platform-input-support.py
          -gkey /path/open-targets-gac.json
          -gb bucket/object_path -steps drug
          --log-level DEBUG > log.txt &

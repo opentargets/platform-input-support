@@ -2,8 +2,8 @@
 name = "platform-input-support"
 version = "0.1.0"
 description = "Platform Input Support"
-authors = ["Your Name <you@example.com>"]
-license = "Apache License 2.0"
+authors = ["Open Targets"]
+license = "Apache-2.0 license"
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -20,9 +20,7 @@ Yapsy = "^1.12.2"
 tqdm = "^4.66.1"
 jsonpickle = "^3.0.2"
 munch = "^4.0.0"
-future = "0.18.2"
 opentargets-urlzsource = "1.0.0"
-requests-file = "1.5.1"
 strenum = "^0.4.15"
 
 [tool.poetry.group.dev.dependencies]
