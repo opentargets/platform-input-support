@@ -1,50 +1,52 @@
-import os
-import yaml
 import logging
+from pathlib import Path
+from typing import Union
+import yaml
 from addict import Dict
 from definitions import ROOT_DIR
 
 logger = logging.getLogger(__name__)
 
 
-class YAMLReader(object):
+class YAMLReaderException(Exception):
+    """YAML Reader Exception"""
 
-    def __init__(self, yaml_file):
+
+class YAMLReader:
+    """YAML reader"""
+
+    def __init__(self, yaml_file: Union[Path, None]) -> None:
         """
         Constructor
 
-        :param yaml_file: path to YAML file to read from
-        :return: a YAMLReader
+        :param yaml_file: path to YAML file to read from or None
         """
-        self.yaml_file = yaml_file if yaml_file is not None else os.path.join(ROOT_DIR, 'config.yaml')
-        self.yaml_dictionary = {}
-        self.yaml_data = {}
+        self._default_yaml_file = Path(ROOT_DIR).joinpath("config.yaml")
+        self.yaml_file: Path = (yaml_file if yaml_file is not None
+                                else self._default_yaml_file)
+        self.yaml_dict = Dict()
 
-    def read_yaml(self, standard_output=False):
+    def read_yaml(self) -> Dict:
         """
         Read the currently wrapped YAML file
 
-        :param standard_output: whether the result should be text or a dictionary
-        :return: text representation of yaml data if standard_output is set to True, a dictionary object otherwise
+        :return: a dictionary object
         """
-        # print("Config file: " + self.yaml_file )
-        logger.debug(f"Reading configuration file '{self.yaml_file}'")
-        with open(self.yaml_file, 'r') as stream:
+        logger.debug("Reading configuration file %s", self.yaml_file)
+        with open(self.yaml_file, 'r', encoding="UTF-8") as stream:
             try:
-                self.yaml_data = yaml.load(stream, yaml.SafeLoader)
-                self.yaml_dictionary = Dict(self.yaml_data)
-            except yaml.YAMLError as e:
-                # TODO Report error back to caller
-                logger.error(f"The following ERROR occurred while reading YAML file '{self.yaml_file}', '{e}'")
-        if standard_output:
-            return self.yaml_data
-        else:
-            return self.yaml_dictionary
+                self.yaml_dict = Dict(yaml.load(stream, yaml.SafeLoader))
+            except yaml.YAMLError as err:
+                message = f"The following ERROR occurred while reading \
+                    YAML file '{self.yaml_file}', '{err}'"
+                logger.error(message)
+                raise YAMLReaderException(message) from err
+        return self.yaml_dict
 
-    def get_list_keys(self):
+    def get_list_keys(self) -> list:
         """
         Get a listing of keys in the currently wrapped YAML file
 
         :return: a list of keys in the currently wrapped YAML file
         """
-        return list(self.yaml_dictionary.keys())
+        return list(self.yaml_dict.keys())
