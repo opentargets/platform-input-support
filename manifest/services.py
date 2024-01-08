@@ -3,14 +3,18 @@ import os
 import json
 import copy
 import logging
+from typing import List, Tuple, Union, Dict
 import jsonpickle
 import google.auth
 from strenum import StrEnum
 from google.cloud import storage, exceptions
-from typing import List, Tuple
+
 
 from modules.common.TimeUtils import get_timestamp_iso_utc_now
-from .models import ManifestStep, ManifestResource, ManifestDocument, ManifestStatus
+from .models import (ManifestStep,
+                     ManifestResource,
+                     ManifestDocument,
+                     ManifestStatus)
 
 # Logging
 logger = logging.getLogger(__name__)
@@ -49,8 +53,8 @@ def get_manifest_service(args=None, configuration=None):
     return __manifestServiceInstance
 
 
-# Handler for ManifestStatus Enum
 class JsonEnumHandler(jsonpickle.handlers.BaseHandler):
+    """Handler for ManifestStatus Enum"""
     def restore(self, obj):
         pass
 
@@ -62,14 +66,27 @@ class JsonEnumHandler(jsonpickle.handlers.BaseHandler):
 jsonpickle.handlers.registry.register(ManifestStatus, JsonEnumHandler)
 
 
-class GcpBucketService(object):
-    def __init__(self, bucket_name=None, path=None):
+class GcpBucketService:
+    """Google Cloud Platform bucket service
+    """
+    def __init__(self, bucket_name: str = None, path: str = None):
+        """Constructor for GCP bucket service
+
+        Keyword Arguments:
+            bucket_name -- GCP bucket name (default: {None})
+            path -- GCP bucket path (default: {None})
+        """
         self._logger = logging.getLogger(__name__)
         self.bucket_name = bucket_name
         self.path = path
         self.client = storage.Client()
 
-    def get_bucket(self):
+    def get_bucket(self) -> Union[storage.Bucket, None]:
+        """Get Google bucket
+
+        Returns:
+            Bucket or None
+        """
         if self.bucket_name is None:
             logger.error("No bucket name has been provided for this resource instance")
         else:
@@ -86,13 +103,29 @@ class GcpBucketService(object):
                 )
         return None
 
-    def download_file(self, src_path_file, dst_path_file):
+    def download_file(self, src_path_file: str, dst_path_file: str) -> None:
+        """Download file.
+
+        Arguments:
+            src_path_file -- Source file path
+            dst_path_file -- Destination file path
+        """
         # WARNING - No error condition signaling mechanism is specified in the documentation
         self.get_bucket().blob(src_path_file).download_to_filename(dst_path_file)
         # TODO - Handle possible errors
 
     @staticmethod
-    def get_bucket_and_path(google_bucket_param):
+    def get_bucket_and_path(
+        google_bucket_param: Union[str, None]
+    ) -> Union[Tuple[None, None], Tuple[str, str]]:
+        """Get bucket and path from config param
+
+        Arguments:
+            google_bucket_param -- google bucket config param
+
+        Returns:
+            gcp_bucket, gcp_path
+        """
         if google_bucket_param is None:
             return None, None
         split = google_bucket_param.split("/", 1) + [None]
@@ -104,8 +137,6 @@ class ManifestServiceException(Exception):
     Exception type for errors dealing with the manifest file
     """
 
-    pass
-
 
 class ManifestService:
     """
@@ -114,8 +145,6 @@ class ManifestService:
 
     def __init__(self, config):
         self.config = config
-        # TODO - Remove unused property
-        self.session_timestamp: str = get_timestamp_iso_utc_now()
         self._logger = logging.getLogger(__name__)
         self.__manifest: ManifestDocument = None
         self.__is_manifest_loaded = False
@@ -207,7 +236,8 @@ class ManifestService:
             self.__manifest = self._produce_manifest()
         return self.__manifest
 
-    def make_paths_relative(self):
+    def make_paths_relative(self) -> None:
+        """Make paths relative to the output directory"""
         self._logger.debug("Converting PATHs, relative to output dir")
         if self.manifest:
             for step in self.manifest.steps.values():
@@ -222,7 +252,12 @@ class ManifestService:
                             index_relative_path:
                         ]
 
-    def __reset_manifest_step(self, step_name: str):
+    def __reset_manifest_step(self, step_name: str) -> None:
+        """Reset manifest step
+
+        Arguments:
+            step_name -- step to reset
+        """
         self._logger.debug(f"Reset request for step name '{step_name}'")
         if step_name not in self.__resetted_manifest_steps:
             self._logger.debug(f"Resetting step '{step_name}'")
@@ -250,10 +285,16 @@ class ManifestService:
         return self.manifest.steps[step_name]
 
     def new_resource(self) -> ManifestResource:
+        """Returns a new manifest resource"""
         return ManifestResource(get_timestamp_iso_utc_now())
 
     @staticmethod
-    def _get_checksum_compute_chain():
+    def _get_checksum_compute_chain() -> Dict:
+        """Return a dictionary of checksums
+
+        Returns:
+            Dict of checksums
+        """
         return {"md5sum": hashlib.md5(), "sha256sum": hashlib.sha256()}
 
     @staticmethod
@@ -275,6 +316,18 @@ class ManifestService:
     def _compute_checksums_for_resource(
         self, resource: ManifestResource
     ) -> Tuple[bool, List[str], ManifestResource]:
+        """Compute checksums for the specified resource
+
+        Arguments:
+            resource -- Manifest resourece to compute checksums for
+
+        Returns:
+            Tuple[
+                success status (bool),
+                errors (List),
+                ManifestResource
+                ]
+        """
         self._logger.debug(f"Computing checksums for '{resource.path_destination}'")
         success = False
         errors = []
@@ -297,6 +350,14 @@ class ManifestService:
         return success, errors, resource
 
     def compute_checksums(self, resources: List[ManifestResource]) -> int:
+        """Compute checksums for resources
+
+        Arguments:
+            resources -- List of manifest resources
+
+        Returns:
+            Number of successfully computed checksums
+        """
         self._logger.debug(f"[CHECKSUMS] Computing for {len(resources)} resources")
         n_success = 0
         for resource in resources:
@@ -308,11 +369,20 @@ class ManifestService:
         self._logger.debug(f"[CHECKSUMS] Completed")
         return n_success
 
-    def add_resource_to_step(self, step_name: str, resource: ManifestResource):
+    def add_resource_to_step(
+        self, step_name: str,
+        resource: ManifestResource
+    ) -> None:
+        """Add ManifestResource to step
+
+        Arguments:
+            step_name -- Name of step to add the resource to 
+            resource -- Resource to add
+        """
         manifest_step = self.get_step(step_name)
         manifest_step.resources.append(resource)
 
-    def persist(self):
+    def persist(self) -> None:
         """
         This method will persist the manifest file to the output directory
         """

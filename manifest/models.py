@@ -9,11 +9,13 @@ from modules.common.TimeUtils import get_timestamp_iso_utc_now
 logger = logging.getLogger(__name__)
 
 
-# TODO - Global Data model
-class ManifestDocument(object):
+class ManifestDocument:
+    """Top-level data model for manifest document"""
     def __init__(self, timestamp: str = None):
-        """
-        Constructor for the Manifest file root content
+        """Constructor for the Manifest file root content
+
+        Keyword Arguments:
+            timestamp -- timestampe string (default: {None})
         """
         if timestamp is None:
             timestamp = get_timestamp_iso_utc_now()
@@ -28,9 +30,14 @@ class ManifestDocument(object):
         self.msg_validation: str = ManifestStatus.NOT_SET
 
 
-# TODO - Step Data model
-class ManifestStep(object):
+class ManifestStep:
+    """Data model for manifest step"""
     def __init__(self, timestamp: str = None):
+        """Constructor for the Manifest file root content
+
+        Keyword Arguments:
+            timestamp -- timestampe string (default: {None})
+        """
         if timestamp is None:
             timestamp = get_timestamp_iso_utc_now()
         self.created: str = timestamp
@@ -43,9 +50,14 @@ class ManifestStep(object):
         self.msg_validation: str = ManifestStatus.NOT_SET
 
 
-# TODO - Resource data model
-class ManifestResource(object):
+class ManifestResource:
+    """Data model for manifest resource"""
     def __init__(self, timestamp: str = None):
+        """Constructor for the Manifest file root content
+
+        Keyword Arguments:
+            timestamp -- timestampe string (default: {None})
+        """
         if timestamp is None:
             timestamp = get_timestamp_iso_utc_now()
         self.created: str = timestamp
@@ -58,7 +70,10 @@ class ManifestResource(object):
         self.source_checksums = ManifestResourceChecksums()
         self.destination_checksums = ManifestResourceChecksums()
 
-class ManifestResourceChecksums(object):
+
+class ManifestResourceChecksums:
+    """Data model for manifest resource checksums
+    """
     def __init__(self):
         self.crc32 = ManifestStatus.NOT_SET
         self.md5sum = ManifestStatus.NOT_SET
@@ -66,6 +81,7 @@ class ManifestResourceChecksums(object):
 
 
 class ManifestStatus(StrEnum):
+    """Manifest status enums"""
     ERROR = auto()
     FAILED = auto()
     NO_NAME = auto()
