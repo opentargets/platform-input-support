@@ -36,8 +36,7 @@ def main():
         yaml_dict = yaml.read_yaml()
         print_list_steps(yaml.get_list_keys())
     except YAMLReaderException as err:
-        message = f"When trying to read the YAML config, \
-            the following error occurred '{err}'"
+        message = f"When trying to read the YAML config, the following error occurred '{err}'"
         logger.error(message)
         raise PISRunnerException(message) from err
     cfg.set_up_logging(args)

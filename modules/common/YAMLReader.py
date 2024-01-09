@@ -37,8 +37,8 @@ class YAMLReader:
             try:
                 self.yaml_dict = Dict(yaml.load(stream, yaml.SafeLoader))
             except yaml.YAMLError as err:
-                message = f"The following ERROR occurred while reading \
-                    YAML file '{self.yaml_file}', '{err}'"
+                message = ("The following ERROR occurred while reading "
+                           f"YAML file '{self.yaml_file}', '{err}'")
                 logger.error(message)
                 raise YAMLReaderException(message) from err
         return self.yaml_dict
