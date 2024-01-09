@@ -1,28 +1,29 @@
+"""
+- EFO -
+The current implementation is based on the conversion from owl format to
+json lines format using Apache RIOT.
+
+The structure disease_obsolete stores the obsolete terms and it is used to
+retrieve the relationship between valid term and obsolete terms.
+
+The locationIds are generated retrieving the structure parent/child and
+recursively retrieve the proper info.
+"""
 import re
 import json
 import logging
-import jsonlines
 from urllib import parse
+import jsonlines
 
 logger = logging.getLogger(__name__)
 
-"""
-- EFO -
-The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
-The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
-    term and obsolete terms.
-The locationIds are generated retrieving the structure parent/child and recursively retrieve the proper info
-"""
-
 
 class EFOException(Exception):
-    pass
+    """Custom EFO Exception"""
 
 
-class EFO(object):
-    """
-    EFO Data modeling
-    """
+class EFO:
+    """EFO Data modeling"""
 
     def __init__(self, efo_input):
         """
