@@ -2,6 +2,7 @@ import unittest
 from definitions import ROOT_DIR
 import subprocess
 
+from modules.common.YAMLReader import YAMLReader
 from plugins.helpers.HPO import HPO
 from plugins.helpers.EFO import EFO
 from plugins.helpers.MONDO import MONDO
@@ -17,9 +18,13 @@ class TestDiseaseStep(unittest.TestCase):
         self.efo_filename = ROOT_DIR + "/tests/resources/efo.jsonl"
         self.phenotype_filename = ROOT_DIR + "/tests/resources/phenotype.hpoa"
         self.mondo_filename = ROOT_DIR + "/tests/resources/mondo.jsonl"
+        default_conf_file = ROOT_DIR + '/' + 'config.yaml'
+        self.yaml_reader = YAMLReader(default_conf_file)
+        self.config = self.yaml_reader.read_yaml()
 
     def testDisease(self):
-        EFOModule = EFO(self.efo_filename)
+        conf = self.config.disease.etl.efo
+        EFOModule = EFO(self.efo_filename, conf)
         process = subprocess.Popen(
             "cat " + self.efo_filename + "| grep -v deprecated | grep -v 'Restric' | grep -v 'intersectionOf' | wc -l",
             shell=True,
