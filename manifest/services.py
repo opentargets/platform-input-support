@@ -114,8 +114,6 @@ class ManifestService:
 
     def __init__(self, config):
         self.config = config
-        # TODO - Remove unused property
-        self.session_timestamp: str = get_timestamp_iso_utc_now()
         self._logger = logging.getLogger(__name__)
         self.__manifest: ManifestDocument = None
         self.__is_manifest_loaded = False

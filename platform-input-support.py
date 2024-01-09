@@ -3,9 +3,9 @@ import logging.config
 import sys
 
 # Custom modules
-import modules.cfg as cfg
-from manifest import get_manifest_service, ManifestStatus
-from modules.common.YAMLReader import YAMLReader, YAMLReaderException
+from modules import cfg
+from manifest import get_manifest_service
+from modules.common.YAMLReader import YAMLReader
 from modules.RetrieveResource import RetrieveResource
 
 logger = logging.getLogger(__name__)
