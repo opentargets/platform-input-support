@@ -1,7 +1,5 @@
 import os
 import logging
-import warnings
-from datetime import datetime
 
 from typing import List
 from yapsy.IPlugin import IPlugin

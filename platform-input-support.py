@@ -2,8 +2,8 @@
 import logging.config
 
 # Custom modules
-import modules.cfg as cfg
-from manifest import get_manifest_service, ManifestStatus
+from modules import cfg
+from manifest import get_manifest_service
 from modules.common.YAMLReader import YAMLReader
 from modules.RetrieveResource import RetrieveResource
 

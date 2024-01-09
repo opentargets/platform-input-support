@@ -3,13 +3,13 @@ import logging
 from typing import List
 
 from yapsy.IPlugin import IPlugin
-from plugins.helpers.HPO import HPO, HPOException
-from modules.common.Riot import Riot, RiotException
-from plugins.helpers.MONDO import MONDO, MONDOException
+from plugins.helpers.HPO import HPO
+from modules.common.Riot import Riot
+from plugins.helpers.MONDO import MONDO
 from modules.common import create_folder
-from plugins.helpers.EFO import EFO, EFOException
+from plugins.helpers.EFO import EFO
 from modules.common.Downloads import Downloads
-from plugins.helpers.HPOPhenotypes import HPOPhenotypes, HPOPhenotypesException
+from plugins.helpers.HPOPhenotypes import HPOPhenotypes
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
 
 logger = logging.getLogger(__name__)

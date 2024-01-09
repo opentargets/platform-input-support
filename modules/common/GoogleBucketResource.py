@@ -160,26 +160,6 @@ class GoogleBucketResource(object):
         """
         return self.list_blobs(self.object_path, include=included_pattern)
 
-    # TODO - UNUSED method, REMOVE
-    def copy_from(self, original_filename, dest_filename, gs_specific_output_dir=None):
-        bucket_link = self.get_bucket()
-        if bucket_link is None:
-            raise ValueError('Invalid google storage bucket {bucket}'.format(bucket=self.bucket_name))
-
-        object_path = self.object_path
-        if gs_specific_output_dir is not None:
-            object_path = object_path + '/' + gs_specific_output_dir
-
-        blob = bucket_link.blob(object_path + '/' + dest_filename)
-        logger.debug('Copy the file %s to the bucket %s', original_filename, bucket_link)
-        if ".gz" in original_filename:
-            blob.content_type = "application/x-gzip"
-        else:
-            blob.content_type = "text/plain"
-
-        blob.upload_from_filename(filename=original_filename)
-        return blob.name
-
     # NOTE General helper method that should be refactored out of this class into a Spark related Helper module
     @staticmethod
     def is_a_spark_directory(filename):
@@ -314,38 +294,3 @@ class GoogleBucketResource(object):
         if download_descriptor["is_dir"]:
             return self.download_dir(download_descriptor["file"], download_descriptor["output"])
         return [self.download_file(download_descriptor["file"], download_descriptor["output"])]
-
-    # TODO - UNUSED method, REMOVE
-    def blob_metadata(self, blob_name):
-        """
-        Prints out a blob's metadata for the given BLOB name
-
-        :param blob_name: BLOB name to print metadata for
-        """
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(self.bucket_name)
-        blob = bucket.get_blob(blob_name)
-
-        print(('Blob: {}'.format(blob.name)))
-        print(('Bucket: {}'.format(blob.bucket.name)))
-        print(('Storage class: {}'.format(blob.storage_class)))
-        print(('ID: {}'.format(blob.id)))
-        print(('Size: {} bytes'.format(blob.size)))
-        print(('Updated: {}'.format(blob.updated)))
-        print(('Generation: {}'.format(blob.generation)))
-        print(('Metageneration: {}'.format(blob.metageneration)))
-        print(('Etag: {}'.format(blob.etag)))
-        print(('Owner: {}'.format(blob.owner)))
-        print(('Component count: {}'.format(blob.component_count)))
-        print(('Crc32c: {}'.format(blob.crc32c)))
-        print(('md5_hash: {}'.format(blob.md5_hash)))
-        print(('Cache-control: {}'.format(blob.cache_control)))
-        print(('Content-type: {}'.format(blob.content_type)))
-        print(('Content-disposition: {}'.format(blob.content_disposition)))
-        print(('Content-encoding: {}'.format(blob.content_encoding)))
-        print(('Content-language: {}'.format(blob.content_language)))
-        print(('Metadata: {}'.format(blob.metadata)))
-
-        if blob.retention_expiration_time:
-            print(("retentionExpirationTime: {}"
-                   .format(blob.retention_expiration_time)))
