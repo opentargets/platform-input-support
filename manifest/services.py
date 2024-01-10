@@ -67,7 +67,9 @@ jsonpickle.handlers.registry.register(ManifestStatus, JsonEnumHandler)
 
 
 class GcpBucketService:
-    """Google Cloud Platform bucket service
+    """
+    Google Cloud Platform bucket service.
+    Get Google bucket objects and transfer data from them.
     """
     def __init__(self, bucket_name: str = None, path: str = None):
         """Constructor for GCP bucket service
@@ -82,7 +84,7 @@ class GcpBucketService:
         self.client = storage.Client()
 
     def get_bucket(self) -> Union[storage.Bucket, None]:
-        """Get Google bucket
+        """Get a Google bucket object if it exists.
 
         Returns:
             Bucket or None
@@ -104,7 +106,7 @@ class GcpBucketService:
         return None
 
     def download_file(self, src_path_file: str, dst_path_file: str) -> None:
-        """Download file.
+        """Download the contents of a google bucket (source) to a local file (dest).
 
         Arguments:
             src_path_file -- Source file path
@@ -253,7 +255,11 @@ class ManifestService:
                         ]
 
     def __reset_manifest_step(self, step_name: str) -> None:
-        """Reset manifest step
+        """
+        Reset manifest step.
+        When repeating a step we need to overwrite the existing instance of
+        that step in the manifest. This method is used to reset the state of
+        that step to the initial state. 
 
         Arguments:
             step_name -- step to reset
