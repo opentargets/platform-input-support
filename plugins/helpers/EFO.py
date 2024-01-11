@@ -1,36 +1,39 @@
+"""
+- EFO -
+The current implementation is based on the conversion from owl format to
+json lines format using Apache RIOT.
+
+The structure disease_obsolete stores the obsolete terms and it is used to
+retrieve the relationship between valid term and obsolete terms.
+
+The locationIds are generated retrieving the structure parent/child and
+recursively retrieve the proper info.
+"""
 import re
 import json
 import logging
-import jsonlines
+from typing import Dict
 from urllib import parse
+import jsonlines
 
 logger = logging.getLogger(__name__)
 
-"""
-- EFO -
-The current implementation is based on the conversion from owl format to json lines format using Apache RIOT
-The structure disease_obsolete stores the obsolete terms and it is used to retrieve the relationship between valid
-    term and obsolete terms.
-The locationIds are generated retrieving the structure parent/child and recursively retrieve the proper info
-"""
-
 
 class EFOException(Exception):
-    pass
+    """Custom EFO Exception"""
 
 
-class EFO(object):
-    """
-    EFO Data modeling
-    """
+class EFO:
+    """EFO Data modeling"""
 
-    def __init__(self, efo_input):
+    def __init__(self, efo_input: str, conf: Dict) -> None:
         """
         Constructor for EFO data model instance based on the given efo_input
 
         :parm efo_input: path to EFO input file
         """
         self.efo_input = efo_input
+        self.conf = conf
         self.diseases = {}
         self.diseases_obsolete = {}
         self.has_location_ids = {}
@@ -198,23 +201,19 @@ class EFO(object):
         """
         return elem.replace(":", "_")
 
-    def get_prefix(self, id):
+    def get_prefix(self, id: str) -> str:
         """
         Get the right ontology URL prefix for the given term ID
 
         :param id: term ID to find out the URL prefix for
         :return: the URL prefix recognised for the given term ID
+            default value is returned if unmatched
         """
-        # We should probably externalise this in the configuration file, so we don't need to potentially change the code
-        # in the future. Alternatively, we could use resolution services like https://identifiers.org
-        simple_id = re.match(r'^(.+?)_', id)
-        if simple_id.group() in ["EFO_", "OTAR_"]:
-            return "http://www.ebi.ac.uk/efo/"
-        elif (simple_id.group() in 'Orphanet_'):
-            return "http://www.orpha.net/ORDO/"
-        else:
-            logger.warning("Match fail for {}".format(id))
-            return "http://purl.obolibrary.org/obo/"
+        url_prefix_map: dict = self.conf.url_prefix_mapping
+        url_prefix_default: str = self.conf.url_prefix_mapping_default
+        id_regex = re.match(r'^(.+?)_', id)
+        identifier = id_regex.group(1)
+        return url_prefix_map.get(identifier, url_prefix_default)
 
     def extract_id_from_uri(self, uri):
         """

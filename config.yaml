@@ -18,6 +18,11 @@ disease:
     path: ontology-inputs
     owl_jq: '.["@graph"][] | select (.["@type"] == ("owl:Class","owl:Restriction") and ."@id" != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
     diseases_static_file: diseases_efo.jsonl
+    url_prefix_mapping:
+      EFO: http://www.ebi.ac.uk/efo/
+      OTAR: http://www.ebi.ac.uk/efo/
+      Orphanet: http://www.orpha.net/ORDO/
+    url_prefix_mapping_default: http://purl.obolibrary.org/obo/
    hpo:
     uri: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2021-10-10/hp.owl
     output_filename: ontology-hpo.jsonl
