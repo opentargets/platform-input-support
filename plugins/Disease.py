@@ -169,7 +169,7 @@ class Disease(IPlugin):
                                                   conf.etl.efo.path,
                                                   conf.etl.efo.diseases_static_file)
         if conversion_manifest.status_completion == ManifestStatus.COMPLETED:
-            efo = EFO(conversion_manifest.path_destination)
+            efo = EFO(conversion_manifest.path_destination, conf=conf.etl.efo)
             try:
                 efo.generate()
             except Exception as e:
