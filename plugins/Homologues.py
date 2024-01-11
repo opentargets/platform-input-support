@@ -1,5 +1,4 @@
 import os
-import errno
 import logging
 import subprocess
 from typing import List
