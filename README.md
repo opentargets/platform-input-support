@@ -19,6 +19,7 @@ List of available steps:
 - OpenFDA
 - Otar
 - Pharmacogenomics
+- PPPEvidence
 - Reactome
 - SO
 - Target
