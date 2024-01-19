@@ -1,0 +1,9 @@
+export OTOPS_PIS_DOCKER_IMAGE_NAME=quay.io/opentargets/platform-input-support
+export OTOPS_PIS_DOCKER_IMAGE_TAG=latest
+export OTOPS_PATH_PIS_OUTPUT_DIR=output
+export OTOPS_PATH_PIS_LOGS_DIR=logs
+export OTOPS_EFO_RELEASE_VERSION=v3.59.0
+export OTOPS_ENSEMBL_RELEASE_VERSION=110
+export OTOPS_CHEMBL_RELEASE_VERSION=34
+export OTOPS_PATH_GCS_PIS_OUTPUT=open-targets-pre-data-releases/devpis/input
+export OTOPS_PATH_GCS_PIS_SESSIONS=gs://open-targets-pre-data-releases/devpis/sessions/
