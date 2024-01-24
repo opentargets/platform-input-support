@@ -17,6 +17,7 @@ __pycache__/
 output/
 
 # Log output file
+logs/
 .log
 *.log
 
@@ -33,3 +34,13 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 .venv/*
+
+# hidden files
+.*
+
+# meta dirs
+sessions/
+credentials/
+
+# terraform
+terraform.tfstate
