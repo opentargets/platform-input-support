@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-PATH_SCRIPTS := scripts
+PATH_SCRIPTS := launcher/scripts/pipeline
 OTOPS_PATH_CREDENTIALS := credentials
 OTOPS_PATH_GCS_CREDENTIALS_GCP_FILE := "gs://open-targets-ops/credentials/pis-service_account.json"
 OTOPS_PATH_GCS_CREDENTIALS_FILE := ${OTOPS_PATH_CREDENTIALS}/gcs_credentials.json
@@ -8,6 +8,8 @@ SESSION_ID := $(shell uuidgen | tr '''[:upper:]''' '''[:lower:]''' | cut -f5 -d'
 PATH_PIS_SESSION := sessions/${SESSION_ID}
 PATH_PIS_SESSION_CONTEXT := ${PATH_PIS_SESSION}/.env
 config_dest ?= ${PATH_PIS_SESSION}
+OTOPS_PATH_PIS_CONFIG := ${config_dest}/config.yaml
+OTOPS_PIS_RUN_ARGS := ${args}
 
 default: help
 
@@ -40,9 +42,9 @@ new_session: # Initialise the running context and start a new session
 config_init: # Instantiate the PIS config. Optionally set the output directory with config_dest=<config output dir>
 	@echo "[PIS] Instantiating PIS config"
 	@mkdir -p ${config_dest}
-	@echo "[PIS] Writing config to ==> ${config_dest}"
+	@echo "[PIS] Writing config to ==> ${OTOPS_PATH_PIS_CONFIG}"
 	$(eval include ${PIS_ACTIVE_PROFILE})
-	@bash ./${PATH_SCRIPTS}/init_config.sh config.yaml ${config_dest}/config.yaml
+	@bash ./${PATH_SCRIPTS}/init_config.sh config.yaml ${OTOPS_PATH_PIS_CONFIG}
 
 .PHONY: launch_local
 launch_local: gcp_credentials new_session config_init # Launch PIS locally
@@ -53,12 +55,38 @@ launch_local: gcp_credentials new_session config_init # Launch PIS locally
 	@echo "[PIS] Preparing dirs"
 	@mkdir -p ${OTOPS_PATH_PIS_OUTPUT_DIR}
 	@mkdir -p ${OTOPS_PATH_PIS_LOGS_DIR}
-	@echo "[PIS] Docker run with args: '${args}'"
-	@bash ./${PATH_SCRIPTS}/run.sh ${args}
+	@echo "[PIS] Docker run with args: '${OTOPS_PIS_RUN_ARGS}'"
+	@bash ./${PATH_SCRIPTS}/run.sh
 	@echo "[PIS] Uploading logs to GCS"
 	@gsutil -m cp -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSIONS}
+
+.PHONY: launch_remote
+launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
+	@echo "[PIS] SESSION_ID: ${SESSION_ID}"
+	@echo "Loading context: ${PATH_PIS_SESSION_CONTEXT}"
+	$(eval include ${PIS_ACTIVE_PROFILE})
+	@echo "[PIS] Launching PIS remotely"
+	@echo "[TERRAFORM] Using Terraform Workspace ID '${SESSION_ID}'" && \
+		terraform -chdir=launcher init && \
+		terraform -chdir=launcher workspace new ${SESSION_ID} && \
+		terraform -chdir=launcher apply
 
 .PHONY: clean_sessions_metadata
 clean_sessions_metadata: # Clean all session metadata files
 	@echo "[PIS] Removing all session metadata..."
 	@rm -rv sessions
+
+.PHONY: clean_all_infrastructure
+clean_all_infrastructure: ## Clean all the infrastructures used for run PIS remotely
+	@cd launcher ; \
+	terraform init && \
+	terraform workspace select default && \
+	for ws in $$( terraform workspace list | cut -f2 -d'*' ) ; do \
+		if [ $$ws != 'default' ] ; then \
+			echo "[CLEAN] Terraform workspace '$$ws'"; \
+			terraform workspace select $$ws ; \
+			terraform destroy -auto-approve ; \
+			terraform workspace select default ; \
+			terraform workspace delete $$ws ; \
+		fi \
+	done

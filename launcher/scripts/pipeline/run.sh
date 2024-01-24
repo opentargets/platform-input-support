@@ -1,6 +1,6 @@
 #!/bin/bash
 
-config=$(realpath "${config_dest}/config.yaml")
+config=$(realpath ${OTOPS_PATH_PIS_CONFIG})
 output=$(realpath ${OTOPS_PATH_PIS_OUTPUT_DIR})
 logs=$(realpath ${OTOPS_PATH_PIS_LOGS_DIR})
 creds=$(realpath ${OTOPS_PATH_GCS_CREDENTIALS_FILE})
@@ -15,6 +15,6 @@ run_cmd="docker run \
          --log-level=DEBUG \
          -gkey /srv/credentials/open-targets-gac.json \
          -gb ${OTOPS_PATH_GCS_PIS_OUTPUT} \
-         $@"
+         ${OTOPS_PIS_RUN_ARGS}"
 
 $run_cmd
