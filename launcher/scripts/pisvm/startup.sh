@@ -61,8 +61,11 @@ install_packages
 log "Waiting for pipeline scripts to be ready, timeout after 20 minutes"
 timeout 1200 bash -c "until [[ -f ${FLAG_PIPELINE_SCRIPTS_READY} ]]; do sleep 1; done"
 # Launch the pipeline scripts
-log "Launching pipeline scripts"
-./${FILENAME_PIPELINE_SCRIPTS_ENTRY_POINT}
+cd ${PIS_VM_HOME}
+log "Setting context from: ${CONTEXT_PATH}/.env"
+source ${CONTEXT_PATH}/.env
+log "Launching pipeline script: ${FILENAME_PIPELINE_SCRIPTS_ENTRY_POINT}"
+${FILENAME_PIPELINE_SCRIPTS_ENTRY_POINT}
 log "Pipeline scripts completed"
 # Shutting down this pipeline machine
 log "[--- Shutting down this pipeline machine ---]"

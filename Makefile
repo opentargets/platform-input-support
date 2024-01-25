@@ -9,7 +9,7 @@ PATH_PIS_SESSION := sessions/${SESSION_ID}
 PATH_PIS_SESSION_CONTEXT := ${PATH_PIS_SESSION}/.env
 config_dest ?= ${PATH_PIS_SESSION}
 OTOPS_PATH_PIS_CONFIG := ${config_dest}/config.yaml
-OTOPS_PIS_RUN_ARGS := ${args}
+OTOPS_PIS_RUN_ARGS := "${args}"
 
 default: help
 
@@ -57,8 +57,10 @@ launch_local: gcp_credentials new_session config_init # Launch PIS locally
 	@mkdir -p ${OTOPS_PATH_PIS_LOGS_DIR}
 	@echo "[PIS] Docker run with args: '${OTOPS_PIS_RUN_ARGS}'"
 	@bash ./${PATH_SCRIPTS}/run.sh
-	@echo "[PIS] Uploading logs to GCS"
-	@gsutil -m cp -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSIONS}
+	@echo "[PIS] Uploading logs to GCS: ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}/${SESSION_ID}"
+	@gsutil -m rsync -r ${OTOPS_PATH_PIS_LOGS_DIR}/ ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}/${SESSION_ID}/
+	@echo "[PIS] Uploading config/context to GCS: ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${SESSION_ID}"
+	@gsutil -m rsync -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${SESSION_ID}/
 
 .PHONY: launch_remote
 launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
@@ -70,6 +72,7 @@ launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
 		terraform -chdir=launcher init && \
 		terraform -chdir=launcher workspace new ${SESSION_ID} && \
 		terraform -chdir=launcher apply
+	
 
 .PHONY: clean_sessions_metadata
 clean_sessions_metadata: # Clean all session metadata files

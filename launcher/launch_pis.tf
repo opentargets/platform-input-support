@@ -64,6 +64,8 @@ resource "google_compute_instance" "pisvm" {
         FLAG_PIPELINE_SCRIPTS_READY           = local.flag_pipeline_scripts_ready,
         PATH_PIPELINE_SCRIPTS                 = local.path_pipeline_scripts,
         FILENAME_PIPELINE_SCRIPTS_ENTRY_POINT = local.filename_pipeline_scripts_entry_point,
+        CONTEXT_PATH                          = local.path_context
+        PIS_VM_HOME                           = local.pisvm_remote_path_home
       }
     )
     ssh-keys               = "${local.pisvm_remote_user_name}:${tls_private_key.pisvm.public_key_openssh}"
