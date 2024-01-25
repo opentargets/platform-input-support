@@ -18,7 +18,7 @@ run_cmd="docker run \
          --log-level=DEBUG \
          -gkey /srv/credentials/open-targets-gac.json \
          -gb ${OTOPS_PATH_GCS_PIS_OUTPUT} \
-         $args"
+         $pis_args"
 
 $run_cmd
 
