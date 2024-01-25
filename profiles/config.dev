@@ -13,5 +13,4 @@ export OTOPS_CHEMBL_RELEASE_VERSION=34
 
 # Google cloud storage config
 export OTOPS_PATH_GCS_PIS_OUTPUT=open-targets-pre-data-releases/devpis/input
-export OTOPS_PATH_GCS_PIS_SESSION_LOGS=gs://open-targets-ops/logs/platform-pis
 export OTOPS_PATH_GCS_PIS_SESSION_CONFIGS=gs://open-targets-pre-data-releases/devpis/sessions

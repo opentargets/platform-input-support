@@ -21,3 +21,5 @@ run_cmd="docker run \
          $args"
 
 $run_cmd
+
+gsutil -m rsync -r ${logs}/ ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}
