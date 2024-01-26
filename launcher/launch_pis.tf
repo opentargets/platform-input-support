@@ -73,7 +73,7 @@ resource "google_compute_instance" "pisvm" {
   }
 
   service_account {
-    email  = "platform-input-support@${var.project_id}.iam.gserviceaccount.com"
+    email  = "pis-service-account@${var.project_id}.iam.gserviceaccount.com"
     scopes = ["cloud-platform"]
   }
 
