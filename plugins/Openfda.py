@@ -47,7 +47,7 @@ class Openfda(IPlugin):
             fda_output = create_folder(os.path.join(output.prod_dir, "fda-inputs"))
             fda = OpenfdaHelper(fda_output, manifest_service=get_manifest_service())
             drug_event_partitions = repo_metadata['results']['drug']['event']['partitions']
-            with concurrent.futures.ThreadPoolExecutor(max_workers=max(len(drug_event_partitions), 1000)) as executor:
+            with concurrent.futures.ThreadPoolExecutor(100) as executor:
                 self._logger.debug(f"Threadpool: {executor._max_workers}")
                 try:
                     return list(itertools.chain.from_iterable(executor.map(fda.do_download_openfda_event_file, drug_event_partitions)))

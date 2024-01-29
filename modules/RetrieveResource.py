@@ -139,7 +139,7 @@ class RetrieveResource(object):
         """
         Run the requested pipeline steps
         """
-        with concurrent.futures.ThreadPoolExecutor(len(self.steps())) as executor:
+        with concurrent.futures.ProcessPoolExecutor() as executor:
             executor.map(self.run_plugin, self.steps())
             
     def create_output_structure(self):
