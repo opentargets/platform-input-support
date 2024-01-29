@@ -69,7 +69,7 @@ variable "vm_pis_boot_disk_size" {
 variable "vm_pis_machine_type" {
   description = "Machine type for pis vm, default 'e2-standard-4'"
   type        = string
-  default     = "e2-standard-4"
+  default     = "e2-standard-8"
 }
 
 variable "vm_pis_machine_spot" {
