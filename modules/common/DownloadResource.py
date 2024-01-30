@@ -1,6 +1,8 @@
 import os
 import logging
 import datetime
+import ftplib
+from furl import furl
 import subprocess
 import urllib.request, urllib.parse, urllib.error
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
@@ -110,10 +112,15 @@ class DownloadResource(object):
         downloaded_resource.path_destination = filename
         errors = list()
         logger.info(f"[FTP] BEGIN: '{resource_info.uri}' -> '{filename}'")
+        url = furl(resource_info.uri)
         for attempt in range(retry_count):
             try:
-                urllib.request.urlretrieve(resource_info.uri, filename)
-            except Exception as e:
+                ftp = ftplib.FTP(str(url.host))
+                ftp.login()
+                with open(filename, "wb") as f:
+                    ftp.retrbinary("RETR " + str(url.path), f.write)
+                    ftp.quit()
+            except ftplib.all_errors as e:
                 errors.append(f"FAILED Attempt #{attempt + 1} to download '{resource_info.uri}', reason '{e}'")
                 logger.warning(errors[-1])
             else:
