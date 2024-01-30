@@ -1,7 +1,5 @@
 import os
 import logging
-import concurrent.futures
-
 from modules.common.Utils import Utils
 from definitions import PIS_OUTPUT_DIR
 from yapsy.PluginManager import PluginManager
@@ -120,28 +118,29 @@ class RetrieveResource(object):
         # Load all plugins
         self.simplePluginManager.collectPlugins()
 
-    def run_plugin(self, plugin_name):
-        plugin = self.simplePluginManager.getPluginByName(plugin_name)
-        plugin_configuration = self.yaml[plugin_name.lower()]
-        plugin_configuration["gcp_credentials"] = self.args.gcp_credentials
-        try:
-            plugin.plugin_object.process(
-                plugin_configuration, self.yaml.outputs, self.yaml.config
-            )
-        except Exception as e:
-            logger.error(
-                "A problem occurred while running step '{}'".format(plugin_name)
-            )
-            logger.error(e)
-            raise
-
+    # noinspection PyBroadException
     def run_plugins(self):
         """
         Run the requested pipeline steps
         """
-        with concurrent.futures.ThreadPoolExecutor(len(self.steps())) as executor:
-            executor.map(self.run_plugin, self.steps())
-            
+        steps_to_execute = self.steps()
+        # TODO - Refactor this for running all steps in parallel, collecting possible results as Futures, with the
+        #  option of re-try on those that failed, based on the premise that they are idempotent
+        for plugin_name in steps_to_execute:
+            plugin = self.simplePluginManager.getPluginByName(plugin_name)
+            plugin_configuration = self.yaml[plugin_name.lower()]
+            plugin_configuration["gcp_credentials"] = self.args.gcp_credentials
+            try:
+                plugin.plugin_object.process(
+                    plugin_configuration, self.yaml.outputs, self.yaml.config
+                )
+            except Exception as e:
+                logger.error(
+                    "A problem occurred while running step '{}'".format(plugin_name)
+                )
+                logger.error(e)
+                raise
+
     def create_output_structure(self):
         """
         Prepare pipeline output folder including an area for staging results ('staging') and another one for final
