@@ -37,7 +37,10 @@ new_session: # Initialise the running context and start a new session
 	@echo ${SESSION_ID}
 	@mkdir -p ${PATH_PIS_SESSION}
 	@echo "[PIS] Creating context environment file (${PATH_PIS_SESSION_CONTEXT}) from active profile"
-	@bash -c 'source ${PIS_ACTIVE_PROFILE} && ./${PATH_SCRIPTS}/init_context.sh' > ${PATH_PIS_SESSION_CONTEXT}
+	@bash -c 'set -o allexport && \
+		source ${PIS_ACTIVE_PROFILE} && \
+		set +o allexport && \
+		./${PATH_SCRIPTS}/init_context.sh' > ${PATH_PIS_SESSION_CONTEXT}
 
 .PHONY: config_init
 config_init: # Instantiate the PIS config. Optionally set the output directory with config_dest=<config output dir>
@@ -72,11 +75,10 @@ launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
 	@echo "[TERRAFORM] Using Terraform Workspace ID '${SESSION_ID}'" && \
 		terraform -chdir=launcher init && \
 		terraform -chdir=launcher workspace new ${SESSION_ID} && \
-		terraform -chdir=launcher apply
+		terraform -chdir=launcher apply 
 	@echo "[PIS] Uploading config/context to GCS: ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${SESSION_ID}"
 	@gsutil -m rsync -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${SESSION_ID}/
 	@echo "[PIS] Logs will be uploaded to GCS when pipeline has completed: ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}"
-
 
 .PHONY: clean_sessions_metadata
 clean_sessions_metadata: # Clean all session metadata files

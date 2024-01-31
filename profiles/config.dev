@@ -1,16 +1,19 @@
 # PIS image config
-export OTOPS_PIS_DOCKER_IMAGE_NAME=quay.io/opentargets/platform-input-support
-export OTOPS_PIS_DOCKER_IMAGE_TAG=latest
+OTOPS_PIS_DOCKER_IMAGE_NAME=quay.io/opentargets/platform-input-support
+OTOPS_PIS_DOCKER_IMAGE_TAG=latest
 
 # local directory config
-export OTOPS_PATH_PIS_OUTPUT_DIR=output
-export OTOPS_PATH_PIS_LOGS_DIR=logs
+OTOPS_PATH_PIS_OUTPUT_DIR=output
+OTOPS_PATH_PIS_LOGS_DIR=logs
 
 # PIS config
-export OTOPS_EFO_RELEASE_VERSION=v3.59.0
-export OTOPS_ENSEMBL_RELEASE_VERSION=110
-export OTOPS_CHEMBL_RELEASE_VERSION=34
+OTOPS_EFO_RELEASE_VERSION=v3.59.0
+OTOPS_ENSEMBL_RELEASE_VERSION=110
+OTOPS_CHEMBL_RELEASE_VERSION=34
 
 # Google cloud storage config
-export OTOPS_PATH_GCS_PIS_OUTPUT=open-targets-pre-data-releases/devpis/input
-export OTOPS_PATH_GCS_PIS_SESSION_CONFIGS=gs://open-targets-pre-data-releases/devpis/sessions
+OTOPS_PATH_GCS_PIS_OUTPUT=open-targets-pre-data-releases/devpis/input
+OTOPS_PATH_GCS_PIS_SESSION_CONFIGS=gs://open-targets-pre-data-releases/devpis/sessions
+
+# Terraform variables
+TF_VAR_resources_prefix=pis-dev

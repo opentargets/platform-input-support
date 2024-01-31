@@ -69,4 +69,4 @@ ${FILENAME_PIPELINE_SCRIPTS_ENTRY_POINT}
 log "Pipeline scripts completed"
 # Shutting down this pipeline machine
 log "[--- Shutting down this pipeline machine ---]"
-#poweroff
+poweroff
