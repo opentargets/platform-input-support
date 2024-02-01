@@ -98,10 +98,6 @@ resource "google_compute_instance" "pisvm" {
   // Common configuration
   provisioner "file" {
     content = templatefile("${local.path_source_pipeline_scripts}/config.sh", {
-      PIS_PROJECT_ID                                   = var.project_id,
-      PIS_GCP_ZONE                                     = var.gcp_default_zone,
-      PIS_DATA_RELEASE_PATH_SOURCE_ROOT                = local.data_release_path_source_root,
-      PIS_DATA_RELEASE_PATH_INPUT_ROOT                 = local.data_release_path_input_root,
       PIS_FLAG_PIPELINE_SCRIPTS_READY                  = local.flag_pipeline_scripts_ready,
       PIS_GCP_PATH_PIS_PIPELINE_SESSION_LOGS           = local.gcp_path_pis_pipeline_session_logs,
       PIS_PATH_PIPELINE_ROOT                           = local.path_pipeline_root,

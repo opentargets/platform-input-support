@@ -11,6 +11,7 @@ config_dest ?= ${PATH_PIS_SESSION}
 OTOPS_PATH_PIS_CONFIG := ${config_dest}/config.yaml
 OTOPS_PIS_RUN_ARGS := "${args}"
 OTOPS_PATH_GCS_PIS_SESSION_LOGS := gs://open-targets-ops/logs/platform-pis/${SESSION_ID}/
+last_session_id=$(shell cat .sessionid) 
 
 default: help
 
@@ -35,6 +36,7 @@ set_profile: # Set an active configuration profile, e.g. "make set_profile profi
 new_session: # Initialise the running context and start a new session
 	@echo "[PIS] Setting running context"
 	@echo ${SESSION_ID}
+	@echo "$${SESSION_ID}" > .sessionid
 	@mkdir -p ${PATH_PIS_SESSION}
 	@echo "[PIS] Creating context environment file (${PATH_PIS_SESSION_CONTEXT}) from active profile"
 	@bash -c 'set -o allexport && \
@@ -80,10 +82,23 @@ launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
 	@gsutil -m rsync -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${SESSION_ID}/
 	@echo "[PIS] Logs will be uploaded to GCS when pipeline has completed: ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}"
 
-.PHONY: clean_sessions_metadata
-clean_sessions_metadata: # Clean all session metadata files
+.PHONY: clean_all_sessions_metadata
+clean_all_sessions_metadata: # Clean all session metadata files
 	@echo "[PIS] Removing all session metadata..."
 	@rm -rv sessions
+
+.PHONY: clean_session_metadata
+clean_session_metadata: # Clean metadata files for the current session
+	@echo "[PIS] Removing metadata for session: '$${last_session_id}'"
+	@rm -rv sessions/$${last_session_id}
+
+.PHONY: clean_infrastructure
+clean_infrastructure: # Clean the infrastructure for the session
+	@cd launcher ; \
+		terraform init && \
+		echo "[TERRAFORM] Cleaning up Workspace ID '$${last_session_id}'" \
+		terraform workspace select ${last_session_id} && \
+		terraform destroy
 
 .PHONY: clean_all_infrastructure
 clean_all_infrastructure: ## Clean all the infrastructures used for run PIS remotely
@@ -99,3 +114,4 @@ clean_all_infrastructure: ## Clean all the infrastructures used for run PIS remo
 			terraform workspace delete $$ws ; \
 		fi \
 	done
+
