@@ -11,21 +11,6 @@ locals {
   path_source_pipeline_scripts                = "${path.module}/scripts/pipeline"
   path_source_credentials                     = "${path.cwd}/credentials"
   path_source_session                         = "${path.cwd}/sessions/${terraform.workspace}"
-  
-  // --- Open Targets Data Release Skeleton --- //
-  data_release_skeleton_path_output_root      = "output"
-  data_release_skeleton_path_input_root       = "input"
-  data_release_skeleton_path_etl_root         = "${local.data_release_skeleton_path_output_root}/etl"
-  data_release_skeleton_path_etl_json_root    = "${local.data_release_skeleton_path_etl_root}/json"
-  data_release_skeleton_path_etl_parquet_root = "${local.data_release_skeleton_path_etl_root}/parquet"
-  data_release_skeleton_path_metadata_root     = "${local.data_release_skeleton_path_output_root}/metadata"
-
-  // --- Open Targets Data Release --- //
-  data_release_path_source_root = "gs://${var.data_location_source}"
-  data_release_path_etl_json    = "${local.data_release_path_source_root}/${local.data_release_skeleton_path_etl_json_root}"
-  data_release_path_etl_parquet = "${local.data_release_path_source_root}/${local.data_release_skeleton_path_etl_parquet_root}"
-  data_release_path_input_root  = "${local.data_release_path_source_root}/${local.data_release_skeleton_path_input_root}"
-
   // --- PIS VM data load process configuration --- //
   // Base path to the pipeline pipeline scripts
   path_pipeline_root                               = "${local.pisvm_remote_path_home}/pis"

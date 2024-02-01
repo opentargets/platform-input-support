@@ -95,18 +95,11 @@ resource "google_compute_instance" "pisvm" {
       "mkdir -p ${local.path_pipeline_scripts} credentials sessions/${terraform.workspace} output logs",
     ]
   }
-  // Commong configuration
+  // Common configuration
   provisioner "file" {
     content = templatefile("${local.path_source_pipeline_scripts}/config.sh", {
       PIS_PROJECT_ID                                   = var.project_id,
       PIS_GCP_ZONE                                     = var.gcp_default_zone,
-      PIS_IS_PARTNER_INSTANCE                          = var.is_partner_instance,
-      PIS_DATA_RELEASE_SKELETON_PATH_OUTPUT_ROOT       = local.data_release_skeleton_path_output_root,
-      PIS_DATA_RELEASE_SKELETON_PATH_INPUT_ROOT        = local.data_release_skeleton_path_input_root,
-      PIS_DATA_RELEASE_SKELETON_PATH_ETL_ROOT          = local.data_release_skeleton_path_etl_root,
-      PIS_DATA_RELEASE_SKELETON_PATH_ETL_JSON_ROOT     = local.data_release_skeleton_path_etl_json_root,
-      PIS_DATA_RELEASE_SKELETON_PATH_ETL_PARQUET_ROOT  = local.data_release_skeleton_path_etl_parquet_root,
-      PIS_DATA_RELEASE_SKELETON_PATH_METADATA_ROOT     = local.data_release_skeleton_path_metadata_root,
       PIS_DATA_RELEASE_PATH_SOURCE_ROOT                = local.data_release_path_source_root,
       PIS_DATA_RELEASE_PATH_INPUT_ROOT                 = local.data_release_path_input_root,
       PIS_FLAG_PIPELINE_SCRIPTS_READY                  = local.flag_pipeline_scripts_ready,
