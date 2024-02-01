@@ -17,3 +17,11 @@ OTOPS_PATH_GCS_PIS_SESSION_CONFIGS=gs://open-targets-pre-data-releases/devpis/se
 
 # Terraform variables
 TF_VAR_resources_prefix=pis-dev
+TF_VAR_data_location_source=open-targets-pre-data-releases/devpis
+TF_VAR_project_id=open-targets-eu-dev
+TF_VAR_gcp_default_region=europe-west1
+TF_VAR_gcp_default_zone=europe-west1-d
+TF_VAR_vm_pis_boot_image=debian-11
+TF_VAR_vm_pis_boot_disk_size=512
+TF_VAR_vm_pis_machine_type=e2-standard-8
+TF_VAR_pis_logs_path_root=gs://open-targets-ops/logs/platform-pis

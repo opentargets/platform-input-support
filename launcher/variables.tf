@@ -26,33 +26,6 @@ variable "gcp_default_zone" {
   default     = "europe-west1-d"
 }
 
-
-// --- RELEASE INFORMATION --- //
-variable "config_gcp_default_region" {
-  description = "Default region when not specified in the module"
-  type        = string
-  default     = "europe-west1"
-}
-
-variable "config_gcp_default_zone" {
-  description = "Default zone when not specified in the module, default 'europe-west1-d'"
-  type        = string
-  default     = "europe-west1-d"
-}
-
-variable "config_project_id" {
-  description = "Default project to use when not specified in the module, default 'open-targets-eu-dev'"
-  type        = string
-  default     = "open-targets-eu-dev"
-}
-
-// --- ETL info --- //
-variable "is_partner_instance" {
-  description = "Is partners instance? By default false"
-  type        = bool
-  default     = false
-}
-
 // --- pis VM Configuration --- //
 variable "vm_pis_boot_image" {
   description = "Boot image configuration for pis VM, default 'Debian 11'"
