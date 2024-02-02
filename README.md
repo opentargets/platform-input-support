@@ -30,7 +30,28 @@ The final files are located under the output directory while the files used for 
 
 Below more details about how to execute the script.
 
-# Installation Requirements
+# Running Platform Input Support
+
+_Requires **Google Cloud SDK** and **docker** (if running locally)_
+
+## Step 1. Configure the run
+- Set the values in the [config](profiles/config.dev) or copy it to profiles/config.<profile_name>
+- _Note: you're unlikely to need to change anything other than the PIS Config section and maybe the image tag._
+- Set the profile to one you need e.g. `make set_profile profile=dev`
+
+## Step 2. Deploy and run the pipeline remotely
+- Launch with pis arguments e.g. (steps for public) so `make launch_remote args='-exclude otar pppevidence'`
+- This deploys a vm on GCP, runs PIS with the args given, uploads the PIS output, configs and logs to the configured GCS bucket.
+- To follow the logs while the VM is up, run the following: 
+  - `gcloud compute ssh --zone "<pisvm.zone>" "<pisvm.username>@<pisvm.name" --project "open-targets-eu-dev" --command='journalctl -u google-startup-scripts.service -f'`
+## Step 2 (alt). Run the pipeline locally
+- Launch with pis arguments e.g. (steps for public) so `make launch_local args='-exclude otar pppevidence'`
+- This runs PIS with the args given, uploads the PIS output, configs and logs to the configured GCS bucket.
+## Step 3. Clean up
+- If you launched PIS remotely, you'll want to tear down the infrastructure after it's finished: `make clean_infrastructure`. If you want to tear down _all_ infrastructure from previous runs: `make clean_all_infrastructure`
+- The session configs are stored locally in "sessions/<session_id>". A helper make target allows you to clear this: `make clean_session_metadata` or for all sessions: `make clean_all_sessions_metadata`
+
+# Local installation requirements
 
 * Python3.8
 * Poetry
@@ -51,7 +72,7 @@ Platform input support is available as docker image, a _Dockerfile_ is provided 
 
 For instance
 ```
-mkdir /tmp/pis
+mkdir /tmp/pi
 sudo docker run 
  -v path_with_credentials:/usr/src/app/cred 
  -v /tmp/pis:/usr/src/app/output 
@@ -76,7 +97,7 @@ This is an example how to run singularity using the docker image.
 singularity exec \
    -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
    docker://quay.io/opentargets/platform-input-support:cm_singularity \
-   conda run --no-capture-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py -steps drug
+   conda run --no-cature-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py -steps drug
   
 ```
 

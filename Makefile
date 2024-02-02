@@ -10,8 +10,8 @@ PATH_PIS_SESSION_CONTEXT := ${PATH_PIS_SESSION}/.env
 config_dest ?= ${PATH_PIS_SESSION}
 OTOPS_PATH_PIS_CONFIG := ${config_dest}/config.yaml
 OTOPS_PIS_RUN_ARGS := "${args}"
-OTOPS_PATH_GCS_PIS_SESSION_LOGS := gs://open-targets-ops/logs/platform-pis/${SESSION_ID}/
-current_session_id=$(shell cat .sessionid) 
+OTOPS_PATH_GCS_PIS_SESSION_LOGS := gs://open-targets-ops/logs/platform-pis/
+current_session_id=$(shell cat .sessionid)
 
 default: help
 
@@ -36,7 +36,7 @@ set_profile: # Set an active configuration profile, e.g. "make set_profile profi
 new_session: # Initialise the running context and start a new session
 	@echo "[PIS] Setting running context"
 	@echo ${SESSION_ID}
-	@echo "$${SESSION_ID}" > .sessionid
+	@echo "${SESSION_ID}" > .sessionid
 	@mkdir -p ${PATH_PIS_SESSION}
 	@echo "[PIS] Creating context environment file (${PATH_PIS_SESSION_CONTEXT}) from active profile"
 	@bash -c 'set -o allexport && \
@@ -70,7 +70,7 @@ launch_local: gcp_credentials new_session config_init # Launch PIS locally
 	@bash ./${PATH_SCRIPTS}/run.sh
 	@echo "[PIS] Uploading config/context to GCS: ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${current_session_id}"
 	@gsutil -m rsync -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${current_session_id}/
-	@echo "[PIS] Logs will be uploaded to GCS when pipeline has completed: ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}"
+	@echo "[PIS] Logs will be uploaded to GCS when pipeline has completed: ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}${current_session_id}"
 
 .PHONY: launch_remote
 launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
@@ -93,8 +93,8 @@ clean_all_sessions_metadata: # Clean all session metadata files
 
 .PHONY: clean_session_metadata
 clean_session_metadata: # Clean metadata files for the current session
-	@echo "[PIS] Removing metadata for session: '$${current_session_id}'"
-	@rm -rv sessions/$${current_session_id}
+	@echo "[PIS] Removing metadata for session: ${current_session_id}"
+	@rm -rv sessions/${current_session_id}/
 
 .PHONY: clean_infrastructure
 clean_infrastructure: # Clean the infrastructure for the session

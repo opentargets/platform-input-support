@@ -1,12 +1,14 @@
-# PIS image config
-OTOPS_PIS_DOCKER_IMAGE_NAME=quay.io/opentargets/platform-input-support
-OTOPS_PIS_DOCKER_IMAGE_TAG=latest
-
 # PIS config
 OTOPS_EFO_RELEASE_VERSION=v3.59.0
 OTOPS_ENSEMBL_RELEASE_VERSION=110
-OTOPS_CHEMBL_RELEASE_VERSION=34
+OTOPS_CHEMBL_RELEASE_VERSION=33
 OTOPS_PIS_RELEASE_VERSION=devpis
+
+# --- Unlikely to need to change the variables below --- #
+
+# PIS image config
+OTOPS_PIS_DOCKER_IMAGE_NAME=quay.io/opentargets/platform-input-support
+OTOPS_PIS_DOCKER_IMAGE_TAG=latest
 
 # local directory config
 OTOPS_PATH_PIS_OUTPUT_DIR=output
