@@ -1,6 +1,8 @@
 import os
 import logging
 import datetime
+import ftplib
+from furl import furl
 import subprocess
 import urllib.request, urllib.parse, urllib.error
 from manifest import ManifestResource, ManifestStatus, get_manifest_service
@@ -95,7 +97,12 @@ class DownloadResource(object):
             logger.error(f"[DOWNLOAD] FAILED: '{resource_info.uri}' -> '{destination_filename}'")
         return downloaded_resource
 
-    def ftp_download(self, resource_info: Dict, retry_count=3) -> ManifestResource:
+    def ftp_download(
+        self,
+        resource_info: Dict,
+        retry_count: int = 3,
+        timeout: int = 3600
+    ) -> ManifestResource:
         """
         Perform an FTP download
 
@@ -110,24 +117,26 @@ class DownloadResource(object):
         downloaded_resource.path_destination = filename
         errors = list()
         logger.info(f"[FTP] BEGIN: '{resource_info.uri}' -> '{filename}'")
+        url = furl(resource_info.uri)
         for attempt in range(retry_count):
             try:
-                urllib.request.urlretrieve(resource_info.uri, filename)
-            except Exception as e:
+                ftp = ftplib.FTP(str(url.host), timeout=timeout)
+                ftp.login()
+                with open(filename, "wb") as f:
+                    ftp.retrbinary("RETR " + str(url.path), f.write)
+                    ftp.quit()
+            except ftplib.all_errors as e:
                 errors.append(f"FAILED Attempt #{attempt + 1} to download '{resource_info.uri}', reason '{e}'")
                 logger.warning(errors[-1])
             else:
                 downloaded_resource.status_completion = ManifestStatus.COMPLETED
                 downloaded_resource.msg_completion = f"Download completed after {attempt + 1} attempt(s)"
                 break
-            finally:
-                urllib.request.urlcleanup()
         if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
             logger.warning(f"[FTP] Re-trying with a command line tool - '{resource_info.uri}'")
             # EBI FTP started to reply ConnectionResetError: [Errno 104] Connection reset by peer.
             # I had an exchange of email with sysinfo, they suggested us to use wget.
             # WARNING - Magic Number timeout
-            timeout = 3600
             cmd = 'curl ' + resource_info.uri + ' --output ' + filename
             for attempt in range(retry_count):
                 logger.warning(f"[FTP] Attempt #{attempt} Re-try Command '{cmd}'")
