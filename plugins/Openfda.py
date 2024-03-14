@@ -2,7 +2,7 @@ import os
 import json
 import logging
 import itertools
-import multiprocessing as mp
+import concurrent.futures
 
 from typing import List
 from yapsy.IPlugin import IPlugin
@@ -46,18 +46,16 @@ class Openfda(IPlugin):
             self._logger.debug("OpenFDA FAERs metadata received")
             fda_output = create_folder(os.path.join(output.prod_dir, "fda-inputs"))
             fda = OpenfdaHelper(fda_output, manifest_service=get_manifest_service())
-            # Parallel data gathering
-            self._logger.debug(f"Download processes pool -- {mp.cpu_count()}")
-            download_pool_nprocesses = mp.cpu_count() * 2
-            download_pool_chunksize = int(
-                len(repo_metadata['results']['drug']['event']['partitions']) / download_pool_nprocesses
-            )
-            with mp.Pool(processes=download_pool_nprocesses) as download_pool:
+            drug_event_partitions = repo_metadata['results']['drug']['event']['partitions']
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                max_workers = executor._max_workers
+                download_pool_chunksize = len(drug_event_partitions) / max_workers
+                self._logger.debug(f"Max number of workers: {max_workers}")
                 try:
-                    return list(itertools.chain.from_iterable(download_pool.map(fda.do_download_openfda_event_file,
-                                                                                repo_metadata['results']['drug'][
-                                                                                    'event']['partitions'],
-                                                                                chunksize=download_pool_chunksize)))
+                    return list(itertools.chain.from_iterable(executor.map(
+                        fda.do_download_openfda_event_file,
+                        drug_event_partitions,
+                        chunksize=download_pool_chunksize)))
                 except Exception as e:
                     self._logger.error("Something went wrong: " + str(e))
         return []
