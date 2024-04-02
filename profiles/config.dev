@@ -1,8 +1,8 @@
 # PIS config
-OTOPS_EFO_RELEASE_VERSION=v3.59.0
-OTOPS_ENSEMBL_RELEASE_VERSION=110
+OTOPS_EFO_RELEASE_VERSION=v3.62.0
+OTOPS_ENSEMBL_RELEASE_VERSION=111
 OTOPS_CHEMBL_RELEASE_VERSION=33
-OTOPS_PIS_RELEASE_VERSION=devpis
+OTOPS_PIS_RELEASE_VERSION=24.03
 
 # --- Unlikely to need to change the variables below --- #
 
@@ -15,12 +15,12 @@ OTOPS_PATH_PIS_OUTPUT_DIR=output
 OTOPS_PATH_PIS_LOGS_DIR=logs
 
 # Google cloud storage config
-OTOPS_PATH_GCS_PIS_OUTPUT=open-targets-pre-data-releases/${OTOPS_PIS_RELEASE_VERSION}/input
-OTOPS_PATH_GCS_PIS_SESSION_CONFIGS=gs://open-targets-pre-data-releases/${OTOPS_PIS_RELEASE_VERSION}/sessions
+OTOPS_PATH_GCS_PIS_OUTPUT=open-targets-pre-data-releases/partners/${OTOPS_PIS_RELEASE_VERSION}/input
+OTOPS_PATH_GCS_PIS_SESSION_CONFIGS=gs://open-targets-pre-data-releases/partners/${OTOPS_PIS_RELEASE_VERSION}/sessions
 
 # Terraform variables
 TF_VAR_resources_prefix=pis
-TF_VAR_data_location_source=open-targets-pre-data-releases/${OTOPS_PIS_RELEASE_VERSION}
+TF_VAR_data_location_source=open-targets-pre-data-releases/partners/${OTOPS_PIS_RELEASE_VERSION}
 TF_VAR_project_id=open-targets-eu-dev
 TF_VAR_gcp_default_region=europe-west1
 TF_VAR_gcp_default_zone=europe-west1-d
