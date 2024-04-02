@@ -49,7 +49,7 @@ class Openfda(IPlugin):
             drug_event_partitions = repo_metadata['results']['drug']['event']['partitions']
             with concurrent.futures.ProcessPoolExecutor() as executor:
                 max_workers = executor._max_workers
-                download_pool_chunksize = len(drug_event_partitions) / max_workers
+                download_pool_chunksize = int(len(drug_event_partitions) / max_workers)
                 self._logger.debug(f"Max number of workers: {max_workers}")
                 try:
                     return list(itertools.chain.from_iterable(executor.map(
