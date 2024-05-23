@@ -45,7 +45,7 @@ new_session: # Initialise the running context and start a new session
 		./${PATH_SCRIPTS}/init_context.sh' > ${PATH_PIS_SESSION_CONTEXT}
 
 .PHONY: switch_session
-switch_session: # Switch to another existing session e.g. "make switch_session session='abcdef1234'" (see folder 'sessions') 
+switch_session: # Switch to another existing session e.g. "make switch_session session='abcdef1234'" (see folder 'sessions')
 	@echo "[PIS] Switching to session: '${session}'"
 	@echo "${session}" > .sessionid
 
@@ -71,6 +71,18 @@ launch_local: gcp_credentials new_session config_init # Launch PIS locally
 	@echo "[PIS] Uploading config/context to GCS: ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${current_session_id}"
 	@gsutil -m rsync -r ${PATH_PIS_SESSION} ${OTOPS_PATH_GCS_PIS_SESSION_CONFIGS}/${current_session_id}/
 	@echo "[PIS] Logs will be uploaded to GCS when pipeline has completed: ${OTOPS_PATH_GCS_PIS_SESSION_LOGS}${current_session_id}"
+
+.PHONY: launch_local_nogcp
+launch_local_nogcp: gcp_credentials new_session config_init # Launch PIS locally without uploading to GCS
+	@echo "[PIS] Session ID: ${current_session_id}"
+	@echo "[PIS] Launching PIS locally"
+	@echo "Loading context: ${PATH_PIS_SESSION_CONTEXT}"
+	$(eval include ${PIS_ACTIVE_PROFILE})
+	@echo "[PIS] Preparing dirs"
+	@mkdir -p ${OTOPS_PATH_PIS_OUTPUT_DIR}
+	@mkdir -p ${OTOPS_PATH_PIS_LOGS_DIR}
+	@echo "[PIS] Docker run with args: '${OTOPS_PIS_RUN_ARGS}'"
+	@bash ./${PATH_SCRIPTS}/run.sh --nogcp
 
 .PHONY: launch_remote
 launch_remote: gcp_credentials new_session config_init # Launch PIS remotely
@@ -118,4 +130,3 @@ clean_all_infrastructure: ## Clean all the infrastructures used for run PIS remo
 			terraform workspace delete $$ws ; \
 		fi \
 	done
-
