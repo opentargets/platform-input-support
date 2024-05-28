@@ -18,9 +18,10 @@ jobs:
           sudo apt-get install -y jq
       - name: Check out repo
         id: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: platform-input-support
+          fetch-depth: 0
 
       - name: Prepare files required for version bump
         id: prepare_bump_version
