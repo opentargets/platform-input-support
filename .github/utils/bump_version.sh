@@ -34,9 +34,9 @@ while IFS= read -r msg; do
   esac
 done <<< "$COMMIT_MESSAGES"
 
-if [ "$CHANGES" -le "1" ]; then
-  echo "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_PRE_RELEASE:+-$VERSION_PRE_RELEASE}"
-else
-  >&2 echo "There is more than one version bump in the commit messages. Something must be wrong."
+if [ "$CHANGES" -ne "1" ]; then
+  echo "There must be EXACTLY ONE version bump in the commit messages. Something must be wrong."
   exit 1
+else
+  echo "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_PRE_RELEASE:+-$VERSION_PRE_RELEASE}"
 fi
