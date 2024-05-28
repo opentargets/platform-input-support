@@ -16,16 +16,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
-      - name: Check out repo
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: platform-input-support
+      # - name: Check out repo
+      #   id: checkout
+      #   uses: actions/checkout@v4
+      #   with:
+      #     fetch-depth: 0
+      #     path: platform-input-support
 
       - name: Prepare files required for version bump
         id: prepare_bump_version
         run: |
+          git clone https://github.com/opentargets/platform-input-support.git
           COMMIT_MESSAGES=$(echo '${{ toJson(github.event) }}' | jq -r ".commits[].message")
           CURRENT_TAG=$(git -C ./platform-input-support describe --tag)
           echo "COMMIT_MESSAGES=$COMMIT_MESSAGES" >> "$GITHUB_ENV"
