@@ -1,0 +1,55 @@
+name: Bump version and create a new tagged release 🚀
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      COMMIT_MESSAGES: ''
+      CURRENT_TAG: 'v0.0.0'
+      NEW_TAG: 'v0.0.0'
+    steps:
+      - name: Install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Check out repo
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          path: platform-input-support
+
+      - name: Prepare files required for version bump
+        id: prepare_bump_version
+        run: |
+          COMMIT_MESSAGES=$(echo '${{ toJson(github.event) }}' | jq -r ".commits[].message")
+          CURRENT_TAG=$(git -C ./platform-input-support describe --tag --abbrev=0)
+          {
+            echo 'COMMIT_MESSAGES<<EOF'
+            echo $COMMIT_MESSAGES
+            echo EOF
+          } >> "$GITHUB_ENV"
+          echo "CURRENT_TAG=$CURRENT_TAG" >> "$GITHUB_ENV"
+
+      - name: Bump version
+        id: bump_version
+        run: |
+          NEW_TAG=$(./platform-input-support/.github/utils/bump_version.sh)
+          echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
+
+      - name: Create a new release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.NEW_TAG }}
+          release_name: ${{ env.NEW_TAG }}
+          body: |
+            test
