@@ -20,8 +20,8 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
         with:
-          path: platform-input-support
           fetch-depth: 0
+          path: platform-input-support
 
       - name: Prepare files required for version bump
         id: prepare_bump_version
