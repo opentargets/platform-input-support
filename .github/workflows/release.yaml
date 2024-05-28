@@ -32,7 +32,7 @@ jobs:
           CURRENT_TAG=$(git -C ./platform-input-support describe --tag)
           {
             echo 'COMMIT_MESSAGES<<EOF'
-            $COMMIT_MESSAGES
+            echo $COMMIT_MESSAGES
             echo EOF
           } >> "$GITHUB_ENV"
           echo "CURRENT_TAG=$CURRENT_TAG" >> "$GITHUB_ENV"
