@@ -35,7 +35,7 @@ while IFS= read -r msg; do
 done <<< "$COMMIT_MESSAGES"
 
 if [ "$CHANGES" -ne "1" ]; then
-  echo "There must be EXACTLY ONE version bump in the commit messages. Something must be wrong."
+  >&2 echo "There must be EXACTLY ONE version bump in the commit messages. Something must be wrong."
   exit 1
 else
   echo "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_PRE_RELEASE:+-$VERSION_PRE_RELEASE}"
