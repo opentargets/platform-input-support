@@ -1,11 +1,6 @@
-#!/usr/bin/env bash
-
-echo "CURRENT TAG: ${CURRENT_TAG}"
+#!/bin/bash
 
 VERSION="${CURRENT_TAG#[vV]}"
-
-echo "VERSION: ${VERSION}"
-
 VERSION_MAJOR="${VERSION%%.*}"
 VERSION_MINOR_PATCH="${VERSION#*.}"
 VERSION_MINOR="${VERSION_MINOR_PATCH%%.*}"
@@ -20,12 +15,28 @@ case "$VERSION" in
     ;;
 esac
 
-echo "Version: ${VERSION}"
-echo "Version [major]: ${VERSION_MAJOR}"
-echo "Version [minor]: ${VERSION_MINOR}"
-echo "Version [patch]: ${VERSION_PATCH}"
-echo "Version [pre-release]: ${VERSION_PRE_RELEASE}"
+CHANGES=0
 
-echo "Commit messages: ${COMMIT_MESSAGES}"
-echo "Current tag: ${CURRENT_TAG}"
-echo "New tag: ${NEW_TAG}"
+while IFS= read -r msg; do
+  case "$msg" in
+    "[MAJOR]"*)
+      VERSION_MAJOR=$((VERSION_MAJOR + 1))
+      CHANGES=$((CHANGES + 1))
+      ;;
+    "[MINOR]"*)
+      VERSION_MINOR=$((VERSION_MINOR + 1))
+      CHANGES=$((CHANGES + 1))
+      ;;
+          "[PATCH]"*)
+      VERSION_PATCH=$((VERSION_PATCH + 1))
+      CHANGES=$((CHANGES + 1))
+      ;;
+  esac
+done <<< "$COMMIT_MESSAGES"
+
+if [ "$CHANGES" -le "1" ]; then
+  echo "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_PRE_RELEASE:+-$VERSION_PRE_RELEASE}"
+else
+  >&2 echo "There is more than one version bump in the commit messages. Something must be wrong."
+  exit 1
+fi

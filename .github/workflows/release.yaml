@@ -43,11 +43,11 @@ jobs:
           NEW_TAG=$(./platform-input-support/.github/utils/bump_version.sh)
           echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
 
-      # - name: Create a new release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   with:
-      #     tag_name: ${{ env.NEW_TAG }}
-      #     release_name: ${{ env.NEW_TAG }}
-      #     body: |
-      #       test
+      - name: Create a new release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.NEW_TAG }}
+          release_name: ${{ env.NEW_TAG }}
+          body: |
+            test
