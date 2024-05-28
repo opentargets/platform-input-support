@@ -29,7 +29,7 @@ jobs:
         id: prepare_bump_version
         run: |
           COMMIT_MESSAGES=$(echo '${{ toJson(github.event) }}' | jq -r ".commits[].message")
-          CURRENT_TAG=$(git -C ./platform-input-support describe --tag)
+          CURRENT_TAG=$(git -C ./platform-input-support describe --tag --abbrev=0)
           {
             echo 'COMMIT_MESSAGES<<EOF'
             echo $COMMIT_MESSAGES
