@@ -1,11 +1,11 @@
 import unittest
-from definitions import ROOT_DIR
+from platform_input_support import ROOT_DIR
 import subprocess
 
-from modules.common.YAMLReader import YAMLReader
-from plugins.helpers.HPO import HPO
-from plugins.helpers.EFO import EFO
-from plugins.helpers.MONDO import MONDO
+from platform_input_support.modules.common.YAMLReader import YAMLReader
+from platform_input_support.plugins.helpers.HPO import HPO
+from platform_input_support.plugins.helpers.EFO import EFO
+from platform_input_support.plugins.helpers.MONDO import MONDO
 
 
 class TestDiseaseStep(unittest.TestCase):

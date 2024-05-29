@@ -1,8 +1,8 @@
 import os
 import pytest
-from definitions import ROOT_DIR
-from plugins.helpers.EFO import EFO
-from modules.common.YAMLReader import YAMLReader
+from platform_input_support import ROOT_DIR
+from platform_input_support.plugins.helpers.EFO import EFO
+from platform_input_support.modules.common.YAMLReader import YAMLReader
 
 
 EFO_INPUT = ROOT_DIR + "/tests/resources/efo.jsonl"

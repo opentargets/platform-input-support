@@ -1,21 +1,23 @@
-import pathlib
-import pytest
+from pathlib import Path
 import shutil
 
-from modules.common.Riot import Riot, RiotException
-from modules.common.YAMLReader import YAMLReader
+import pytest
+
+from platform_input_support import ROOT_DIR
+from platform_input_support.modules.common.Riot import Riot, RiotException
+from platform_input_support.modules.common.YAMLReader import YAMLReader
 
 
 @pytest.fixture()
 def riot_inputs():
     """Create the test config"""
     # setup
-    test_dir = "tests/riot_test_temp"
+    test_dir = Path(ROOT_DIR) / 'tests' / 'riot_test_temp'
     yaml = YAMLReader(None).read_yaml()
     yaml.config.output_dir = test_dir
     yaml.config.java_vm = "-Xms1024m -Xmx1024m"
-    pathlib.Path(test_dir).mkdir(exist_ok=True)
-    owl_test_file = "tests/resources/efo_sample.owl"
+    Path(test_dir).mkdir(exist_ok=True)
+    owl_test_file = Path(ROOT_DIR) / 'tests' / 'resources' / 'efo_sample.owl'
     yield yaml, owl_test_file
     # teardown
     shutil.rmtree(test_dir)
@@ -69,7 +71,7 @@ def test_run_riot_empty_owl_file(riot_inputs: tuple):
     """Empty OWL file"""
     yaml, owl_test_file = riot_inputs
     riot = Riot(yaml.config)
-    owl_test_file = pathlib.Path(yaml.config.output_dir).joinpath("empty.owl")
+    owl_test_file = Path(yaml.config.output_dir).joinpath("empty.owl")
     with open(owl_test_file, "w") as f:
         f.write("")
     json_out = "efo_test.json"
@@ -86,7 +88,7 @@ def test_run_riot_malformed_owl_file(riot_inputs: tuple):
     """Malformed OWL file"""
     yaml, owl_test_file = riot_inputs
     riot = Riot(yaml.config)
-    owl_test_file = pathlib.Path(yaml.config.output_dir).joinpath("bad.owl")
+    owl_test_file = Path(yaml.config.output_dir).joinpath("bad.owl")
     with open(owl_test_file, "w") as f:
         f.write("This is not OWL content")
     json_out = "efo_test.json"

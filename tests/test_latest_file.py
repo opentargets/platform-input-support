@@ -1,6 +1,6 @@
 import unittest
 from datetime import date, timedelta, datetime
-from modules.common import extract_date_from_file
+from platform_input_support.modules.common import extract_date_from_file
 
 
 class TestLatestFile(unittest.TestCase):
