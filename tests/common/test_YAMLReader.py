@@ -2,9 +2,9 @@ import os
 from pathlib import Path
 import pytest
 import yaml
-from definitions import ROOT_DIR
+from platform_input_support import ROOT_DIR
 
-from modules.common.YAMLReader import YAMLReader, YAMLReaderException
+from platform_input_support.modules.common.YAMLReader import YAMLReader, YAMLReaderException
 
 
 @pytest.fixture()

@@ -2,12 +2,9 @@ import os
 import pathlib
 import pytest
 
-from modules.common.YAMLReader import YAMLReader
-import modules.cfg as cfg
-from manifest.services import (
-    get_manifest_service,
-    ManifestStatus,
-)
+from platform_input_support.modules.common.YAMLReader import YAMLReader
+import platform_input_support.modules.cfg as cfg
+from platform_input_support.manifest.services import get_manifest_service, ManifestStatus
 
 
 @pytest.fixture()
