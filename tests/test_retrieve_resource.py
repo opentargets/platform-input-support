@@ -1,8 +1,8 @@
 import pytest
 
-from modules.common.YAMLReader import YAMLReader
+from platform_input_support.modules.common.YAMLReader import YAMLReader
 from munch import Munch
-from modules.RetrieveResource import RetrieveResource
+from platform_input_support.modules.RetrieveResource import RetrieveResource
 
 
 @pytest.fixture()

@@ -2,9 +2,9 @@ import mock
 import unittest
 from addict import Dict
 from munch import Munch
-from manifest import get_manifest_service
-from definitions import PIS_OUTPUT_DIR
-from modules.common.DownloadResource import DownloadResource
+from platform_input_support.manifest import get_manifest_service
+from platform_input_support import PIS_OUTPUT_DIR
+from platform_input_support.modules.common.DownloadResource import DownloadResource
 import re
 
 

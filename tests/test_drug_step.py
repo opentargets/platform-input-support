@@ -1,10 +1,11 @@
 import unittest
 from mock import patch
-from definitions import ROOT_DIR
+from platform_input_support import ROOT_DIR
 from addict import Dict
+from pathlib import Path
 
-import plugins.Drug as Drug
-from modules.common.YAMLReader import YAMLReader
+import platform_input_support.plugins.Drug as Drug
+from platform_input_support.modules.common.YAMLReader import YAMLReader
 
 
 class TestDrugStep(unittest.TestCase):
@@ -13,7 +14,7 @@ class TestDrugStep(unittest.TestCase):
     """
 
     def setUp(self):
-        default_conf_file = ROOT_DIR + '/' + 'config.yaml'
+        default_conf_file = Path(ROOT_DIR) / 'config.yaml'
         self.yaml_reader = YAMLReader(default_conf_file)
         self.config = self.yaml_reader.read_yaml()
         self.output = self.create_output_dir_test()
@@ -24,7 +25,7 @@ class TestDrugStep(unittest.TestCase):
         output.staging_dir = "staging"
         return output
 
-    @patch('plugins.Drug.Drug._download_elasticsearch_data')
+    @patch('platform_input_support.plugins.Drug.Drug._download_elasticsearch_data')
     def test_output_has_fields_to_write_to_GCP(self, mock1):
         """
         Step should return a dictionary with GCP target directory so that if `RetrieveResource` is configured to upload
