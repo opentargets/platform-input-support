@@ -59,23 +59,23 @@ def extract_date_from_file(filename):
     """
     valid_date = []
     # First format to try
-    valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{2}\-[0-9]{2})", '%Y-%m-%d'))
-    valid_date.append(date_reg_expr(filename, "([0-9]{2}\-[0-9]{2}\-[0-9]{4})", '%d-%m-%Y'))
+    valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{2}-[0-9]{2})", '%Y-%m-%d'))
+    valid_date.append(date_reg_expr(filename, "([0-9]{2}-[0-9]{2}-[0-9]{4})", '%d-%m-%Y'))
     if valid_date.count(None) == len(valid_date):
         # Second format to try
         # Case d-mm-yyyy or dd-m-yyyy
-        valid_date.append(date_reg_expr(filename, "([0-9]{1}\-[0-9]{2}\-[0-9]{4})", '%d-%m-%Y'))
-        valid_date.append(date_reg_expr(filename, "([0-9]{2}\-[0-9]{1}\-[0-9]{4})", '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{1}-[0-9]{2}-[0-9]{4})", '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{2}-[0-9]{1}-[0-9]{4})", '%d-%m-%Y'))
     if valid_date.count(None) == len(valid_date):
         # Third format to try
         # Case yyyy-m-dd or yyyy-mm-d
-        valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{1}\-[0-9]{2})", '%Y-%m-%d'))
-        valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{2}\-[0-9]{1})", '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{1}-[0-9]{2})", '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{2}-[0-9]{1})", '%Y-%m-%d'))
     # So no double dd or mm present.
     if valid_date.count(None) == len(valid_date):
         # Forth format to try
-        valid_date.append(date_reg_expr(filename, "([0-9]{1}\-[0-9]{1}\-[0-9]{4})", '%d-%m-%Y'))
-        valid_date.append(date_reg_expr(filename, "([0-9]{4}\-[0-9]{1}\-[0-9]{1})", '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{1}-[0-9]{1}-[0-9]{4})", '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{1}-[0-9]{1})", '%Y-%m-%d'))
     if valid_date.count(None) != len(valid_date):
         final_date = list(filter(None, valid_date))
         if len(final_date) == 1:
