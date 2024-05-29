@@ -7,7 +7,7 @@ license = "Apache-2.0 license"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.8.18"
+python = "~3.8"
 addict = "^2.4.0"
 ConfigArgParse = "^1.7"
 elasticsearch = "7.17.0"
