@@ -12,7 +12,7 @@ EFO_INPUT = ROOT_DIR + "/tests/resources/efo.jsonl"
 def efo_conf():
     """Create the config"""
     yaml = YAMLReader(os.path.join(ROOT_DIR, "config.yaml")).read_yaml()
-    config = yaml.disease.etl.efo
+    config = yaml.steps.disease.etl.efo
     yield config
 
 

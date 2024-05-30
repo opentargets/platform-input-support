@@ -36,11 +36,11 @@ class TestDrugStep(unittest.TestCase):
         es_return_values = ['f1', 'f2', 'f3']
         mock1.return_value = es_return_values
         # We only want to test the results of ES configuration at this point.
-        es_config = self.config['drug']
+        es_config = self.config.steps.drug
         es_config.datasources.pop('downloads', None)
         # When
         drugStep = Drug.Drug()
-        results = drugStep.download_indices(self.config.drug, self.output )
+        results = drugStep.download_indices(self.config.steps.drug, self.output)
         # Then
         # Each file saved should be in returned dictionary
         self.assertEqual(len(results), len(es_return_values))
