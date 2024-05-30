@@ -1,6 +1,5 @@
 import datetime
 import ftplib
-import logging
 import os
 import subprocess
 import urllib.error
@@ -9,10 +8,9 @@ import urllib.request
 
 # Common packages
 from furl import furl
+from loguru import logger
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
-
-logger = logging.getLogger(__name__)
 
 
 class DownloadResource:
@@ -52,13 +50,13 @@ class DownloadResource:
         :return: the download destination path when successful, empty path if not
         """
         # TODO - Change in return type breaks the unit test, although the return value wasn't used anywhere but in tests
-        logger.debug('Start download %s', resource_info.uri)
+        logger.debug(f'Start download {resource_info.uri}')
         downloaded_resource = self.manifest_service.new_resource()
         downloaded_resource.source_url = resource_info.uri
         destination_filename = self.set_filename(resource_info.output_filename)
         downloaded_resource.path_destination = destination_filename
         errors = []
-        logger.info('[DOWNLOAD] BEGIN: %s -> %s', resource_info.uri, destination_filename)
+        logger.info(f'[DOWNLOAD] BEGIN: {resource_info.uri} -> {destination_filename}')
         for attempt in range(retry_count):
             try:
                 opener = urllib.request.build_opener()
@@ -80,25 +78,20 @@ class DownloadResource:
                 logger.error(errors[-1])
                 break
             except OSError as io_error:
-                errors.append('IOError: %s', io_error)
+                errors.append(f'IOError: {io_error}')
                 logger.error(errors[-1])
             except Exception as e:
-                errors.append('Error: %s', e)
+                errors.append(f'Error: {e}')
                 logger.error(errors[-1])
             else:
                 downloaded_resource.status_completion = ManifestStatus.COMPLETED
                 downloaded_resource.msg_completion = f'Download completed after {attempt + 1} attempt(s)'
-                logger.info(
-                    '[DOWNLOAD] END, (%d attempt(s)): %s -> %s',
-                    attempt + 1,
-                    resource_info.uri,
-                    destination_filename,
-                )
+                logger.info(f'[DOWNLOAD] END, ({attempt+1} attempt(s)): {resource_info.uri} -> {destination_filename}')
                 break
         if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
             downloaded_resource.status_completion = ManifestStatus.FAILED
             downloaded_resource.msg_completion = ' -E- '.join(errors)
-            logger.error('[DOWNLOAD] FAILED: %s -> %s', resource_info.uri, destination_filename)
+            logger.error(f'[DOWNLOAD] FAILED: {resource_info.uri} -> {destination_filename}')
         return downloaded_resource
 
     def ftp_download(self, resource_info: dict, retry_count: int = 3, timeout: int = 3600) -> ManifestResource:
@@ -109,13 +102,13 @@ class DownloadResource:
         """
         # WARNING - TODO - resource_info.output_dir is NOT BEING used anywhere, it should be used instead of
         # self.output_dir, if set.
-        logger.info('Start to download: %s', resource_info.uri)
+        logger.info(f'Start to download: {resource_info.uri}')
         filename = self.set_filename(resource_info.output_filename)
         downloaded_resource = self.manifest_service.new_resource()
         downloaded_resource.source_url = resource_info.uri
         downloaded_resource.path_destination = filename
         errors = []
-        logger.info('[FTP] BEGIN: %s -> %s', resource_info.uri, filename)
+        logger.info(f'[FTP] BEGIN: {resource_info.uri} -> {filename}')
         url = furl(resource_info.uri)
         for attempt in range(retry_count):
             try:
@@ -132,13 +125,13 @@ class DownloadResource:
                 downloaded_resource.msg_completion = f'Download completed after {attempt + 1} attempt(s)'
                 break
         if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
-            logger.warning('[FTP] Re-trying with a command line tool: %s', resource_info.uri)
+            logger.warning(f'[FTP] Re-trying with a command line tool: {resource_info.uri}')
             # EBI FTP started to reply ConnectionResetError: [Errno 104] Connection reset by peer.
             # I had an exchange of email with sysinfo, they suggested us to use wget.
             # WARNING - Magic Number timeout
             cmd = 'curl ' + resource_info.uri + ' --output ' + filename
             for attempt in range(retry_count):
-                logger.warning('[FTP] Attempt #%d Re-try Command %s', attempt, cmd)
+                logger.warning(f'[FTP] Attempt #{attempt} Re-try Command {cmd}')
                 # TODO We need to handle the completion of this command, I think it would be worth writing a helper
                 try:
                     subprocess.run(cmd, shell=True, capture_output=True, timeout=timeout, check=True)  # noqa: S602
@@ -162,7 +155,7 @@ class DownloadResource:
             if downloaded_resource.status_completion == ManifestStatus.NOT_COMPLETED:
                 downloaded_resource.status_completion = ManifestStatus.FAILED
                 downloaded_resource.msg_completion = ' -E- '.join(errors)
-                logger.error('[FTP] FAILED (%d attempt(s)): %s -> %s', attempt + 1, resource_info.uri, filename)
+                logger.error(f'[FTP] FAILED ({attempt+1} attempt(s)): {resource_info.uri} -> {filename}')
             else:
-                logger.info('[FTP] END (%d attempt(s)): %s -> %s', {attempt + 1}, resource_info.uri, filename)
+                logger.info(f'[FTP] END ({attempt+1} attempt(s)): {resource_info.uri} -> {filename}')
         return downloaded_resource

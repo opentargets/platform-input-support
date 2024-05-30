@@ -1,6 +1,6 @@
-import logging
 import os
 
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
@@ -8,15 +8,12 @@ from platform_input_support.modules.common import create_folder
 from platform_input_support.modules.common.downloads import Downloads
 from platform_input_support.modules.common.elasticsearch_helper import ElasticsearchInstance
 
-logger = logging.getLogger(__name__)
-
 
 class Drug(IPlugin):
     """Drug data collection step."""
 
     def __init__(self):
         """Drug class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'Drug'
 
     def _download_elasticsearch_data(self, output_dir, url, indices) -> list[ManifestResource]:
@@ -33,7 +30,7 @@ class Drug(IPlugin):
         for index in list(indices.values()):
             index_name = index['name']
             outfile = os.path.join(output_dir, f'{index_name}.jsonl')
-            logger.info('Downloading Elasticsearch data from index %s to file %s', index_name, outfile)
+            logger.info(f'Downloading Elasticsearch data from index {index_name} to file {outfile}')
             index_manifest = get_manifest_service().new_resource()
             index_manifest.source_url = f'{url}/{index_name}'
             index_manifest.path_destination = outfile
@@ -53,9 +50,9 @@ class Drug(IPlugin):
                     logger.error(index_manifest.msg_completion)
                 else:
                     if docs_saved > 0:
-                        logger.info('Successfully downloaded %s documents from index %s', docs_saved, index_name)
+                        logger.info(f'Successfully downloaded {docs_saved} documents from index {index_name}')
                     else:
-                        logger.warning('EMPTY INDEX with name %s.', index_name)
+                        logger.warning(f'EMPTY INDEX with name {index_name}')
                     # There could be an empty index, which means its corresponding file is empty,
                     # or maybe non-existent
                     index_manifest.status_completion = ManifestStatus.COMPLETED
@@ -73,7 +70,7 @@ class Drug(IPlugin):
         :return: list of files downloaded.
         """
         if source.url is not None and isinstance(source.url, str):
-            logger.info('%d indices found for %s.', len(source.indices), source)
+            logger.info(f'{len(source.indices)} indices found for {source}')
             return self._download_elasticsearch_data(output_dir, source.url, source.indices)
         logger.error('Unable to validate host and port for Elasticsearch connection.')
         return []
@@ -97,7 +94,7 @@ class Drug(IPlugin):
         :param cmd_conf: UNUSED
         """
         # TODO - Handle errors in the process and report back
-        self._logger.info('[STEP] BEGIN, Drug')
+        logger.info('[STEP] BEGIN, Drug')
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         # TODO - Should I halt the step as soon as I face the first problem?
@@ -111,4 +108,4 @@ class Drug(IPlugin):
         if manifest_step.status_completion != ManifestStatus.FAILED:
             manifest_step.status_completion = ManifestStatus.COMPLETED
             manifest_step.msg_completion = 'The step has completed its execution'
-        self._logger.info('[STEP] END, Drug')
+        logger.info('[STEP] END, Drug')

@@ -1,17 +1,15 @@
 import concurrent.futures
 import itertools
 import json
-import logging
 import os
 
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
 from platform_input_support.modules.common import create_folder
 from platform_input_support.modules.common.downloads import Downloads
-from platform_input_support.plugins.helpers.openfda import OpenfdaHelper
-
-logger = logging.getLogger(__name__)
+from platform_input_support.plugins.helpers.openfda import OpenFDA as OpenFDAHelper
 
 # This module gathers all data related to OpenFDA FAERS database, with a focus on Drug Events.
 # In addition, a collection of blacklisted events is downloaded for later use in the ETL backend pipeline.
@@ -22,7 +20,6 @@ class Openfda(IPlugin):
 
     def __init__(self):
         """Openfda class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'OpenFDA'
 
     def _download_selected_event_files(self, repo_metadata, output) -> list[ManifestResource]:
@@ -34,14 +31,14 @@ class Openfda(IPlugin):
         """
         # Body
         if repo_metadata:
-            self._logger.debug('OpenFDA FAERs metadata received')
+            logger.debug('OpenFDA FAERs metadata received')
             fda_output = create_folder(os.path.join(output.prod_dir, 'fda-inputs'))
-            fda = OpenfdaHelper(fda_output, manifest_service=get_manifest_service())
+            fda = OpenFDAHelper(fda_output, manifest_service=get_manifest_service())
             drug_event_partitions = repo_metadata['results']['drug']['event']['partitions']
             with concurrent.futures.ProcessPoolExecutor() as executor:
                 max_workers = executor._max_workers
                 download_pool_chunksize = int(len(drug_event_partitions) / max_workers)
-                self._logger.debug('Max number of workers: %d', max_workers)
+                logger.debug(f'Max number of workers: {max_workers}')
                 try:
                     return list(
                         itertools.chain.from_iterable(
@@ -53,7 +50,7 @@ class Openfda(IPlugin):
                         )
                     )
                 except Exception as e:
-                    self._logger.error('Something went wrong: %s', e)
+                    logger.error(f'Something went wrong: {e}')
         return []
 
     def _download_openfda_faers(self, resource, output) -> list[ManifestResource]:
@@ -63,8 +60,8 @@ class Openfda(IPlugin):
         :param output: output folder for the data collection
         :return: information on the downloaded files
         """
-        self._logger.info('OpenFDA available files download, URI %s --- START ---', resource.uri)
-        self._logger.info('Download OpenFDA FAERS repository metadata')
+        logger.info(f'OpenFDA available files download, URI {resource.uri} --- START ---')
+        logger.info('Download OpenFDA FAERS repository metadata')
         download = Downloads.download_staging_http(output.staging_dir, resource)
         repo_metadata = {}
         with open(download.path_destination) as f:
@@ -78,7 +75,7 @@ class Openfda(IPlugin):
         :param output: output folder for collected OpenFDA data
         :param cmd_conf: UNUSED
         """
-        self._logger.info('[STEP] BEGIN, openfda')
+        logger.info('[STEP] BEGIN, openfda')
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         # TODO - Should I halt the step as soon as I face the first problem?
@@ -100,6 +97,6 @@ class Openfda(IPlugin):
         if manifest_step.status_completion == ManifestStatus.COMPLETED:
             manifest_step.msg_completion = 'The step has completed its data collection'
         else:
-            self._logger.error(manifest_step.msg_completion)
+            logger.error(manifest_step.msg_completion)
         # TODO - Validation
-        self._logger.info('[STEP] END, openfda')
+        logger.info('[STEP] END, openfda')

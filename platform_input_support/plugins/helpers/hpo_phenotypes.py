@@ -1,10 +1,6 @@
-import logging
-
 import jsonlines
 
 from platform_input_support.modules.common import set_suffix_timestamp
-
-logger = logging.getLogger(__name__)
 
 
 class HPOPhenotypesError(Exception):

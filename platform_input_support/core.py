@@ -1,45 +1,34 @@
 # Custom modules
-import logging.config
+from loguru import logger
 
+from platform_input_support.logger import Logger
 from platform_input_support.manifest import get_manifest_service
 
 # Custom modules
 from platform_input_support.modules import cfg
-from platform_input_support.modules.common.yaml_reader import YAMLReader, YAMLReaderError
+from platform_input_support.modules.common.yaml_reader import YAMLReader
 from platform_input_support.modules.retrieve_resource import RetrieveResource
-
-logger = logging.getLogger(__name__)
 
 
 class PISRunnerError(Exception):
     """Platform input support exception."""
 
 
-def print_list_steps(keys_list):
-    """List the steps available defined inside the config yaml file."""
-    keys_list.remove('config')
-    list_steps = '\n\t'.join(keys_list)
-    list_steps = 'List of steps available:\n\t' + list_steps
-    print(list_steps)  # noqa: T201
-
-
 # This procedure reads the config file and the args and runs the plugins requested.
 def main():
-    logger.debug('Setting up configuration parser')
+    Logger.init()
+
     cfg.setup_parser()
-    logger.debug('Get command line arguments')
     args = cfg.get_args()
-    logger.debug('Prepare YAML reader for configuration file')
-    try:
-        yaml = YAMLReader(args.config)
-        logger.debug('Read configuration file')
-        yaml_dict = yaml.read_yaml()
-        print_list_steps(yaml.get_list_keys())
-    except YAMLReaderError as err:
-        message = f"When trying to read the YAML config, the following error occurred '{err}'"
-        logger.error(message)
-        raise PISRunnerError(message) from err
-    cfg.set_up_logging(args)
+
+    yaml = YAMLReader(args.config)
+    yaml_dict = yaml.read_yaml()
+
+    Logger.config(yaml_dict)
+
+    steps = yaml_dict['steps']
+    step_names = ', '.join(list(steps.keys()))
+    logger.info(f'{len(steps)} steps parsed from config: {step_names}')
 
     # Resources retriever
     resources = RetrieveResource(args, yaml_dict)

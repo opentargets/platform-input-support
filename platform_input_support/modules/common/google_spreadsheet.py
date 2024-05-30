@@ -1,12 +1,10 @@
 import csv
-import logging
 from abc import ABC, abstractmethod
 
 import gspread
+from loguru import logger
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
-
-logger = logging.getLogger(__name__)
 
 
 # Factory method
@@ -34,7 +32,6 @@ class GoogleSpreadSheet(ABC):
         self.path_output = path_output
         self.output_format = output_format
         self.attempts = attempts
-        self.logger = logging.getLogger(__name__)
 
     @abstractmethod
     def _do_download(self) -> ManifestResource:
@@ -61,7 +58,7 @@ class GoogleSpreadSheet(ABC):
 
 class AuthHandler(GoogleSpreadSheet):
     def _do_download(self) -> ManifestResource:
-        self.logger.info('Authenticated Google Spreadsheet data collection for %s', self.summary)
+        logger.info(f'Authenticated Google Spreadsheet data collection for {self.summary}')
         download_manifest = get_manifest_service().new_resource()
         download_manifest.source_url = self.get_spreadsheet_url(self.spreadsheet_id)
         download_manifest.path_destination = self.path_output
@@ -74,7 +71,7 @@ class AuthHandler(GoogleSpreadSheet):
                     writer = self.get_writer(f)
                     writer.writerows(worksheet.get_all_values())
             except Exception as e:
-                self.logger.error(e)
+                logger.error(e)
                 continue
             else:
                 download_manifest.msg_completion = (
@@ -88,10 +85,10 @@ class AuthHandler(GoogleSpreadSheet):
                 f'worksheet name {self.worksheet_name}'
             )
             download_manifest.status_completion = ManifestStatus.FAILED
-            self.logger.error(download_manifest.msg_completion)
+            logger.error(download_manifest.msg_completion)
         return download_manifest
 
 
 class NoneAuthHandler(GoogleSpreadSheet):
     def _do_download(self):
-        raise NotImplementedError('NOT IMPLEMENTED - Anonymous Google Spreadsheet data collection for %s', self.summary)
+        raise NotImplementedError(f'NOT IMPLEMENTED - Anonymous Google Spreadsheet data collection for {self.summary}')

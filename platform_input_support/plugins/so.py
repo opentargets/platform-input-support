@@ -1,6 +1,6 @@
-import logging
 import os
 
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestStatus, get_manifest_service
@@ -8,15 +8,12 @@ from platform_input_support.modules.common import create_folder
 from platform_input_support.modules.common.downloads import Downloads
 from platform_input_support.modules.common.riot import Riot
 
-logger = logging.getLogger(__name__)
-
 
 class SO(IPlugin):
     """SO ontology data collection step."""
 
     def __init__(self):
         """SO class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'SO'
 
     def process(self, conf, output, cmd_conf):
@@ -26,7 +23,7 @@ class SO(IPlugin):
         :param output: output information object for the results of this pipeline step
         :param cmd_conf: command line tools configuration object
         """
-        self._logger.info('[STEP] BEGIN, so')
+        logger.info('[STEP] BEGIN, so')
         manifest_step = get_manifest_service().get_step(self.step_name)
         riot = Riot(cmd_conf)
         download_manifest = Downloads.download_staging_http(output.staging_dir, conf.etl)
@@ -47,8 +44,7 @@ class SO(IPlugin):
                 )
             else:
                 download_manifest.msg_completion = (
-                    'Original converted to JSON and filtered with JQ using %s',
-                    conf.etl.owl_jq,
+                    f'Original converted to JSON and filtered with JQ using {conf.etl.owl_jq}'
                 )
                 download_manifest.status_completion = ManifestStatus.COMPLETED
         manifest_step.resources.append(download_manifest)
@@ -59,6 +55,6 @@ class SO(IPlugin):
         else:
             manifest_step.status_completion = ManifestStatus.FAILED
             manifest_step.msg_completion = download_manifest.msg_completion
-            self._logger.error(manifest_step.msg_completion)
+            logger.error(manifest_step.msg_completion)
         # TODO - Validation
-        self._logger.info('[STEP] END, so')
+        logger.info('[STEP] END, so')

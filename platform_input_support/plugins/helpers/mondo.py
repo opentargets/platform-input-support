@@ -1,10 +1,8 @@
 import json
-import logging
 import re
 
 import jsonlines
-
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class MONDOError(Exception):
@@ -48,7 +46,7 @@ class MONDO:
         if '@id' in mondo:
             return re.sub(r'^.*?:', '', mondo['@id'])
         else:
-            logger.warning('neither id nor @id have been found in MONDO item %s', mondo)
+            logger.warning(f'neither id nor @id have been found in MONDO item {mondo}')
 
     def set_db_xrefs(self, id, mondo):
         """Compute DB Xrefs for the given term ID according to the given MONDO information object.

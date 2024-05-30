@@ -1,20 +1,17 @@
 import copy
 import hashlib
 import json
-import logging
 import os
 from pathlib import Path
 
 import google.auth
 import jsonpickle
 from google.cloud import exceptions, storage
+from loguru import logger
 from strenum import StrEnum
 
 from platform_input_support.manifest import ManifestDocument, ManifestResource, ManifestStatus, ManifestStep
 from platform_input_support.modules.common.time_utils import get_timestamp_iso_utc_now
-
-# Logging
-logger = logging.getLogger(__name__)
 
 # Singleton
 __manifestServiceInstance = None
@@ -38,7 +35,7 @@ def get_manifest_service(args=None, configuration=None):
             raise ManifestServiceError(msg)
         manifest_config = configuration.config.manifest
         manifest_config.update({'output_dir': configuration.output_dir, 'gcp_bucket': args.gcp_bucket})
-        logger.debug('Initializing Manifest service, configuration: %s', json.dumps(manifest_config))
+        logger.debug(f'Initializing Manifest service, configuration: {json.dumps(manifest_config)}')
         __manifestServiceInstance = ManifestService(manifest_config)
     return __manifestServiceInstance
 
@@ -70,7 +67,6 @@ class GcpBucketService:
             bucket_name -- GCP bucket name (default: {None})
             path -- GCP bucket path (default: {None})
         """
-        self._logger = logging.getLogger(__name__)
         self.bucket_name = bucket_name
         self.path = path
         self.client = storage.Client()
@@ -87,9 +83,9 @@ class GcpBucketService:
             try:
                 return self.client.get_bucket(self.bucket_name)
             except google.cloud.exceptions.NotFound:
-                logger.error('Bucket %s NOT FOUND', self.bucket_name)
+                logger.error(f'Bucket {self.bucket_name} NOT FOUND')
             except exceptions.Forbidden:
-                logger.error('Google Cloud Storage, FORBIDDEN access, path %s', self.bucket_name)
+                logger.error(f'Google Cloud Storage, FORBIDDEN access, path {self.bucket_name}')
         return None
 
     def download_file(self, src_path_file: str, dst_path_file: str) -> None:
@@ -128,7 +124,6 @@ class ManifestService:
 
     def __init__(self, config):
         self.config = config
-        self._logger = logging.getLogger(__name__)
         self.__manifest: ManifestDocument = None
         self.__is_manifest_loaded = False
         self.__resetted_manifest_steps = set()
@@ -153,9 +148,9 @@ class ManifestService:
             try:
                 file_content = Path(self.path_manifest).read_text()
                 manifest_document = jsonpickle.decode(file_content)  # noqa: S301
-                self._logger.debug('Manifest file loaded from disk at %s', self.path_manifest)
+                logger.debug(f'Manifest file loaded from disk at {self.path_manifest}')
             except Exception as e:
-                self._logger.error('Error loading manifest file from disk at %s, error %s', self.path_manifest, e)
+                logger.error(f'Error loading manifest file from disk at {self.path_manifest}, error {e}')
             else:
                 self.__is_manifest_loaded = True
                 # Load and modify the 'modified' timestamp
@@ -168,34 +163,32 @@ class ManifestService:
 
         The following precedence rules apply: local, GCP or create new one.
         """
-        self._logger.debug('Local manifest file path at %s', self.path_manifest)
+        logger.debug(f'Local manifest file path at {self.path_manifest}')
         if self.config.gcp_bucket is not None:
             gcp_bucket, gcp_path = GcpBucketService.get_bucket_and_path(self.config.gcp_bucket)
             gcp_path_manifest = f'{gcp_path}/{self.config.file_name}'
             gcp_client = GcpBucketService(gcp_bucket, gcp_path_manifest)
             gcp_bucket_full_path_manifest = f'{gcp_bucket}/{gcp_path_manifest}'
             try:
-                logger.debug('GCP manifest file path %s', gcp_bucket_full_path_manifest)
+                logger.debug(f'GCP manifest file path {gcp_bucket_full_path_manifest}')
                 gcp_client.download_file(gcp_path_manifest, self.path_manifest)
             except Exception as e:
-                self._logger.warning(
-                    'GCP information provided but manifest file NOT FOUND at %s due to %s',
-                    gcp_bucket_full_path_manifest,
-                    e,
+                logger.warning(
+                    f'GCP information provided but manifest file NOT FOUND at {gcp_bucket_full_path_manifest}: {e}'
                 )
             else:
-                self._logger.debug('Loading existing manifest file at %s', gcp_bucket_full_path_manifest)
+                logger.debug(f'Loading existing manifest file at {gcp_bucket_full_path_manifest}')
                 return self.__load_manifest()
         manifest_document = self.__load_manifest()
         if manifest_document is None:
-            self._logger.info('using NEW Manifest Document')
+            logger.info('using NEW Manifest Document')
             manifest_document = self.__create_manifest()
         return manifest_document
 
     @property
     def path_manifest(self) -> str:
         """This property will return the path to the manifest file."""
-        return os.path.join(self.config.output_dir, self.config.file_name)
+        return os.path.join(self.config.output_dir, self.config.file_name or 'manifest.json')
 
     @property
     def manifest(self) -> ManifestDocument:
@@ -205,10 +198,10 @@ class ManifestService:
 
     def make_paths_relative(self) -> None:
         """Make paths relative to the output directory."""
-        self._logger.debug('Converting PATHs, relative to output dir')
+        logger.debug('Converting PATHs, relative to output dir')
         if self.manifest:
             for step in self.manifest.steps.values():
-                self._logger.debug('Converting step %s PATHs', step.name)
+                logger.debug(f'Converting step {step.name} PATHs')
                 for resource in step.resources:
                     index_relative_path = resource.path_destination.rfind(self.config.output_dir)
                     if index_relative_path != -1:
@@ -225,9 +218,9 @@ class ManifestService:
         Arguments:
             step_name -- step to reset
         """
-        self._logger.debug('Reset request for step name %s', step_name)
+        logger.debug(f'Reset request for step name {step_name}')
         if step_name not in self.__resetted_manifest_steps:
-            self._logger.debug('Resetting step %s', step_name)
+            logger.debug(f'Resetting step {step_name}')
             new_manifest_step = self.__create_manifest_step()
             new_manifest_step.name = step_name
             new_manifest_step.created = self.manifest.steps[step_name].created
@@ -236,7 +229,7 @@ class ManifestService:
 
     def _reset_manifest_document_statuses(self) -> None:
         """Reset manifest document statuses to defaults."""
-        self._logger.debug('resetting manifest defaults')
+        logger.debug('resetting manifest defaults')
         self.manifest.status = ManifestStatus.FAILED
         self.manifest.status_completion = ManifestStatus.NOT_COMPLETED
         self.manifest.msg_completion = ManifestStatus.NOT_SET
@@ -290,7 +283,7 @@ class ManifestService:
                 ManifestResource
                 ]
         """
-        self._logger.debug('Computing checksums for %s', resource.path_destination)
+        logger.debug(f'Computing checksums for {resource.path_destination}')
         success = False
         errors = []
         buf_size = 65536
@@ -305,11 +298,8 @@ class ManifestService:
                     hasher.update(data)
         for hasher_key, hasher in hashers.items():
             setattr(resource.destination_checksums, hasher_key, hasher.hexdigest())
-            self._logger.debug(
-                '%s -> %s(%s)',
-                resource.path_destination,
-                hasher_key,
-                getattr(resource.destination_checksums, hasher_key),
+            logger.debug(
+                f'{resource.path_destination} -> {hasher_key}({getattr(resource.destination_checksums, hasher_key)})'
             )
 
         success = True
@@ -324,7 +314,7 @@ class ManifestService:
         Returns:
             Number of successfully computed checksums
         """
-        self._logger.debug('[CHECKSUMS] Computing for %s resources', len(resources))
+        logger.debug(f'[CHECKSUMS] Computing for {len(resources)} resources')
         n_success = 0
         for resource in resources:
             # TODO - Handle errors
@@ -332,7 +322,7 @@ class ManifestService:
                 success, _, _ = self._compute_checksums_for_resource(resource)
                 if success:
                     n_success += 1
-        self._logger.debug('[CHECKSUMS] Completed')
+        logger.debug('[CHECKSUMS] Completed')
         return n_success
 
     def add_resource_to_step(self, step_name: str, resource: ManifestResource) -> None:
@@ -352,8 +342,8 @@ class ManifestService:
             enconded_json = jsonpickle.encode(self.manifest, make_refs=False)
             Path(self.path_manifest).write_text(enconded_json)
         except OSError:
-            self._logger.error('COULD NOT write manifest file %s', self.path_manifest)
-        self._logger.info('WROTE manifest file %s, session %s', self.path_manifest, self.manifest.session)
+            logger.error(f'COULD NOT write manifest file {self.path_manifest}')
+        logger.info(f'WROTE manifest file {self.path_manifest}, session {self.manifest.session}')
 
     def evaluate_manifest_document(self) -> None:
         """Evaluate the statuses based on the manifest steps statuses."""
