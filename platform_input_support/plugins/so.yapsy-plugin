@@ -1,0 +1,9 @@
+[Core]
+Name = SO
+Module = so
+
+[Documentation]
+Author = Open Targets Core Team
+Version = 0.1
+Website = http://github.com/opentargets
+Description = ETL Sequence Ontology

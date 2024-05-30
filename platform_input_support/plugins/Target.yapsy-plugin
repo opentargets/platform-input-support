@@ -1,9 +1,0 @@
-[Core]
-Name = Target
-Module = Target
-
-[Documentation]
-Author = Open Targets Core Team
-Version = 0.1
-Website = http://github.com/opentargets
-Description = Retrieve Target information

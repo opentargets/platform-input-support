@@ -1,5 +1,5 @@
-"""
-Manifest file data models.
+"""Manifest file data models.
+
 The Manifest file stores the state of the PIS pipeline.
 The file is organised like so:
 - pipeline status/completion/messages
@@ -24,25 +24,28 @@ that means one or more of the steps have failed.
 In turn, a step will have failed because one or more of it's resources have
 failed.
 """
-import typing
+
 import logging
 from enum import auto
+
 from strenum import StrEnum
-from platform_input_support.modules.common.TimeUtils import get_timestamp_iso_utc_now
+
+from platform_input_support.modules.common.time_utils import get_timestamp_iso_utc_now
 
 # Logging
 logger = logging.getLogger(__name__)
 
 
 class ManifestDocument:
-    """
-    Top-level data model for manifest document.
+    """Top-level data model for manifest document.
+
     Represents the state of the overall pipeline, when it was
     created/modified. What the overal status of the pipeline is with
     messages and a list of steps objects [ManifestStep].
     """
-    def __init__(self, timestamp: str = None):
-        """Constructor for the Manifest file root content
+
+    def __init__(self, timestamp: str | None = None):
+        """Manifest file root content constructor.
 
         Keyword Arguments:
             timestamp -- ISO format timestamp string (default: {None})
@@ -52,7 +55,7 @@ class ManifestDocument:
         self.session: str = timestamp
         self.created: str = timestamp
         self.modified: str = timestamp
-        self.steps: typing.Dict[str, ManifestStep] = dict()
+        self.steps: dict[str, ManifestStep] = {}
         self.status: str = ManifestStatus.FAILED
         self.status_completion: str = ManifestStatus.NOT_COMPLETED
         self.status_validation: str = ManifestStatus.NOT_VALIDATED
@@ -61,15 +64,16 @@ class ManifestDocument:
 
 
 class ManifestStep:
-    """
-    Data model for manifest step.
+    """Data model for manifest step.
+
     Represents the state of a step e.g. 'evidence' step or 'disease' step
     in the pipeline. With a timestamp for time created/modified,
     the name of the step and the completion status and message.
     It also lists the step's resources [ManifestResource].
     """
-    def __init__(self, timestamp: str = None):
-        """Constructor for the Manifest file root content
+
+    def __init__(self, timestamp: str | None = None):
+        """Manifest file root content constructor.
 
         Keyword Arguments:
             timestamp -- ISO format timestamp string (default: {None})
@@ -79,7 +83,7 @@ class ManifestStep:
         self.created: str = timestamp
         self.modified: str = timestamp
         self.name: str = ManifestStatus.NO_NAME
-        self.resources: list = list()
+        self.resources: list = []
         self.status_completion: str = ManifestStatus.NOT_COMPLETED
         self.status_validation: str = ManifestStatus.NOT_VALIDATED
         self.msg_completion: str = ManifestStatus.NOT_SET
@@ -87,14 +91,15 @@ class ManifestStep:
 
 
 class ManifestResource:
-    """
-    Data model for manifest resource.
+    """Data model for manifest resource.
+
     Represents the state of a single resource. Includes the timestamp for
     when it was create, the resource source and desination, the completion
     status and the checksums for that resource [ManifestResourceChecksums].
     """
-    def __init__(self, timestamp: str = None):
-        """Constructor for the Manifest file root content
+
+    def __init__(self, timestamp: str | None = None):
+        """Manifest file root content constructor.
 
         Keyword Arguments:
             timestamp -- ISO format timestamp string (default: {None})
@@ -113,9 +118,8 @@ class ManifestResource:
 
 
 class ManifestResourceChecksums:
-    """
-    Data model for manifest resource checksums
-    """
+    """Data model for manifest resource checksums."""
+
     def __init__(self):
         self.crc32 = ManifestStatus.NOT_SET
         self.md5sum = ManifestStatus.NOT_SET
@@ -123,7 +127,8 @@ class ManifestResourceChecksums:
 
 
 class ManifestStatus(StrEnum):
-    """Manifest status enums"""
+    """Manifest status enums."""
+
     ERROR = auto()
     FAILED = auto()
     NO_NAME = auto()

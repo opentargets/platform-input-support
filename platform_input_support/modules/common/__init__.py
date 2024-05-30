@@ -1,12 +1,11 @@
-import os
-import re
-import gzip
-import shutil
-import logging
-import zipfile
-import pathlib
 import binascii
-
+import gzip
+import logging
+import os
+import pathlib
+import re
+import shutil
+import zipfile
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -14,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 # NOTE Refactor this out into a helper module
 def is_gzip(filename):
-    """
-    Check whether the given path is a gzip file
+    """Check whether the given path is a gzip file.
 
     :return: True if the given path is a gzip file, False otherwise
     """
@@ -26,9 +24,7 @@ def is_gzip(filename):
 
 # Regular expression for date and format
 def date_reg_expr(sourcestr, regexpr, format):
-    """
-    Extract the date from a string given the date regular expression to isolate it from the rest of the string, and its
-    format, for building the date object
+    """Extract date from a string.
 
     :param sourcestr: string to extract the date from
     :param regexpr: regular expression to use for isolating the date substring
@@ -51,58 +47,55 @@ def date_reg_expr(sourcestr, regexpr, format):
 # Extract any date in the format dd-mm-yyyy or yyyy-mm-dd and other sub cases.
 # Return None if date are not available.
 def extract_date_from_file(filename):
-    """
-    This method will try to extract a given file date by using different date formats, if possible
+    """Extract a given file date by using different date formats, if possible.
 
     :param filename: filename that contains a date string
     :return: the date information found in the file name or None if no date information was found
     """
     valid_date = []
     # First format to try
-    valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{2}-[0-9]{2})", '%Y-%m-%d'))
-    valid_date.append(date_reg_expr(filename, "([0-9]{2}-[0-9]{2}-[0-9]{4})", '%d-%m-%Y'))
+    valid_date.append(date_reg_expr(filename, '([0-9]{4}-[0-9]{2}-[0-9]{2})', '%Y-%m-%d'))
+    valid_date.append(date_reg_expr(filename, '([0-9]{2}-[0-9]{2}-[0-9]{4})', '%d-%m-%Y'))
     if valid_date.count(None) == len(valid_date):
         # Second format to try
         # Case d-mm-yyyy or dd-m-yyyy
-        valid_date.append(date_reg_expr(filename, "([0-9]{1}-[0-9]{2}-[0-9]{4})", '%d-%m-%Y'))
-        valid_date.append(date_reg_expr(filename, "([0-9]{2}-[0-9]{1}-[0-9]{4})", '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, '([0-9]{1}-[0-9]{2}-[0-9]{4})', '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, '([0-9]{2}-[0-9]{1}-[0-9]{4})', '%d-%m-%Y'))
     if valid_date.count(None) == len(valid_date):
         # Third format to try
         # Case yyyy-m-dd or yyyy-mm-d
-        valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{1}-[0-9]{2})", '%Y-%m-%d'))
-        valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{2}-[0-9]{1})", '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, '([0-9]{4}-[0-9]{1}-[0-9]{2})', '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, '([0-9]{4}-[0-9]{2}-[0-9]{1})', '%Y-%m-%d'))
     # So no double dd or mm present.
     if valid_date.count(None) == len(valid_date):
         # Forth format to try
-        valid_date.append(date_reg_expr(filename, "([0-9]{1}-[0-9]{1}-[0-9]{4})", '%d-%m-%Y'))
-        valid_date.append(date_reg_expr(filename, "([0-9]{4}-[0-9]{1}-[0-9]{1})", '%Y-%m-%d'))
+        valid_date.append(date_reg_expr(filename, '([0-9]{1}-[0-9]{1}-[0-9]{4})', '%d-%m-%Y'))
+        valid_date.append(date_reg_expr(filename, '([0-9]{4}-[0-9]{1}-[0-9]{1})', '%Y-%m-%d'))
     if valid_date.count(None) != len(valid_date):
         final_date = list(filter(None, valid_date))
         if len(final_date) == 1:
             return final_date[0]
-        raise ValueError("Unexpected error !!!")
+        raise ValueError('Unexpected error !!!')
     return None
 
 
 def recursive_remove_folder(folder):
-    """
-    Remove the folder tree starting at the given folder
+    """Remove the folder tree starting at the given folder.
 
     :param folder: starting point for the recursive removal of files and folders
     :return: the removed folder tree path if success, None otherwise
     """
     try:
-        logger.debug("Removing '{}' folder tree...".format(folder))
+        logger.debug('Removing %s folder tree...', folder)
         shutil.rmtree(folder)
         return folder
     except Exception as e:
-        logger.error("Error while deleting folder tree '{}'".format(e))
+        logger.error('Error while deleting folder tree %s', e)
     return None
 
 
 def create_folder(folder):
-    """
-    Create the given folder including all possible parents
+    """Create the given folder including all possible parents.
 
     :return: the created folder
     :raise OSError: in case the folder could not be created
@@ -110,15 +103,13 @@ def create_folder(folder):
     try:
         pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
     except OSError as e:
-        msg = "Fatal: output directory '{}' does not exist and cannot be created. ERROR: '{}'".format(folder, e)
-        logger.error(msg)
+        logger.error('Fatal: output directory %s does not exist and cannot be created. ERROR: %s', folder, e)
         raise
     return folder
 
 
 def make_gzip(file_with_path, dest_filename=None):
-    """
-    Gzip compress the file at the given path, by using the highest compression level '9'
+    """Gzip compress the file at the given path, by using the highest compression level '9'.
 
     :param file_with_path: path to the source file
     :param dest_filename: optional, path to the destination file, if missing, the path to the source file will be used
@@ -134,9 +125,7 @@ def make_gzip(file_with_path, dest_filename=None):
 
 
 def make_gunzip(file_with_path):
-    """
-    Gzip uncompress the file at the given path, in place, into a new file path with the compressed file extension
-    removed
+    """Gzip uncompress a file.
 
     :param file_with_path: path to the file that will be gunzipped
     :return: the path to the uncompressed file
@@ -149,21 +138,19 @@ def make_gunzip(file_with_path):
 
 
 def make_zip(file_with_path):
-    """
-    Compress the file in the given path using Zip, in place, into a new file with '.zip' extension
+    """Compress a file.
 
     :param file_with_path: source file path
     :return: path to the compressed file
     """
-    filename_zip = file_with_path + ".zip"
-    with zipfile.ZipFile(filename_zip, "w", zipfile.ZIP_DEFLATED, allowZip64=True) as zf:
+    filename_zip = file_with_path + '.zip'
+    with zipfile.ZipFile(filename_zip, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as zf:
         zf.write(file_with_path)
     return filename_zip
 
 
 def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: str) -> str:
-    """
-    Opens `zip_file` and saves `file_to_extract` to `output_dir`.
+    """Open `zip_file` and saves `file_to_extract` to `output_dir`.
 
     :param file_to_extract_path: file to extract from the zip compressed file
     :param zip_file: zip compressed file where to extract the file from
@@ -172,16 +159,15 @@ def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: 
     with zipfile.ZipFile(zip_file) as zf:
         if file_to_extract_path in zf.namelist():
             _, dst_file_name = os.path.split(file_to_extract_path)
-            with open(os.path.join(output_dir, dst_file_name), "wb") as f:
-                logger.debug(f"Extracting {file_to_extract_path} from {zip_file} to {f.name}")
+            with open(os.path.join(output_dir, dst_file_name), 'wb') as f:
+                logger.debug('Extracting %s from %s to %s', file_to_extract_path, zip_file, f.name)
                 f.write(zf.read(file_to_extract_path))
                 return f.name
     return ''
 
 
 def make_unzip_single_file(file_with_path):
-    """
-    Unzip a given zip file that contains only one compressed file.
+    """Unzip a given zip file that contains only one compressed file.
 
     :param file_with_path: path to the zip file to uncompress
     :raise ValueError: if the zip file contains more than one compressed file
@@ -190,16 +176,13 @@ def make_unzip_single_file(file_with_path):
     zipdata = zipfile.ZipFile(file_with_path)
     zipinfos = zipdata.infolist()
     if len(zipinfos) != 1:
-        raise ValueError('Zip File contains more than a single file %s.' % file_with_path)
+        raise ValueError('Zip File %s contains more than a single file', file_with_path)
     zipinfos[0].filename = os.path.basename(file_with_path).replace('.gz', '').replace('.gzip', '').replace('.zip', '')
-    return zipdata.extract(zipinfos[0],
-                           os.path.dirname(file_with_path)
-                           if os.path.dirname(file_with_path) != '' else None)
+    return zipdata.extract(zipinfos[0], os.path.dirname(file_with_path) or None)
 
 
 def get_output_spark_files(directory_info, filter):
-    """
-    Get a listing of paths to files in a given folder which file name ends in the given filter
+    """Get a listing of paths to files in a given folder which file name ends in the given filter.
 
     :param directory_info: folder to list files from
     :param filter: filter condition to get the file listing
@@ -209,8 +192,7 @@ def get_output_spark_files(directory_info, filter):
 
 
 def set_suffix_timestamp(filename):
-    """
-    Given a file name, set its suffix to the current date by replacing '{suffix}' placeholder in the name of the file
+    """Set filename suffix to the current date.
 
     :param filename: file name to set its suffix
     :return: the new file name with its suffix set to current date

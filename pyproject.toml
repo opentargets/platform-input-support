@@ -7,7 +7,7 @@ license = "Apache-2.0 license"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "~3.8"
+python = "~3.10"
 addict = "^2.4.0"
 ConfigArgParse = "^1.7"
 elasticsearch = "7.17.0"
@@ -55,15 +55,19 @@ select = [
   'RUF',    # ruff
   'UP',     # pyupgrade
   'D',      # pydocstyle
+  'D212',   # flake8-docstrings
   'S',      # flake8-bandit
   'C4',     # flake8-comprehensions
   'INT',    # flake8-gettext
   'LOG',    # flake8-logging
   'G',      # flake8-logging-format
+  'I',      # isort
+  'ICN001', # flake8-import-conventions
   'B',      # flake8-bugbear
   'A001',   # flake8-builtins
   'COM',    # flake8-commas
   'T10',    # flake8-debugger
+  'T20',    # flake8-todo
   'EXE',    # flake8-executable
   'ISC',    # flake8-implicit-str-concat
   'PIE',    # flake8-pie
@@ -77,25 +81,21 @@ select = [
   'TRY',    # tryceratops
   'PERF',   # perflint
   'FURB',   # refurb
+  'W',      # pycodestyle
 ]
 
 ignore = [
+  'D1',      # we are missing many docstrings
+  'D213',    # we prefer D212
   'E226',    # allow omitting whitespace around arithmetic operators
   'E731',    # allow assigning lambdas (it's useful for single-line functions defined inside other functions)
-  'N818',    # not all our exceptions are errors
   'RUF012',  # ultra-noisy and dicts in classvars are very common
-  'RUF015',  # not always more readable, and we don't do it for huge lists
-  'RUF022',  # autofix messes up our formatting instead of just sorting
-  'RUF027',  # also triggers on i18n functions -> too noisy for now
+  'RUF015',  # not always more readable
   'UP038',   # it looks kind of weird and it slower than a tuple
-  'D205',    # too many docstrings which have no summary line
-  'D301',    # https://github.com/astral-sh/ruff/issues/8696
-  'D1',      # we have way too many missing docstrings :(
-  'D401',    # too noisy (but maybe useful to go through at some point)
-  'D412',    # we do not use section, and in click docstrings those blank lines are useful
   'S101',    # we use asserts outside tests, and do not run python with `-O` (also see B011)
-  'S113',    # enforcing timeouts would likely require config in some places - maybe later
   'S311',    # false positives, it does not care about the context
+  'S321',    # some resources we need are in ftp servers
+  'S402',    # ^ likewise
   'S324',    # all our md5/sha1 usages are for non-security purposes
   'S404',    # useless, triggers on *all* subprocess imports
   'S403',    # there's already a warning on using pickle, no need to have one for the import
@@ -140,7 +140,7 @@ ignore = [
 ]
 
 extend-safe-fixes = [
-  'RUF005',  # we typically don't deal with objects overriding `__add__` ir `__radd__`
+  'RUF005',  # we typically don't deal with objects overriding `__add__` or `__radd__`
   'C4',      # they seem pretty safe
   'UP008',   # ^ likewise
   'D200',    # ^ likewise
@@ -152,11 +152,21 @@ extend-safe-fixes = [
   'PERF102', # ^ likewise
 ]
 
+[tool.ruff.lint.extend-per-file-ignores]
+'tests/**/test_*.py' = ['S108', 'S602']
+
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
 multiline-quotes = 'single'
 docstring-quotes = 'double'
 avoid-escape = true
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+parametrize-names-type = 'tuple'
+parametrize-values-type = 'tuple'
+parametrize-values-row-type = 'tuple'
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"
