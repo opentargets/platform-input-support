@@ -44,3 +44,6 @@ credentials/
 
 # terraform
 terraform.tfstate
+
+# ruff
+.ruff_cache/
