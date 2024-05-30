@@ -221,7 +221,7 @@ an entry in the config such as:
     resource: probeminer
 ```
 
-The _unzip\_file_ flag tells `RetrieveResource.py` to treat the file as an archive.
+The _unzip\_file_ flag tells `retrieve_resource.py` to treat the file as an archive.
 
 The `uri` field indicates from where to download the data. The archive will be saved under `output_filename`.
 The first element of the archive will be extracted under `output_filename` with the suffix '[gz|zip]'
