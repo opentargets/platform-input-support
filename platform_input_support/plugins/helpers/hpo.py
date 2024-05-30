@@ -1,10 +1,8 @@
 import json
-import logging
 import re
 
 import jsonlines
-
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class HPOError(Exception):
@@ -48,7 +46,7 @@ class HPO:
         elif '@id' in hp:
             return re.sub(r'^.*?:', '', hp['@id']).replace(':', '_')
         else:
-            logger.debug('skip this id: %s', hp)
+            logger.debug(f'skip this id: {hp}')
 
     def is_not_obsolete(self, id, hpo):
         """Check that a given HPO term is not obsolete.

@@ -1,17 +1,14 @@
-import logging
 import os
 from pathlib import Path
 
+from loguru import logger
 from yapsy.PluginManager import PluginManager
 
 from platform_input_support import PIS_OUTPUT_DIR, ROOT_DIR
-from platform_input_support.logger import Logger
 from platform_input_support.manifest import ManifestStatus, get_manifest_service
 from platform_input_support.modules.common import create_folder, recursive_remove_folder
 from platform_input_support.modules.common.google_bucket_repository import GoogleBucketResource
 from platform_input_support.modules.common.utils import Utils
-
-_logger = Logger.get(__name__)
 
 
 class RetrieveResource:
@@ -41,7 +38,7 @@ class RetrieveResource:
     def checks_gc_service_account(self):
         """Check that valid Google Cloud Platform credentials are present."""
         if self.args.gcp_credentials is None:
-            _logger.warning('Some of the steps may not work properly due the lack of permissions to access to GCS')
+            logger.warning('Some of the steps may not work properly due the lack of permissions to access to GCS')
         # We may still have the default user credentials
         if not GoogleBucketResource.has_valid_auth_key(self.args.gcp_credentials):
             raise ValueError('Google credential is not valid!')
@@ -49,10 +46,10 @@ class RetrieveResource:
     def copy_to_gs(self):
         """Copy local files to the given Google Storage Bucket destination."""
         if self.args.gcp_bucket is not None:
-            _logger.info('Copying files to GCP bucket %s', self.args.gcp_bucket)
+            logger.info(f'Copying files to GCP bucket {self.args.gcp_bucket}')
             Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(self.args.gcp_bucket)
         else:
-            _logger.warning('No GCP Bucket details provided, THE COLLECTED DATA WILL STAY LOCAL')
+            logger.warning('No GCP Bucket details provided, THE COLLECTED DATA WILL STAY LOCAL')
 
     def matching_steps(self, steps, all_plugins_available):
         """Compute list of plugins that we need to run for covering the requested pipeline steps.
@@ -67,7 +64,7 @@ class RetrieveResource:
                 matching_plugins.append(plugin)
                 lowercase_steps.remove(plugin.lower())
         if lowercase_steps:
-            _logger.warning('Steps NOT FOUND: %s', lowercase_steps)
+            logger.warning(f'Steps NOT FOUND: {lowercase_steps}')
         return matching_plugins
 
     def steps(self):
@@ -84,7 +81,7 @@ class RetrieveResource:
         else:
             plugins_to_run = list(set(steps_requested))
 
-        _logger.info('SELECTED Steps: %s', plugins_to_run)
+        logger.info(f'SELECTED Steps: {plugins_to_run}')
         return plugins_to_run
 
     def init_plugins(self):
@@ -94,9 +91,6 @@ class RetrieveResource:
         #  stages behavior, so this could probably go somewhere else, maybe as an environment variable. On another
         #  thought, we may just want to make this a constant somewhere, probably the application itself, so its value is
         #  specified in a single place.
-        # Turn the volume down for the yapsy logger
-        logger_yapsy = logging.getLogger('yapsy')
-        logger_yapsy.setLevel(logging.INFO)
         self.simple_plugin_manager.setPluginPlaces([Path(ROOT_DIR) / 'platform_input_support' / 'plugins'])
         # Load all plugins
         self.simple_plugin_manager.collectPlugins()
@@ -114,8 +108,7 @@ class RetrieveResource:
             try:
                 plugin.plugin_object.process(plugin_configuration, self.yaml.outputs, self.yaml.config)
             except Exception as e:
-                _logger.error('A problem occurred while running step %s', plugin_name)
-                _logger.error(e)
+                logger.error(f'A problem occurred while running step {plugin_name}: {e}')
                 raise
 
     def create_output_structure(self):
@@ -126,15 +119,15 @@ class RetrieveResource:
         :param output_dir: destination path for the pipeline output filetree structure
         """
         if not self.__is_done_create_output_structure:
-            _logger.debug('Setting output structure')
+            logger.debug('Setting output structure')
             if self.args.force_clean:
                 recursive_remove_folder(self.output_dir)
             else:
-                _logger.warning('Output folder NOT CLEANED UP.')
+                logger.warning('Output folder NOT CLEANED UP.')
             self.yaml.outputs.prod_dir = create_folder(os.path.join(self.output_dir, 'prod'))
             self.yaml.outputs.staging_dir = create_folder(os.path.join(self.output_dir, 'staging'))
             self.__is_done_create_output_structure = True
-        _logger.debug('Output structure has been created')
+        logger.debug('Output structure has been created')
 
     def run(self):
         """Run Resource Retrieval process.
@@ -152,7 +145,7 @@ class RetrieveResource:
             self.checks_gc_service_account()
             self.run_plugins()
         except Exception as e:
-            _logger.error('An error occurred while running the pipeline: %s', e)
+            logger.error(f'An error occurred while running the pipeline: {e}')
             manifest_service.manifest.status_completion = ManifestStatus.FAILED
             manifest_service.manifest.msg_completion = f"COULD NOT complete the data collection session due to '{e}'"
 

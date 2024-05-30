@@ -1,11 +1,10 @@
-import logging
 import os
 import tempfile
 from pathlib import Path
 
-from platform_input_support.modules.common.utils import CustomSubProcException, Utils, subproc
+from loguru import logger
 
-logger = logging.getLogger(__name__)
+from platform_input_support.modules.common.utils import CustomSubProcError, Utils, subproc
 
 
 class RiotError(Exception):
@@ -35,8 +34,8 @@ class Riot:
 
         JVM options from the yaml config are passed in here.
         """
-        os.environ['_JAVA_OPTIONS'] = str(self.yaml.java_vm)
-        logger.info('_JAVA_OPTIONS: %s', os.environ['_JAVA_OPTIONS'])
+        java_options = os.environ['_JAVA_OPTIONS'] = str(self.yaml.java_vm)
+        logger.info(f'_JAVA_OPTIONS: {java_options}')
         return os.environ.copy()
 
     def run_riot(
@@ -63,7 +62,7 @@ class Riot:
                 logger.debug('riot command completed.')
                 subproc(cmd=jq_cmd)
                 logger.debug('jq command completed.')
-            except CustomSubProcException as err:
+            except CustomSubProcError as err:
                 msg_err = (
                     f"FAILED to run RIOT on file '{owl_file}' "
                     f"and JQ with filter '{owl_jq}' "
@@ -84,10 +83,7 @@ class Riot:
         _, filename = os.path.split(owl_file)
         dst_filename = filename.replace('.owl', '.json')
         logger.debug(
-            "RIOT OWL file %s to JSON, output folder %s, destination file name %s, JQ filter %s'",
-            owl_file,
-            output_dir,
-            dst_filename,
-            owl_jq,
+            f'RIOT OWL file {owl_file} to JSON, output folder {output_dir}, ',
+            f'destination file name {dst_filename}, JQ filter {owl_jq}',
         )
         return self.run_riot(owl_file, output_dir, dst_filename, owl_jq)

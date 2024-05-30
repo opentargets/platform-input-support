@@ -1,18 +1,10 @@
 import json
-import logging
 
 import requests
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, utils
+from loguru import logger
 from requests import ConnectionError
-
-logger = logging.getLogger(__name__)
-# Remove excessive logging for Elastic Search Library
-es_logger = logging.getLogger('elasticsearch')
-es_logger.setLevel(logging.WARNING)
-# Remove excessive logging from urllib3 used by Elastic Search Library
-urllib_logger = logging.getLogger('urllib3.connectionpool')
-urllib_logger.setLevel(logging.WARNING)
 
 
 class ElasticsearchInstance:
@@ -35,7 +27,7 @@ class ElasticsearchInstance:
     def url(self):
         if self._url is None:
             self._url = f'{self._scheme}://{self._host}:{self._port}'
-        logger.debug('Elastic Search Helper - URL %s', self._url)
+        logger.debug(f'Elastic Search Helper - URL {self._url}')
         return self._url
 
     @property
@@ -53,7 +45,7 @@ class ElasticsearchInstance:
             request = requests.head(self.url, timeout=1)
             return request.ok
         except ConnectionError as error:
-            logger.error('Unable to reach %s: %s', self.url, error)
+            logger.error(f'Unable to reach {self.url}: {error}')
         return False
 
     @staticmethod
@@ -92,7 +84,7 @@ class ElasticsearchInstance:
                 if f in hit:
                     hit_dict[f] = self._process_hit_value(hit[f])
                 else:
-                    logger.error('field "%s" NOT FOUND on document from index: %s', f, index)
+                    logger.error(f'field {f} NOT FOUND on document from index: {index}')
             doc_buffer.append(hit_dict)
             # write buffer to file, update document count, and clear buffer
             if len(doc_buffer) >= size:
@@ -105,8 +97,7 @@ class ElasticsearchInstance:
             doc_count += len(doc_buffer)
         return doc_count
 
-    @staticmethod
-    def write_elasticsearch_docs_as_jsonl(docs, filename):
+    def write_elasticsearch_docs_as_jsonl(self, docs, filename):
         """Write list of elasticsearch objects to file as jsonl format.
 
         :param docs: List of elasticsearch documents represented as dictionaries. Each document will be written as a
@@ -118,4 +109,4 @@ class ElasticsearchInstance:
             for doc in docs:
                 json.dump(doc, outfile)
                 outfile.write('\n')
-        logger.debug('Wrote %d documents to %s', len(docs), filename)
+        logger.debug(f'Wrote {len(docs)} documents to filename')

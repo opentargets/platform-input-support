@@ -1,32 +1,24 @@
 import json
-import logging
 import os
 import uuid
 import zipfile
 
+from loguru import logger
+
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
 from platform_input_support.modules.common.download_resource import DownloadResource
 
-logger = logging.getLogger(__name__)
 
-
-class Openfda:
+class OpenFDA:
     """OpenFDA data download Helper with re-entrant download event file method for multithreading safety."""
 
-    def __init__(self, output_dir, logger=None, manifest_service=None):
+    def __init__(self, output_dir, manifest_service=None):
         """OpenFDA helper constructor class.
 
         :param output_dir: destination folder for the downloaded event file
         """
         self.output = output_dir
-        self._logger = logger
         self.__manifest_service = manifest_service
-
-    @property
-    def logger(self):
-        if self._logger is None:
-            self._logger = logger
-        return self._logger
 
     @property
     def manifest_service(self):
@@ -39,14 +31,16 @@ class Openfda:
 
         :param download_entry: download information object
         """
-        self.logger.debug(download_entry)
+        logger.debug(download_entry)
         download_url = download_entry['file']
         download_description = download_entry['display_name']
         download_dest_filename = f'{uuid.uuid4()}.zip'
         download_dest_path = os.path.join(self.output, download_dest_filename)
         download_resource_key = f'openfda-event-{download_dest_filename}'
-        self.logger.info(
-            'Download OpenFDA FAERs %s, from %s --> %s', download_description, download_url, download_dest_filename
+        logger.info(
+            f'Download OpenFDA FAERs {download_description}, ',
+            f'from {download_url} ',
+            f'--> {download_dest_filename}',
         )
         download_resource = type(
             'download_resource',
@@ -69,7 +63,7 @@ class Openfda:
                 unzip_filename = event_file.filename
                 unzip_dest_filename = f'{uuid.uuid4()}.jsonl'
                 unzip_dest_path = os.path.join(self.output, unzip_dest_filename)
-                self.logger.debug('Inflating event file %s, CRC %s', unzip_filename, event_file.CRC)
+                logger.debug(f'Inflating event file {unzip_filename}, CRC {event_file.CRC}')
                 event_file_manifest = self.manifest_service.clone_resource(download_manifest)
                 event_file_manifest.path_destination = unzip_dest_path
                 event_file_manifest.status_completion = (
@@ -86,15 +80,13 @@ class Openfda:
                             for result in event_data['results']:
                                 inflatedf.write(f'{format(json.dumps(result))}\n')
                         else:
-                            self.logger.warning(
-                                'NO EVENT DATA RESULTS for event file %s, source URL %s, description %s',
-                                unzip_filename,
-                                download_url,
-                                download_description,
+                            logger.warning(
+                                f'NO EVENT DATA RESULTS for event file {unzip_filename}, source URL {download_url}, '
+                                f'description {download_description}',
                             )
                 event_file_manifest.status_completion = ManifestStatus.COMPLETED
                 if wrote_results:
                     event_file_manifests.append(event_file_manifest)
-        self.logger.debug('Removing processed ZIP file: %s', download_dest_path)
+        logger.debug(f'Removing processed ZIP file: {download_dest_path}')
         os.remove(download_dest_path)
         return event_file_manifests

@@ -1,16 +1,14 @@
-import logging
 import os
 import subprocess
 
 from addict import Dict
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
 from platform_input_support.modules.common import create_folder
 from platform_input_support.modules.common.download_resource import DownloadResource
 from platform_input_support.modules.common.utils import Utils
-
-logger = logging.getLogger(__name__)
 
 
 class Homologues(IPlugin):
@@ -34,7 +32,6 @@ class Homologues(IPlugin):
     """
 
     def __init__(self):
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'Homologues'
 
     @staticmethod
@@ -82,30 +79,27 @@ class Homologues(IPlugin):
         """
         _, tail = os.path.split(input_file)
         output_file = os.path.join(path_output, tail.replace('json', 'tsv'))
-        self._logger.info("Extracting id and name from: %s' to %s", input_file, output_file)
+        logger.info(f'Extracting id and name from: {input_file} to {output_file}')
         try:
             jqp = subprocess.run(f"{jq_cmd} '{conf.jq}' {input_file} > {output_file}", capture_output=True, shell=True)  # noqa: S602
             jqp.check_returncode()
         except OSError as e:
-            self._logger.error(
-                'JQ Filter %s failed on file %s, destination file %s with error code %s, error message %s',
-                conf.jq,
-                input_file,
-                output_file,
-                e.errno,
-                e.strerror,
+            logger.error(
+                f'JQ Filter {conf.jq} '
+                f'failed on file {input_file}, '
+                f'destination file {output_file} '
+                f'with error code {e.errno}, '
+                f'error message {e.strerror}',
             )
             raise
         except subprocess.CalledProcessError as e:
-            self._logger.error(
-                'JQ filter %s failed on file %s, destination file %s with error code %s, command standard output %s, '
-                'command standard error output %s',
-                conf.jq,
-                input_file,
-                output_file,
-                e.returncode,
-                e.output,
-                jqp.stderr,
+            logger.error(
+                f'JQ filter {conf.jq} '
+                f'failed on file {input_file}, '
+                f'destination file {output_file} '
+                f'with error code {e.returncode}, '
+                f'command standard output {e.output}, '
+                f'command standard error output {jqp.stderr}'
             )
             raise
         return output_file
@@ -127,7 +121,7 @@ class Homologues(IPlugin):
         mapping_data_manifests = []
         for species in conf.resources:
             # Download the protein files for each species of interest
-            self._logger.debug('Downloading gene dictionary files for %s', species)
+            logger.debug(f'Downloading gene dictionary files for {species}')
             download_manifest = self.download_gene_dictionary_for_species(
                 ensembl_base_uri, output.staging_dir, download_service, species
             )
@@ -143,12 +137,11 @@ class Homologues(IPlugin):
                         f"'{download_manifest.path_destination}'"
                         f" using JQ command '{jq_cmd}', due to error: {e!s}"
                     )
-                    self._logger.error(download_manifest.msg_completion)
+                    logger.error(download_manifest.msg_completion)
                 else:
-                    self._logger.debug(
-                        'Gene dictionary data for %s download manifest destination path set to %s',
-                        species,
-                        download_manifest.path_destination,
+                    logger.debug(
+                        f'Gene dictionary data for {species} download manifest destination path set '
+                        f'to {download_manifest.path_destination}',
                     )
                     download_manifest.msg_completion = (
                         f"Gene dictionary data for '{species}', JQ filtered with '{conf.jq}'"
@@ -173,7 +166,7 @@ class Homologues(IPlugin):
         homology_data_manifests = []
         # Iterate over the species of interest to download the homology data, which is a pair of files like
         for species in conf.resources:
-            self._logger.debug('Downloading homology files for %s', species)
+            logger.debug(f'Downloading homology files for {species}')
             for type_homologue in conf.types_homologues:
                 homology_data_manifests.append(  # noqa: PERF401
                     self.download_homologies_for_species(
@@ -189,7 +182,7 @@ class Homologues(IPlugin):
         :param output: output information object for results from this step
         :param cmd_conf: command line configuration object for external tools
         """
-        self._logger.info('[STEP] BEGIN, Homologues')
+        logger.info('[STEP] BEGIN, Homologues')
         # TODO - Should I halt the step as soon as I face the first problem?
         manifest_step = get_manifest_service().get_step(self.step_name)
         # Download gene dictionary data
@@ -204,4 +197,4 @@ class Homologues(IPlugin):
         if manifest_step.status_completion != ManifestStatus.FAILED:
             manifest_step.status_completion = ManifestStatus.COMPLETED
             manifest_step.msg_completion = 'The step has completed its execution'
-        self._logger.info('[STEP] END, Homologues')
+        logger.info('[STEP] END, Homologues')

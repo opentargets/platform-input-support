@@ -1,16 +1,14 @@
 import base64
 import binascii
-import logging
 import os
 from datetime import datetime
 
 import google.auth
 from google.cloud import exceptions, storage
+from loguru import logger
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
 from platform_input_support.modules.common import extract_date_from_file
-
-logger = logging.getLogger(__name__)
 
 
 class GoogleBucketResource:
@@ -25,7 +23,7 @@ class GoogleBucketResource:
         self.client = storage.Client()
 
     def __del__(self):
-        logger.debug('Destroyed instance of %s', __name__)
+        logger.debug('Destroyed instance of {__name__}')
 
     @staticmethod
     def has_valid_auth_key(gcp_credentials=None):
@@ -41,9 +39,9 @@ class GoogleBucketResource:
         try:
             _, project = google.auth.default()
         except Exception as error:
-            logger.error('Google Auth Error: %s', error)
+            logger.error(f'Google Auth Error: {error}')
         else:
-            logger.info('\n\tGoogle Bucket connection: %s', project)
+            logger.info(f'Google Bucket connection: {project}')
             return True
         return False
 
@@ -94,9 +92,9 @@ class GoogleBucketResource:
             try:
                 return self.client.get_bucket(self.bucket_name)
             except google.cloud.exceptions.NotFound:
-                logger.error('Bucket %s NOT FOUND', self.bucket_name)
+                logger.error(f'Bucket {self.bucket_name} NOT FOUND')
             except exceptions.Forbidden:
-                logger.error('Google Cloud Storage, FORBIDDEN access, path %s', self.bucket_name)
+                logger.error(f'Google Cloud Storage, FORBIDDEN access, path {self.bucket_name}')
         return None
 
     # For instance you can call the method
@@ -118,7 +116,7 @@ class GoogleBucketResource:
             blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
 
             for blob in blobs:
-                logger.debug('Filename: %s , Created: %s, Updated: %s', blob.name, blob.time_created, blob.updated)
+                logger.debug(f'Filename: {blob.name} , Created: {blob.time_created}, Updated: {blob.updated}')
                 if ((exclude is not None) and (exclude in blob.name)) or (
                     (include is not None) and (include not in blob.name)
                 ):
@@ -185,20 +183,19 @@ class GoogleBucketResource:
                         possible_recent_date_collision = True
                     # it is spark dir. Check if it is the same dir
                     elif os.path.dirname(filename) != os.path.dirname(last_recent_file):
-                        logger.debug('%s vs %s', filename, last_recent_file)
+                        logger.debug(f'{filename} vs {last_recent_file}')
                         possible_recent_date_collision = True
                 if date_file > recent_date:
                     possible_recent_date_collision = False
                     recent_date = date_file
                     last_recent_file = filename
+        recent_date_str = recent_date.strftime('%d-%m-%Y')
         if possible_recent_date_collision:
             # Raise an error. No filename is unique in the recent date selected.
-            msg = "Error TWO files with the same date: '{}' and '{}'".format(
-                last_recent_file, recent_date.strftime('%d-%m-%Y')
-            )
+            msg = f'Error TWO files with the same date: {last_recent_file} and {recent_date_str}'
             logger.error(msg)
             raise ValueError(msg)
-        logger.info('Latest file: %s %s', last_recent_file, recent_date.strftime('%d-%m-%Y'))
+        logger.info(f'Latest file: {last_recent_file} {recent_date_str}')
         return {
             'latest_filename': last_recent_file,
             'suffix': recent_date.strftime('%Y-%m-%d'),

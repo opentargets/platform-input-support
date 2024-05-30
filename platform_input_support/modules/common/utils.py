@@ -1,15 +1,10 @@
-import logging
 import os
 import shutil
 import subprocess
 from pathlib import Path
 
 from addict import Dict
-
-logger = logging.getLogger(__name__)
-
-
-# print(os.environ["PATH"])
+from loguru import logger
 
 
 class Utils:
@@ -31,8 +26,8 @@ class Utils:
         cmd_result = shutil.which(cmd)
         if cmd_result is None:
             cmd_result = yaml_cmd
-            logger.warning('Command %s NOT FOUND. Using the path from config.yaml', cmd)
-        logger.debug('%s path %s', cmd, cmd_result)
+            logger.warning(f'Command {cmd} NOT FOUND. Using the path from config.yaml')
+        logger.debug(f'{cmd} path {cmd_result}')
         return cmd_result
 
     def gsutil_multi_copy_to(self, destination_bucket):
@@ -44,11 +39,10 @@ class Utils:
         # cmd_result = shutil.which("gsutil")
         # cmd = "gsutil -q -m cp -r " + self.yaml.output_dir + "/* gs://" + destination_bucket + "/"
         # subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        source = os.path.join(self.output_dir, '*')
         destination_bucket = f'gs://{destination_bucket}/'
         logger.debug(
-            'using gsutil for source %s, destination %s',
-            os.path.join(self.output_dir, '*'),
-            destination_bucket,
+            f'using gsutil for source {source}, destination {destination_bucket}',
         )
         proc = subprocess.Popen(
             [
@@ -69,24 +63,22 @@ class Utils:
                 # Wait for 1 hour for the operation to complete
                 _, err = proc.communicate(timeout=3600)
             except subprocess.TimeoutExpired:
-                logger.warning('Attempt #%d timed out!', attempt + 1)
+                logger.warning(f'Attempt #{attempt+1} timed out!')
                 continue
             except Exception as e:
                 proc.kill()
-                logger.error('There was a problem copying files to bucket %s: %s', destination_bucket, e)
+                logger.error(f'There was a problem copying files to bucket {destination_bucket}: {e}')
                 break
             else:
                 completed = True
-                logger.info(
-                    'gsutil copy for source %s, destination %s COMPLETED!',
-                    Path(self.output_dir) / '*',
-                    destination_bucket,
-                )
+                source = Path(self.output_dir) / '*'
+                logger.info(f'gsutil copy for source {source} destination {destination_bucket} COMPLETED!')
                 break
         if not completed:
             proc.kill()
             _, err = proc.communicate()
-            logger.error('COULD NOT COMPLETE file copy to GCP Bucket %s: %s', destination_bucket, err.decode('utf-8'))
+            err_str = err.decode('utf-8')
+            logger.error(f'COULD NOT COMPLETE file copy to GCP Bucket {destination_bucket}: {err_str}')
 
     @staticmethod
     def resource_for_stage(resource):
@@ -119,9 +111,7 @@ def subproc(cmd: str, **kwargs) -> None:
     """
 
     def raise_exception(sp: subprocess.CompletedProcess, error: str) -> None:
-        raise CustomSubProcError(
-            'FAILED to run command %s, with return code %d, error: %s', sp.args, sp.returncode, error
-        )
+        raise CustomSubProcError(f'FAILED to run command {sp.args}, with return code {sp.returncode}, error: {error}')
 
     try:
         sp = subprocess.run(cmd, shell=True, text=True, capture_output=True, check=False, **kwargs)  # noqa: S602

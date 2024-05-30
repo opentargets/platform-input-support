@@ -1,9 +1,9 @@
 import datetime
 import json
-import logging
 import os
 
 import jsonlines
+from loguru import logger
 from opentargets_urlzsource import URLZSource
 from yapsy.IPlugin import IPlugin
 
@@ -11,15 +11,12 @@ from platform_input_support.manifest import ManifestResource, ManifestStatus, ge
 from platform_input_support.modules.common import create_folder, make_gzip, make_unzip_single_file
 from platform_input_support.modules.common.downloads import Downloads
 
-logger = logging.getLogger(__name__)
-
 
 class Expression(IPlugin):
     """Expression data collection step."""
 
     def __init__(self):
         """Expression class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.suffix = datetime.datetime.today().strftime('%Y-%m-%d')
         self.step_name = 'Expression'
 
@@ -65,19 +62,19 @@ class Expression(IPlugin):
                     )
                 else:
                     download_manifest.path_destination = path_filename_tissue
-                    self._logger.debug(
-                        'Tissue translation map download manifest destination path set to %s, '
-                        'which is the destination for the extracted tissue translation data',
-                        download_manifest.path_destination,
+                    logger.debug(
+                        'Tissue translation map download manifest destination path set to '
+                        f'{download_manifest.path_destination}, which is the destination for the extracted tissue '
+                        'translation data',
                     )
                     download_manifest.msg_completion = (
                         'The destination file contains the tissue translation map extracted from the data source'
                     )
                     download_manifest.status_completion = ManifestStatus.COMPLETED
         else:
-            self._logger.error(
-                'COULD NOT produce tissue translation mapping data, because data file at %s could not be retrieved',
-                download_manifest.source_url,
+            logger.error(
+                'COULD NOT produce tissue translation mapping data, because data file at '
+                f'{download_manifest.source_url} could not be retrieved',
             )
         return download_manifest
 
@@ -97,7 +94,7 @@ class Expression(IPlugin):
         :param output: output folder information object
         :param resource: download resource information object
         """
-        self._logger.debug('[START] Normal tissue download')
+        logger.debug('[START] Normal tissue download')
         download_manifest = Downloads.download_staging_http(output.staging_dir, resource)
         if download_manifest.status_completion == ManifestStatus.COMPLETED:
             try:
@@ -109,14 +106,14 @@ class Expression(IPlugin):
                     f" from '{download_manifest.path_destination}'"
                     f" due to '{e}'"
                 )
-                self._logger.error(download_manifest.msg_completion)
+                logger.error(download_manifest.msg_completion)
             else:
-                self._logger.debug('[NORMAL_TISSUE] Filename unzip - %s', filename_unzip)
+                logger.debug(f'[NORMAL_TISSUE] Filename unzip - {filename_unzip}')
                 gzip_filename = os.path.join(
                     create_folder(os.path.join(output.prod_dir, resource.path)),
                     resource.output_filename.replace('{suffix}', self.suffix),
                 )
-                self._logger.debug('[NORMAL_TISSUE] Filename gzip - %s', gzip_filename)
+                logger.debug(f'[NORMAL_TISSUE] Filename gzip - {gzip_filename}')
                 try:
                     download_manifest.path_destination = make_gzip(filename_unzip, gzip_filename)
                 except Exception as e:
@@ -127,12 +124,12 @@ class Expression(IPlugin):
                         f" to '{gzip_filename}'"
                         f" due to '{e}'"
                     )
-                    self._logger.error(download_manifest.msg_completion)
+                    logger.error(download_manifest.msg_completion)
                 else:
-                    self._logger.debug(
-                        'Normal tissue data download manifest destination path set to %s, '
-                        'which is the result of compression format conversion from original file',
-                        download_manifest.path_destination,
+                    logger.debug(
+                        'Normal tissue data download manifest destination path set to '
+                        f'{download_manifest.path_destination}, which is the result of compression format conversion '
+                        'from original file',
                     )
                     download_manifest.msg_completion = (
                         'The source file was converted from its original compression format to gzip format'
@@ -147,7 +144,7 @@ class Expression(IPlugin):
         :param output: output folder information
         :param cmd_conf: NOT USED
         """
-        self._logger.info('[STEP] BEGIN, Expression')
+        logger.info('[STEP] BEGIN, Expression')
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         # TODO - Should I halt the step as soon as I face the first problem?
@@ -161,4 +158,4 @@ class Expression(IPlugin):
         if manifest_step.status_completion != ManifestStatus.FAILED:
             manifest_step.status_completion = ManifestStatus.COMPLETED
             manifest_step.msg_completion = 'The step has completed its execution'
-        self._logger.info('[STEP] END, Expression')
+        logger.info('[STEP] END, Expression')

@@ -1,14 +1,13 @@
 import datetime
-import logging
 import os
+
+from loguru import logger
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
 from platform_input_support.modules.common import create_folder
 from platform_input_support.modules.common.download_resource import DownloadResource
 from platform_input_support.modules.common.google_bucket_repository import GoogleBucketResource
 from platform_input_support.modules.common.utils import Utils
-
-logger = logging.getLogger(__name__)
 
 
 # NOTE I would probably refactor the name of this class, it is in module 'Downloads'
@@ -57,7 +56,7 @@ class Downloads:
         if google_resource.get_bucket() is not None:
             latest_filename = google_resource.get_latest_file(resource)
             if latest_filename['latest_filename'] is None:
-                logger.warning('The path=%s does not contain any recent file', google_resource.bucket_name)
+                logger.warning(f'The path {google_resource.bucket_name} does not contain any recent file')
         return latest_filename
 
     def exec(self, resources_info) -> list[ManifestResource]:

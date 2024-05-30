@@ -1,11 +1,8 @@
-import logging
-
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestStatus, get_manifest_service
 from platform_input_support.modules.common.downloads import Downloads
-
-logger = logging.getLogger(__name__)
 
 
 class Evidence(IPlugin):
@@ -13,7 +10,6 @@ class Evidence(IPlugin):
 
     def __init__(self):
         """Evidence class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'Evidence'
 
     def process(self, conf, output, cmd_conf=None):
@@ -23,7 +19,7 @@ class Evidence(IPlugin):
         :param output: output folder information
         :param cmd_conf: UNUSED
         """
-        self._logger.info('[STEP] BEGIN, Evidence')
+        logger.info('[STEP] BEGIN, Evidence')
         manifest_service = get_manifest_service()
         manifest_step = manifest_service.get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
@@ -35,4 +31,4 @@ class Evidence(IPlugin):
         if manifest_step.status_completion != ManifestStatus.FAILED:
             manifest_step.status_completion = ManifestStatus.COMPLETED
             manifest_step.msg_completion = 'The step has completed its execution'
-        self._logger.info('[STEP] END, Evidence')
+        logger.info('[STEP] END, Evidence')

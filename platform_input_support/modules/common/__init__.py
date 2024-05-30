@@ -1,6 +1,5 @@
 import binascii
 import gzip
-import logging
 import os
 import pathlib
 import re
@@ -8,7 +7,7 @@ import shutil
 import zipfile
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 # NOTE Refactor this out into a helper module
@@ -86,11 +85,11 @@ def recursive_remove_folder(folder):
     :return: the removed folder tree path if success, None otherwise
     """
     try:
-        logger.debug('Removing %s folder tree...', folder)
+        logger.debug(f'Removing {folder} folder tree...')
         shutil.rmtree(folder)
         return folder
     except Exception as e:
-        logger.error('Error while deleting folder tree %s', e)
+        logger.error(f'Error while deleting folder tree {e}')
     return None
 
 
@@ -103,7 +102,7 @@ def create_folder(folder):
     try:
         pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
     except OSError as e:
-        logger.error('Fatal: output directory %s does not exist and cannot be created. ERROR: %s', folder, e)
+        logger.error(f'Fatal: output directory {folder} does not exist and cannot be created. ERROR: {e}')
         raise
     return folder
 
@@ -160,7 +159,7 @@ def extract_file_from_zip(file_to_extract_path: str, zip_file: str, output_dir: 
         if file_to_extract_path in zf.namelist():
             _, dst_file_name = os.path.split(file_to_extract_path)
             with open(os.path.join(output_dir, dst_file_name), 'wb') as f:
-                logger.debug('Extracting %s from %s to %s', file_to_extract_path, zip_file, f.name)
+                logger.debug(f'Extracting {file_to_extract_path} from {zip_file} to {f.name}')
                 f.write(zf.read(file_to_extract_path))
                 return f.name
     return ''
@@ -176,7 +175,7 @@ def make_unzip_single_file(file_with_path):
     zipdata = zipfile.ZipFile(file_with_path)
     zipinfos = zipdata.infolist()
     if len(zipinfos) != 1:
-        raise ValueError('Zip File %s contains more than a single file', file_with_path)
+        raise ValueError(f'Zip File {file_with_path} contains more than a single file')
     zipinfos[0].filename = os.path.basename(file_with_path).replace('.gz', '').replace('.gzip', '').replace('.zip', '')
     return zipdata.extract(zipinfos[0], os.path.dirname(file_with_path) or None)
 
