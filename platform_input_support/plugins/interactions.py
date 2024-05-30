@@ -1,11 +1,8 @@
-import logging
-
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestStatus, get_manifest_service
 from platform_input_support.modules.common.downloads import Downloads
-
-logger = logging.getLogger(__name__)
 
 
 class Interactions(IPlugin):
@@ -13,7 +10,6 @@ class Interactions(IPlugin):
 
     def __init__(self):
         """Interactions class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'Interactions'
 
     def process(self, conf, output, cmd_conf=None):
@@ -23,7 +19,7 @@ class Interactions(IPlugin):
         :param output: output information object on where the results of this step should be placed
         :param cmd_conf: NOT USED
         """
-        self._logger.info('[STEP] BEGIN, Interactions')
+        logger.info('[STEP] BEGIN, Interactions')
         manifest_step = get_manifest_service().get_step(self.step_name)
         manifest_step.resources.extend(Downloads(output.prod_dir).exec(conf))
         get_manifest_service().compute_checksums(manifest_step.resources)
@@ -34,4 +30,4 @@ class Interactions(IPlugin):
         if manifest_step.status_completion != ManifestStatus.FAILED:
             manifest_step.status_completion = ManifestStatus.COMPLETED
             manifest_step.msg_completion = 'The step has completed its execution'
-        self._logger.info('[STEP] END, Interactions')
+        logger.info('[STEP] END, Interactions')

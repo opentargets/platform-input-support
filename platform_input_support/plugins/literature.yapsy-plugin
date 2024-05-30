@@ -1,6 +1,6 @@
 [Core]
 Name = Literature
-Module = Literature
+Module = literature
 
 [Documentation]
 Author = Open Targets Core Team

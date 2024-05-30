@@ -1,12 +1,11 @@
-import logging
+import sys
 from pathlib import Path
 
 import yaml
 from addict import Dict
+from loguru import logger
 
 from platform_input_support import ROOT_DIR
-
-logger = logging.getLogger(__name__)
 
 
 class YAMLReaderError(Exception):
@@ -30,12 +29,14 @@ class YAMLReader:
 
         :return: a dictionary object
         """
-        logger.debug('Reading configuration file %s', self.yaml_file)
+        logger.info(f'Reading config from {self.yaml_file}')
         with open(self.yaml_file, encoding='UTF-8') as stream:
             try:
                 self.yaml_dict = Dict(yaml.load(stream, yaml.SafeLoader))
-            except yaml.YAMLError as err:
-                raise YAMLReaderError('error occurred while reading yaml file %s: %s', self.yaml_file, err)
+            except yaml.YAMLError:
+                logger.critical('error reading config file')
+                sys.exit(1)
+
         return self.yaml_dict
 
     def get_list_keys(self) -> list:

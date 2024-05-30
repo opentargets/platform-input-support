@@ -25,15 +25,11 @@ In turn, a step will have failed because one or more of it's resources have
 failed.
 """
 
-import logging
 from enum import auto
 
 from strenum import StrEnum
 
 from platform_input_support.modules.common.time_utils import get_timestamp_iso_utc_now
-
-# Logging
-logger = logging.getLogger(__name__)
 
 
 class ManifestDocument:

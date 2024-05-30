@@ -1,11 +1,12 @@
 ---
 config:
-  gsutil : /snap/bin/gsutil
+  gsutil: /snap/bin/gsutil
   riot: /usr/share/apache-jena/bin/riot
   jq: /usr/bin/jq
   java_vm: -Xms4096m -Xmx8192m
-  manifest:
-    file_name: manifest.json
+  log:
+    level: DEBUG
+    filename: output.log
 steps:
   disease:
     etl:

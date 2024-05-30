@@ -11,13 +11,10 @@ recursively retrieve the proper info.
 """
 
 import json
-import logging
 import re
 from urllib import parse
 
 import jsonlines
-
-logger = logging.getLogger(__name__)
 
 
 class EFOError(Exception):

@@ -1,6 +1,6 @@
-import logging
 import os
 
+from loguru import logger
 from yapsy.IPlugin import IPlugin
 
 from platform_input_support.manifest import ManifestResource, ManifestStatus, get_manifest_service
@@ -12,15 +12,12 @@ from platform_input_support.plugins.helpers.hpo import HPO
 from platform_input_support.plugins.helpers.hpo_phenotypes import HPOPhenotypes
 from platform_input_support.plugins.helpers.mondo import MONDO
 
-logger = logging.getLogger(__name__)
-
 
 class Disease(IPlugin):
     """Disease data collection step."""
 
     def __init__(self):
         """Disease class constructor."""
-        self._logger = logging.getLogger(__name__)
         self.step_name = 'Disease'
 
     def owl_to_json(self, filename_input, output_dir, resource, riot):
@@ -32,7 +29,7 @@ class Disease(IPlugin):
         :return: destination file path of the conversion + filtering process
         """
         file_output_path = os.path.join(output_dir, resource.path)
-        logger.debug('OWL to JSON output path %s', file_output_path)
+        logger.debug(f'OWL to JSON output path {file_output_path}')
         create_folder(file_output_path)
         return riot.convert_owl_to_jsonld(filename_input, file_output_path, resource.owl_jq)
 
@@ -167,14 +164,14 @@ class Disease(IPlugin):
                 static_disease_manifest.msg_completion = (
                     f"Unable to produce the static disease file due to '{e}', Exception of type -> '{type(e)}'"
                 )
-                self._logger.error(static_disease_manifest.msg_completion)
+                logger.error(static_disease_manifest.msg_completion)
                 static_disease_manifest.status_completion = ManifestStatus.FAILED
             else:
                 try:
                     efo.save_static_disease_file(static_disease_manifest.path_destination)
                 except Exception as e:
                     static_disease_manifest.msg_completion = f"Unable to produce the static disease file due to '{e}'"
-                    self._logger.error(static_disease_manifest.msg_completion)
+                    logger.error(static_disease_manifest.msg_completion)
                     static_disease_manifest.status_completion = ManifestStatus.FAILED
                 else:
                     static_disease_manifest.msg_completion += (
@@ -189,7 +186,7 @@ class Disease(IPlugin):
                         static_disease_manifest.msg_completion = (
                             f"Unable to produce the static disease file due to '{e}'"
                         )
-                        self._logger.error(static_disease_manifest.msg_completion)
+                        logger.error(static_disease_manifest.msg_completion)
                         static_disease_manifest.status_completion = ManifestStatus.FAILED
                     else:
                         conversion_manifest.msg_completion += (
@@ -208,7 +205,7 @@ class Disease(IPlugin):
         :param output: output folder for collected and pre-processed data
         :param cmd_conf: command line tools configuration
         """
-        self._logger.info('[STEP] BEGIN, Disease')
+        logger.info('[STEP] BEGIN, Disease')
         riot = Riot(cmd_conf)
         manifest_step = get_manifest_service().get_step(self.step_name)
         # TODO - Should I halt the step as soon as I face the first problem?
@@ -225,4 +222,4 @@ class Disease(IPlugin):
         if manifest_step.status_completion != ManifestStatus.FAILED:
             manifest_step.status_completion = ManifestStatus.COMPLETED
             manifest_step.msg_completion = 'The step has completed its execution'
-        self._logger.info('[STEP] END, Disease')
+        logger.info('[STEP] END, Disease')
