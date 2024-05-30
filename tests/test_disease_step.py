@@ -23,7 +23,7 @@ class TestDiseaseStep(unittest.TestCase):
         self.config = self.yaml_reader.read_yaml()
 
     def testDisease(self):
-        conf = self.config.disease.etl.efo
+        conf = self.config.steps.disease.etl.efo
         EFOModule = EFO(self.efo_filename, conf)
         process = subprocess.Popen(
             "cat " + self.efo_filename + "| grep -v deprecated | grep -v 'Restric' | grep -v 'intersectionOf' | wc -l",

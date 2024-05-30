@@ -18,7 +18,7 @@ def resources():
 def test_steps_logging_one_found(resources: tuple, caplog) -> None:
     yaml, args = resources
     args.steps = ["disease"]
-    r = RetrieveResource(args, yaml)
+    r = RetrieveResource(args, yaml.steps)
     r.init_plugins()
     steps_to_run = r.steps()
     assert len(steps_to_run) == 1
@@ -32,7 +32,7 @@ def test_steps_logging_one_found(resources: tuple, caplog) -> None:
 def test_steps_logging_not_found(resources: tuple, caplog) -> None:
     yaml, args = resources
     args.steps = ["not_a_step"]
-    r = RetrieveResource(args, yaml)
+    r = RetrieveResource(args, yaml.steps)
     r.init_plugins()
     steps_to_run = r.steps()
     assert len(steps_to_run) == 0

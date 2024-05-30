@@ -32,7 +32,7 @@ def test_run_riot(riot_inputs: tuple):
         owl_file=owl_test_file,
         dir_output=yaml.config.output_dir,
         json_file=json_out,
-        owl_jq=yaml.disease.etl.efo.owl_jq,
+        owl_jq=yaml.steps.disease.etl.efo.owl_jq,
     )
 
 
@@ -48,7 +48,7 @@ def test_run_riot_JNI_error(riot_inputs: tuple):
             owl_file=owl_test_file,
             dir_output=yaml.config.output_dir,
             json_file=json_out,
-            owl_jq=yaml.disease.etl.efo.owl_jq,
+            owl_jq=yaml.steps.disease.etl.efo.owl_jq,
         )
 
 
@@ -63,7 +63,7 @@ def test_run_riot_no_owl_file(riot_inputs: tuple):
             owl_file=owl_test_file,
             dir_output=yaml.config.output_dir,
             json_file=json_out,
-            owl_jq=yaml.disease.etl.efo.owl_jq,
+            owl_jq=yaml.steps.disease.etl.efo.owl_jq,
         )
 
 
@@ -80,7 +80,7 @@ def test_run_riot_empty_owl_file(riot_inputs: tuple):
             owl_file=owl_test_file,
             dir_output=yaml.config.output_dir,
             json_file=json_out,
-            owl_jq=yaml.disease.etl.efo.owl_jq,
+            owl_jq=yaml.steps.disease.etl.efo.owl_jq,
         )
 
 
@@ -97,7 +97,7 @@ def test_run_riot_malformed_owl_file(riot_inputs: tuple):
             owl_file=owl_test_file,
             dir_output=yaml.config.output_dir,
             json_file=json_out,
-            owl_jq=yaml.disease.etl.efo.owl_jq,
+            owl_jq=yaml.steps.disease.etl.efo.owl_jq,
         )
 
 
@@ -107,7 +107,7 @@ def test_convert_owl_to_jsonld_should_pass(riot_inputs: tuple):
     assert riot.convert_owl_to_jsonld(
         owl_file=owl_test_file,
         output_dir=yaml.config.output_dir,
-        owl_jq=yaml.disease.etl.efo.owl_jq,
+        owl_jq=yaml.steps.disease.etl.efo.owl_jq,
     )
 
 
@@ -120,5 +120,5 @@ def test_convert_owl_to_jsonld_should_fail(riot_inputs: tuple):
         riot.convert_owl_to_jsonld(
             owl_file=owl_test_file,
             output_dir=yaml.config.output_dir,
-            owl_jq=yaml.disease.etl.efo.owl_jq,
+            owl_jq=yaml.steps.disease.etl.efo.owl_jq,
         )
