@@ -32,7 +32,7 @@ class DownloadResource:
         return self.__manifest_service
 
     def replace_suffix(self, args):
-        if args.suffix:
+        if args.get('suffix'):
             self.suffix = args.suffix
 
     def set_filename(self, filename) -> str:

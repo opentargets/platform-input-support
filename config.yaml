@@ -1,12 +1,16 @@
 ---
 config:
+  output_path: ./output
+  gcp_credentials_path: /path/to/credentials.json
+  gcp_bucket_path: gs://opentargets-pre-data-releases/24.06dev-javier
+  log_level: DEBUG
+  log_filename: output.log
+
+  # old settings
   gsutil: /snap/bin/gsutil
   riot: /usr/share/apache-jena/bin/riot
   jq: /usr/bin/jq
   java_vm: -Xms4096m -Xmx8192m
-  log:
-    level: DEBUG
-    filename: output.log
 steps:
   disease:
     etl:

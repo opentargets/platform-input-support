@@ -34,7 +34,7 @@ def get_manifest_service(args=None, configuration=None):
             logger.error(msg)
             raise ManifestServiceError(msg)
         manifest_config = configuration.config.manifest
-        manifest_config.update({'output_dir': configuration.output_dir, 'gcp_bucket': args.gcp_bucket})
+        manifest_config.update({'output_dir': configuration.output_dir, 'gcp_bucket': args.get('gcp_bucket')})
         logger.debug(f'Initializing Manifest service, configuration: {json.dumps(manifest_config)}')
         __manifestServiceInstance = ManifestService(manifest_config)
     return __manifestServiceInstance
