@@ -20,9 +20,7 @@ class RetrieveResource:
 
     @property
     def output_dir(self):
-        if self.args.output_dir is not None:
-            return self.args.output_dir
-        return PIS_OUTPUT_DIR
+        return self.args.get('output_dir', PIS_OUTPUT_DIR)
 
     @property
     def output_dir_prod(self):
@@ -37,17 +35,19 @@ class RetrieveResource:
 
     def checks_gc_service_account(self):
         """Check that valid Google Cloud Platform credentials are present."""
-        if self.args.gcp_credentials is None:
+        gcp_credentials = self.args.get('gcp_credentials')
+        if gcp_credentials is None:
             logger.warning('Some of the steps may not work properly due the lack of permissions to access to GCS')
         # We may still have the default user credentials
-        if not GoogleBucketResource.has_valid_auth_key(self.args.gcp_credentials):
+        if not GoogleBucketResource.has_valid_auth_key(gcp_credentials):
             raise ValueError('Google credential is not valid!')
 
     def copy_to_gs(self):
         """Copy local files to the given Google Storage Bucket destination."""
-        if self.args.gcp_bucket is not None:
-            logger.info(f'Copying files to GCP bucket {self.args.gcp_bucket}')
-            Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(self.args.gcp_bucket)
+        gcp_bucket = self.args.get('gcp_bucket')
+        if gcp_bucket is not None:
+            logger.info(f'Copying files to GCP bucket {gcp_bucket}')
+            Utils(self.yaml.config, self.yaml.outputs).gsutil_multi_copy_to(gcp_bucket)
         else:
             logger.warning('No GCP Bucket details provided, THE COLLECTED DATA WILL STAY LOCAL')
 
@@ -74,9 +74,9 @@ class RetrieveResource:
         excluded ones.
         """
         all_plugins_available_names = [plugin.name for plugin in self.simple_plugin_manager.getAllPlugins()]
-        steps_requested = self.matching_steps(self.args.steps, all_plugins_available_names)
-        excluded_requested = self.matching_steps(self.args.exclude, all_plugins_available_names)
-        if len(self.args.steps) == 0:
+        steps_requested = self.matching_steps(self.args.get('steps'), all_plugins_available_names)
+        excluded_requested = self.matching_steps(self.args.get('exclude'), all_plugins_available_names)
+        if len(self.args.get('steps')) == 0:
             plugins_to_run = list(set(all_plugins_available_names) - set(excluded_requested))
         else:
             plugins_to_run = list(set(steps_requested))
@@ -104,7 +104,7 @@ class RetrieveResource:
         for plugin_name in steps_to_execute:
             plugin = self.simple_plugin_manager.getPluginByName(plugin_name)
             plugin_configuration = self.yaml.steps[plugin_name.lower()]
-            plugin_configuration['gcp_credentials'] = self.args.gcp_credentials
+            plugin_configuration['gcp_credentials'] = self.args.get('gcp_credentials')
             try:
                 plugin.plugin_object.process(plugin_configuration, self.yaml.outputs, self.yaml.config)
             except Exception as e:
@@ -120,7 +120,7 @@ class RetrieveResource:
         """
         if not self.__is_done_create_output_structure:
             logger.debug('Setting output structure')
-            if self.args.force_clean:
+            if self.args['force_clean']:
                 recursive_remove_folder(self.output_dir)
             else:
                 logger.warning('Output folder NOT CLEANED UP.')

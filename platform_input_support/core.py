@@ -1,12 +1,10 @@
 # Custom modules
+from addict import Dict
 from loguru import logger
 
+from platform_input_support.config import config
 from platform_input_support.logger import Logger
-from platform_input_support.manifest import get_manifest_service
-
-# Custom modules
-from platform_input_support.modules import cfg
-from platform_input_support.modules.common.yaml_reader import YAMLReader
+from platform_input_support.manifest.services import get_manifest_service
 from platform_input_support.modules.retrieve_resource import RetrieveResource
 
 
@@ -17,26 +15,26 @@ class PISRunnerError(Exception):
 # This procedure reads the config file and the args and runs the plugins requested.
 def main():
     Logger.init()
+    Logger.config(config)
 
-    cfg.setup_parser()
-    args = cfg.get_args()
-
-    yaml = YAMLReader(args.config)
-    yaml_dict = yaml.read_yaml()
-
-    Logger.config(yaml_dict)
-
-    steps = yaml_dict['steps']
+    steps = config.get('steps', {})
     step_names = ', '.join(list(steps.keys()))
     logger.info(f'{len(steps)} steps parsed from config: {step_names}')
 
+    # mock stuff here to make things work again - This is temporary
+    yaml_dict = config
+    yaml_dict = Dict(yaml_dict)
+    yaml_dict.manifest = {'file_name': 'manifest.json'}
+    config['output_dir'] = './output'
+    config['force_clean'] = False
+
     # Resources retriever
-    resources = RetrieveResource(args, yaml_dict)
+    resources = RetrieveResource(config, yaml_dict)
     # Session's Manifest
     manifest_config = yaml_dict
     manifest_config.update({'output_dir': resources.output_dir_prod})
     # Initialize the manifest service
-    _ = get_manifest_service(args, manifest_config)
+    _ = get_manifest_service(config, manifest_config)
     resources.run()
 
 

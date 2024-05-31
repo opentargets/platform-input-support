@@ -20,13 +20,13 @@ class Riot:
     @property
     def riot_cmd(self):
         if self._riot_cmd is None:
-            self._riot_cmd = Utils.check_path_command('riot', self.yaml.riot)
+            self._riot_cmd = Utils.check_path_command('riot', self.yaml['riot'])
         return self._riot_cmd
 
     @property
     def jq_cmd(self):
         if self._jq_cmd is None:
-            self._jq_cmd = Utils.check_path_command('jq', self.yaml.jq)
+            self._jq_cmd = Utils.check_path_command('jq', self.yaml['jq'])
         return self._jq_cmd
 
     def get_running_environment(self) -> dict[str, str]:
@@ -34,7 +34,7 @@ class Riot:
 
         JVM options from the yaml config are passed in here.
         """
-        java_options = os.environ['_JAVA_OPTIONS'] = str(self.yaml.java_vm)
+        java_options = os.environ['_JAVA_OPTIONS'] = str(self.yaml['java_vm'])
         logger.info(f'_JAVA_OPTIONS: {java_options}')
         return os.environ.copy()
 
