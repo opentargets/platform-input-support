@@ -3,7 +3,11 @@ import logging.config
 import logging.handlers
 import sys
 
-from loguru import logger
+from loguru import logger as _logger
+
+from platform_input_support.config import config
+
+__all__ = ['logger']
 
 
 class CustomFormatter(logging.Formatter):
@@ -20,26 +24,9 @@ class CustomFormatter(logging.Formatter):
 
 
 class Logger:
-    @classmethod
-    def init(cls):
-        handlers = [
-            {
-                'sink': sys.stdout,
-                'level': 'DEBUG',
-            },
-        ]
-
-        logger.configure(handlers=handlers)
-        logger.debug('logger initialized')
-
-    @classmethod
-    def config(cls, config: dict) -> None:
-        log_level = config.get('log_level')
+    def __init__(self, config: dict) -> None:
+        log_level = config.get('log_level', 'DEBUG')
         log_filename = config.get('log_filename')
-
-        if log_level is None and log_filename is None:
-            logger.info('No log configuration found, keeping defaults')
-            return
 
         handlers = [
             {
@@ -57,6 +44,9 @@ class Logger:
                 }
             )
 
-        logger.remove()
-        logger.configure(handlers=handlers)
-        logger.debug('logger configured')
+        _logger.configure(handlers=handlers)
+
+
+log = Logger(config)
+logger = _logger
+logger.debug('logger configured')

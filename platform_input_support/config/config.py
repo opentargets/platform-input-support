@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# this module is initialized before the logger, so we must use loguru here
 from loguru import logger
 
 from platform_input_support.config.parse_cli import ParseCLI

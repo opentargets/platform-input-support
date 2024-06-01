@@ -3,7 +3,7 @@ from addict import Dict
 from loguru import logger
 
 from platform_input_support.config import config
-from platform_input_support.logger import Logger
+from platform_input_support.logger import logger
 from platform_input_support.manifest.services import get_manifest_service
 from platform_input_support.modules.retrieve_resource import RetrieveResource
 
@@ -12,10 +12,8 @@ class PISRunnerError(Exception):
     """Platform input support exception."""
 
 
-# This procedure reads the config file and the args and runs the plugins requested.
 def main():
-    Logger.init()
-    Logger.config(config)
+    logger.info('starting platform input support')
 
     steps = config.get('steps', {})
     step_names = ', '.join(list(steps.keys()))
