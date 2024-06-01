@@ -155,6 +155,7 @@ extend-safe-fixes = [
 
 [tool.ruff.lint.extend-per-file-ignores]
 'tests/**/test_*.py' = ['S108', 'S602']
+'**/__init__.py' = ['F401']
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
