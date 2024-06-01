@@ -1,5 +1,6 @@
 # Custom modules
 from platform_input_support.logger import logger
+from platform_input_support.step.step_repository import StepRepository
 
 
 class PISRunnerError(Exception):
@@ -8,6 +9,11 @@ class PISRunnerError(Exception):
 
 def main():
     logger.info('starting platform input support')
+
+    step_repository = StepRepository()
+    step_repository.register_steps()
+
+    step_repository.run()
 
     # # # Resources retriever
     # resources = RetrieveResource(yaml_dict['settings'], yaml_dict)
