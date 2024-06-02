@@ -109,12 +109,4 @@ class ParseCLI:
             help='Log level for the application.',
         )
 
-        parser.add_argument(
-            '--log-filename',
-            default=os.environ.get('PIS_LOG_FILE'),
-            action=WithEnvironmentVariable,
-            help='Log file name. The application will only log to standard output by default, but '
-            'if this argument is present, the log will be written to the file as well.',
-        )
-
         self.data = vars(parser.parse_args())
