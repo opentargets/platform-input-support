@@ -11,7 +11,7 @@ class ParseYAML:
         self.data = {}
 
     def parse(self):
-        logger.debug(f'reading yaml file {self.file_path}')
+        logger.debug(f'reading config file: {self.file_path}')
         yaml_str: str
         try:
             yaml_str = Path.read_text(self.file_path)
@@ -19,7 +19,7 @@ class ParseYAML:
             logger.critical(f'error reading config file: {e}')
             sys.exit(1)
 
-        logger.debug('parsing yaml file')
+        logger.debug('parsing config file')
         data: dict
         try:
             data = yaml.safe_load(yaml_str)

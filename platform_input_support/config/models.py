@@ -38,7 +38,6 @@ class SettingsModel:
     include: set[str] = field(default_factory=set)
     exclude: set[str] = field(default_factory=set)
     log_level: str = 'INFO'
-    log_filename: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict):
