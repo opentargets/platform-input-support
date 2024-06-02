@@ -3,9 +3,8 @@ import logging.config
 import logging.handlers
 import sys
 
-from loguru import logger as _logger
+from loguru import logger
 
-from platform_input_support.config import config
 from platform_input_support.config.models import SettingsModel
 
 __all__ = ['logger']
@@ -45,9 +44,4 @@ class Logger:
                 }
             )
 
-        _logger.configure(handlers=handlers)
-
-
-log = Logger(config.settings)
-logger = _logger
-logger.debug('logger configured')
+        logger.configure(handlers=handlers)
