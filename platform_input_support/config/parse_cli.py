@@ -3,6 +3,8 @@ import os
 
 from loguru import logger
 
+from platform_input_support.config.models import SettingsModel
+
 
 class WithEnvironmentVariable(argparse.Action):
     def __init__(self, required=False, default=None, **kwargs):
@@ -20,6 +22,25 @@ class WithEnvironmentVariable(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
+class StoreLowercaseSetAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if values is not None:
+            unique_values = {value.lower() for value in values}
+            setattr(namespace, self.dest, unique_values)
+
+
+class WithDefaultsFromDataclassHelpFormatter(argparse.HelpFormatter):
+    def _get_help_string(self, action):
+        example_data = SettingsModel()
+        help_ = action.help
+        default = example_data.__dict__.get(action.dest)
+        if help_ is not None and default is not None and action.default is not argparse.SUPPRESS:
+            defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
+            if action.option_strings or action.nargs in defaulting_nargs:
+                help_ += f' (default: {default})'
+        return help_
+
+
 class ParseCLI:
     def __init__(self) -> None:
         self.data = {}
@@ -29,7 +50,7 @@ class ParseCLI:
 
         parser = argparse.ArgumentParser(
             description='Open Targets platform input support application.',
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            formatter_class=WithDefaultsFromDataclassHelpFormatter,
         )
 
         parser.add_argument(
@@ -43,7 +64,7 @@ class ParseCLI:
         parser.add_argument(
             '-o',
             '--output-path',
-            default='./output',
+            # default is './output', set in the SettingsModel
             action=WithEnvironmentVariable,
             help='The path for the output directory.',
         )
@@ -64,25 +85,25 @@ class ParseCLI:
 
         group = parser.add_mutually_exclusive_group()
         group.add_argument(
-            '-s',
-            '--steps',
-            default=[],
+            '-i',
+            '--include',
             nargs='+',
-            help='Run only a given step or list of steps. Cannot be specified in an environment '
+            action=StoreLowercaseSetAction,
+            help='Run a given step or list of steps. Cannot be specified in an environment '
             'variable. This argument is mutually exclusive with --exclude.',
         )
         group.add_argument(
             '-e',
             '--exclude',
-            default=[],
             nargs='+',
+            action=StoreLowercaseSetAction,
             help='Run all steps except for the given step or list of steps. Cannot be specified in '
             'an environment variable. This argument is mutually exclusive with --steps.',
         )
 
         parser.add_argument(
             '--log-level',
-            default='INFO',
+            # default is 'INFO', set in the SettingsModel
             choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
             action=WithEnvironmentVariable,
             help='Log level for the application.',
@@ -90,7 +111,7 @@ class ParseCLI:
 
         parser.add_argument(
             '--log-filename',
-            default=os.environ.get('PIS_LOG_FILE', 'platform_input_support.log'),
+            default=os.environ.get('PIS_LOG_FILE'),
             action=WithEnvironmentVariable,
             help='Log file name. The application will only log to standard output by default, but '
             'if this argument is present, the log will be written to the file as well.',
