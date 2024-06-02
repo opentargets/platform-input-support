@@ -1,8 +1,8 @@
 ---
 settings:
   output_path: ./output
-  gcp_credentials_path: /path/to/credentials.json
-  gcp_bucket_path: gs://opentargets-pre-data-releases/24.06dev-javier
+  gcp_credentials_path: ./credentials/gcs_credentials.json
+  gcp_bucket_path: gs://open-targets-pre-data-releases/24.06dev-test
   log_level: DEBUG
   log_filename: output.log
 
