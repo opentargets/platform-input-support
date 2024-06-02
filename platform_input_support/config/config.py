@@ -35,7 +35,7 @@ class Config:
 
         # print info about the steps found in the config
         step_list = list(self.config.steps.keys())
-        logger.info(f'{len(step_list)} steps parsed from config: {step_list}')
+        logger.info(f'found configuration for {len(step_list)} steps: {step_list}')
 
 
 c = Config()
