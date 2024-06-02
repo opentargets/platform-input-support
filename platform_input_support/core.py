@@ -1,8 +1,12 @@
 # Custom modules
 from importlib.metadata import version
 
-from platform_input_support.logger import logger
-from platform_input_support.step.step_repository import StepRepository
+from loguru import logger
+
+from platform_input_support.config import config
+from platform_input_support.logger import Logger
+
+# from platform_input_support.step.step_repository import StepRepository
 
 
 class PISRunnerError(Exception):
@@ -10,12 +14,15 @@ class PISRunnerError(Exception):
 
 
 def main():
+    Logger(config.settings)
+    logger.debug('logger configured')
+
     logger.info(f'starting platform input support v{version("platform_input_support")}')
 
-    step_repository = StepRepository()
-    step_repository.register_steps()
+    # step_repository = StepRepository()
+    # step_repository.register_steps()
 
-    step_repository.run()
+    # step_repository.run()
 
     # # # Resources retriever
     # resources = RetrieveResource(yaml_dict['settings'], yaml_dict)

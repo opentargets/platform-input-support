@@ -1,4 +1,4 @@
-from platform_input_support.logger import logger
+from loguru import logger
 
 from platform_input_support.config import config
 from platform_input_support.manifest.services import StepReporter
