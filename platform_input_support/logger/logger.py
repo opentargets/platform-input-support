@@ -2,6 +2,7 @@ import logging
 import logging.config
 import logging.handlers
 import sys
+from pathlib import Path
 
 from loguru import logger
 
@@ -26,22 +27,18 @@ class CustomFormatter(logging.Formatter):
 class Logger:
     def __init__(self, settings: SettingsModel) -> None:
         log_level = settings.log_level
-        log_filename = settings.log_filename
+        log_filename = Path(settings.output_path) / 'output.log'
 
         handlers = [
             {
                 'sink': sys.stdout,
                 'level': log_level,
             },
+            {
+                'sink': log_filename,
+                'level': log_level,
+                'serialize': True,
+            },
         ]
-
-        if log_filename:
-            handlers.append(
-                {
-                    'sink': log_filename,
-                    'level': log_level,
-                    'serialize': True,
-                }
-            )
 
         logger.configure(handlers=handlers)
