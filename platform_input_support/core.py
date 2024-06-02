@@ -1,4 +1,6 @@
 # Custom modules
+from importlib.metadata import version
+
 from platform_input_support.logger import logger
 from platform_input_support.step.step_repository import StepRepository
 
@@ -8,7 +10,7 @@ class PISRunnerError(Exception):
 
 
 def main():
-    logger.info('starting platform input support')
+    logger.info(f'starting platform input support v{version("platform_input_support")}')
 
     step_repository = StepRepository()
     step_repository.register_steps()
