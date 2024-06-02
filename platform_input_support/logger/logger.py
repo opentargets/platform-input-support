@@ -6,6 +6,7 @@ import sys
 from loguru import logger as _logger
 
 from platform_input_support.config import config
+from platform_input_support.config.models import SettingsModel
 
 __all__ = ['logger']
 
@@ -24,9 +25,9 @@ class CustomFormatter(logging.Formatter):
 
 
 class Logger:
-    def __init__(self, config: dict) -> None:
-        log_level = config.get('log_level', 'DEBUG')
-        log_filename = config.get('log_filename')
+    def __init__(self, settings: SettingsModel) -> None:
+        log_level = settings.log_level
+        log_filename = settings.log_filename
 
         handlers = [
             {
@@ -47,6 +48,6 @@ class Logger:
         _logger.configure(handlers=handlers)
 
 
-log = Logger(config)
+log = Logger(config.settings)
 logger = _logger
 logger.debug('logger configured')
