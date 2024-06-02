@@ -3,8 +3,9 @@ from importlib import import_module
 from inspect import getmembers, isclass
 from pathlib import Path
 
+from loguru import logger
+
 from platform_input_support.config import config
-from platform_input_support.logger import logger
 from platform_input_support.step.step import Step
 
 
