@@ -1,27 +1,7 @@
-# Google Application Credential
-# do not upload/share this file
-open-targets-gac.json
-mrtarget.data.yml
-opentargets-urlzsource
-
-# Byte-compiled / optimized / DLL files
+# Various python files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# PyCharm files
-.idea
-.DS_Store
-
-# Output dir
-output/
-
-# Log output file
-logs/
-.log
-*.log
-
-# Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -34,16 +14,17 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 .venv/*
+.ruff_cache/
 
-# hidden files
-.*
+# PyCharm files
+.idea
+.DS_Store
 
-# meta dirs
+# outputs
 sessions/
 credentials/
+output/
+*.log
 
 # terraform
 terraform.tfstate
-
-# ruff
-.ruff_cache/
