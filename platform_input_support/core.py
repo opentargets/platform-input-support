@@ -5,7 +5,7 @@ from loguru import logger
 
 from platform_input_support.config import config
 from platform_input_support.logger import Logger
-from platform_input_support.modules.services import google_service
+from platform_input_support.step.step_repository import StepRepository
 
 # from platform_input_support.step.step_repository import StepRepository
 
@@ -20,10 +20,10 @@ def main():
 
     logger.info(f'starting platform input support v{version("platform_input_support")}')
 
-    # step_repository = StepRepository()
-    # step_repository.register_steps()
+    step_repository = StepRepository()
+    step_repository.register_steps()
 
-    # step_repository.run()
+    step_repository.run()
 
 
 if __name__ == '__main__':

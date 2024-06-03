@@ -1,7 +1,7 @@
 from loguru import logger
 
 from platform_input_support.config import config
-from platform_input_support.manifest.services import StepReporter
+from platform_input_support.manifest import StepReporter
 
 
 class Step(StepReporter):
