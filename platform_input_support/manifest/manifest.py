@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from platform_input_support.manifest.models import ManifestReport, PartReport, ResourceReport, Status, StepReport
+from platform_input_support.manifest.models import ActionReport, ManifestReport, ResourceReport, Status, StepReport
 
 
 class ManifestReporter:
@@ -11,7 +11,7 @@ class ManifestReporter:
         self._manifest.modified = datetime.now()
         self._manifest.status = Status.NOT_COMPLETED
 
-    def pass_manifest(self):
+    def complete_manifest(self):
         self._manifest.status = Status.COMPLETED
 
     def fail_manifest(self, msg: str | None):
@@ -20,8 +20,8 @@ class ManifestReporter:
 
         self._manifest.status = Status.FAILED
 
-    def validate_manifest(self):
-        self._manifest.status = Status.VALIDATED
+    def pass_validation_manifest(self):
+        self._manifest.status = Status.VALIDATION_PASSED
 
     def fail_validation_manifest(self, msg: str | None):
         if msg:
@@ -29,10 +29,8 @@ class ManifestReporter:
 
         self._manifest.status = Status.VALIDATION_FAILED
 
-    def new_step(self, step_name: str) -> StepReport:
-        step = StepReport(name=step_name)
+    def add_step(self, step: StepReport):
         self._manifest.steps[step.name] = step
-        return step
 
 
 class StepReporter:
@@ -43,7 +41,7 @@ class StepReporter:
         step_name = self.__class__.__name__.lower()
         self._step = StepReport(name=step_name)
 
-    def pass_step(self):
+    def complete_step(self):
         self._step.status = Status.COMPLETED
 
     def fail_step(self, msg: str | None):
@@ -52,8 +50,8 @@ class StepReporter:
 
         self._step.status = Status.FAILED
 
-    def validate_step(self):
-        self._step.status = Status.VALIDATED
+    def pass_validation_step(self):
+        self._step.status = Status.VALIDATION_PASSED
 
     def fail_validation_step(self, msg: str | None):
         if msg:
@@ -61,39 +59,32 @@ class StepReporter:
 
         self._step.status = Status.VALIDATION_FAILED
 
-    def new_part(self) -> PartReport:
-        resource = PartReport()
-        self._step.parts.append(resource)
-        return resource
+    def add_action(self, action: ActionReport):
+        self._step.actions.append(action)
 
 
-class ResourceReporter:
+class ActionReporter:
     def __init__(self):
-        self._resource = ResourceReport()
+        self._action = ActionReport()
 
-    def start_resource(self, source_url, destination_path):
-        self._resource.source_url = source_url
-        self._resource.status = Status.NOT_COMPLETED
-        self._resource.destination_path = destination_path
+    def start_action(self):
+        self._action.name = self.__class__.__name__.lower()
+        self._action.status = Status.NOT_COMPLETED
 
-    def pass_resource(self):
-        self._resource.status = Status.COMPLETED
+    def complete_action(self):
+        self._action.status = Status.COMPLETED
 
-    def fail_resource(self, msg: str | None):
+    def fail_action(self, msg: str | None):
         if msg:
-            self._resource.log.append(msg)
+            self._action.log.append(msg)
 
-        self._resource.status = Status.FAILED
+        self._action.status = Status.FAILED
 
-    def validate_resource(self, checksum_destination, checksum_source):
-        self._resource.checksum_destination = checksum_destination
-        self._resource.checksum_source = checksum_source
-        self._resource.status = Status.VALIDATED
+    def pass_validation_action(self):
+        self._action.status = Status.VALIDATION_PASSED
 
-    def fail_validation_resource(self, checksum_destination, checksum_source, msg: str | None):
-        self._resource.checksum_destination = checksum_destination
-        self._resource.checksum_source = checksum_source
+    def fail_validation_action(self, msg: str | None):
         if msg:
-            self._resource.log.append(msg)
+            self._action.log.append(msg)
 
-        self._resource.status = Status.VALIDATION_FAILED
+        self._action.status = Status.VALIDATION_FAILED

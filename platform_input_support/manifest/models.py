@@ -7,16 +7,16 @@ from strenum import StrEnum
 
 class Status(StrEnum):
     NOT_SET = auto()
-    SUCCESS = auto()
+    NOT_COMPLETED = auto()
     FAILED = auto()
     COMPLETED = auto()
-    NOT_COMPLETED = auto()
-    VALIDATED = auto()
     VALIDATION_FAILED = auto()
+    VALIDATION_PASSED = auto()
 
 
 @dataclass
-class PartReport:
+class ActionReport:
+    name: str | Status = Status.NOT_SET
     status: Status = Status.NOT_COMPLETED
     created: datetime.datetime = field(default_factory=datetime.datetime.now)
     log: list[str] = field(default_factory=list)
@@ -26,7 +26,7 @@ class PartReport:
 class StepReport:
     name: str | Status = Status.NOT_SET
     status: Status = Status.NOT_COMPLETED
-    parts: list[PartReport] = field(default_factory=list)
+    actions: list[ActionReport] = field(default_factory=list)
     created: datetime.datetime = field(default_factory=datetime.datetime.now)
     modified: datetime.datetime = field(default_factory=datetime.datetime.now)
     log: list[str] = field(default_factory=list)
@@ -42,7 +42,7 @@ class ManifestReport:
 
 
 @dataclass
-class ResourceReport(PartReport):
+class ResourceReport(ActionReport):
     source_url: str | Status = Status.NOT_SET
     destination_path: str | Status = Status.NOT_SET
     checksum_destination: str | Status = Status.NOT_SET
