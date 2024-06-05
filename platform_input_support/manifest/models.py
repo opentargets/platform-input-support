@@ -1,8 +1,6 @@
 import datetime
 from dataclasses import dataclass, field
-from enum import auto
-
-from strenum import StrEnum
+from enum import StrEnum, auto
 
 
 class Status(StrEnum):
