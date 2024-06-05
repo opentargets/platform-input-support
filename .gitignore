@@ -1,19 +1,10 @@
 # Various python files
 __pycache__/
 *.py[cod]
-*$py.class
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
+.pytest_cache/
 .cache
-nosetests.xml
-coverage.xml
 *.cover
 .hypothesis/
-.pytest_cache/
-.venv/*
 .ruff_cache/
 
 # PyCharm files
