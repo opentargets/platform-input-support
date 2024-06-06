@@ -1,1 +1,1 @@
-from .manifest import ManifestReporter, ResourceReporter, StepReporter
+from .manifest import ActionReporter, ManifestReporter, StepReporter
