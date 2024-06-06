@@ -3,35 +3,32 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class ActionSettings:
-    pass
-
-
-class ParseConfigError:
+class ActionSettingsMapping:
     pass
 
 
 @dataclass
-class ActionModel:
+class ActionMapping:
     name: str
-    config: dict[str, ActionSettings]
+    config: dict[str, ActionSettingsMapping]
 
     @classmethod
     def from_dict(cls, data: dict):
-        return cls(name=data['name'], config=data['config'])
+        name = data.pop('name')
+        return cls(name=name, config=data)
 
 
 @dataclass
-class StepModel:
-    actions: list[ActionModel]
+class StepMapping:
+    actions: list[ActionMapping]
 
     @classmethod
     def from_dict(cls, data: dict):
-        return cls(actions=[ActionModel.from_dict(action) for action in data['actions']])
+        return cls(actions=[ActionMapping.from_dict(action) for action in data])
 
 
 @dataclass
-class SettingsModel:
+class ConfigMapping:
     output_path: str = './output'
     gcp_credentials_path: str | None = None
     gcp_bucket_path: str | None = None
@@ -59,13 +56,13 @@ class SettingsModel:
 
 
 @dataclass
-class ConfigModel:
-    settings: SettingsModel
-    steps: dict[str, StepModel]
+class RootMapping:
+    config: ConfigMapping
+    steps: dict[str, StepMapping]
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
-            settings=SettingsModel.from_dict(data['settings']),
-            steps={step: StepModel.from_dict(step_data) for step, step_data in data['steps'].items()},
+            config=ConfigMapping.from_dict(data['config']),
+            steps={step: StepMapping.from_dict(step_data) for step, step_data in data['steps'].items()},
         )

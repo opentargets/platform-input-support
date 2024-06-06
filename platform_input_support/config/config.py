@@ -5,7 +5,7 @@ from pathlib import Path
 # this module is initialized before the logger, so we must use loguru here
 from loguru import logger
 
-from platform_input_support.config.models import ConfigModel, SettingsModel
+from platform_input_support.config.models import ConfigMapping, RootMapping, StepMapping
 from platform_input_support.config.parse_cli import ParseCLI
 from platform_input_support.config.parse_yaml import ParseYAML
 
@@ -14,28 +14,28 @@ __all__ = ['config']
 
 class Config:
     def __init__(self):
-        self.config: ConfigModel
+        self.config: RootMapping
 
         logger.debug('initializing configuration')
 
         # parse the cli arguments
         cli_parser = ParseCLI()
         cli_parser.parse()
-        cli_settings = SettingsModel.from_dict(cli_parser.data)
+        cli_config = ConfigMapping.from_dict(cli_parser.data)
 
         # parse the yaml file
         config_file_path = Path(cli_parser.data.get('config', 'config.yaml'))
         yaml_parser = ParseYAML(config_file_path)
         yaml_parser.parse()
-        yaml_config = ConfigModel.from_dict(yaml_parser.data)
+        yaml_root = RootMapping.from_dict(yaml_parser.data)
 
         # merge and validate settings
-        merged_settings = yaml_config.settings + cli_settings
-        self._check_output_path(merged_settings.output_path)
+        merged_config = yaml_root.config + cli_config
+        self._check_output_path(merged_config.output_path)
 
         # update config
-        yaml_config.settings = merged_settings
-        self.config = yaml_config
+        yaml_root.config = merged_config
+        self.config = yaml_root
 
         # print info about the steps found in the config
         step_list = list(self.config.steps.keys())
@@ -59,4 +59,5 @@ class Config:
 
 
 c = Config()
-config: ConfigModel = c.config
+config: ConfigMapping = c.config.config
+steps: dict[str, StepMapping] = c.config.steps

@@ -3,15 +3,15 @@ from pathlib import Path
 
 from loguru import logger
 
-from platform_input_support.config.models import SettingsModel
+from platform_input_support.config.models import ConfigMapping
 
 __all__ = ['logger']
 
 
 class Logger:
-    def __init__(self, settings: SettingsModel) -> None:
-        log_level = settings.log_level
-        log_filename = Path(settings.output_path) / 'output.log'
+    def __init__(self, config: ConfigMapping) -> None:
+        log_level = config.log_level
+        log_filename = Path(config.output_path) / 'output.log'
 
         handlers = [
             {

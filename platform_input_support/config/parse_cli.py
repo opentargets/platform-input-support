@@ -3,7 +3,7 @@ import os
 
 from loguru import logger
 
-from platform_input_support.config.models import SettingsModel
+from platform_input_support.config.models import ConfigMapping
 
 
 class WithEnvironmentVariable(argparse.Action):
@@ -31,7 +31,7 @@ class StoreLowercaseSetAction(argparse.Action):
 
 class WithDefaultsFromDataclassHelpFormatter(argparse.HelpFormatter):
     def _get_help_string(self, action):
-        example_data = SettingsModel()
+        example_data = ConfigMapping()
         help_ = action.help
         default = example_data.__dict__.get(action.dest)
         if help_ is not None and default is not None and action.default is not argparse.SUPPRESS:
