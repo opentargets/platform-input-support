@@ -3,12 +3,9 @@ from importlib.metadata import version
 
 from loguru import logger
 
+from platform_input_support.action.action_repository import ActionRepository
 from platform_input_support.config import config
 from platform_input_support.logger import Logger
-
-# from platform_input_support.step.step_repository import StepRepository
-
-# from platform_input_support.step.step_repository import StepRepository
 
 
 class PISRunnerError(Exception):
@@ -21,10 +18,10 @@ def main():
     logger.debug('logger configured')
     logger.info(f'starting platform input support v{version("platform_input_support")}')
 
-    # step_repository = StepRepository()
-    # step_repository.register_steps()
+    action_repository = ActionRepository()
+    action_repository.register_actions()
 
-    # step_repository.run()
+    print(action_repository.actions)
 
 
 if __name__ == '__main__':
