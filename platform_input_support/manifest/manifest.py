@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from platform_input_support.manifest.models import ActionReport, ManifestReport, ResourceReport, Status, StepReport
+from platform_input_support.manifest.models import ActionReport, ManifestReport, Status, StepReport
 
 
 class ManifestReporter:
