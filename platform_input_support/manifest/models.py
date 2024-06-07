@@ -37,11 +37,3 @@ class ManifestReport:
     created: datetime.datetime = field(default_factory=datetime.datetime.now)
     modified: datetime.datetime = field(default_factory=datetime.datetime.now)
     log: list[str] = field(default_factory=list)
-
-
-@dataclass
-class ResourceReport(ActionReport):
-    source_url: str | Status = Status.NOT_SET
-    destination_path: str | Status = Status.NOT_SET
-    checksum_destination: str | Status = Status.NOT_SET
-    checksum_source: str | Status = Status.NOT_SET
