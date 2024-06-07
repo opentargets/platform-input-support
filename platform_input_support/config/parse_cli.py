@@ -12,6 +12,8 @@ class WithEnvironmentVariable(argparse.Action):
 
         env_var_name = 'PIS_' + option_string[-1][2:].upper().replace('-', '_')
         default = os.environ.get(env_var_name, default)
+        if default is not None:
+            default = default.lower()
         kwargs['help'] += f' (environment variable: {env_var_name})'
         if required and default:
             required = False
@@ -22,19 +24,13 @@ class WithEnvironmentVariable(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-class StoreLowercaseSetAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if values is not None:
-            unique_values = {value.lower() for value in values}
-            setattr(namespace, self.dest, unique_values)
-
-
 class WithDefaultsFromDataclassHelpFormatter(argparse.HelpFormatter):
     def _get_help_string(self, action):
-        example_data = ConfigMapping()
+        example_data = ConfigMapping('dummy')
         help_ = action.help
+        required = action.required
         default = example_data.__dict__.get(action.dest)
-        if help_ is not None and default is not None and action.default is not argparse.SUPPRESS:
+        if not required and help_ is not None and default is not None and action.default is not argparse.SUPPRESS:
             defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
             if action.option_strings or action.nargs in defaulting_nargs:
                 help_ += f' (default: {default})'
@@ -51,6 +47,14 @@ class ParseCLI:
         parser = argparse.ArgumentParser(
             description='Open Targets platform input support application.',
             formatter_class=WithDefaultsFromDataclassHelpFormatter,
+        )
+
+        parser.add_argument(
+            '-s',
+            '--step',
+            action=WithEnvironmentVariable,
+            required=True,
+            help='The step to run',
         )
 
         parser.add_argument(
@@ -81,24 +85,6 @@ class ParseCLI:
             '--gcp-bucket-path',
             action=WithEnvironmentVariable,
             help='If set, the result will be uploaded to this google cloud storage path.',
-        )
-
-        group = parser.add_mutually_exclusive_group()
-        group.add_argument(
-            '-i',
-            '--include',
-            nargs='+',
-            action=StoreLowercaseSetAction,
-            help='Run a given step or list of steps. Cannot be specified in an environment '
-            'variable. This argument is mutually exclusive with --exclude.',
-        )
-        group.add_argument(
-            '-e',
-            '--exclude',
-            nargs='+',
-            action=StoreLowercaseSetAction,
-            help='Run all steps except for the given step or list of steps. Cannot be specified in '
-            'an environment variable. This argument is mutually exclusive with --steps.',
         )
 
         parser.add_argument(
