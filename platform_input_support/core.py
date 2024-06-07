@@ -23,12 +23,13 @@ def main():
 
     step = steps[config.step]
 
-    for action in step.actions:
-        logger.debug(f'running action {action}')
+    for action_mapping in step.actions:
+        logger.debug(f'running action {action_mapping.name}')
 
-        new_action = action_repository.actions[action.name](action.config)
+        action = action_repository.actions[action_mapping.name](action_mapping.config)
+        action.run()
 
-        new_action.run()
+        print(action._report)
 
 
 if __name__ == '__main__':

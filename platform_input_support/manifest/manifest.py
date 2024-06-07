@@ -15,19 +15,15 @@ class ManifestReporter:
     def complete_manifest(self):
         self._report.status = Status.COMPLETED
 
-    def fail_manifest(self, msg: str | None):
-        if msg:
-            self._report.log.append(msg)
-
+    def fail_manifest(self, error: Exception):
+        self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
     def pass_validation_manifest(self):
         self._report.status = Status.VALIDATION_PASSED
 
-    def fail_validation_manifest(self, msg: str | None):
-        if msg:
-            self._report.log.append(msg)
-
+    def fail_validation_manifest(self, error: Exception):
+        self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
 
     def add_step(self, step: StepReport):
@@ -45,19 +41,15 @@ class StepReporter:
     def complete_step(self):
         self._report.status = Status.COMPLETED
 
-    def fail_step(self, msg: str | None):
-        if msg:
-            self._report.log.append(msg)
-
+    def fail_step(self, error: Exception):
+        self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
     def pass_validation_step(self):
         self._report.status = Status.VALIDATION_PASSED
 
-    def fail_validation_step(self, msg: str | None):
-        if msg:
-            self._report.log.append(msg)
-
+    def fail_validation_step(self, error: Exception):
+        self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
 
     def add_action(self, action: ActionReport):
@@ -79,19 +71,15 @@ class ActionReporter:
     def complete_action(self):
         self._report.status = Status.COMPLETED
 
-    def fail_action(self, msg: str | None):
-        if msg:
-            self._report.log.append(msg)
-
+    def fail_action(self, error: Exception):
+        self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
     def pass_validation_action(self):
         self._report.status = Status.VALIDATION_PASSED
 
-    def fail_validation_action(self, msg: str | None):
-        if msg:
-            self._report.log.append(msg)
-
+    def fail_validation_action(self, error: Exception):
+        self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
 
     def set_field(self, field_name: str, value: str):
