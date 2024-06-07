@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import wraps
 from importlib import import_module
 
 from platform_input_support.manifest.models import ActionReport, ManifestReport, Status, StepReport
@@ -84,3 +85,27 @@ class ActionReporter:
 
     def set_field(self, field_name: str, value: str):
         setattr(self._report, field_name, value)
+
+
+def report_to_manifest(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        try:
+            if func.__name__ == 'run':
+                self.start_action()
+
+            result = func(self, *args, **kwargs)
+
+            if func.__name__ == 'run':
+                self.complete_action()
+            elif func.__name__ == 'validate':
+                self.pass_validation_action()
+            return result
+        except Exception as e:
+            if func.__name__ == 'run':
+                self.fail_action(e)
+            elif func.__name__ == 'validate':
+                self.fail_validation_action(e)
+            raise
+
+    return wrapper
