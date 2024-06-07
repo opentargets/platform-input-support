@@ -1,16 +1,12 @@
 import inspect
 from dataclasses import dataclass, field
-
-
-@dataclass
-class ActionSettingsMapping:
-    pass
+from typing import Any
 
 
 @dataclass
 class ActionMapping:
     name: str
-    config: dict[str, ActionSettingsMapping]
+    config: dict[str, Any]
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -29,11 +25,10 @@ class StepMapping:
 
 @dataclass
 class ConfigMapping:
+    step: str
     output_path: str = './output'
     gcp_credentials_path: str | None = None
     gcp_bucket_path: str | None = None
-    include: set[str] = field(default_factory=set)
-    exclude: set[str] = field(default_factory=set)
     log_level: str = 'INFO'
 
     @classmethod
