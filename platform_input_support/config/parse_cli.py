@@ -74,13 +74,6 @@ class ParseCLI:
         )
 
         parser.add_argument(
-            '-g',
-            '--gcp-credentials-path',
-            action=WithEnvironmentVariable,
-            help='The path were the JSON credential file is stored.',
-        )
-
-        parser.add_argument(
             '-b',
             '--gcp-bucket-path',
             action=WithEnvironmentVariable,
