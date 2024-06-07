@@ -30,4 +30,4 @@ class Download(Action):
             download(self.config.source, self.config.destination)
             self.complete_action()
         except DownloadError as e:
-            self.fail_action(str(e))
+            self.fail_action(e)
