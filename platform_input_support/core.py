@@ -4,7 +4,7 @@ from importlib.metadata import version
 from loguru import logger
 
 from platform_input_support.action.action_repository import ActionRepository
-from platform_input_support.config import config
+from platform_input_support.config import config, steps
 from platform_input_support.logger import Logger
 
 
@@ -21,7 +21,14 @@ def main():
     action_repository = ActionRepository()
     action_repository.register_actions()
 
-    print(action_repository.actions)
+    step = steps[config.step]
+
+    for action in step.actions:
+        logger.debug(f'running action {action}')
+
+        new_action = action_repository.actions[action.name](action.config)
+
+        new_action.run()
 
 
 if __name__ == '__main__':

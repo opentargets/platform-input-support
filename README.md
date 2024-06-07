@@ -1,5 +1,8 @@
 # Open Targets: Platform-input-support overview
 
+TODO: Write how you don't need to define `from_dict` for actions unless the
+config is not shallow.
+
 The aim of this application is to allow the reproducibility of OpenTarget Platform data release pipeline.
 The input files are copied in a local hard disk and eventually in a specific google storage bucket
 
