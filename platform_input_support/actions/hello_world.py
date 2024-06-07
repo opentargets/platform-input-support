@@ -4,11 +4,12 @@ from typing import Any
 from loguru import logger
 
 from platform_input_support.action.action import Action, ActionConfigMapping
+from platform_input_support.manifest.manifest import report_to_manifest
 
 
 @dataclass
 class HelloWorldConfigMapping(ActionConfigMapping):
-    name: str = 'world'
+    who: str = 'world'
 
 
 class HelloWorld(Action):
@@ -16,13 +17,6 @@ class HelloWorld(Action):
         self.config: HelloWorldConfigMapping
         super().__init__(config)
 
+    @report_to_manifest
     def run(self):
-        self.start_action()
-
-        try:
-            logger.info(f'Hello, {self.config.name}!')
-        except Exception as e:
-            self.fail_action(f'error: {e}')
-            return
-
-        self.complete_action()
+        logger.info(f'Hello, {self.config.who}!')

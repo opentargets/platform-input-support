@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from platform_input_support.action.action import Action, ActionConfigMapping
-from platform_input_support.helpers.download import DownloadError, download
+from platform_input_support.helpers.download import download
+from platform_input_support.manifest.manifest import report_to_manifest
 from platform_input_support.manifest.models import ActionReport, Status
 
 
@@ -23,11 +24,6 @@ class Download(Action):
         self.config: DownloadConfigMapping
         super().__init__(config)
 
+    @report_to_manifest
     def run(self):
-        self.start_action()
-
-        try:
-            download(self.config.source, self.config.destination)
-            self.complete_action()
-        except DownloadError as e:
-            self.fail_action(e)
+        download(self.config.source, self.config.destination)
