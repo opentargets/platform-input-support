@@ -1,5 +1,5 @@
 import inspect
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -27,7 +27,6 @@ class StepMapping:
 class ConfigMapping:
     step: str
     output_path: str = './output'
-    gcp_credentials_path: str | None = None
     gcp_bucket_path: str | None = None
     log_level: str = 'INFO'
 

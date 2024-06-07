@@ -7,7 +7,6 @@ from google.cloud import storage
 from loguru import logger
 
 from platform_input_support.config import config
-from platform_input_support.config.models import SettingsModel
 
 __all__ = ['GoogleHelperError', 'google']
 
@@ -17,14 +16,10 @@ class GoogleHelperError(Exception):
 
 
 class GoogleHelper:
-    def __init__(self, settings: SettingsModel):
-        if not settings.gcp_credentials_path:
-            logger.debug('gcp credentials not set, run will be local')
-            return
-
+    def __init__(self):
         try:
-            auth.load_credentials_from_file(settings.gcp_credentials_path)
-            logger.debug('gcp credentials working properly')
+            _, project_id = auth.default()
+            logger.debug(f'gcp authenticated on project {project_id}')
         except auth_exceptions.DefaultCredentialsError as e:
             logger.critical(f'error : {e}')
             sys.exit(1)
@@ -33,12 +28,12 @@ class GoogleHelper:
 
         # check if the configured bucket exists
         try:
-            if settings.gcp_bucket_path is None:
+            if config.gcp_bucket_path is None:
                 logger.critical('missing setting: gcp_bucket_path')
                 sys.exit(1)
 
-            if not self.bucket_exists(settings.gcp_bucket_path):
-                logger.critical(f'gcp bucket does not exist: {settings.gcp_bucket_path}')
+            if not self.bucket_exists(config.gcp_bucket_path):
+                logger.critical(f'gcp bucket does not exist: {config.gcp_bucket_path}')
                 sys.exit(1)
         except GoogleHelperError as e:
             logger.critical(f'error checking gcp bucket: {e}')
@@ -106,4 +101,4 @@ class GoogleHelper:
             logger.error(f'error uploading file: {e}')
 
 
-google = GoogleHelper(config.settings)
+google = GoogleHelper()
