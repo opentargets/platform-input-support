@@ -5,13 +5,21 @@ config:
   gcp_bucket_path: gs://open-targets-pre-data-releases/24.06dev-test
   log_level: DEBUG
 
+scratch_pad:
+  efo_release_version: v3.65.0
+  ensembl_release_version: '111'
+  chembl_release_version: '34'
+
 steps:
   go:
     - name: download
       source: http://purl.obolibrary.org/obo/go.obo
       destination: gene-ontology-inputs/go.obo
 
-  baselineexpression:
-    - name: download-latest
+  baseline_expression:
+    - name: find_latest
       source: gs://otar000-evidence_input/BaselineExpression/json
+      scratch_pad_key: source
+    - name: download
+      source: ${source}
       destination: expression-inputs/baseline_expression.json.gz
