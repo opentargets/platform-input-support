@@ -5,6 +5,7 @@ from attr import dataclass
 from loguru import logger
 
 from platform_input_support.manifest.manifest import ActionReporter
+from platform_input_support.scratch_pad import scratch_pad
 
 
 @dataclass
@@ -19,8 +20,12 @@ class Action(ActionReporter):
         action_class = self.__class__.__name__
         self.name = action_class.lower()
 
-        action_module = import_module(self.__module__)
+        # replace templates in the config strings
+        for key, value in config.items():
+            if isinstance(value, str):
+                config[key] = scratch_pad.replace(value)
 
+        action_module = import_module(self.__module__)
         config_class = f'{action_class}ConfigMapping'
         config_mapping: ActionConfigMapping = getattr(action_module, config_class)
         self.config = config_mapping.from_dict(config)

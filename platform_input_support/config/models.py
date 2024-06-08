@@ -52,11 +52,13 @@ class ConfigMapping:
 @dataclass
 class RootMapping:
     config: ConfigMapping
+    scratch_pad: dict[str, str]
     steps: dict[str, StepMapping]
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
             config=ConfigMapping.from_dict(data['config']),
+            scratch_pad=data['scratch_pad'],
             steps={step: StepMapping.from_dict(step_data) for step, step_data in data['steps'].items()},
         )
