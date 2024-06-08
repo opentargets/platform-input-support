@@ -1,1 +1,1 @@
-from .config import config, steps
+from .config import config, scratch_pad, steps
