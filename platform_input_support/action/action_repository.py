@@ -13,7 +13,7 @@ class ActionRepository:
 
     @staticmethod
     def _filename_to_class(filename: str) -> str:
-        return filename.replace('_', ' ').title().replace(' ', '').lower()
+        return filename.replace('_', ' ').title().replace(' ', '')
 
     def _register_action(self, action_name: str, action: type[Action]):
         self.actions[action_name] = action
@@ -31,7 +31,6 @@ class ActionRepository:
                 continue
 
             for name, obj in getmembers(action_module):
-                name = name.lower()
                 if isclass(obj) and name == self._filename_to_class(filename):
-                    self._register_action(name, obj)
+                    self._register_action(filename, obj)
                     break
