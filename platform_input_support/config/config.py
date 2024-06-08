@@ -61,3 +61,4 @@ class Config:
 c = Config()
 config: ConfigMapping = c.config.config
 steps: dict[str, StepMapping] = c.config.steps
+scratch_pad: dict[str, str] = c.config.scratch_pad
