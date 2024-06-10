@@ -42,8 +42,11 @@ class GoogleHelper:
             sys.exit(1)
 
     @staticmethod
-    def _parse_url(url: str) -> tuple[str, str]:
-        bucket_name, file_path = url.replace('gs://', '').split('/', 1)
+    def _parse_url(url: str) -> tuple[str, str | None]:
+        url_parts = url.replace('gs://', '').split('/', 1)
+        bucket_name = url_parts[0]
+        file_path = url_parts[1] if len(url_parts) > 1 else None
+
         return bucket_name, file_path
 
     def bucket_exists(self, url: str) -> bool:
@@ -82,7 +85,7 @@ class GoogleHelper:
             blob = bucket.blob(file_path)
             blob.download_to_filename(destination)
 
-            logger.debug(f'file downloaded: {destination}')
+            logger.debug(f'downloaded {url} to {destination}')
         except cloud_exceptions.NotFound:
             logger.error(f'bucket or file not found: {url}')
         except cloud_exceptions.GoogleCloudError as e:
@@ -102,17 +105,26 @@ class GoogleHelper:
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error uploading file: {e}')
 
-    def list(self, url: str) -> list[str]:
+    def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
         bucket_name, prefix = self._parse_url(url)
+        file_list = []
 
         try:
             bucket = self.client.get_bucket(bucket_name)
-            return [f'gs://{bucket_name}/{blob.name}' for blob in bucket.list_blobs(prefix=prefix)]
+            file_list = list(bucket.list_blobs(prefix=prefix))
         except cloud_exceptions.NotFound:
             logger.error(f'bucket not found: {bucket_name}')
+            return []
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error listing gs objects: {e}')
-        return []
+            return []
+
+        if include is not None:
+            file_list = [blob for blob in file_list if include in blob.name]
+        elif exclude is not None:
+            file_list = [blob for blob in file_list if exclude not in blob.name]
+
+        return [f'gs://{bucket_name}/{blob.name}' for blob in file_list]
 
     def get_creation_date(self, url: str) -> datetime.datetime | None:
         bucket_name, file_path = self._parse_url(url)
