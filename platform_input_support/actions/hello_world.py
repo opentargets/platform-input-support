@@ -20,3 +20,4 @@ class HelloWorld(Action):
     @report_to_manifest
     def run(self):
         logger.info(f'Hello, {self.config.who}!')
+        return f'completed action hello_world for {self.config.who}'

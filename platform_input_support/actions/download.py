@@ -25,5 +25,6 @@ class Download(Action):
         super().__init__(config)
 
     @report_to_manifest
-    def run(self):
+    def run(self) -> str:
         download(self.config.source, self.config.destination)
+        return f'downloaded {self.config.source} to {self.config.destination}'

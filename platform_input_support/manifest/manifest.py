@@ -2,6 +2,8 @@ from datetime import datetime
 from functools import wraps
 from importlib import import_module
 
+from loguru import logger
+
 from platform_input_support.manifest.models import ActionReport, ManifestReport, Status, StepReport
 
 
@@ -66,22 +68,32 @@ class ActionReporter:
         self._report = report
 
     def start_action(self):
+        logger.info('starting action')  # TODO: add action name
         self._report.name = self.__class__.__name__.lower()
         self._report.status = Status.NOT_COMPLETED
 
-    def complete_action(self):
+    def complete_action(self, log: str):
+        logger.info(f'completed action {self._report.name}')
+        self._report.log.append(log)
         self._report.status = Status.COMPLETED
 
     def fail_action(self, error: Exception):
+        logger.error(str(error))
         self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
-    def pass_validation_action(self):
+    def pass_validation_action(self, log: str):
+        logger.info(f'validation passed for action {self._report.name}')
+        self._report.log.append(log)
         self._report.status = Status.VALIDATION_PASSED
 
     def fail_validation_action(self, error: Exception):
         self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
+
+    def append_log(self, log: str):
+        logger.info(log)
+        self._report.log.append(log)
 
     def set_field(self, field_name: str, value: str):
         setattr(self._report, field_name, value)
@@ -97,9 +109,9 @@ def report_to_manifest(func):
             result = func(self, *args, **kwargs)
 
             if func.__name__ == 'run':
-                self.complete_action()
+                self.complete_action(result)
             elif func.__name__ == 'validate':
-                self.pass_validation_action()
+                self.pass_validation_action(result)
             return result
         except Exception as e:
             if func.__name__ == 'run':
