@@ -1,8 +1,8 @@
 from pathlib import Path
-from venv import logger
 
 import requests
 import requests.adapters
+from loguru import logger
 from urllib3 import Retry
 
 from platform_input_support.config import config
@@ -37,6 +37,7 @@ def download(source: str, destination: str):
         download_http(source, complete_destination_path)
     elif protocol == 'gs':
         google.download(source, complete_destination_path)
+    logger.info(f'downloaded {source} to {destination}')
 
 
 def download_http(source: str, destination: Path):
@@ -57,5 +58,6 @@ def download_http(source: str, destination: Path):
             for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
                 if chunk:
                     f.write(chunk)
+        logger.debug(f'downloaded {source} to {destination}')
     else:
         raise DownloadError(f'response status code: {response.status_code}')
