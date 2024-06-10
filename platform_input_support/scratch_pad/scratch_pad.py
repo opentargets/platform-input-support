@@ -1,3 +1,4 @@
+import ast
 from string import Template
 
 from platform_input_support.config import scratch_pad
@@ -11,13 +12,20 @@ class ScratchPad:
     def __init__(self, sentinel_dict: dict | None):
         self.sentinel_dict = sentinel_dict or {}
 
-    def store(self, key: str, value: str):
-        key = f'{key}'
+    def store(self, key: str, value: str | list[str]):
+        key = f'{key}'  # TODO: add some kind of action name here?
         self.sentinel_dict[key] = value
 
     def replace(self, template: str) -> str:
         replacer = TemplateWithDots(template)
-        return replacer.substitute(self.sentinel_dict)
+        replaced_value = replacer.substitute(self.sentinel_dict)
+
+        try:
+            parsed_value = ast.literal_eval(replaced_value)
+        except (SyntaxError, ValueError):
+            parsed_value = replaced_value
+
+        return parsed_value
 
 
 scratch_pad = ScratchPad(scratch_pad)
