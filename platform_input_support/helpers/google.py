@@ -1,4 +1,6 @@
+import datetime
 import sys
+from pathlib import Path
 
 from google import auth
 from google.auth import exceptions as auth_exceptions
@@ -72,7 +74,7 @@ class GoogleHelper:
             logger.error(f'error checking gs object: {e}')
         return False
 
-    def download(self, url: str, destination: str):
+    def download(self, url: str, destination: Path):
         bucket_name, file_path = self._parse_url(url)
 
         try:
@@ -86,7 +88,7 @@ class GoogleHelper:
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error downloading file: {e}')
 
-    def put(self, source: str, destination: str):
+    def upload(self, source: str, destination: str):
         bucket_name, file_path = self._parse_url(destination)
 
         try:
@@ -99,6 +101,32 @@ class GoogleHelper:
             logger.error(f'bucket not found: {bucket_name}')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error uploading file: {e}')
+
+    def list(self, url: str) -> list[str]:
+        bucket_name, prefix = self._parse_url(url)
+
+        try:
+            bucket = self.client.get_bucket(bucket_name)
+            return [f'gs://{bucket_name}/{blob.name}' for blob in bucket.list_blobs(prefix=prefix)]
+        except cloud_exceptions.NotFound:
+            logger.error(f'bucket not found: {bucket_name}')
+        except cloud_exceptions.GoogleCloudError as e:
+            logger.error(f'error listing gs objects: {e}')
+        return []
+
+    def get_creation_date(self, url: str) -> datetime.datetime | None:
+        bucket_name, file_path = self._parse_url(url)
+
+        try:
+            bucket = self.client.get_bucket(bucket_name)
+            blob = bucket.blob(file_path)
+            blob.reload()
+            return blob.time_created
+        except cloud_exceptions.NotFound:
+            logger.error(f'bucket or file not found: {url}')
+        except cloud_exceptions.GoogleCloudError as e:
+            logger.error(f'error getting creation date: {e}')
+        return None
 
 
 google = GoogleHelper()
