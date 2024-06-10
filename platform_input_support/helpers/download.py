@@ -6,6 +6,7 @@ import requests.adapters
 from urllib3 import Retry
 
 from platform_input_support.config import config
+from platform_input_support.helpers.google import google
 
 CHUNK_SIZE = 8192
 
@@ -31,6 +32,14 @@ def download(source: str, destination: str):
     except OSError as e:
         raise DownloadError(f'error creating path {complete_destination_path}: {e}')
 
+    protocol = source.split(':')[0]
+    if protocol in ['http', 'https']:
+        download_http(source, complete_destination_path)
+    elif protocol == 'gs':
+        google.download(source, complete_destination_path)
+
+
+def download_http(source: str, destination: Path):
     s = requests.Session()
     retries = Retry(
         total=5,
@@ -44,7 +53,7 @@ def download(source: str, destination: str):
 
     response = s.get(source, stream=True)
     if response.status_code == 200:
-        with open(complete_destination_path, 'wb') as f:
+        with open(destination, 'wb') as f:
             for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
                 if chunk:
                     f.write(chunk)
