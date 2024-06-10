@@ -3,7 +3,7 @@ from typing import Any
 
 from loguru import logger
 
-from platform_input_support.action.action import Action, ActionConfigMapping
+from platform_input_support.action import Action, ActionConfigMapping
 from platform_input_support.manifest.manifest import report_to_manifest
 
 
