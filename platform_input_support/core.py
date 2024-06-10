@@ -5,7 +5,6 @@ from loguru import logger
 
 from platform_input_support.action.action_repository import ActionRepository
 from platform_input_support.config import config, steps
-from platform_input_support.helpers.google import google
 from platform_input_support.logger import Logger
 
 
@@ -22,7 +21,7 @@ def main():
     action_repository = ActionRepository()
     action_repository.register_actions()
 
-    step = steps[config.step]
+    step = steps[config.step]  # TODO class for this
 
     for action_mapping in step.actions:
         logger.debug(f'running action {action_mapping.name}')

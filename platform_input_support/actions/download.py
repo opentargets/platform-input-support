@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from platform_input_support.action.action import Action, ActionConfigMapping
+from platform_input_support.action import Action, ActionConfigMapping
 from platform_input_support.helpers.download import download
 from platform_input_support.manifest.manifest import report_to_manifest
 from platform_input_support.manifest.models import ActionReport, Status
