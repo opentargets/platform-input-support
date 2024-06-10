@@ -28,11 +28,12 @@ class Action(ActionReporter):
         action_module = import_module(self.__module__)
         config_class = f'{action_class}ConfigMapping'
         config_mapping: ActionConfigMapping = getattr(action_module, config_class)
+
         self.config = config_mapping.from_dict(config)
 
         super().__init__()
 
         logger.debug(f'initialized action {self.name}')
 
-    def run(self):
+    def run(self) -> str | None:
         pass
