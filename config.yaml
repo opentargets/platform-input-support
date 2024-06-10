@@ -17,9 +17,72 @@ steps:
       destination: gene-ontology-inputs/go.obo
 
   baseline_expression:
-    - name: find_latest
+    - name: download_latest
       source: gs://otar000-evidence_input/BaselineExpression/json
-      scratch_pad_key: source
-    - name: download
-      source: ${source}
       destination: expression-inputs/baseline_expression.json.gz
+
+  evidence:
+    - name: download_latest
+      source: gs://otar000-evidence_input/CancerBiomarkers/json
+      destination: evidence-files/cancerbiomarkers/cancerbiomarkers.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/ChEMBL/json
+      destination: evidence-files/chembl/chembl.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/ClinGen/json
+      destination: evidence-files/clingen/clingen.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/CRISPR/json
+      destination: evidence-files/crispr/crispr.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/Crispr_screens/json
+      destination: evidence-files/crispr_screen/crispr_screen.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/Gene2Phenotype/json
+      destination: evidence-files/gene2phenotype/gene2phenotype.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/GeneBurden/json
+      destination: evidence-files/gene_burden/gene_burden.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/Genetics_portal/json/
+      destination: evidence-files/genetics-portal-evidences/genetics-portal-evidences.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/GenomicsEngland/json
+      destination: evidence-files/genomics-england/genomics_england.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/IMPC/json
+      destination: evidence-files/impc/impc.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/IntOgen/json
+      destination: evidence-files/intogen/intogen.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/Orphanet/json
+      destination: evidence-files/orphanet/orphanet.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/PROGENy/json
+      destination: evidence-files/progeny/progeny.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/SLAPEnrich/json
+      destination: evidence-files/slapenrich/slapenrich.json.gz
+    - name: download_latest
+      source: gs://otar000-evidence_input/SysBio/json
+      destination: evidence-files/sysbio/sysbio.json.gz
+    - name: download_latest
+      source: gs://otar006-reactome
+      destination: evidence-files/reactome/reactome.json.gz
+    - name: get_file_list
+      source: gs://otar007-cosmic
+      pattern: '!hallmarks'
+      scratch_pad_key: cosmic_file_list
+    - name: download_latest
+      source: ${cosmic_file_list}
+      destination: evidence-files/cosmic/cosmic.json.gz
+    - name: download_latest
+      source: gs://otar010-atlas
+      destination: evidence-files/atlas/atlas.json.bz2
+    - name: download_latest
+      source: gs://otar011-uniprot
+      destination: evidence-files/uniprot/uniprot.json.gz
+    - name: download_latest
+      source: gs://otar012-eva/disease-target-evidence
+      destination: evidence-files/eva/eva.json.gz
