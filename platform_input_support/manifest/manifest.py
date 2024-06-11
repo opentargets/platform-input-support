@@ -118,6 +118,5 @@ def report_to_manifest(func):
                 self.fail_action(e)
             elif func.__name__ == 'validate':
                 self.fail_validation_action(e)
-            raise
 
     return wrapper
