@@ -4,6 +4,7 @@ from pathlib import Path
 
 from google import auth
 from google.auth import exceptions as auth_exceptions
+from google.auth.transport.requests import AuthorizedSession, Request
 from google.cloud import exceptions as cloud_exceptions
 from google.cloud import storage
 from loguru import logger
@@ -20,13 +21,20 @@ class GoogleHelperError(Exception):
 class GoogleHelper:
     def __init__(self):
         try:
-            _, project_id = auth.default()
+            scopes = [
+                'https://www.googleapis.com/auth/cloud-platform',
+                'https://www.googleapis.com/auth/spreadsheets',
+            ]
+
+            credentials, project_id = auth.default(scopes=scopes)
+
             logger.debug(f'gcp authenticated on project {project_id}')
         except auth_exceptions.DefaultCredentialsError as e:
             logger.critical(f'error : {e}')
             sys.exit(1)
 
-        self.client = storage.Client()
+        self.credentials = credentials
+        self.client = storage.Client(credentials=credentials)
 
         # check if the configured bucket exists
         try:
@@ -105,13 +113,30 @@ class GoogleHelper:
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error uploading file: {e}')
 
+    @staticmethod
+    def _is_file(blob: storage.Blob, prefix: str | None) -> bool:
+        blob_name = str(blob.name)
+
+        if prefix is None:
+            return not blob_name.endswith('/')
+        return '/' not in blob_name.replace(prefix, '') and not blob_name.endswith('/')
+
     def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
         bucket_name, prefix = self._parse_url(url)
+
+        # make sure we select the path given, not all prefixes
+        if prefix is not None and not prefix.endswith('/'):
+            prefix = f'{prefix}/'
+
         file_list = []
 
         try:
             bucket = self.client.get_bucket(bucket_name)
-            file_list = list(bucket.list_blobs(prefix=prefix))
+            blobs = list(bucket.list_blobs(prefix=prefix))
+
+            # list is not recursive, so we need to filter out blobs that have longer prefixes
+            file_list = [blob for blob in blobs if self._is_file(blob, prefix)]
+
         except cloud_exceptions.NotFound:
             logger.error(f'bucket not found: {bucket_name}')
             return []
@@ -126,19 +151,22 @@ class GoogleHelper:
 
         return [f'gs://{bucket_name}/{blob.name}' for blob in file_list]
 
-    def get_creation_date(self, url: str) -> datetime.datetime | None:
+    def get_modification_date(self, url: str) -> datetime.datetime | None:
         bucket_name, file_path = self._parse_url(url)
 
         try:
             bucket = self.client.get_bucket(bucket_name)
             blob = bucket.blob(file_path)
             blob.reload()
-            return blob.time_created
+            return blob.updated
         except cloud_exceptions.NotFound:
             logger.error(f'bucket or file not found: {url}')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error getting creation date: {e}')
         return None
+
+    def get_session(self) -> AuthorizedSession:
+        return AuthorizedSession(self.credentials)
 
 
 google = GoogleHelper()
