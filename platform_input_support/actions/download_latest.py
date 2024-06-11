@@ -29,10 +29,10 @@ class DownloadLatest(Action):
         newest_file = None
 
         for f in file_list:
-            creation_date = google.get_creation_date(f)
-            if creation_date:
-                if not newest_date or creation_date > newest_date:
-                    newest_date = creation_date
+            modification_date = google.get_modification_date(f)
+            if modification_date:
+                if not newest_date or modification_date > newest_date:
+                    newest_date = modification_date
                     newest_file = f
 
         if newest_file:
