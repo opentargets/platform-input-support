@@ -11,11 +11,6 @@ scratch_pad:
   chembl_release_version: '34'
 
 steps:
-  go:
-    - name: download
-      source: http://purl.obolibrary.org/obo/go.obo
-      destination: gene-ontology-inputs/go.obo
-
   baseline_expression:
     - name: download_latest
       source: gs://otar000-evidence_input/BaselineExpression/json
@@ -24,65 +19,140 @@ steps:
   evidence:
     - name: download_latest
       source: gs://otar000-evidence_input/CancerBiomarkers/json
-      destination: evidence-files/cancerbiomarkers/cancerbiomarkers.json.gz
+      destination: evidence-files/cancerbiomarkers.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/ChEMBL/json
-      destination: evidence-files/chembl/chembl.json.gz
+      destination: evidence-files/chembl.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/ClinGen/json
-      destination: evidence-files/clingen/clingen.json.gz
+      destination: evidence-files/clingen.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/CRISPR/json
-      destination: evidence-files/crispr/crispr.json.gz
+      destination: evidence-files/crispr.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/Crispr_screens/json
-      destination: evidence-files/crispr_screen/crispr_screen.json.gz
+      destination: evidence-files/crispr_screen.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/Gene2Phenotype/json
-      destination: evidence-files/gene2phenotype/gene2phenotype.json.gz
+      destination: evidence-files/gene2phenotype.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/GeneBurden/json
-      destination: evidence-files/gene_burden/gene_burden.json.gz
+      destination: evidence-files/gene_burden.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/Genetics_portal/json/
-      destination: evidence-files/genetics-portal-evidences/genetics-portal-evidences.json.gz
+      destination: evidence-files/genetics-portal-evidences.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/GenomicsEngland/json
-      destination: evidence-files/genomics-england/genomics_england.json.gz
+      destination: evidence-files/genomics_england.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/IMPC/json
-      destination: evidence-files/impc/impc.json.gz
+      destination: evidence-files/impc.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/IntOgen/json
-      destination: evidence-files/intogen/intogen.json.gz
+      destination: evidence-files/intogen.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/Orphanet/json
-      destination: evidence-files/orphanet/orphanet.json.gz
+      destination: evidence-files/orphanet.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/PROGENy/json
-      destination: evidence-files/progeny/progeny.json.gz
+      destination: evidence-files/progeny.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/SLAPEnrich/json
-      destination: evidence-files/slapenrich/slapenrich.json.gz
+      destination: evidence-files/slapenrich.json.gz
     - name: download_latest
       source: gs://otar000-evidence_input/SysBio/json
-      destination: evidence-files/sysbio/sysbio.json.gz
+      destination: evidence-files/sysbio.json.gz
     - name: download_latest
       source: gs://otar006-reactome
-      destination: evidence-files/reactome/reactome.json.gz
+      destination: evidence-files/reactome.json.gz
     - name: get_file_list
       source: gs://otar007-cosmic
       pattern: '!hallmarks'
       scratch_pad_key: cosmic_file_list
     - name: download_latest
       source: ${cosmic_file_list}
-      destination: evidence-files/cosmic/cosmic.json.gz
+      destination: evidence-files/cosmic.json.gz
     - name: download_latest
       source: gs://otar010-atlas
-      destination: evidence-files/atlas/atlas.json.bz2
+      destination: evidence-files/atlas.json.bz2
     - name: download_latest
       source: gs://otar011-uniprot
-      destination: evidence-files/uniprot/uniprot.json.gz
+      destination: evidence-files/uniprot.json.gz
     - name: download_latest
       source: gs://otar012-eva/disease-target-evidence
-      destination: evidence-files/eva/eva.json.gz
+      destination: evidence-files/eva.json.gz
+
+  go:
+    - name: download
+      source: http://purl.obolibrary.org/obo/go.obo
+      destination: gene-ontology-inputs/go.obo
+
+  interactions:
+    - name: download
+      source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/gtf/homo_sapiens/Homo_sapiens.GRCh38.${ensembl_release_version}.chr.gtf.gz
+      destination: interactions-inputs/Homo_sapiens.GRCh38.chr.gtf.gz
+    - name: download
+      source: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
+      destination: interactions-inputs/rna_central_ensembl.tsv
+    - name: download
+      source: https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
+      destination: interactions-inputs/HUMAN_9606_idmapping.dat.gz
+    - name: download
+      source: https://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
+      destination: interactions-inputs/intact-interactors.json
+    - name: download_latest
+      source: otar001-core/stringInteractions
+      destination: interactions-inputs/string-interactions.txt.gz
+
+  literature:
+    - name: download
+      source: https://ftp.ebi.ac.uk/pub/databases/pmc/DOI/PMID_PMCID_DOI.csv.gz
+      destination: literature-inputs/PMID_PMCID_DOI.csv.gz
+
+  mouse_phenotypes:
+    - name: download_latest
+      source: otar001-core/MousePhenotypes
+      destination: mouse-phenotypes-inputs/mouse_phenotypes.json.gz
+
+  otar:
+    - name: download
+      source: https://docs.google.com/spreadsheets/d/1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs/export?format=csv&gid=1179867447
+      destination: otar-inputs/otar_meta.csv
+    - name: download
+      source: https://docs.google.com/spreadsheets/d/1CV_shXJy1ACM09HZBB_-3Nl6l_dfkrA26elMAF0ttHs/export?format=csv&gid=72910172
+      destination: otar-inputs/otar_project_to_efo.csv
+
+  pharmacogenomics:
+    - name: download_latest
+      source: otar012-eva/pharmacogenomics
+      destination: pharmacogenomics-inputs/pharmacogenomics.json.gz
+
+  ppp_evidence:
+    - name: download_latest
+      source: otar013-ppp/validation_lab
+      destination: evidence-files/validation_lab.json.gz
+    - name: download_latest
+      source: otar013-ppp/encore
+      destination: evidence-files/encore.json.gz
+    - name: download_latest
+      source: otar013-ppp/ot_crispr
+      destination: evidence-files/ot_crispr.json.gz
+
+  reactome:
+    - name: download
+      source: https://reactome.org/download/current/ReactomePathways.txt
+      destination: reactome-inputs/ReactomePathways.txt
+    - name: download
+      source: https://reactome.org/download/current/ReactomePathwaysRelation.txt
+      destination: reactome-inputs/ReactomePathwaysRelation.txt
+
+  target_engine:
+    - name: download
+      source: https://www.proteinatlas.org/download/proteinatlas.json.gz
+      destination: targetEngine-inputs/proteinatlas.json.gz
+    - name: download
+      source: https://rest.uniprot.org/locations/stream?compressed=true&fields=id%2Cname%2Ccategory%2Cgene_ontologies%2Cpart_of%2Cis_a&format=tsv&query=%28%2A%29
+      destination: targetEngine-inputs/uniprot_locations.tsv.gz
+    - name: download
+      source: https://raw.githubusercontent.com/opentargets/target_engine/main/src/data_flow/phenotypeScores/20230825_mousePheScores.csv
+      destination: targetEngine-inputs/mouse_pheno_scores.csv
