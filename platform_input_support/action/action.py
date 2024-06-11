@@ -1,3 +1,4 @@
+import sys
 from importlib import import_module
 from typing import Any
 
@@ -29,7 +30,11 @@ class Action(ActionReporter):
         config_class = f'{action_class}ConfigMapping'
         config_mapping: ActionConfigMapping = getattr(action_module, config_class)
 
-        self.config = config_mapping.from_dict(config)
+        try:
+            self.config = config_mapping.from_dict(config)
+        except TypeError as e:
+            logger.critical(f'invalid config for {action_class}: {e}')
+            sys.exit(1)
 
         super().__init__()
 
