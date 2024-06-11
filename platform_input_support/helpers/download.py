@@ -16,11 +16,13 @@ class DownloadError(Exception):
 
 
 def _ensure_path_exists(path: Path):
+    parent = path.parent
+
     try:
-        logger.info(f'ensuring path {path} exists')
-        path.parent.mkdir(parents=True, exist_ok=True)
+        logger.info(f'ensuring path {parent} exists')
+        parent.mkdir(parents=True, exist_ok=True)
     except OSError as e:
-        logger.error(f'error creating path {path}: {e}')
+        logger.error(f'error creating path {parent}: {e}')
         raise
 
 
@@ -32,11 +34,15 @@ def download(source: str, destination: str):
     except OSError as e:
         raise DownloadError(f'error creating path {complete_destination_path}: {e}')
 
-    protocol = source.split(':')[0]
-    if protocol in ['http', 'https']:
-        download_http(source, complete_destination_path)
-    elif protocol == 'gs':
-        google.download(source, complete_destination_path)
+    if source.startswith('https://docs.google.com/spreadsheets/d'):
+        download_spreadsheet(source, complete_destination_path)
+    else:
+        protocol = source.split(':')[0]
+        if protocol in ['http', 'https']:
+            download_http(source, complete_destination_path)
+        elif protocol == 'gs':
+            google.download(source, complete_destination_path)
+
     logger.info(f'downloaded {source} to {destination}')
 
 
@@ -52,12 +58,20 @@ def download_http(source: str, destination: Path):
     s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
     s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
 
+    _download(source, destination, s)
+
+
+def download_spreadsheet(source: str, destination: Path):
+    s = google.get_session()
+    _download(source, destination, s)
+
+
+def _download(source: str, destination: Path, s: requests.Session, stream: bool = False):
     response = s.get(source, stream=True)
     if response.status_code == 200:
         with open(destination, 'wb') as f:
             for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-                if chunk:
-                    f.write(chunk)
+                f.write(chunk)
         logger.debug(f'downloaded {source} to {destination}')
     else:
         raise DownloadError(f'response status code: {response.status_code}')
