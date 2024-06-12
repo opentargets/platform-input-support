@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import requests
@@ -57,7 +58,6 @@ def download_http(source: str, destination: Path):
 
     s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
     s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
-
     _download(source, destination, s)
 
 
@@ -67,11 +67,10 @@ def download_spreadsheet(source: str, destination: Path):
 
 
 def _download(source: str, destination: Path, s: requests.Session, stream: bool = False):
-    response = s.get(source, stream=True)
-    if response.status_code == 200:
-        with open(destination, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-                f.write(chunk)
-        logger.debug(f'downloaded {source} to {destination}')
-    else:
-        raise DownloadError(f'response status code: {response.status_code}')
+    r = s.get(source, stream=True)
+    r.raise_for_status()
+
+    with open(destination, 'wb') as f:
+        shutil.copyfileobj(r.raw, f, CHUNK_SIZE)
+
+    logger.debug(f'downloaded {source} to {destination}')
