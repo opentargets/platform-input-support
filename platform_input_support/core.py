@@ -3,9 +3,9 @@ from importlib.metadata import version
 
 from loguru import logger
 
-from platform_input_support.action.action_repository import ActionRepository
 from platform_input_support.config import config, steps
 from platform_input_support.logger import Logger
+from platform_input_support.step import Step
 
 
 class PISRunnerError(Exception):
@@ -18,18 +18,8 @@ def main():
     Logger(config)
     logger.debug('logger configured')
 
-    action_repository = ActionRepository()
-    action_repository.register_actions()
-
-    step = steps[config.step]  # TODO class for this
-
-    for action_mapping in step.actions:
-        logger.debug(f'running action {action_mapping.name}')
-
-        action = action_repository.actions[action_mapping.name](action_mapping.config)
-        action.run()
-
-        print(action._report)
+    step = Step(config.step, steps[config.step])
+    step.run()
 
 
 if __name__ == '__main__':

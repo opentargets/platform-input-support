@@ -34,3 +34,7 @@ class ActionRepository:
                 if isclass(obj) and name == self._filename_to_class(filename):
                     self._register_action(filename, obj)
                     break
+
+
+action_repository = ActionRepository()
+action_repository.register_actions()
