@@ -44,7 +44,7 @@ def download(source: str, destination: str):
         elif protocol == 'gs':
             google.download(source, complete_destination_path)
 
-    logger.info(f'downloaded {source} to {destination}')
+    logger.info('download successful')
 
 
 def download_http(source: str, destination: Path):
@@ -72,5 +72,3 @@ def _download(source: str, destination: Path, s: requests.Session, stream: bool 
 
     with open(destination, 'wb') as f:
         shutil.copyfileobj(r.raw, f, CHUNK_SIZE)
-
-    logger.debug(f'downloaded {source} to {destination}')
