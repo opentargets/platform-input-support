@@ -44,12 +44,12 @@ class Config:
 
     def _check_output_path(self, output_path: str) -> None:
         if Path(output_path).exists():
-            logger.debug(f'output path exists: {output_path}')
+            logger.debug(f'output path {output_path} exists')
             if not os.access(output_path, os.W_OK):
-                logger.critical(f'output path is not writable: {output_path}')
+                logger.critical(f'output path {output_path} is not writable')
                 sys.exit(1)
         if not Path(output_path).is_dir():
-            logger.info(f'output path does not exist, creating: {output_path}')
+            logger.info(f'output path {output_path} does not exist, creating it')
 
             try:
                 Path(output_path).mkdir(parents=True, exist_ok=True)
