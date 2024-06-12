@@ -30,7 +30,7 @@ class GoogleHelper:
 
             logger.debug(f'gcp authenticated on project {project_id}')
         except auth_exceptions.DefaultCredentialsError as e:
-            logger.critical(f'error : {e}')
+            logger.critical(f'error authenticating on gcp: {e}')
             sys.exit(1)
 
         self.credentials = credentials
@@ -43,7 +43,7 @@ class GoogleHelper:
                 sys.exit(1)
 
             if not self.bucket_exists(config.gcp_bucket_path):
-                logger.critical(f'gcp bucket does not exist: {config.gcp_bucket_path}')
+                logger.critical(f'gcp bucket {config.gcp_bucket_path} does not exist')
                 sys.exit(1)
         except GoogleHelperError as e:
             logger.critical(f'error checking gcp bucket: {e}')
@@ -60,13 +60,14 @@ class GoogleHelper:
     def bucket_exists(self, url: str) -> bool:
         bucket_name, _ = self._parse_url(url)
 
-        logger.debug(f'checking if bucket exists: {bucket_name}')
+        logger.debug(f'checking if bucket {bucket_name} exists')
 
         try:
             self.client.get_bucket(bucket_name)
+            logger.debug(f'bucket {bucket_name} and is readable')
             return True
         except cloud_exceptions.NotFound:
-            logger.debug(f'bucket not found: {bucket_name}')
+            logger.debug(f'bucket {bucket_name} not found')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error checking bucket: {e}')
         return False
@@ -74,13 +75,13 @@ class GoogleHelper:
     def stat(self, url: str) -> bool:
         bucket_name, file_path = self._parse_url(url)
 
-        logger.debug(f'statting url: {url}')
+        logger.debug(f'statting {url}')
 
         try:
             bucket = self.client.get_bucket(bucket_name)
             return bucket.blob(file_path).exists()
         except cloud_exceptions.NotFound:
-            logger.debug(f'file not found: {url}')
+            logger.debug(f'file {url} not found')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error checking gs object: {e}')
         return False
@@ -95,7 +96,7 @@ class GoogleHelper:
 
             logger.debug(f'downloaded {url} to {destination}')
         except cloud_exceptions.NotFound:
-            logger.error(f'bucket or file not found: {url}')
+            logger.error(f'bucket or file {url} not found')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error downloading file: {e}')
 
@@ -107,9 +108,9 @@ class GoogleHelper:
             blob = bucket.blob(file_path)
             blob.upload_from_filename(source)
 
-            logger.debug(f'file uploaded: {destination}')
+            logger.debug(f'file {destination} uploaded')
         except cloud_exceptions.NotFound:
-            logger.error(f'bucket not found: {bucket_name}')
+            logger.error(f'bucket {bucket_name} not found')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error uploading file: {e}')
 
@@ -138,7 +139,7 @@ class GoogleHelper:
             file_list = [blob for blob in blobs if self._is_file(blob, prefix)]
 
         except cloud_exceptions.NotFound:
-            logger.error(f'bucket not found: {bucket_name}')
+            logger.error(f'bucket {bucket_name} not found')
             return []
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error listing gs objects: {e}')
@@ -160,7 +161,7 @@ class GoogleHelper:
             blob.reload()
             return blob.updated
         except cloud_exceptions.NotFound:
-            logger.error(f'bucket or file not found: {url}')
+            logger.error(f'bucket or file {url} not found')
         except cloud_exceptions.GoogleCloudError as e:
             logger.error(f'error getting creation date: {e}')
         return None

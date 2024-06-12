@@ -12,7 +12,7 @@ class ParseYAML:
         self.data: dict[str, Any] = {}
 
     def parse(self):
-        logger.debug(f'reading config file: {self.file_path}')
+        logger.debug(f'reading config file {self.file_path}')
         yaml_str: str
         try:
             yaml_str = Path.read_text(self.file_path)
