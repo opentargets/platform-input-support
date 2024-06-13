@@ -39,24 +39,24 @@ class StepReporter:
         self._report = StepReport(self.name)
 
     def start_step(self):
-        logger.info(f'starting step {self._report.name}')
+        logger.info('starting step')
         self._report.status = Status.NOT_COMPLETED
 
     def complete_step(self):
-        logger.info(f'completed step {self._report.name}')
+        logger.info('step completed')
         self._report.status = Status.COMPLETED
 
     def fail_step(self, error: Exception):
-        logger.error(f'failed step {self._report.name}: f{error}')
+        logger.error(f'failed step: f{error}')
         self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
     def pass_validation_step(self):
-        logger.info(f'validation passed for step {self._report.name}')
+        logger.info(f'validation passed {self._report.name}')
         self._report.status = Status.VALIDATION_PASSED
 
     def fail_validation_step(self, error: Exception):
-        logger.error(f'failed validation for step {self._report.name}: f{error}')
+        logger.error(f'failed validation: f{error}')
         self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
 
@@ -65,35 +65,34 @@ class StepReporter:
 
 
 class ActionReporter:
-    def __init__(self):
+    def __init__(self, name: str):
         action_class = self.__class__.__name__
         action_module = import_module(self.__module__)
         report_class = f'{action_class}Report'
-        name = self.__class__.__name__.lower()
         report: ActionReport = getattr(action_module, report_class, ActionReport)(name)
         self._report = report
 
     def start_action(self):
-        logger.info(f'starting action {self._report.name}')
+        logger.info('starting action')
         self._report.status = Status.NOT_COMPLETED
 
     def complete_action(self, log: str):
-        logger.info(f'completed action {self._report.name}')
+        logger.info('action completed')
         self._report.log.append(log)
         self._report.status = Status.COMPLETED
 
     def fail_action(self, error: Exception):
-        logger.error(f'failed action {self._report.name}: f{error}')
+        logger.error(f'action failed: {error}')
         self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
     def pass_validation_action(self, log: str):
-        logger.info(f'validation passed for action {self._report.name}')
+        logger.info('validation passed')
         self._report.log.append(log)
         self._report.status = Status.VALIDATION_PASSED
 
     def fail_validation_action(self, error: Exception):
-        logger.error(f'failed valication for action {self._report.name}: f{error}')
+        logger.error(f'failed validation: f{error}')
         self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
 

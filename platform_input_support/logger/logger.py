@@ -8,6 +8,18 @@ from platform_input_support.config.models import ConfigMapping
 __all__ = ['logger']
 
 
+def format_log(record):
+    action = '::<y>{extra[action]}</>' if record['extra'].get('action') else ''
+
+    return (
+        '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
+        '<lvl>{level: <8}</> | '
+        '<c>{name}</>:<c>{function}</>:<c>{line}</>'
+        f'{action}'
+        ' - <lvl>{message}</>\n{exception}'
+    )
+
+
 class Logger:
     def __init__(self, config: ConfigMapping) -> None:
         log_level = config.log_level
@@ -17,6 +29,7 @@ class Logger:
             {
                 'sink': sys.stdout,
                 'level': log_level,
+                'format': format_log,
             },
             {
                 'sink': log_filename,

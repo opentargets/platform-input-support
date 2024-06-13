@@ -12,78 +12,78 @@ scratch_pad:
 
 steps:
   baseline_expression:
-    - name: download_latest
+    - name: download_latest baseline_expression
       source: gs://otar000-evidence_input/BaselineExpression/json
       destination: expression-inputs/baseline_expression.json.gz
 
   evidence:
-    - name: download_latest
+    - name: download_latest cancerbiomarkers
       source: gs://otar000-evidence_input/CancerBiomarkers/json
       destination: evidence-files/cancerbiomarkers.json.gz
-    - name: download_latest
+    - name: download_latest chembl
       source: gs://otar000-evidence_input/ChEMBL/json
       destination: evidence-files/chembl.json.gz
-    - name: download_latest
+    - name: download_latest clingen
       source: gs://otar000-evidence_input/ClinGen/json
       destination: evidence-files/clingen.json.gz
-    - name: download_latest
+    - name: download_latest crispr
       source: gs://otar000-evidence_input/CRISPR/json
       destination: evidence-files/crispr.json.gz
-    - name: download_latest
+    - name: download_latest crispr_screen
       source: gs://otar000-evidence_input/Crispr_screens/json
       destination: evidence-files/crispr_screen.json.gz
-    - name: download_latest
+    - name: download_latest gene2phenotype
       source: gs://otar000-evidence_input/Gene2Phenotype/json
       destination: evidence-files/gene2phenotype.json.gz
-    - name: download_latest
+    - name: download_latest gene_burden
       source: gs://otar000-evidence_input/GeneBurden/json
       destination: evidence-files/gene_burden.json.gz
-    - name: download_latest
+    - name: download_latest evidences
       source: gs://otar000-evidence_input/Genetics_portal/json
       destination: evidence-files/genetics-portal-evidences.json.gz
-    - name: download_latest
+    - name: download_latest genomics_england
       source: gs://otar000-evidence_input/GenomicsEngland/json
       destination: evidence-files/genomics_england.json.gz
-    - name: download_latest
+    - name: download_latest impc
       source: gs://otar000-evidence_input/IMPC/json
       destination: evidence-files/impc.json.gz
-    - name: download_latest
+    - name: download_latest intogen
       source: gs://otar000-evidence_input/IntOgen/json
       destination: evidence-files/intogen.json.gz
-    - name: download_latest
+    - name: download_latest orphanet
       source: gs://otar000-evidence_input/Orphanet/json
       destination: evidence-files/orphanet.json.gz
-    - name: download_latest
+    - name: download_latest progeny
       source: gs://otar000-evidence_input/PROGENy/json
       destination: evidence-files/progeny.json.gz
-    - name: download_latest
+    - name: download_latest slapenrich
       source: gs://otar000-evidence_input/SLAPEnrich/json
       destination: evidence-files/slapenrich.json.gz
-    - name: download_latest
+    - name: download_latest sysbio
       source: gs://otar000-evidence_input/SysBio/json
       destination: evidence-files/sysbio.json.gz
-    - name: download_latest
+    - name: download_latest reactome
       source: gs://otar006-reactome
       destination: evidence-files/reactome.json.gz
-    - name: get_file_list
+    - name: get_file_list cosmic
       source: gs://otar007-cosmic
       pattern: '!hallmarks'
       scratch_pad_key: cosmic_file_list
-    - name: download_latest
+    - name: download_latest cosmic
       source: ${cosmic_file_list}
       destination: evidence-files/cosmic.json.gz
-    - name: download_latest
+    - name: download_latest atlas.
       source: gs://otar010-atlas
       destination: evidence-files/atlas.json.bz2
-    - name: download_latest
+    - name: download_latest uniprot
       source: gs://otar011-uniprot
       destination: evidence-files/uniprot.json.gz
-    - name: download_latest
+    - name: download_latest eva
       source: gs://otar012-eva/disease-target-evidence
       destination: evidence-files/eva.json.gz
 
   go:
-    - name: download
+    - name: download gene-ontology
       source: http://purl.obolibrary.org/obo/go.obo
       destination: gene-ontology-inputs/go.obo
 
