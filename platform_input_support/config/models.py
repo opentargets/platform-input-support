@@ -13,6 +13,9 @@ class ActionMapping:
         name = data.pop('name')
         return cls(name=name, config=data)
 
+    def get_action_effective_name(self):
+        return self.name.split(' ')[0]
+
 
 @dataclass
 class StepMapping:
