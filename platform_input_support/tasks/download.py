@@ -1,26 +1,24 @@
 from dataclasses import dataclass
 
-from platform_input_support.action import Action
-from platform_input_support.action.action import ActionConfigMapping
 from platform_input_support.helpers.download import DownloadHelper
-from platform_input_support.manifest.manifest import report_to_manifest
-from platform_input_support.manifest.models import ActionReport, Status
+from platform_input_support.manifest import Status, TaskReport, report_to_manifest
+from platform_input_support.task import Task, TaskConfigMapping
 
 
 @dataclass
-class DownloadConfigMapping(ActionConfigMapping):
+class DownloadConfigMapping(TaskConfigMapping):
     source: str
     destination: str
 
 
 @dataclass
-class DownloadReport(ActionReport):
+class DownloadReport(TaskReport):
     checksum_source: str | Status = Status.NOT_SET
     checksum_destination: str | Status = Status.NOT_SET
 
 
-class Download(Action):
-    def __init__(self, config: ActionConfigMapping):
+class Download(Task):
+    def __init__(self, config: TaskConfigMapping):
         self.config: DownloadConfigMapping
         super().__init__(config)
 

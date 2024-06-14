@@ -13,7 +13,7 @@ class Status(StrEnum):
 
 
 @dataclass
-class ActionReport:
+class TaskReport:
     name: str | Status = Status.NOT_SET
     status: Status = Status.NOT_COMPLETED
     created: datetime.datetime = field(default_factory=datetime.datetime.now)
@@ -24,7 +24,7 @@ class ActionReport:
 class StepReport:
     name: str | Status = Status.NOT_SET
     status: Status = Status.NOT_COMPLETED
-    actions: list[ActionReport] = field(default_factory=list)
+    tasks: list[TaskReport] = field(default_factory=list)
     created: datetime.datetime = field(default_factory=datetime.datetime.now)
     modified: datetime.datetime = field(default_factory=datetime.datetime.now)
     log: list[str] = field(default_factory=list)

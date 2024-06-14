@@ -2,14 +2,11 @@ import os
 import sys
 from pathlib import Path
 
-# this module is initialized before the logger, so we must use loguru here
 from loguru import logger
 
-from platform_input_support.config.models import ConfigMapping, RootMapping, StepMapping
+from platform_input_support.config.models import ConfigMapping, RootMapping, TaskMapping
 from platform_input_support.config.parse_cli import ParseCLI
 from platform_input_support.config.parse_yaml import ParseYAML
-
-__all__ = ['config']
 
 
 class Config:
@@ -60,5 +57,5 @@ class Config:
 
 c = Config()
 config: ConfigMapping = c.config.config
-steps: dict[str, StepMapping] = c.config.steps
+tasks: list[TaskMapping] = c.config.steps[c.config.config.step]
 scratch_pad: dict[str, str] = c.config.scratch_pad

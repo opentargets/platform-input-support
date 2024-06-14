@@ -4,9 +4,9 @@ from typing import Any
 
 
 @dataclass
-class ActionMapping:
+class TaskMapping:
     name: str
-    config: dict[str, Any]
+    config: dict[str, Any]  # this becomes a TaskConfigMapping once the task is instantiated
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -15,15 +15,6 @@ class ActionMapping:
 
     def real_name(self):
         return self.name.split(' ')[0]
-
-
-@dataclass
-class StepMapping:
-    actions: list[ActionMapping]
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        return cls(actions=[ActionMapping.from_dict(action) for action in data])
 
 
 @dataclass
@@ -56,12 +47,12 @@ class ConfigMapping:
 class RootMapping:
     config: ConfigMapping
     scratch_pad: dict[str, str]
-    steps: dict[str, StepMapping]
+    steps: dict[str, list[TaskMapping]]
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
             config=ConfigMapping.from_dict(data['config']),
             scratch_pad=data['scratch_pad'],
-            steps={step: StepMapping.from_dict(step_data) for step, step_data in data['steps'].items()},
+            steps={step: [TaskMapping.from_dict(task) for task in tasks] for step, tasks in data['steps'].items()},
         )
