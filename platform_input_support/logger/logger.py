@@ -9,12 +9,12 @@ __all__ = ['logger']
 
 
 def format_log(record):
-    action = '<y>{extra[action]}</>::' if record['extra'].get('action') else ''
+    task = '<y>{extra[task]}</>::' if record['extra'].get('task') else ''
 
     return (
         '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
         '<lvl>{level: <8}</> | '
-        f'{action}'
+        f'{task}'
         '<c>{name}</>:<c>{function}</>:<c>{line}</>'
         ' - <lvl>{message}</>\n{exception}'
     )

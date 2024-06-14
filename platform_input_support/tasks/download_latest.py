@@ -1,19 +1,19 @@
 from dataclasses import dataclass
 
-from platform_input_support.action import Action, ActionConfigMapping
 from platform_input_support.helpers.download import DownloadHelper
 from platform_input_support.helpers.google import google
-from platform_input_support.manifest.manifest import report_to_manifest
+from platform_input_support.manifest import report_to_manifest
+from platform_input_support.task import Task, TaskConfigMapping
 
 
 @dataclass
-class DownloadLatestConfigMapping(ActionConfigMapping):
+class DownloadLatestConfigMapping(TaskConfigMapping):
     source: list[str] | str
     destination: str
 
 
-class DownloadLatest(Action):
-    def __init__(self, config: ActionConfigMapping):
+class DownloadLatest(Task):
+    def __init__(self, config: TaskConfigMapping):
         self.config: DownloadLatestConfigMapping
         super().__init__(config)
 

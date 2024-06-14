@@ -5,7 +5,7 @@ from importlib import import_module
 
 from loguru import logger
 
-from platform_input_support.manifest.models import ActionReport, ManifestReport, Status, StepReport
+from platform_input_support.manifest.models import ManifestReport, Status, StepReport, TaskReport
 
 
 class ManifestReporter:
@@ -61,38 +61,38 @@ class StepReporter:
         self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
 
-    def add_action(self, action: ActionReport):
-        self._report.actions.append(action)
+    def add_task(self, task: TaskReport):
+        self._report.tasks.append(task)
 
 
-class ActionReporter:
+class TaskReporter:
     def __init__(self, name: str):
-        action_class = self.__class__.__name__
-        action_module = import_module(self.__module__)
-        report_class = f'{action_class}Report'
-        report: ActionReport = getattr(action_module, report_class, ActionReport)(name)
+        task_class = self.__class__.__name__
+        task_module = import_module(self.__module__)
+        report_class = f'{task_class}Report'
+        report: TaskReport = getattr(task_module, report_class, TaskReport)(name)
         self._report = report
 
-    def start_action(self):
-        logger.info('starting action')
+    def start_task(self):
+        logger.info('starting task')
         self._report.status = Status.NOT_COMPLETED
 
-    def complete_action(self, log: str):
-        logger.info('action completed')
+    def complete_task(self, log: str):
+        logger.info('task completed')
         self._report.log.append(log)
         self._report.status = Status.COMPLETED
 
-    def fail_action(self, error: Exception):
-        logger.opt(exception=sys.exc_info()).error(f'action failed: {error}')
+    def fail_task(self, error: Exception):
+        logger.opt(exception=sys.exc_info()).error(f'task failed: {error}')
         self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
-    def pass_validation_action(self, log: str):
+    def pass_validation_task(self, log: str):
         logger.info('validation passed')
         self._report.log.append(log)
         self._report.status = Status.VALIDATION_PASSED
 
-    def fail_validation_action(self, error: Exception):
+    def fail_validation_task(self, error: Exception):
         logger.error(f'failed validation: f{error}')
         self._report.log.append(str(error))
         self._report.status = Status.VALIDATION_FAILED
@@ -110,19 +110,19 @@ def report_to_manifest(func):
     def wrapper(self, *args, **kwargs):
         try:
             if func.__name__ == 'run':
-                self.start_action()
+                self.start_task()
 
             result = func(self, *args, **kwargs)
 
             if func.__name__ == 'run':
-                self.complete_action(result)
+                self.complete_task(result)
             elif func.__name__ == 'validate':
-                self.pass_validation_action(result)
+                self.pass_validation_task(result)
             return result
         except Exception as e:
             if func.__name__ == 'run':
-                self.fail_action(e)
+                self.fail_task(e)
             elif func.__name__ == 'validate':
-                self.fail_validation_action(e)
+                self.fail_validation_task(e)
 
     return wrapper
