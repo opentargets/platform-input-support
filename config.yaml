@@ -90,29 +90,29 @@ steps:
   homologues:
     - name: explode homologues
       foreach:
-        - caenorhabditis_elegans
-        - canis_lupus_familiaris
-        - cavia_porcellus
-        - danio_rerio
-        - drosophila_melanogaster
-        - macaca_mulatta
-        - mus_musculus
-        - oryctolagus_cuniculusiter
-        - pan_troglodytes
-        - rattus_norvegicus
-        - sus_scrofa
-        - xenopus_tropicalis
-        - homo_sapiens
+        - species: caenorhabditis_elegans
+        - species: canis_lupus_familiaris
+        - species: cavia_porcellus
+        - species: danio_rerio
+        - species: drosophila_melanogaster
+        - species: macaca_mulatta
+        - species: mus_musculus
+        - species: oryctolagus_cuniculusiter
+        - species: pan_troglodytes
+        - species: rattus_norvegicus
+        - species: sus_scrofa
+        - species: xenopus_tropicalis
+        - species: homo_sapiens
       do:
-        - name: download ${i} gene dictionary
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${i}/${i}.json
-          destination: target-inputs/homologue/gene_dictionary/${i}.json
-        - name: download ${i} ncrna homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${i}/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
-          destination: target-inputs/homologue/homologies/ncrna-${i}.tsv.gz
-        - name: download ${i} protein homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${i}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
-          destination: target-inputs/homologue/homologies/protein-${i}.tsv.gz
+        - name: download ${species} gene dictionary
+          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${species}/${species}.json
+          destination: target-inputs/homologue/gene_dictionary/${species}.json
+        - name: download ${species} ncrna homologies
+          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
+          destination: target-inputs/homologue/homologies/ncrna-${species}.tsv.gz
+        - name: download ${species} protein homologies
+          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
+          destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
 
   interactions:
     - name: download
@@ -140,6 +140,20 @@ steps:
     - name: download_latest
       source: otar001-core/MousePhenotypes
       destination: mouse-phenotypes-inputs/mouse_phenotypes.json.gz
+
+  openfda:
+    - name: download blacklisted events
+      source: https://raw.githubusercontent.com/opentargets/platform-etl-backend/master/src/main/resources/blacklisted_events.txt
+      destination: fda-inputs/blacklisted_events.txt
+    - name: explode fda events
+      foreach_function: urls_from_json
+      foreach_function_args:
+        url: https://api.fda.gov/download.json
+        json_path: .results.drug.event.partitions[].file
+      do:
+        - name: download
+          source: ${source}
+          destination: fda-inputs/${destination}
 
   otar:
     - name: download
