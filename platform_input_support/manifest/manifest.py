@@ -78,7 +78,7 @@ class TaskReporter:
         self._report.status = Status.NOT_COMPLETED
 
     def complete_task(self, log: str):
-        logger.info('task completed')
+        logger.info(f'task completed: {log}')
         self._report.log.append(log)
         self._report.status = Status.COMPLETED
 
