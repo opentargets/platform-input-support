@@ -126,47 +126,6 @@ config:
         uri: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
         output_filename: normal_tissue.tsv.gz
         path: expression-inputs
-  homologues:
-    uri: https://ftp.ensembl.org/pub/release-{release}/json/
-    path_gene_dictionary: gene_dictionary
-    uri_homologues: https://ftp.ensembl.org/pub/release-{release}/tsv/ensembl-compara/homologies
-    path_homologues: homologies
-    types_homologues:
-      - protein
-      - ncrna
-    path: target-inputs/homologue
-    release: <ENSEMBL_RELEASE_VERSION>
-    jq: '.genes[] | [.id, .name] | @tsv'
-    resources:
-      - caenorhabditis_elegans
-      - canis_lupus_familiaris
-      - cavia_porcellus
-      - danio_rerio
-      - drosophila_melanogaster
-      - macaca_mulatta
-      - mus_musculus
-      - oryctolagus_cuniculus
-      - pan_troglodytes
-      - rattus_norvegicus
-      - sus_scrofa
-      - xenopus_tropicalis
-      - homo_sapiens
-  openfda:
-    http_downloads:
-      - uri: https://raw.githubusercontent.com/opentargets/platform-etl-backend/master/src/main/resources/blacklisted_events.txt
-        path: fda-inputs
-        output_filename: blacklisted_events.txt
-    etl:
-      downloads:
-        uri: https://api.fda.gov/download.json
-        path: fda-inputs
-        output_filename: openfda_file_listing.json
-  so:
-    etl:
-      uri: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.owl
-      output_filename: ontology-so-{suffix}.json
-      path: so-inputs
-      owl_jq: '.["@graph"][] | select (.["@type"] == "owl:Class" and .id != null)|.subClassOf=([.subClassOf]|flatten|del(.[]|nulls))|.hasExactSynonym=([.hasExactSynonym]|flatten|del(.[]|nulls))|.hasDbXref=([.hasDbXref]|flatten|del(.[]|nulls))|.inSubset=([.inSubset]|flatten|del(.[]|nulls))|.hasAlternativeId=([.hasAlternativeId]|flatten|del(.[]|nulls))|@json'
   target:
     http_downloads:
       - uri: https://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
