@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import Any
 
 from platform_input_support.action import Action, ActionConfigMapping
-from platform_input_support.helpers.download import download
+from platform_input_support.helpers.download import DownloadHelper
 from platform_input_support.helpers.google import google
 from platform_input_support.manifest.manifest import report_to_manifest
 
@@ -37,7 +36,7 @@ class DownloadLatest(Action):
 
         if newest_file:
             self.append_log(f'latest file is {newest_file}')
-            download(newest_file, self.config.destination)
-            return f'downloaded {newest_file} to {self.config.destination}'
+            d = DownloadHelper(newest_file, self.config.destination)
+            return d.download()
         else:
             raise ValueError(f'No files found in {self.config.source}')
