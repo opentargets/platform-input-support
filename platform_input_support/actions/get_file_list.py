@@ -16,7 +16,7 @@ class GetFileListConfigMapping(ActionConfigMapping):
 
 
 class GetFileList(Action):
-    def __init__(self, config: dict[str, Any]):
+    def __init__(self, config: ActionConfigMapping):
         self.config: GetFileListConfigMapping
         super().__init__(config)
 
