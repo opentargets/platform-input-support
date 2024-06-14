@@ -1,8 +1,8 @@
 import sys
+from dataclasses import dataclass
 from importlib import import_module
 from typing import Any
 
-from attr import dataclass
 from loguru import logger
 
 from platform_input_support.manifest.manifest import ActionReporter
