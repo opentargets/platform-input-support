@@ -13,7 +13,7 @@ class ActionMapping:
         name = data.pop('name')
         return cls(name=name, config=data)
 
-    def get_action_effective_name(self):
+    def real_name(self):
         return self.name.split(' ')[0]
 
 
