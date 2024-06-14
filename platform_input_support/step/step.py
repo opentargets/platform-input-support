@@ -34,11 +34,11 @@ class Step(StepReporter):
         self.start_step()
 
         preprocess_tasks = self._get_preprocess_tasks()
-        logger.info(f'Running {len(preprocess_tasks)} preprocess tasks')
+        logger.info(f'running {len(preprocess_tasks)} preprocess tasks')
         for am in preprocess_tasks:
             self._run_task(am)
 
-        logger.info(f'Running {len(self.tasks)} main tasks')
+        logger.info(f'running {len(self.tasks)} main tasks')
         pool = Pool(PARALLEL_STEP_COUNT)
         pool.map(self._run_task, self.tasks)
 

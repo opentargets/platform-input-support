@@ -39,4 +39,4 @@ class DownloadLatest(Task):
             d = DownloadHelper(newest_file, self.config.destination)
             return d.download()
         else:
-            raise ValueError(f'No files found in {self.config.source}')
+            raise ValueError(f'no files found in {self.config.source}')
