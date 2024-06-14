@@ -13,7 +13,6 @@ class ScratchPad:
         self.sentinel_dict = sentinel_dict or {}
 
     def store(self, key: str, value: str | list[str]):
-        key = f'{key}'  # TODO: add some kind of action name here?
         self.sentinel_dict[key] = value
 
     def replace(self, template: str) -> str:
