@@ -18,6 +18,6 @@ class HelloWorld(Task):
 
     @report_to_manifest
     def run(self):
-        logger.info(f'Hello, {self.config.who}!')
+        logger.info(f'hello, {self.config.who}!')
 
         return f'completed task hello_world for {self.config.who}'
