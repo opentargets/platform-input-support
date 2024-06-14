@@ -119,7 +119,7 @@ class GoogleHelper:
         blob_name = str(blob.name)
 
         if prefix is not None:
-            blob_name.replace(prefix, '')
+            blob_name = blob_name.replace(prefix, '')
 
         return '/' not in blob_name and not blob_name.endswith('/')
 
