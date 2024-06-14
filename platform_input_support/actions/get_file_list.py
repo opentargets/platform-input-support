@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from typing import Any
 
 from platform_input_support.action import Action, ActionConfigMapping
-from platform_input_support.helpers.download import download
 from platform_input_support.helpers.google import google
 from platform_input_support.manifest.manifest import report_to_manifest
 from platform_input_support.scratch_pad import scratch_pad
@@ -30,7 +28,7 @@ class GetFileList(Action):
             file_list = google.list(self.config.source, include=self.config.pattern)
 
         if len(file_list):
-            self.append_log(f'{len(file_list)} files with pattern {self.config.pattern} found in {self.config.source}')
             scratch_pad.store(self.config.scratch_pad_key, file_list)
+            return f'{len(file_list)} files with pattern {self.config.pattern} found in {self.config.source}'
         else:
             raise ValueError(f'no files found in {self.config.source} with pattern {self.config.pattern}')

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from google import auth
 from google.auth import exceptions as auth_exceptions
-from google.auth.transport.requests import AuthorizedSession, Request
+from google.auth.transport.requests import AuthorizedSession
 from google.cloud import exceptions as cloud_exceptions
 from google.cloud import storage
 from loguru import logger
@@ -118,9 +118,10 @@ class GoogleHelper:
     def _is_file(blob: storage.Blob, prefix: str | None) -> bool:
         blob_name = str(blob.name)
 
-        if prefix is None:
-            return not blob_name.endswith('/')
-        return '/' not in blob_name.replace(prefix, '') and not blob_name.endswith('/')
+        if prefix is not None:
+            blob_name.replace(prefix, '')
+
+        return '/' not in blob_name and not blob_name.endswith('/')
 
     def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
         bucket_name, prefix = self._parse_url(url)
