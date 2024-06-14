@@ -9,66 +9,64 @@ from urllib3 import Retry
 from platform_input_support.config import config
 from platform_input_support.helpers.google import google
 
-CHUNK_SIZE = 8192
+CHUNK_SIZE = 1024 * 1024 * 10
 
 
 class DownloadError(Exception):
     pass
 
 
-def _ensure_path_exists(path: Path):
-    parent = path.parent
+class DownloadHelper:
+    def __init__(self, source: str, destination: str):
+        self.source = source
+        self.destination = Path(config.output_path) / destination
 
-    try:
-        logger.info(f'ensuring path {parent} exists')
-        parent.mkdir(parents=True, exist_ok=True)
-    except OSError as e:
-        logger.error(f'error creating path {parent}: {e}')
-        raise
+    def _ensure_path_exists(self):
+        parent = self.destination.parent
 
+        try:
+            logger.info(f'ensuring path {parent} exists')
+            parent.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            raise DownloadError(f'error creating path {self.destination}: {e}')
 
-def download(source: str, destination: str):
-    complete_destination_path = Path(config.output_path) / destination
+    def download(self) -> str:
+        logger.info(f'downloading {self.source} to {self.destination}')
 
-    try:
-        _ensure_path_exists(complete_destination_path)
-    except OSError as e:
-        raise DownloadError(f'error creating path {complete_destination_path}: {e}')
+        self._ensure_path_exists()
 
-    if source.startswith('https://docs.google.com/spreadsheets/d'):
-        download_spreadsheet(source, complete_destination_path)
-    else:
-        protocol = source.split(':')[0]
-        if protocol in ['http', 'https']:
-            download_http(source, complete_destination_path)
-        elif protocol == 'gs':
-            google.download(source, complete_destination_path)
+        if self.source.startswith('https://docs.google.com/spreadsheets/d'):
+            self.download_spreadsheet()
+        else:
+            protocol = self.source.split(':')[0]
+            if protocol in ['http', 'https']:
+                self.download_http()
+            elif protocol == 'gs':
+                google.download(self.source, self.destination)
 
-    logger.info('download successful')
+        logger.info('download successful')
+        return f'downloaded {self.source} to {self.destination}'
 
+    def download_http(self):
+        s = requests.Session()
+        retries = Retry(
+            total=5,
+            backoff_factor=0.1,
+            status_forcelist=[500, 502, 503, 504],
+            allowed_methods={'GET'},
+        )
 
-def download_http(source: str, destination: Path):
-    s = requests.Session()
-    retries = Retry(
-        total=5,
-        backoff_factor=0.1,
-        status_forcelist=[500, 502, 503, 504],
-        allowed_methods={'GET'},
-    )
+        s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
+        s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
+        self._download(s, True)
 
-    s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
-    s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
-    _download(source, destination, s)
+    def download_spreadsheet(self):
+        s = google.get_session()
+        self._download(s)
 
+    def _download(self, s: requests.Session, stream: bool = False):
+        r = s.get(self.source, stream=True)
+        r.raise_for_status()
 
-def download_spreadsheet(source: str, destination: Path):
-    s = google.get_session()
-    _download(source, destination, s)
-
-
-def _download(source: str, destination: Path, s: requests.Session, stream: bool = False):
-    r = s.get(source, stream=True)
-    r.raise_for_status()
-
-    with open(destination, 'wb') as f:
-        shutil.copyfileobj(r.raw, f, CHUNK_SIZE)
+        with open(self.destination, 'wb') as f:
+            shutil.copyfileobj(r.raw, f, CHUNK_SIZE)
