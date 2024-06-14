@@ -70,7 +70,7 @@ class TaskReporter:
         task_class = self.__class__.__name__
         task_module = import_module(self.__module__)
         report_class = f'{task_class}Report'
-        report: TaskReport = getattr(task_module, report_class, TaskReport)(name)
+        report: TaskReport = getattr(task_module, report_class, TaskReport)(name)  # TODO: get full name here!
         self._report = report
 
     def start_task(self):
