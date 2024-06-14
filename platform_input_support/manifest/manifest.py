@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from functools import wraps
 from importlib import import_module
@@ -82,7 +83,7 @@ class ActionReporter:
         self._report.status = Status.COMPLETED
 
     def fail_action(self, error: Exception):
-        logger.error(f'action failed: {error}')
+        logger.opt(exception=sys.exc_info()).error(f'action failed: {error}')
         self._report.log.append(str(error))
         self._report.status = Status.FAILED
 
