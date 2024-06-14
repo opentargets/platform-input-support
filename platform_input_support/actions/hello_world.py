@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Any
 
 from loguru import logger
 
@@ -13,7 +12,7 @@ class HelloWorldConfigMapping(ActionConfigMapping):
 
 
 class HelloWorld(Action):
-    def __init__(self, config: dict[str, Any]):
+    def __init__(self, config: ActionConfigMapping):
         self.config: HelloWorldConfigMapping
         super().__init__(config)
 

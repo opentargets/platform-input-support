@@ -14,7 +14,7 @@ class DownloadLatestConfigMapping(ActionConfigMapping):
 
 
 class DownloadLatest(Action):
-    def __init__(self, config: dict[str, Any]):
+    def __init__(self, config: ActionConfigMapping):
         self.config: DownloadLatestConfigMapping
         super().__init__(config)
 

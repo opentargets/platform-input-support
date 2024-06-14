@@ -22,7 +22,7 @@ class DownloadReport(ActionReport):
 
 
 class Download(Action):
-    def __init__(self, config: dict[str, Any]):
+    def __init__(self, config: ActionConfigMapping):
         self.config: DownloadConfigMapping
         super().__init__(config)
 
