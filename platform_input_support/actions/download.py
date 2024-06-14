@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-from typing import Any
 
-from loguru import logger
-
-from platform_input_support.action import Action, ActionConfigMapping
-from platform_input_support.helpers.download import download
+from platform_input_support.action import Action
+from platform_input_support.action.action import ActionConfigMapping
+from platform_input_support.helpers.download import DownloadHelper
 from platform_input_support.manifest.manifest import report_to_manifest
 from platform_input_support.manifest.models import ActionReport, Status
 
@@ -28,6 +26,5 @@ class Download(Action):
 
     @report_to_manifest
     def run(self) -> str:
-        logger.debug(f'downloading {self.config.source} to {self.config.destination}')
-        download(self.config.source, self.config.destination)
-        return f'downloaded {self.config.source} to {self.config.destination}'
+        d = DownloadHelper(self.config.source, self.config.destination)
+        return d.download()
