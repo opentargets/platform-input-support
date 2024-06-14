@@ -10,15 +10,12 @@ readme = "README.md"
 python = "^3.12"
 elasticsearch = "==8.13.2"
 elasticsearch-dsl = "==8.13.1"
-jsonlines = "==4.0.0"
 google-cloud-storage = "==2.16.0"
-gspread = "==5.12.2"
 PyYAML = "==6.0.1"
-jsonpickle = "==3.0.4"
-opentargets-urlzsource = "==1.0.0"
 loguru = "==0.7.2"
 
 [tool.poetry.group.dev.dependencies]
+poetry = "^1.8.3"
 pytest = "==7.4.3"
 ruff = "==0.4.6"
 
@@ -86,8 +83,6 @@ ignore = [
   'UP038',   # it looks kind of weird and it slower than a tuple
   'S101',    # we use asserts outside tests, and do not run python with `-O` (also see B011)
   'S311',    # false positives, it does not care about the context
-  'S321',    # some resources we need are in ftp servers
-  'S402',    # ^ likewise
   'S324',    # all our md5/sha1 usages are for non-security purposes
   'S404',    # useless, triggers on *all* subprocess imports
   'S403',    # there's already a warning on using pickle, no need to have one for the import
