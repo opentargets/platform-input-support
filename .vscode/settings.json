@@ -1,4 +1,11 @@
 {
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.typeCheckingMode": "standard"
+  "python.analysis.typeCheckingMode": "standard",
+
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true,
+    "**/.venv": true,
+  },
 }
