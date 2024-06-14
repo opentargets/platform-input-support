@@ -3,7 +3,7 @@ config:
   output_path: ./output
   gcp_credentials_path: ./credentials/gcs_credentials.json
   gcp_bucket_path: gs://open-targets-pre-data-releases/24.06dev-test
-  log_level: DEBUG
+  log_level: TRACE
 
 scratch_pad:
   efo_release_version: v3.65.0
@@ -72,7 +72,7 @@ steps:
     - name: download_latest cosmic
       source: ${cosmic_file_list}
       destination: evidence-files/cosmic.json.gz
-    - name: download_latest atlas.
+    - name: download_latest atlas
       source: gs://otar010-atlas
       destination: evidence-files/atlas.json.bz2
     - name: download_latest uniprot
@@ -120,145 +120,145 @@ steps:
 
 
       # caenorhabditis_elegans
-    - name: download
+    - name: download caenorhabditis_elegans gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/caenorhabditis_elegans/caenorhabditis_elegans.json
       destination: target-inputs/homologue/gene_dictionary/caenorhabditis_elegans.json
-    - name: download
+    - name: download caenorhabditis_elegans ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/caenorhabditis_elegans/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/caenorhabditis_elegans.tsv.gz
-    - name: download
+    - name: download caenorhabditis_elegans protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/caenorhabditis_elegans/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/caenorhabditis_elegans.tsv.gz
 
       # canis_lupus_familiaris
-    - name: download
+    - name: download canis_lupus_familiaris gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/canis_lupus_familiaris/canis_lupus_familiaris.json
       destination: target-inputs/homologue/gene_dictionary/canis_lupus_familiaris.json
-    - name: download
+    - name: download canis_lupus_familiaris ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/canis_lupus_familiaris/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/canis_lupus_familiaris.tsv.gz
-    - name: download
+    - name: download canis_lupus_familiaris protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/canis_lupus_familiaris/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/canis_lupus_familiaris.tsv.gz
 
       # cavia_porcellus
-    - name: download
+    - name: download cavia_porcellus gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/cavia_porcellus/cavia_porcellus.json
       destination: target-inputs/homologue/gene_dictionary/cavia_porcellus.json
-    - name: download
+    - name: download cavia_porcellus ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/cavia_porcellus/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/cavia_porcellus.tsv.gz
-    - name: download
+    - name: download cavia_porcellus protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/cavia_porcellus/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/cavia_porcellus.tsv.gz
 
       # danio_rerio
-    - name: download
+    - name: download danio_rerio gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/danio_rerio/danio_rerio.json
       destination: target-inputs/homologue/gene_dictionary/danio_rerio.json
-    - name: download
+    - name: download danio_rerio ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/danio_rerio/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/danio_rerio.tsv.gz
-    - name: download
+    - name: download danio_rerio protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/danio_rerio/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/danio_rerio.tsv.gz
 
       # drosophila_melanogaster
-    - name: download
+    - name: download drosophila_melanogaster gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/drosophila_melanogaster/drosophila_melanogaster.json
       destination: target-inputs/homologue/gene_dictionary/drosophila_melanogaster.json
-    - name: download
+    - name: download drosophila_melanogaster ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/drosophila_melanogaster/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/drosophila_melanogaster.tsv.gz
-    - name: download
+    - name: download drosophila_melanogaster protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/drosophila_melanogaster/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/drosophila_melanogaster.tsv.gz
 
       # macaca_mulatta
-    - name: download
+    - name: download macaca_mulatta gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/macaca_mulatta/macaca_mulatta.json
       destination: target-inputs/homologue/gene_dictionary/macaca_mulatta.json
-    - name: download
+    - name: download macaca_mulatta ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/macaca_mulatta/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/macaca_mulatta.tsv.gz
-    - name: download
+    - name: download macaca_mulatta protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/macaca_mulatta/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/macaca_mulatta.tsv.gz
 
       # mus_musculus
-    - name: download
+    - name: download mus_musculus gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/mus_musculus/mus_musculus.json
       destination: target-inputs/homologue/gene_dictionary/mus_musculus.json
-    - name: download
+    - name: download mus_musculus ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/mus_musculus/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/mus_musculus.tsv.gz
-    - name: download
+    - name: download mus_musculus protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/mus_musculus/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/mus_musculus.tsv.gz
 
       # oryctolagus_cuniculus
-    - name: download
+    - name: download oryctolagus_cuniculus gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/oryctolagus_cuniculus/oryctolagus_cuniculus.json
       destination: target-inputs/homologue/gene_dictionary/oryctolagus_cuniculus.json
-    - name: download
+    - name: download oryctolagus_cuniculus ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/oryctolagus_cuniculus/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/oryctolagus_cuniculus.tsv.gz
-    - name: download
+    - name: download oryctolagus_cuniculus protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/oryctolagus_cuniculus/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/oryctolagus_cuniculus.tsv.gz
 
       # pan_troglodytes
-    - name: download
+    - name: download pan_troglodytes gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/pan_troglodytes/pan_troglodytes.json
       destination: target-inputs/homologue/gene_dictionary/pan_troglodytes.json
-    - name: download
+    - name: download pan_troglodytes ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/pan_troglodytes/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/pan_troglodytes.tsv.gz
-    - name: download
+    - name: download pan_troglodytes protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/pan_troglodytes/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/pan_troglodytes.tsv.gz
 
       # rattus_norvegicus
-    - name: download
+    - name: download rattus_norvegicus gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/rattus_norvegicus/rattus_norvegicus.json
       destination: target-inputs/homologue/gene_dictionary/rattus_norvegicus.json
-    - name: download
+    - name: download rattus_norvegicus ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/rattus_norvegicus/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/rattus_norvegicus.tsv.gz
-    - name: download
+    - name: download rattus_norvegicus protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/rattus_norvegicus/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/rattus_norvegicus.tsv.gz
 
       # sus_scrofa
-    - name: download
+    - name: download sus_scrofa gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/sus_scrofa/sus_scrofa.json
       destination: target-inputs/homologue/gene_dictionary/sus_scrofa.json
-    - name: download
+    - name: download sus_scrofa ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/sus_scrofa/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/sus_scrofa.tsv.gz
-    - name: download
+    - name: download sus_scrofa protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/sus_scrofa/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/sus_scrofa.tsv.gz
 
       # xenopus_tropicalis
-    - name: download
+    - name: download xenopus_tropicalis gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/xenopus_tropicalis/xenopus_tropicalis.json
       destination: target-inputs/homologue/gene_dictionary/xenopus_tropicalis.json
-    - name: download
+    - name: download xenopus_tropicalis ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/xenopus_tropicalis/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/xenopus_tropicalis.tsv.gz
-    - name: download
+    - name: download xenopus_tropicalis protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/xenopus_tropicalis/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/xenopus_tropicalis.tsv.gz
 
       # homo_sapiens
-    - name: download
+    - name: download homo_sapiens gene dictionary
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/homo_sapiens/homo_sapiens.json
       destination: target-inputs/homologue/gene_dictionary/homo_sapiens.json
-    - name: download
+    - name: download homo_sapiens ncrna homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/homo_sapiens/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/homo_sapiens.tsv.gz
-    - name: download
+    - name: download homo_sapiens protein homologies
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/homo_sapiens/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
       destination: target-inputs/homologue/homologies/homo_sapiens.tsv.gz
 
