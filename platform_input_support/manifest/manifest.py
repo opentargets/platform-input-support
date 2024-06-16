@@ -44,7 +44,7 @@ class StepReporter:
         self._report.status = Status.NOT_COMPLETED
 
     def complete_step(self):
-        logger.info('step completed')
+        logger.success('step completed')
         self._report.status = Status.COMPLETED
 
     def fail_step(self, error: Exception):
@@ -53,7 +53,7 @@ class StepReporter:
         self._report.status = Status.FAILED
 
     def pass_validation_step(self):
-        logger.info(f'validation passed {self._report.name}')
+        logger.success(f'validation passed {self._report.name}')
         self._report.status = Status.VALIDATION_PASSED
 
     def fail_validation_step(self, error: Exception):
@@ -78,7 +78,7 @@ class TaskReporter:
         self._report.status = Status.NOT_COMPLETED
 
     def complete_task(self, log: str):
-        logger.info(f'task completed: {log}')
+        logger.success(f'task completed: {log}')
         self._report.log.append(log)
         self._report.status = Status.COMPLETED
 
@@ -88,7 +88,7 @@ class TaskReporter:
         self._report.status = Status.FAILED
 
     def pass_validation_task(self, log: str):
-        logger.info('validation passed')
+        logger.success('validation passed')
         self._report.log.append(log)
         self._report.status = Status.VALIDATION_PASSED
 
