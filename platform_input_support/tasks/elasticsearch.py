@@ -36,17 +36,24 @@ class Elasticsearch(Task):
         self.doc_count: int = 0
         self.doc_written: int = 0
 
-    def _ensure_path_exists(self, destination: Path):
-        parent = Path(destination).parent
+    def _prepare_path(self) -> Path:
+        destination = Path(f'{config.output_path}/{self.config.destination}/{self.config.index}.jsonl')
 
         try:
-            logger.info(f'ensuring path {parent} exists')
-            parent.mkdir(parents=True, exist_ok=True)
+            logger.info(f'ensuring path {destination.parent} exists and does not have files already')
+            destination.parent.mkdir(parents=True, exist_ok=True)
         except OSError as e:
-            raise ElasticsearchError(f'error creating path {destination}: {e}')
+            raise ElasticsearchError(f'error creating path {self.config.destination}: {e}')
+
+        if destination.is_file():
+            raise ElasticsearchError(f'path {self.config.destination} already exists, bailing out')
+
+        return destination
 
     @report_to_manifest
     def run(self):
+        destination = self._prepare_path()
+
         try:
             logger.debug(f'connecting to {self.config.url}')
             self.es = Elasticsearch_(self.config.url)
@@ -54,8 +61,6 @@ class Elasticsearch(Task):
             raise ElasticsearchError(f'connection error: {e}')
 
         index, fields = self.config.index, self.config.fields
-        destination = Path(f'{config.output_path}/{self.config.destination}/{index}.jsonl')
-        self._ensure_path_exists(destination)
         source: Search
         logger.debug(f'scanning index {index} with fields {fields}')
 
