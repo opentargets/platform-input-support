@@ -27,7 +27,6 @@ class GoogleHelper:
             ]
 
             credentials, project_id = auth.default(scopes=scopes)
-
             logger.debug(f'gcp authenticated on project {project_id}')
         except auth_exceptions.DefaultCredentialsError as e:
             logger.critical(f'error authenticating on gcp: {e}')
@@ -38,15 +37,14 @@ class GoogleHelper:
 
         # check if the configured bucket exists
         try:
-            if config.gcp_bucket_path is None:
-                logger.critical('missing setting: gcp_bucket_path')
-                sys.exit(1)
-
-            if not self.bucket_exists(config.gcp_bucket_path):
-                logger.critical(f'gcp bucket {config.gcp_bucket_path} does not exist')
+            if config.gcs_url is None:
+                logger.warning('`gcs_url` setting and `PIS_GCS_URL` env var are missing')
+                return
+            if not self.bucket_exists(config.gcs_url):
+                logger.critical(f'{config.gcs_url} does not exist')
                 sys.exit(1)
         except GoogleHelperError as e:
-            logger.critical(f'error checking gcp bucket: {e}')
+            logger.critical(f'error checking google cloud storage url: {e}')
             sys.exit(1)
 
     @staticmethod
