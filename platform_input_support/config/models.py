@@ -1,17 +1,25 @@
 import inspect
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeVar
+
+from loguru import logger
+
+T = TypeVar('T', bound='TaskMapping')
 
 
 @dataclass
 class TaskMapping:
     name: str
-    config: dict[str, Any]  # this becomes a TaskConfigMapping once the task is instantiated
+    config_dict: dict[str, Any]
 
     @classmethod
-    def from_dict(cls, data: dict):
-        name = data.pop('name')
-        return cls(name=name, config=data)
+    def from_dict(cls: type[T], config_dict: dict) -> T:
+        name: str = ''
+        try:
+            name = config_dict['name']
+        except KeyError:
+            logger.critical('missing field name in a task definition, check configuration file')
+        return cls(name=name, config_dict=config_dict)
 
     def real_name(self):
         return self.name.split(' ')[0]
@@ -27,11 +35,8 @@ class ConfigMapping:
     @classmethod
     def from_dict(cls, data: dict):
         kwargs = {}
-
-        # make sure it fills all the class arguments, but no more
         for param in inspect.signature(cls).parameters:
             kwargs[param] = data.get(param)
-
         return cls(**kwargs)
 
     def __add__(self, other):
