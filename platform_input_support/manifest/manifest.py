@@ -67,6 +67,7 @@ class StepReporter:
 
 class TaskReporter:
     def __init__(self, name: str):
+        self.name = name
         task_class = self.__class__.__name__
         task_module = import_module(self.__module__)
         report_class = f'{task_class}Report'

@@ -2,18 +2,19 @@ from dataclasses import dataclass
 
 from loguru import logger
 
+from platform_input_support.config.models import TaskMapping
 from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Task, TaskConfigMapping
+from platform_input_support.task import Task
 
 
 @dataclass
-class HelloWorldConfigMapping(TaskConfigMapping):
+class HelloWorldMapping(TaskMapping):
     who: str = 'world'
 
 
 class HelloWorld(Task):
-    def __init__(self, config: TaskConfigMapping):
-        self.config: HelloWorldConfigMapping
+    def __init__(self, config: TaskMapping):
+        self.config: HelloWorldMapping
         super().__init__(config)
 
     @report_to_manifest

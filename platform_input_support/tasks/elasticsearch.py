@@ -10,8 +10,9 @@ from elasticsearch_dsl import Search, utils
 from loguru import logger
 
 from platform_input_support.config import config
+from platform_input_support.config.models import TaskMapping
 from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Task, TaskConfigMapping
+from platform_input_support.task import Task
 
 BUFFER_SIZE = 100000
 
@@ -21,7 +22,7 @@ class ElasticsearchError(Exception):
 
 
 @dataclass
-class ElasticsearchConfigMapping(TaskConfigMapping):
+class ElasticsearchMapping(TaskMapping):
     url: str
     destination: str
     index: str
@@ -29,8 +30,8 @@ class ElasticsearchConfigMapping(TaskConfigMapping):
 
 
 class Elasticsearch(Task):
-    def __init__(self, config: TaskConfigMapping):
-        self.config: ElasticsearchConfigMapping
+    def __init__(self, config: TaskMapping):
+        self.config: ElasticsearchMapping
         super().__init__(config)
         self.es: Elasticsearch_
         self.doc_count: int = 0
