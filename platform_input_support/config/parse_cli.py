@@ -75,9 +75,11 @@ class ParseCLI:
 
         parser.add_argument(
             '-b',
-            '--gcp-bucket-path',
+            '--gcs-url',
             action=WithEnvironmentVariable,
-            help='If set, the result will be uploaded to this google cloud storage path.',
+            help='If set, platform-input-support will use this google cloud storage '
+            'url to retrieve the manifest status, and act accordingly to what is there. '
+            'Also, the resulting files will be uploaded there.',
         )
 
         parser.add_argument(

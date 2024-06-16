@@ -1,8 +1,7 @@
 ---
 config:
   output_path: ./output
-  gcp_credentials_path: ./credentials/gcs_credentials.json
-  gcp_bucket_path: gs://open-targets-pre-data-releases/24.06dev-test
+  # gcs_url: gs://open-targets-pre-data-releases/24.06dev-test
   log_level: TRACE
 
 scratch_pad:
