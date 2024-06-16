@@ -9,7 +9,6 @@ from platform_input_support.config.models import ConfigMapping
 class WithEnvironmentVariable(argparse.Action):
     def __init__(self, required=False, default=None, **kwargs):
         option_string: list[str] = kwargs.get('option_strings', [])
-
         env_var_name = 'PIS_' + option_string[-1][2:].upper().replace('-', '_')
         default = os.environ.get(env_var_name, default)
         if default is not None:
@@ -83,6 +82,7 @@ class ParseCLI:
         )
 
         parser.add_argument(
+            '-l',
             '--log-level',
             # default is 'INFO', set in the SettingsModel
             choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
