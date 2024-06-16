@@ -11,11 +11,11 @@ from platform_input_support.config.models import TaskMapping
 from platform_input_support.helpers.download import DownloadHelper
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.scratch_pad import scratch_pad
-from platform_input_support.task import Task, TaskConfigMapping
+from platform_input_support.task import Task
 
 
 @dataclass
-class ExplodeConfigMapping(TaskConfigMapping):
+class ExplodeMapping(TaskMapping):
     do: list[dict]
     foreach: list[dict[str, str]] | None = None
     foreach_function: str | None = None
@@ -23,8 +23,8 @@ class ExplodeConfigMapping(TaskConfigMapping):
 
 
 class Explode(Task):
-    def __init__(self, config: TaskConfigMapping):
-        self.config: ExplodeConfigMapping
+    def __init__(self, config: TaskMapping):
+        self.config: ExplodeMapping
         super().__init__(config)
 
     @report_to_manifest
@@ -64,7 +64,7 @@ class Explode(Task):
 
             for task in self.config.do:
                 task_config_dict = {k2: scratch_pad.replace(v2) for k2, v2 in task.items()}
-                t = TaskMapping(task_config_dict.pop('name'), task_config_dict)
+                t = TaskMapping.from_dict(task_config_dict)
                 tasks.append(t)
                 new_tasks += 1
 

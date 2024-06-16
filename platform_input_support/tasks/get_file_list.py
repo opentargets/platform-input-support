@@ -1,21 +1,22 @@
 from dataclasses import dataclass
 
+from platform_input_support.config.models import TaskMapping
 from platform_input_support.helpers.google import google
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.scratch_pad import scratch_pad
-from platform_input_support.task import Task, TaskConfigMapping
+from platform_input_support.task import Task
 
 
 @dataclass
-class GetFileListConfigMapping(TaskConfigMapping):
+class GetFileListMapping(TaskMapping):
     source: str
     pattern: str
     scratch_pad_key: str
 
 
 class GetFileList(Task):
-    def __init__(self, config: TaskConfigMapping):
-        self.config: GetFileListConfigMapping
+    def __init__(self, config: TaskMapping):
+        self.config: GetFileListMapping
         super().__init__(config)
 
     @report_to_manifest
