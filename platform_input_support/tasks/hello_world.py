@@ -2,9 +2,7 @@ from dataclasses import dataclass
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Task
+from . import Task, TaskMapping, report_to_manifest
 
 
 @dataclass

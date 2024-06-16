@@ -4,9 +4,9 @@ from pathlib import Path
 
 from loguru import logger
 
-from platform_input_support.config.models import ConfigMapping, RootMapping, TaskMapping
-from platform_input_support.config.parse_cli import ParseCLI
-from platform_input_support.config.parse_yaml import ParseYAML
+from .models import ConfigMapping, RootMapping, TaskMapping
+from .parse_cli import ParseCLI
+from .parse_yaml import ParseYAML
 
 DEFAULT_CONFIG_FILENAME = 'config.yaml'
 

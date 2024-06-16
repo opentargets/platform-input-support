@@ -3,7 +3,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from platform_input_support.config.models import ConfigMapping
+from platform_input_support.config import ConfigMapping
 
 __all__ = ['logger']
 
