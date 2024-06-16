@@ -24,8 +24,8 @@ class ExplodeMapping(TaskMapping):
 
 class Explode(Task):
     def __init__(self, config: TaskMapping):
-        self.config: ExplodeMapping
         super().__init__(config)
+        self.config: ExplodeMapping
 
     @report_to_manifest
     def run(self):

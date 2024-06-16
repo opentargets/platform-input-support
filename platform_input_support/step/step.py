@@ -14,9 +14,8 @@ PREPROCESS_TASKS = ['explode', 'get_file_list']
 
 class Step(StepReporter):
     def __init__(self, name: str, tasks: list[TaskMapping]):
-        self.name = name
-        self.tasks = tasks
         super().__init__(name)
+        self.tasks = tasks
 
     def _get_preprocess_tasks(self) -> list[TaskMapping]:
         return [self.tasks.pop(i) for i, j in enumerate(self.tasks) if j.real_name() in PREPROCESS_TASKS]
