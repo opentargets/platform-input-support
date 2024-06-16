@@ -1,6 +1,6 @@
 from loguru import logger
 
-from platform_input_support.config.models import TaskMapping
+from platform_input_support.config import TaskMapping
 from platform_input_support.manifest import TaskReporter
 from platform_input_support.scratch_pad import scratch_pad
 

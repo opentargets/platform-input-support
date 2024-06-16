@@ -7,8 +7,9 @@ from pathlib import Path
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.task import Task
+from platform_input_support.config import TaskMapping
+
+from .task import Task
 
 tasks_dir = Path(__file__).parent.parent / 'tasks'
 tasks_module = 'platform_input_support.tasks'

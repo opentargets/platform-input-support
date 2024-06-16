@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.helpers.google import google
-from platform_input_support.manifest import report_to_manifest
+from platform_input_support.helpers import google
 from platform_input_support.scratch_pad import scratch_pad
-from platform_input_support.task import Task
+
+from . import Task, TaskMapping, report_to_manifest
 
 
 @dataclass

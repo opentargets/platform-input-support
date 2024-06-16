@@ -2,8 +2,8 @@ from multiprocessing.pool import Pool
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.manifest.manifest import StepReporter
+from platform_input_support.config import TaskMapping
+from platform_input_support.manifest import StepReporter
 from platform_input_support.task import PREPROCESS_TASKS, task_repository
 
 PARALLEL_STEP_COUNT = 5

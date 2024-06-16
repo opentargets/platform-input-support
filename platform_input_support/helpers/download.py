@@ -8,7 +8,7 @@ from loguru import logger
 from urllib3 import Retry
 
 from platform_input_support.config import config
-from platform_input_support.helpers.google import google
+from platform_input_support.helpers import google
 
 __all__ = ['DownloadError', 'DownloadHelper']
 CHUNK_SIZE = 1024 * 1024 * 10
@@ -74,7 +74,7 @@ class DownloadHelper:
         s = requests.Session()
         retries = Retry(
             total=5,
-            backoff_factor=0.1,
+            backoff_factor=0.1,  # type: ignore[arg-type]
             status_forcelist=[500, 502, 503, 504],
             allowed_methods={'GET'},
         )
