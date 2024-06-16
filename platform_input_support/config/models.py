@@ -4,7 +4,7 @@ from typing import Any, TypeVar
 
 from loguru import logger
 
-T = TypeVar('T', bound='TaskMapping')
+_T = TypeVar('_T', bound='TaskMapping')
 
 
 @dataclass
@@ -13,7 +13,7 @@ class TaskMapping:
     config_dict: dict[str, Any]
 
     @classmethod
-    def from_dict(cls: type[T], config_dict: dict) -> T:
+    def from_dict(cls: type[_T], config_dict: dict) -> _T:
         name: str = ''
         try:
             name = config_dict['name']
