@@ -21,7 +21,7 @@ class TaskMapping:
 class ConfigMapping:
     step: str
     output_path: str = './output'
-    gcp_bucket_path: str | None = None
+    gcs_url: str | None = None
     log_level: str = 'INFO'
 
     @classmethod
