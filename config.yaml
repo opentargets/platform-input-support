@@ -38,7 +38,74 @@ steps:
     - name: download_latest drugbank
       source: gs://otar001-core/DrugBank/annotation
       destination: chembl-inputs/drugbank.csv.gz
-    # TODO - get chembl ES
+    - name: elasticsearch chembl drug indications
+      url: https://www.ebi.ac.uk/chembl/elk/es
+      destination: chembl-inputs
+      index: chembl_${chembl_release_version}_drug_indication
+      fields:
+        - _metadata
+        - molecule_chembl_id
+        - efo_id
+        - max_phase_for_ind
+        - indication_refs
+    - name: elasticsearch chembl mechanisms of action
+      url: https://www.ebi.ac.uk/chembl/elk/es
+      destination: chembl-inputs
+      index: chembl_${chembl_release_version}_mechanism
+      fields:
+        - _metadata
+        - molecule_chembl_id
+        - target_chembl_id
+        - action_type
+        - mechanism_of_action
+        - mechanism_refs
+        - record_id
+        - parent_molecule_chembl_id
+    - name: elasticsearch chembl molecules
+      url: https://www.ebi.ac.uk/chembl/elk/es
+      destination: chembl-inputs
+      index: chembl_${chembl_release_version}_molecule
+      fields:
+        - molecule_chembl_id
+        - molecule_hierarchy
+        - molecule_type
+        - pref_name
+        - first_approval
+        - max_phase
+        - withdrawn_flag
+        - black_box_warning
+        - molecule_synonyms
+        - cross_references
+        - chebi_par_id
+        - molecule_structures
+    - name: elasticsearch chembl targets
+      url: https://www.ebi.ac.uk/chembl/elk/es
+      destination: chembl-inputs
+      index: chembl_${chembl_release_version}_target
+      fields:
+        - _metadata
+        - target_chembl_id
+        - target_components
+        - target_type
+        - pref_name
+    - name: elasticsearch chembl drug warnings
+      url: https://www.ebi.ac.uk/chembl/elk/es
+      destination: chembl-inputs
+      index: chembl_${chembl_release_version}_drug_warning
+      fields:
+        - _metadata
+        - molecule_chembl_id
+        - parent_molecule_chembl_id
+        - efo_id
+        - efo_term
+        - efo_id_for_warning_class
+        - warning_class
+        - warning_country
+        - warning_description
+        - warning_id
+        - warning_refs
+        - warning_type
+        - warning_year
 
   evidence:
     - name: download_latest cancerbiomarkers
