@@ -14,8 +14,8 @@ class HelloWorldMapping(TaskMapping):
 
 class HelloWorld(Task):
     def __init__(self, config: TaskMapping):
-        self.config: HelloWorldMapping
         super().__init__(config)
+        self.config: HelloWorldMapping
 
     @report_to_manifest
     def run(self):
