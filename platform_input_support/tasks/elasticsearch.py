@@ -40,13 +40,13 @@ class Elasticsearch(Task):
         destination = Path(f'{config.output_path}/{self.config.destination}/{self.config.index}.jsonl')
 
         try:
-            logger.info(f'ensuring path {destination.parent} exists and does not have files already')
+            logger.info(f'ensuring path {destination.parent} exists and {destination.name} does not')
             destination.parent.mkdir(parents=True, exist_ok=True)
         except OSError as e:
             raise ElasticsearchError(f'error creating path {self.config.destination}: {e}')
 
         if destination.is_file():
-            raise ElasticsearchError(f'path {self.config.destination} already exists, bailing out')
+            raise ElasticsearchError(f'file {self.config.destination} already exists')
 
         return destination
 
