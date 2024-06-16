@@ -1,15 +1,12 @@
-import sys
-from importlib import import_module
 from multiprocessing.pool import Pool
 
 from loguru import logger
 
 from platform_input_support.config.models import TaskMapping
 from platform_input_support.manifest.manifest import StepReporter
-from platform_input_support.task import task_repository
+from platform_input_support.task import PREPROCESS_TASKS, task_repository
 
 PARALLEL_STEP_COUNT = 5
-PREPROCESS_TASKS = ['explode', 'get_file_list']
 
 
 class Step(StepReporter):
@@ -20,32 +17,8 @@ class Step(StepReporter):
     def _get_preprocess_tasks(self) -> list[TaskMapping]:
         return [self.tasks.pop(i) for i, j in enumerate(self.tasks) if j.real_name() in PREPROCESS_TASKS]
 
-    def _run_task(self, am: TaskMapping):
-        # get task class from the repository
-        try:
-            task_class = task_repository.tasks[am.real_name()]
-        except KeyError:
-            logger.critical(f'invalid task name: {am.real_name()}')
-            sys.exit(1)
-
-        # import task module and get config class
-        task_module = import_module(task_class.__module__)
-        config_class_name = f'{task_class.__name__}Mapping'
-        try:
-            config_class: type[TaskMapping] = getattr(task_module, config_class_name)
-        except AttributeError:
-            logger.critical(f'{task_class.__name__} task is invalid, {config_class_name}ConfigMapping class not found')
-            sys.exit(1)
-
-        # create config and task instances
-        try:
-            config = config_class(**am.config_dict, config_dict=am.config_dict)
-        except TypeError as e:
-            logger.critical(f'invalid config for {task_class}: {e}')
-            sys.exit(1)
-        task = task_class(config)
-
-        # run the task
+    def _run_task(self, config: TaskMapping):
+        task = task_repository.instantiate(config)
         with logger.contextualize(task=task.name):
             try:
                 task.run()
