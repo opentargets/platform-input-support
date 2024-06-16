@@ -8,6 +8,8 @@ from platform_input_support.config.models import ConfigMapping, RootMapping, Tas
 from platform_input_support.config.parse_cli import ParseCLI
 from platform_input_support.config.parse_yaml import ParseYAML
 
+DEFAULT_CONFIG_FILENAME = 'config.yaml'
+
 
 class Config:
     def __init__(self):
@@ -21,7 +23,7 @@ class Config:
         cli_config = ConfigMapping.from_dict(cli_parser.data)
 
         # parse the yaml file
-        config_file_path = Path(cli_parser.data.get('config', 'config.yaml'))
+        config_file_path = Path(cli_parser.data.get('config', DEFAULT_CONFIG_FILENAME))
         yaml_parser = ParseYAML(config_file_path)
         yaml_parser.parse()
         yaml_root = RootMapping.from_dict(yaml_parser.data)
@@ -40,16 +42,15 @@ class Config:
         logger.info(f'found {len(step_list)} steps: {step_list}')
 
     def _check_output_path(self, output_path: str) -> None:
-        if Path(output_path).exists():
+        if Path(output_path).is_dir():
             logger.debug(f'output path {output_path} exists')
             if not os.access(output_path, os.W_OK):
                 logger.critical(f'output path {output_path} is not writable')
                 sys.exit(1)
-        if not Path(output_path).is_dir():
+        else:
             logger.info(f'output path {output_path} does not exist, creating it')
-
             try:
-                Path(output_path).mkdir(parents=True, exist_ok=True)
+                Path(output_path).mkdir(parents=True)
             except OSError as e:
                 logger.critical(f'error creating output path: {e}')
                 sys.exit(1)
