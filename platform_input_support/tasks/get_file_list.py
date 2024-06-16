@@ -16,8 +16,8 @@ class GetFileListMapping(TaskMapping):
 
 class GetFileList(Task):
     def __init__(self, config: TaskMapping):
-        self.config: GetFileListMapping
         super().__init__(config)
+        self.config: GetFileListMapping
 
     @report_to_manifest
     def run(self):

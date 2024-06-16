@@ -15,8 +15,8 @@ class DownloadLatestMapping(TaskMapping):
 
 class DownloadLatest(Task):
     def __init__(self, config: TaskMapping):
-        self.config: DownloadLatestMapping
         super().__init__(config)
+        self.config: DownloadLatestMapping
 
     @report_to_manifest
     def run(self):

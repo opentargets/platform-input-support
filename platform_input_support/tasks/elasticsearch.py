@@ -31,8 +31,8 @@ class ElasticsearchMapping(TaskMapping):
 
 class Elasticsearch(Task):
     def __init__(self, config: TaskMapping):
-        self.config: ElasticsearchMapping
         super().__init__(config)
+        self.config: ElasticsearchMapping
         self.es: Elasticsearch_
         self.doc_count: int = 0
         self.doc_written: int = 0

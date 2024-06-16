@@ -21,8 +21,8 @@ class DownloadManifest(TaskManifest):
 
 class Download(Task):
     def __init__(self, config: TaskMapping):
-        self.config: DownloadMapping
         super().__init__(config)
+        self.config: DownloadMapping
 
     @report_to_manifest
     def run(self) -> str:
