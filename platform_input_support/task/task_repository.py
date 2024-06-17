@@ -10,7 +10,6 @@ from loguru import logger
 from platform_input_support.config.models import TaskMapping
 from platform_input_support.task import Task
 
-PREPROCESS_TASKS = ['explode', 'get_file_list']
 TASKS_DIR = Path(__file__).parent.parent / 'tasks'
 TASKS_MODULE = 'platform_input_support.tasks'
 
@@ -70,7 +69,3 @@ class TaskRepository:
 
         # instantiate and return a subclass instance
         return task_class(config)
-
-
-task_repository = TaskRepository()
-task_repository.register_tasks()
