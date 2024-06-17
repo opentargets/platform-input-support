@@ -8,7 +8,7 @@ from loguru import logger
 from urllib3 import Retry
 
 from platform_input_support.config import config
-from platform_input_support.helpers.google import google_helper
+from platform_input_support.helpers import google_helper
 
 CHUNK_SIZE = 1024 * 1024 * 10
 
