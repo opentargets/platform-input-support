@@ -1,10 +1,10 @@
 ---
 config:
   output_path: ./output
-  # gcs_url: gs://open-targets-pre-data-releases/24.06dev-test
+  gcs_url: gs://open-targets-pre-data-releases/24.06dev-test/input
   log_level: TRACE
 
-scratch_pad:
+scratchpad:
   efo_release_version: v3.65.0
   ensembl_release_version: '111'
   chembl_release_version: '34'
@@ -158,7 +158,7 @@ steps:
     - name: get_file_list cosmic
       source: gs://otar007-cosmic
       pattern: '!hallmarks'
-      scratch_pad_key: cosmic_file_list
+      scratchpad_key: cosmic_file_list
     - name: download_latest cosmic
       source: ${cosmic_file_list}
       destination: evidence-files/cosmic.json.gz
@@ -375,7 +375,7 @@ steps:
     - name: get_file_list cosmic
       source: gs://otar007-cosmic
       pattern: 'hallmarks'
-      scratch_pad_key: cosmic_file_list
+      scratchpad_key: cosmic_file_list
     - name: download_latest cosmic
       source: ${cosmic_file_list}
       destination: evidence-files/cosmic.json.gz
