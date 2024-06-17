@@ -5,7 +5,7 @@ from loguru import logger
 from platform_input_support.config.models import TaskMapping
 from platform_input_support.manifest import Manifest
 from platform_input_support.manifest.reporters import StepReporter
-from platform_input_support.task.task_repository import PREPROCESS_TASKS, task_repository
+from platform_input_support.task import PREPROCESS_TASKS, task_repository
 
 PARALLEL_STEP_COUNT = 5
 
