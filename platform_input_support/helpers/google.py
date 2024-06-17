@@ -10,23 +10,26 @@ from google.cloud import storage
 from loguru import logger
 
 from platform_input_support.config import config
+from platform_input_support.util.errors import log_and_raise
 
-__all__ = ['GoogleHelperError', 'google']
+GOOGLE_SCOPES = [
+    'https://www.googleapis.com/auth/cloud-platform',
+    'https://www.googleapis.com/auth/spreadsheets',
+]
 
 
 class GoogleHelperError(Exception):
     """Google Helper Exception class."""
 
 
+class GoogleHelperNotFoundError(GoogleHelperError):
+    """Google Helper Not Found Exception class."""
+
+
 class GoogleHelper:
     def __init__(self):
         try:
-            scopes = [
-                'https://www.googleapis.com/auth/cloud-platform',
-                'https://www.googleapis.com/auth/spreadsheets',
-            ]
-
-            credentials, project_id = auth.default(scopes=scopes)
+            credentials, project_id = auth.default(scopes=GOOGLE_SCOPES)
             logger.debug(f'gcp authenticated on project {project_id}')
         except auth_exceptions.DefaultCredentialsError as e:
             logger.critical(f'error authenticating on gcp: {e}')
@@ -167,6 +170,3 @@ class GoogleHelper:
 
     def get_session(self) -> AuthorizedSession:
         return AuthorizedSession(self.credentials)
-
-
-google = GoogleHelper()

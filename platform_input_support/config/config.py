@@ -4,9 +4,9 @@ from pathlib import Path
 
 from loguru import logger
 
-from .models import ConfigMapping, RootMapping, TaskMapping
-from .parse_cli import ParseCLI
-from .parse_yaml import ParseYAML
+from platform_input_support.config.models import ConfigMapping, RootMapping
+from platform_input_support.config.parse_cli import ParseCLI
+from platform_input_support.config.parse_yaml import ParseYAML
 
 DEFAULT_CONFIG_FILENAME = 'config.yaml'
 
@@ -54,9 +54,3 @@ class Config:
             except OSError as e:
                 logger.critical(f'error creating output path: {e}')
                 sys.exit(1)
-
-
-c = Config()
-config: ConfigMapping = c.config.config
-tasks: list[TaskMapping] = c.config.steps[c.config.config.step]
-scratch_pad: dict[str, str] = c.config.scratch_pad

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
-from platform_input_support.helpers import DownloadHelper, google
-
-from . import Task, TaskMapping, report_to_manifest
+from platform_input_support.config.models import TaskMapping
+from platform_input_support.helpers import google_helper
+from platform_input_support.helpers.download import DownloadHelper
+from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.task.task import Task
 
 
 @dataclass
@@ -21,13 +23,13 @@ class DownloadLatest(Task):
         file_list = self.config.source
 
         if isinstance(self.config.source, str):
-            file_list = google.list(self.config.source)
+            file_list = google_helper.list(self.config.source)
 
         newest_date = None
         newest_file = None
 
         for f in file_list:
-            modification_date = google.get_modification_date(f)
+            modification_date = google_helper.get_modification_date(f)
             if modification_date:
                 if not newest_date or modification_date > newest_date:
                     newest_date = modification_date

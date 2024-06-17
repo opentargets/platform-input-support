@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+from platform_input_support.config.models import TaskMapping
+from platform_input_support.helpers import google_helper
+from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.task import Task
 from platform_input_support.util import scratchpad
 
 
@@ -20,9 +24,9 @@ class GetFileList(Task):
         file_list: list[str] = []
 
         if self.config.pattern.startswith('!'):
-            file_list = google.list(self.config.source, exclude=self.config.pattern[1:])
+            file_list = google_helper.list(self.config.source, exclude=self.config.pattern[1:])
         else:
-            file_list = google.list(self.config.source, include=self.config.pattern)
+            file_list = google_helper.list(self.config.source, include=self.config.pattern)
 
         if len(file_list):
             scratchpad.store(self.config.scratchpad_key, file_list)
