@@ -1,16 +1,13 @@
 from dataclasses import dataclass
 
-from platform_input_support.helpers import google
-from platform_input_support.scratch_pad import scratch_pad
-
-from . import Task, TaskMapping, report_to_manifest
+from platform_input_support.util import scratchpad
 
 
 @dataclass
 class GetFileListMapping(TaskMapping):
     source: str
     pattern: str
-    scratch_pad_key: str
+    scratchpad_key: str
 
 
 class GetFileList(Task):
@@ -28,7 +25,7 @@ class GetFileList(Task):
             file_list = google.list(self.config.source, include=self.config.pattern)
 
         if len(file_list):
-            scratch_pad.store(self.config.scratch_pad_key, file_list)
+            scratchpad.store(self.config.scratchpad_key, file_list)
             return f'{len(file_list)} files with pattern {self.config.pattern} found in {self.config.source}'
         else:
             raise ValueError(f'no files found in {self.config.source} with pattern {self.config.pattern}')
