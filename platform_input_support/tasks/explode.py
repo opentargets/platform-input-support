@@ -7,10 +7,7 @@ import jq
 from loguru import logger
 
 from platform_input_support.config import tasks
-from platform_input_support.helpers import DownloadHelper
-from platform_input_support.scratch_pad import scratch_pad
-
-from . import Task, TaskMapping, report_to_manifest
+from platform_input_support.util import scratchpad
 
 
 @dataclass
@@ -59,10 +56,10 @@ class Explode(Task):
 
         for d in foreach:
             for k1, v1 in d.items():
-                scratch_pad.store(k1, v1)
+                scratchpad.store(k1, v1)
 
             for task in self.config.do:
-                task_config_dict = {k2: scratch_pad.replace(v2) for k2, v2 in task.items()}
+                task_config_dict = {k2: scratchpad.replace(v2) for k2, v2 in task.items()}
                 t = TaskMapping.from_dict(task_config_dict)
                 tasks.append(t)
                 new_tasks += 1

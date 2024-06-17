@@ -2,7 +2,7 @@ from loguru import logger
 
 from platform_input_support.config import TaskMapping
 from platform_input_support.manifest import TaskReporter
-from platform_input_support.scratch_pad import scratch_pad
+from platform_input_support.util import scratchpad
 
 
 class Task(TaskReporter):
@@ -13,7 +13,7 @@ class Task(TaskReporter):
         # replace templates in the config strings
         for key, value in vars(self.config).items():
             if isinstance(value, str):
-                setattr(self.config, key, scratch_pad.replace(value))
+                setattr(self.config, key, scratchpad.replace(value))
 
         logger.debug(f'initialized task {self.name}')
 
