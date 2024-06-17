@@ -2,9 +2,10 @@ from multiprocessing.pool import Pool
 
 from loguru import logger
 
-from platform_input_support.config import TaskMapping
-from platform_input_support.manifest import StepReporter
-from platform_input_support.task import PREPROCESS_TASKS, task_repository
+from platform_input_support.config.models import TaskMapping
+from platform_input_support.manifest import Manifest
+from platform_input_support.manifest.reporters import StepReporter
+from platform_input_support.task.task_repository import PREPROCESS_TASKS, task_repository
 
 PARALLEL_STEP_COUNT = 5
 
@@ -19,6 +20,8 @@ class Step(StepReporter):
 
     def _run_task(self, config: TaskMapping):
         task = task_repository.instantiate(config)
+        self.add_task(task)
+
         with logger.contextualize(task=task.name):
             try:
                 task.run()
@@ -26,6 +29,7 @@ class Step(StepReporter):
                 self.fail(e)
 
     def run(self):
+        m = Manifest()
         self.start()
 
         preprocess_tasks = self._get_preprocess_tasks()
@@ -39,3 +43,7 @@ class Step(StepReporter):
         pool.map(self._run_task, self.tasks)
 
         self.complete()
+        m.add_step(self)
+        m.close()
+
+        print('MANIFESTn\n', m._manifest)

@@ -10,8 +10,9 @@ from elasticsearch_dsl import Search, utils
 from loguru import logger
 
 from platform_input_support.config import config
-
-from . import Task, TaskMapping, report_to_manifest
+from platform_input_support.config.models import TaskMapping
+from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.task import Task
 
 BUFFER_SIZE = 100000
 

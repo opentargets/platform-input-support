@@ -8,9 +8,8 @@ from loguru import logger
 from urllib3 import Retry
 
 from platform_input_support.config import config
-from platform_input_support.helpers import google
+from platform_input_support.helpers.google import google_helper
 
-__all__ = ['DownloadError', 'DownloadHelper']
 CHUNK_SIZE = 1024 * 1024 * 10
 
 
@@ -49,10 +48,9 @@ class DownloadHelper:
                 r = self._download_http()
                 self._save_response(r)
             elif protocol == 'gs':
-                google.download(self.source, self.destination)
+                google_helper.download(self.source, self.destination)
 
-        logger.info('download successful')
-        return f'downloaded {self.source} to {self.destination}'
+        return 'download successful'
 
     def download_json(self) -> Any:
         logger.info(f'downloading json from {self.source}')
@@ -67,7 +65,7 @@ class DownloadHelper:
         except requests.JSONDecodeError as e:
             raise DownloadError(f'error decoding json: {e}')
 
-        logger.info('download successful')
+        logger.success('download successful')
         return json
 
     def _download_http(self) -> requests.Response:
@@ -84,7 +82,7 @@ class DownloadHelper:
         return self._download(s)
 
     def _download_spreadsheet(self):
-        s = google.get_session()
+        s = google_helper.get_session()
         self._download(s)
 
     def _download(self, s: requests.Session) -> requests.Response:

@@ -1,2 +1,7 @@
-from .config import config, scratch_pad, tasks
-from .models import ConfigMapping, TaskMapping
+from platform_input_support.config.config import Config
+
+c = Config()
+
+config = c.config.config
+tasks = c.config.steps[c.config.config.step]
+scratchpad_dict = c.config.scratchpad

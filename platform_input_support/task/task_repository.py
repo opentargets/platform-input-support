@@ -7,15 +7,12 @@ from pathlib import Path
 
 from loguru import logger
 
-from platform_input_support.config import TaskMapping
-
-from .task import Task
-
-tasks_dir = Path(__file__).parent.parent / 'tasks'
-tasks_module = 'platform_input_support.tasks'
-
+from platform_input_support.config.models import TaskMapping
+from platform_input_support.task import Task
 
 PREPROCESS_TASKS = ['explode', 'get_file_list']
+TASKS_DIR = Path(__file__).parent.parent / 'tasks'
+TASKS_MODULE = 'platform_input_support.tasks'
 
 
 class TaskRepository:
@@ -31,11 +28,11 @@ class TaskRepository:
         logger.debug(f'registered task {task_name}')
 
     def register_tasks(self):
-        logger.debug(f'registering tasks from {tasks_dir}')
+        logger.debug(f'registering tasks from {TASKS_DIR}')
 
-        for file_path in tasks_dir.glob('*.py'):
+        for file_path in TASKS_DIR.glob('*.py'):
             filename = file_path.stem
-            task_module = import_module(f'{tasks_module}.{filename}')
+            task_module = import_module(f'{TASKS_MODULE}.{filename}')
 
             if task_module.__spec__ is None:
                 continue
@@ -71,7 +68,7 @@ class TaskRepository:
             logger.critical(f'invalid config for {task_class}: {e}')
             sys.exit(1)
 
-        # return a subclass instance
+        # instantiate and return a subclass instance
         return task_class(config)
 
 
