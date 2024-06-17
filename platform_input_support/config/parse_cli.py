@@ -3,7 +3,7 @@ import os
 
 from loguru import logger
 
-from .models import ConfigMapping
+from platform_input_support.config.models import ConfigMapping
 
 
 class WithEnvironmentVariable(argparse.Action):

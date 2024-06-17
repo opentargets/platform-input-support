@@ -7,6 +7,10 @@ import jq
 from loguru import logger
 
 from platform_input_support.config import tasks
+from platform_input_support.config.models import TaskMapping
+from platform_input_support.helpers.download import DownloadHelper
+from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.task import Task
 from platform_input_support.util import scratchpad
 
 
@@ -49,7 +53,7 @@ class Explode(Task):
             try:
                 foreach = func(**args)
             except Exception as e:
-                self.fail_task(Exception(f'error running foreach function {func_name}: {e}'))
+                self.fail(Exception(f'error running foreach function {func_name}: {e}'))
 
         logger.info(f'exploding {len(self.config.do)} tasks by {len(foreach)} iterations')
         new_tasks = 0
