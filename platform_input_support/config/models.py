@@ -30,6 +30,7 @@ class ConfigMapping:
     step: str
     output_path: str = './output'
     gcs_url: str | None = None
+    force: bool = False
     log_level: str = 'INFO'
 
     @classmethod
