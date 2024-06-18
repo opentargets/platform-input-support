@@ -12,7 +12,10 @@ class WithEnvironmentVariable(argparse.Action):
         env_var_name = 'PIS_' + option_string[-1][2:].upper().replace('-', '_')
         default = os.environ.get(env_var_name, default)
         if default is not None:
-            default = default.lower()
+            if isinstance(default, str) and default.lower() in ['true', 'false']:
+                default = default.lower() == 'true'
+            else:
+                default = default.lower()
         kwargs['help'] += f' (environment variable: {env_var_name})'
         if required and default:
             required = False
@@ -79,6 +82,13 @@ class ParseCLI:
             help='If set, platform-input-support will use this google cloud storage '
             'url to retrieve the manifest status, and act accordingly to what is there. '
             'Also, the resulting files will be uploaded there.',
+        )
+
+        parser.add_argument(
+            '-f',
+            '--force',
+            action=WithEnvironmentVariable,
+            help='Force the execution of the step, even if it was already completed.',
         )
 
         parser.add_argument(
