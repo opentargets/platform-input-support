@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from platform_input_support.config.models import TaskMapping
 from platform_input_support.helpers import google_helper
 from platform_input_support.helpers.download import DownloadHelper
-from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task.task import Task
 
 

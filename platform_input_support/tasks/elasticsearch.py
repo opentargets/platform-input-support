@@ -4,14 +4,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from elastic_transport import ApiError
-from elasticsearch import Elasticsearch as Elasticsearch_
+from elasticsearch import Elasticsearch as Es
+from elasticsearch import ElasticsearchException as ESError
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 
 from platform_input_support.config import config
 from platform_input_support.config.models import TaskMapping
-from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task import Task
 
 BUFFER_SIZE = 100000
@@ -33,7 +33,7 @@ class Elasticsearch(Task):
     def __init__(self, config: TaskMapping):
         super().__init__(config)
         self.config: ElasticsearchMapping
-        self.es: Elasticsearch_
+        self.es: Es
         self.doc_count: int = 0
         self.doc_written: int = 0
 
@@ -57,8 +57,8 @@ class Elasticsearch(Task):
 
         try:
             logger.debug(f'connecting to {self.config.url}')
-            self.es = Elasticsearch_(self.config.url)
-        except ConnectionError as e:
+            self.es = Es(self.config.url)
+        except ESError as e:
             raise ElasticsearchError(f'connection error: {e}')
 
         index, fields = self.config.index, self.config.fields
@@ -67,14 +67,14 @@ class Elasticsearch(Task):
 
         try:
             self.doc_count = self.es.count(index=index)['count']
-        except ApiError as e:
+        except ESError as e:
             raise ElasticsearchError(f'error getting index count on index {index}: {e}')
         logger.info(f'index {index} has {self.doc_count} documents')
 
         try:
             search = Search(using=self.es, index=index)
             source = search.source(fields=list(fields))
-        except ApiError as e:
+        except ESError as e:
             raise ElasticsearchError(f'scan error on index {index}: {e}')
 
         doc_buffer: list[dict[str, Any]] = []

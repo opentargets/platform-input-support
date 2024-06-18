@@ -6,10 +6,10 @@ from typing import Any, cast
 import jq
 from loguru import logger
 
-from platform_input_support.config import tasks
+from platform_input_support.config import task_mappings
 from platform_input_support.config.models import TaskMapping
 from platform_input_support.helpers.download import DownloadHelper
-from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task import Task
 from platform_input_support.util import scratchpad
 
@@ -65,7 +65,7 @@ class Explode(Task):
             for task in self.config.do:
                 task_config_dict = {k2: scratchpad.replace(v2) for k2, v2 in task.items()}
                 t = TaskMapping.from_dict(task_config_dict)
-                tasks.append(t)
+                task_mappings.append(t)
                 new_tasks += 1
 
         return f'exploded into {new_tasks} new tasks'

@@ -3,6 +3,7 @@ config:
   output_path: ./output
   gcs_url: gs://open-targets-pre-data-releases/24.06dev-test/input
   log_level: TRACE
+  force: no
 
 scratchpad:
   efo_release_version: v3.65.0

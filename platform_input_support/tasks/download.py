@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 
+from pydantic import BaseModel
+
 from platform_input_support.config.models import TaskMapping
 from platform_input_support.helpers.download import DownloadHelper
-from platform_input_support.manifest.models import Status, TaskManifest
-from platform_input_support.manifest.reporters import report_to_manifest
+from platform_input_support.manifest import report_to_manifest
+from platform_input_support.manifest.models import TaskManifest
 from platform_input_support.task import Task
 
 
@@ -13,12 +15,9 @@ class DownloadMapping(TaskMapping):
     destination: str
 
 
-@dataclass
-class DownloadManifest(TaskManifest):
-    source: str | Status = Status.NOT_SET
-    destination: str | Status = Status.NOT_SET
-    checksum_source: str | Status = Status.NOT_SET
-    checksum_destination: str | Status = Status.NOT_SET
+class DownloadManifest(TaskManifest, BaseModel):
+    checksum_source: str | None = None
+    checksum_destination: str | None = None
 
 
 class Download(Task):
