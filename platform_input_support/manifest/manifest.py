@@ -1,108 +1,90 @@
 import sys
 from functools import wraps
-from importlib import import_module
+from pathlib import Path
 
 from loguru import logger
+from pydantic import ValidationError
+from pydantic_core import PydanticSerializationError
 
-from .models import Manifest, Status, StepManifest, TaskManifest
+from platform_input_support.config import config
+from platform_input_support.helpers import google_helper
+from platform_input_support.manifest.models import RootManifest, Status, StepManifest
+
+MANIFEST_FILENAME = 'manifest.json'
 
 
-class ManifestReporter:
+class Manifest:
     def __init__(self):
-        self._report = ManifestReport()
+        self._manifest = self._fetch_manifest() or RootManifest()
 
-    def start_manifest(self):
-        self._report.modified = datetime.now()
-        self._report.status = Status.NOT_COMPLETED
+    def _fetch_manifest(self) -> RootManifest | None:
+        manifest_str: str | None = None
+        manifest_path: str | Path = Path()
 
-    def complete_manifest(self):
-        self._report.status = Status.COMPLETED
+        # first, try fetching from google cloud storage
+        if google_helper.is_ready:
+            # gcs_url must be set, otherwise google.is_ready would be False
+            assert config.gcs_url is not None
+            manifest_path = f'{config.gcs_url}/{MANIFEST_FILENAME}'
+            manifest_str = google_helper.download(manifest_path)
+            if manifest_str is None:
+                logger.warning('manifest file not found in gcs')
+            # TODO CHECK THIS STUFF
 
-    def fail_manifest(self, error: Exception):
-        self._report.log.append(str(error))
-        self._report.status = Status.FAILED
+        # then, try fetching from local file system
+        if not manifest_str:
+            manifest_path = Path(config.output_path) / MANIFEST_FILENAME
 
-    def pass_validation_manifest(self):
-        self._report.status = Status.VALIDATION_PASSED
+            try:
+                manifest_str = manifest_path.read_text()
+            except FileNotFoundError:
+                logger.warning(f'manifest file not found in {manifest_path}')
+                return None
+            except (OSError, PermissionError, ValueError) as e:
+                logger.critical(f'error reading manifest file: {e}')
+                sys.exit(1)
 
-    def fail_validation_manifest(self, error: Exception):
-        self._report.log.append(str(error))
-        self._report.status = Status.VALIDATION_FAILED
+        try:
+            new_manifest = RootManifest().model_validate_json(manifest_str)
+        except ValidationError as e:
+            logger.critical(f'error validating manifest file: {e}')
+            sys.exit(1)
 
-    def add_step(self, step: StepReport):
-        self._report.steps[step.name] = step
+        modified_date = new_manifest.modified.strftime('%Y-%m-%d %H:%M:%S')
+        logger.success(f'manifest initialized, last modified {modified_date}')
+        return new_manifest
 
+    def _save_local_manifest(self):
+        manifest_path = Path(config.output_path) / MANIFEST_FILENAME
 
-class StepReporter:
-    def __init__(self, name: str):
-        self.name = name
-        self._report = StepReport(self.name)
+        try:
+            json_str = self._manifest.model_dump_json(indent=2, serialize_as_any=True)
+        except PydanticSerializationError as e:
+            logger.critical(f'error serializing manifest: {e}')
+            sys.exit(1)
 
-    def start_step(self):
-        logger.info('starting step')
-        self._report.status = Status.NOT_COMPLETED
+        try:
+            manifest_path.write_text(json_str)
+        except OSError as e:
+            logger.critical(f'error writing manifest file: {e}')
+            sys.exit(1)
 
-    def complete_step(self):
-        logger.success('step completed')
-        self._report.status = Status.COMPLETED
+    def get_step_manifest(self, name: str) -> StepManifest:
+        return self._manifest.steps.get(name, StepManifest(name=name))
 
-    def fail_step(self, error: Exception):
-        logger.error(f'failed step: f{error}')
-        self._report.log.append(str(error))
-        self._report.status = Status.FAILED
+    # No typing here to avoid import mess, maybe when https://peps.python.org/pep-0649/ comes out
+    def add_step(self, step):
+        self._manifest.steps[step.name] = step._manifest
 
-    def pass_validation_step(self):
-        logger.success(f'validation passed {self._report.name}')
-        self._report.status = Status.VALIDATION_PASSED
+    def end(self, step_manifest: StepManifest):
+        self._manifest.steps[step_manifest.name] = step_manifest
+        self._manifest.status = Status.COMPLETED
+        for previous_step_name, previous_step_manifest in self._manifest.steps.items():
+            if previous_step_manifest.status is not Status.COMPLETED:
+                self._manifest.status = Status.FAILED
+                self._manifest.log.append(f'step {previous_step_name} failed')
 
-    def fail_validation_step(self, error: Exception):
-        logger.error(f'failed validation: f{error}')
-        self._report.log.append(str(error))
-        self._report.status = Status.VALIDATION_FAILED
-
-    def add_task(self, task: TaskReport):
-        self._report.tasks.append(task)
-
-
-class TaskReporter:
-    def __init__(self, name: str):
-        self.name = name
-        task_class = self.__class__.__name__
-        task_module = import_module(self.__module__)
-        report_class = f'{task_class}Report'
-        report: TaskReport = getattr(task_module, report_class, TaskReport)(name)  # TODO: get full name here!
-        self._report = report
-
-    def start_task(self):
-        logger.info('starting task')
-        self._report.status = Status.NOT_COMPLETED
-
-    def complete_task(self, log: str):
-        logger.success(f'task completed: {log}')
-        self._report.log.append(log)
-        self._report.status = Status.COMPLETED
-
-    def fail_task(self, error: Exception):
-        logger.opt(exception=sys.exc_info()).error(f'task failed: {error}')
-        self._report.log.append(str(error))
-        self._report.status = Status.FAILED
-
-    def pass_validation_task(self, log: str):
-        logger.success('validation passed')
-        self._report.log.append(log)
-        self._report.status = Status.VALIDATION_PASSED
-
-    def fail_validation_task(self, error: Exception):
-        logger.error(f'failed validation: f{error}')
-        self._report.log.append(str(error))
-        self._report.status = Status.VALIDATION_FAILED
-
-    def append_log(self, log: str):
-        logger.info(log)
-        self._report.log.append(log)
-
-    def set_field(self, field_name: str, value: str):
-        setattr(self._report, field_name, value)
+        self._save_local_manifest()
 
 
 def report_to_manifest(func):
@@ -110,19 +92,22 @@ def report_to_manifest(func):
     def wrapper(self, *args, **kwargs):
         try:
             if func.__name__ == 'run':
-                self.start_task()
+                self.start()
+
+                # add custom fields from config to the manifest
+                self._manifest = self._manifest.model_copy(update=self.config.__dict__, deep=True)
 
             result = func(self, *args, **kwargs)
 
             if func.__name__ == 'run':
-                self.complete_task(result)
+                self.complete(result)
             elif func.__name__ == 'validate':
-                self.pass_validation_task(result)
+                self.pass_validation(result)
             return result
         except Exception as e:
             if func.__name__ == 'run':
-                self.fail_task(e)
+                self.fail(e)
             elif func.__name__ == 'validate':
-                self.fail_validation_task(e)
+                self.fail_validation(e)
 
     return wrapper

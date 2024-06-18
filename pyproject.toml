@@ -12,6 +12,7 @@ elasticsearch = "==7.17.6"
 elasticsearch-dsl = "==7.4.1"
 google-cloud-storage = "==2.16.0"
 jq = "^1.7.0"
+pydantic = "^2.7.4"
 PyYAML = "==6.0.1"
 loguru = "==0.7.2"
 
@@ -99,6 +100,7 @@ ignore = [
   'PT011',   # very noisy
   'PT015',   # nice for tests but not so nice elsewhere
   'PT018',   # ^ likewise
+  'S301',    # we trust our pickled data
   'SIM102',  # sometimes nested ifs are more readable
   'SIM103',  # sometimes this is more readable (especially when checking multiple conditions)
   'SIM105',  # try-except-pass is faster and people are used to it

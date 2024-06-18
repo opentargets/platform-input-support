@@ -1,6 +1,7 @@
-import datetime
-from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from enum import StrEnum, auto
+
+from pydantic import BaseModel, ConfigDict
 
 
 class Status(StrEnum):
@@ -12,28 +13,27 @@ class Status(StrEnum):
     VALIDATION_PASSED = auto()
 
 
-@dataclass
-class TaskReport:
-    name: str | Status = Status.NOT_SET
+class TaskManifest(BaseModel):
+    name: str
     status: Status = Status.NOT_COMPLETED
-    created: datetime.datetime = field(default_factory=datetime.datetime.now)
-    log: list[str] = field(default_factory=list)
+    created: datetime = datetime.now(UTC)
+    log: list[str] = []
+
+    model_config = ConfigDict(extra='allow')
 
 
-@dataclass
-class StepReport:
-    name: str | Status = Status.NOT_SET
+class StepManifest(BaseModel):
+    name: str
     status: Status = Status.NOT_COMPLETED
-    tasks: list[TaskReport] = field(default_factory=list)
-    created: datetime.datetime = field(default_factory=datetime.datetime.now)
-    modified: datetime.datetime = field(default_factory=datetime.datetime.now)
-    log: list[str] = field(default_factory=list)
+    created: datetime = datetime.now(UTC)
+    modified: datetime = datetime.now(UTC)
+    log: list[str] = []
+    tasks: list[TaskManifest] = []
 
 
-@dataclass
-class ManifestReport:
-    status: Status = Status.NOT_SET
-    steps: dict[str, StepReport] = field(default_factory=dict)
-    created: datetime.datetime = field(default_factory=datetime.datetime.now)
-    modified: datetime.datetime = field(default_factory=datetime.datetime.now)
-    log: list[str] = field(default_factory=list)
+class RootManifest(BaseModel):
+    status: Status = Status.NOT_COMPLETED
+    created: datetime = datetime.now(UTC)
+    modified: datetime = datetime.now(UTC)
+    log: list[str] = []
+    steps: dict[str, StepManifest] = {}
