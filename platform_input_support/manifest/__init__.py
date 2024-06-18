@@ -1,1 +1,1 @@
-from platform_input_support.manifest.manifest import Manifest
+from platform_input_support.manifest.manifest import Manifest, report_to_manifest
