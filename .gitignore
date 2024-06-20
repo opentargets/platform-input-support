@@ -10,8 +10,8 @@ __pycache__/
 .idea
 .DS_Store
 
-# outputs
-output/
+# output working directory
+work/
 
 # terraform
 terraform.tfstate
