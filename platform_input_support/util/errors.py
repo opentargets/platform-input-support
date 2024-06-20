@@ -1,5 +1,3 @@
-import sys
-
 from loguru import logger
 
 
@@ -25,8 +23,3 @@ class DownloadError(PISError):
         msg = f'error downloading `{src}`: {error}'
         logger.error(msg)
         super().__init__(msg)
-
-
-def log_and_raise(error: PISError) -> None:
-    logger.opt(exception=sys.exc_info()).error(error)
-    raise error
