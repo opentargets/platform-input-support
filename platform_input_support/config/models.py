@@ -1,64 +1,57 @@
-import inspect
-from dataclasses import dataclass
-from typing import Any, TypeVar
+from pathlib import Path
+from typing import Annotated, Literal
+from xmlrpc.client import Boolean
 
-from loguru import logger
+from pydantic import AfterValidator, BaseModel, ConfigDict
 
-_T = TypeVar('_T', bound='TaskMapping')
+LOG_LEVELS = Literal['TRACE', 'DEBUG', 'INFO', 'SUCCESS', 'WARNING', 'ERROR', 'CRITICAL']
 
 
-@dataclass
-class TaskMapping:
+def gcs_url_is_valid(url: str) -> str:
+    assert url.startswith('gs://'), 'GCS url must start with gs://'
+    return url
+
+
+class TaskDefinition(BaseModel):
     name: str
-    config_dict: dict[str, Any]
-
-    @classmethod
-    def from_dict(cls: type[_T], config_dict: dict) -> _T:
-        name: str = ''
-        try:
-            name = config_dict['name']
-        except KeyError:
-            logger.critical('missing field name in a task definition, check configuration file')
-        return cls(name=name, config_dict=config_dict)
-
-    def real_name(self):
-        return self.name.split(' ')[0]
+    model_config = ConfigDict(extra='allow')
 
 
-@dataclass
-class ConfigMapping:
+class EnvVarSettings(BaseModel):
+    step: str | None = None
+    config_file: Path | None = None
+    work_dir: Path | None = None
+    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
+    force: Boolean | None = None
+    log_level: LOG_LEVELS | None = None
+
+
+class CliSettings(BaseModel):
     step: str
-    output_path: str = './output'
-    gcs_url: str | None = None
+    config_file: Path | None = None
+    work_dir: Path | None = None
+    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
+    force: bool | None = None
+    log_level: LOG_LEVELS | None = None
+
+
+class YamlSettings(BaseModel):
+    work_dir: Path | None = None
+    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
+    force: bool | None = None
+    log_level: LOG_LEVELS | None = None
+
+
+class Settings(BaseModel):
+    step: str = ''  # validation of this field is handled by cli.py
+    config_file: Path = Path('config.yaml')
+    work_dir: Path = Path('./output')
+    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
     force: bool = False
-    log_level: str = 'INFO'
+    log_level: LOG_LEVELS = 'INFO'
 
-    @classmethod
-    def from_dict(cls, data: dict):
-        kwargs = {}
-        for param in inspect.signature(cls).parameters:
-            kwargs[param] = data.get(param)
-        return cls(**kwargs)
-
-    def __add__(self, other):
-        # merge the settings from two objects keeping the values from the other object
-        for key, value in other.__dict__.items():
-            if value is not None or getattr(self, key) is None:
-                setattr(self, key, value)
-
-        return self
-
-
-@dataclass
-class RootMapping:
-    config: ConfigMapping
-    scratchpad: dict[str, str]
-    steps: dict[str, list[TaskMapping]]
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        return cls(
-            config=ConfigMapping.from_dict(data['config']),
-            scratchpad=data['scratchpad'],
-            steps={step: [TaskMapping.from_dict(task) for task in tasks] for step, tasks in data['steps'].items()},
-        )
+    def merge_model(self, incoming: BaseModel):
+        for field_name in self.model_fields:
+            if field_name in incoming.model_fields_set:
+                field_value = getattr(incoming, field_name)
+                setattr(self, field_name, field_value)
