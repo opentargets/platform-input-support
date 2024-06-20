@@ -3,19 +3,30 @@ import sys
 from loguru import logger
 
 
-class NotFoundError(Exception):
+class PISError(Exception):
+    pass
+
+
+class NotFoundError(PISError):
     def __init__(self, resource: str):
-        message = f'{resource} not found'
-        logger.error(message)
-        super().__init__(message)
+        msg = f'`{resource}` not found'
+        logger.error(msg)
+        super().__init__(msg)
 
 
-class HelperError(Exception):
-    def __init__(self, message: str):
-        logger.error(message)
-        super().__init__(message)
+class HelperError(PISError):
+    def __init__(self, msg: str):
+        logger.error(msg)
+        super().__init__(msg)
 
 
-def log_and_raise(error: Exception) -> None:
+class DownloadError(PISError):
+    def __init__(self, src: str, error: Exception):
+        msg = f'error downloading `{src}`: {error}'
+        logger.error(msg)
+        super().__init__(msg)
+
+
+def log_and_raise(error: PISError) -> None:
     logger.opt(exception=sys.exc_info()).error(error)
     raise error

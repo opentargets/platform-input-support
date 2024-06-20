@@ -1,95 +1,59 @@
 import shutil
 from pathlib import Path
-from typing import Any
 
 import requests
 import requests.adapters
 from loguru import logger
 from urllib3 import Retry
 
-from platform_input_support.config import config
 from platform_input_support.helpers import google_helper
+from platform_input_support.util.errors import DownloadError
+from platform_input_support.util.misc import check_dir
 
+# we are going to download big files, better to use a big chunk size
 CHUNK_SIZE = 1024 * 1024 * 10
 
 
-class DownloadError(Exception):
-    pass
+def download(src: str, dst: Path | None = None) -> Path:
+    if dst is None:
+        dst = Path(src.split('/')[-1].split('?')[0])
+    logger.info(f'downloading `{src}` to `{dst}`')
+    check_dir(dst)
 
-
-class DownloadHelper:
-    def __init__(self, source: str, destination: str | None = None):
-        self.source = source
-        if destination:
-            self.destination = Path(config.output_path) / destination
-
-    def _ensure_path_exists(self):
-        parent = self.destination.parent
-
-        try:
-            logger.info(f'ensuring path {parent} exists')
-            parent.mkdir(parents=True, exist_ok=True)
-        except OSError as e:
-            raise DownloadError(f'error creating path {self.destination}: {e}')
-
-    def download(self) -> str:
-        if not self.destination:
-            raise DownloadError('destination not set')
-
-        logger.info(f'downloading {self.source} to {self.destination}')
-
-        self._ensure_path_exists()
-
-        if self.source.startswith('https://docs.google.com/spreadsheets/d'):
-            self._download_spreadsheet()
-        else:
-            protocol = self.source.split(':')[0]
-            if protocol in ['http', 'https']:
-                r = self._download_http()
-                self._save_response(r)
-            elif protocol == 'gs':
-                google_helper.download(self.source, self.destination)
-
-        return 'download successful'
-
-    def download_json(self) -> Any:
-        logger.info(f'downloading json from {self.source}')
-
-        try:
-            r = self._download_http()
-        except requests.RequestException as e:
-            raise DownloadError(f'error downloading {self.source}: {e}')
-
-        try:
-            json = r.json()
-        except requests.JSONDecodeError as e:
-            raise DownloadError(f'error decoding json: {e}')
-
-        logger.success('download successful')
-        return json
-
-    def _download_http(self) -> requests.Response:
-        s = requests.Session()
-        retries = Retry(
-            total=5,
-            backoff_factor=0.1,  # type: ignore[arg-type]
-            status_forcelist=[500, 502, 503, 504],
-            allowed_methods={'GET'},
-        )
-
-        s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
-        s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
-        return self._download(s)
-
-    def _download_spreadsheet(self):
+    # download from google sheets
+    if src.startswith('https://docs.google.com/spreadsheets/d'):
         s = google_helper.get_session()
-        self._download(s)
+        _download(src, dst, s)
 
-    def _download(self, s: requests.Session) -> requests.Response:
-        r = s.get(self.source, stream=True, timeout=(10, None))
-        r.raise_for_status()
-        return r
+    else:
+        proto = src.split(':')[0]
 
-    def _save_response(self, r: requests.Response):
-        with open(self.destination, 'wb') as f:
+        # download from http/https
+        if proto in ['http', 'https']:
+            s = requests.Session()
+            retries = Retry(
+                total=5,
+                backoff_factor=0.1,  # type: ignore[arg-type]
+                status_forcelist=[500, 502, 503, 504],
+                allowed_methods={'GET'},
+            )
+            s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
+            s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
+            _download(src, dst, s)
+
+        # download from google storage
+        elif proto == 'gs':
+            google_helper.download(src, dst)
+
+    return dst
+
+
+def _download(src: str, dst: Path, s: requests.Session):
+    r = s.get(src, stream=True, timeout=(10, None))
+    r.raise_for_status()
+
+    with open(dst, 'wb') as f:
+        try:
             shutil.copyfileobj(r.raw, f, CHUNK_SIZE)
+        except Exception as e:
+            raise DownloadError(src, e)
