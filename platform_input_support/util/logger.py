@@ -5,6 +5,15 @@ from loguru import logger
 from platform_input_support.util.misc import get_full_path
 
 
+def format_task_log(record):
+    return (
+        '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
+        '<lvl>{level: <8}</> | '
+        '<c>{name}</>:<c>{function}</>:<c>{line}</>'
+        ' - <lvl>{message}</>'
+    )
+
+
 def init_logger(log_level: str) -> None:
     log_filename = get_full_path('output.log')
 
@@ -32,5 +41,6 @@ def init_logger(log_level: str) -> None:
         },
     ]
 
+    logger.remove()
     logger.configure(handlers=handlers)
     logger.debug('logger configured')

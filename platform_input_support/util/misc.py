@@ -15,16 +15,15 @@ if TYPE_CHECKING:
 
 def check_dir(path: Path) -> None:
     parent = get_full_path(path).parent
-    # TODO: logger sink that adds to manifest
-    logger.debug(f'checking dir `{parent}`')
+    logger.debug(f'checking directory `{parent}`')
 
     if parent.is_dir():
-        logger.debug(f'dir `{parent}` exists')
+        logger.debug('directory exists')
         if not os.access(parent, os.W_OK):
-            logger.critical(f'dir `{parent}` is not writtable')
+            logger.critical('directory is not writtable')
             sys.exit(1)
     else:
-        logger.info(f'dir `{parent}` does not exist, creating it')
+        logger.info('directory does not exist, creating it')
         try:
             Path(parent).mkdir(parents=True, exist_ok=True)
         except OSError as e:
