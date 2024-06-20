@@ -1,5 +1,4 @@
 import sys
-from functools import wraps
 from typing import TYPE_CHECKING
 
 from loguru import logger
@@ -79,27 +78,3 @@ class Manifest:
                 self._manifest.log.append(f'step `{name}` failed')
 
         self._save_local_manifest()
-
-
-def report_to_manifest(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        try:
-            if func.__name__ == 'run':
-                # add custom fields from definition to the manifest
-                self._manifest = self._manifest.model_copy(update=self.definition.__dict__, deep=True)
-
-            result = func(self, *args, **kwargs)
-
-            if func.__name__ == 'run':
-                self.complete(result)
-            elif func.__name__ == 'validate':
-                self.pass_validation(result)
-            return result
-        except Exception as e:
-            if func.__name__ == 'run':
-                self.fail(e)
-            elif func.__name__ == 'validate':
-                self.fail_validation(e)
-
-    return wrapper

@@ -78,6 +78,7 @@ select = [
 ignore = [
   'D1',      # we are missing many docstrings
   'D213',    # we prefer D212
+  'G004',    # we don't care about logging format
   'E226',    # allow omitting whitespace around arithmetic operators
   'E731',    # allow assigning lambdas (it's useful for single-line functions defined inside other functions)
   'RUF012',  # ultra-noisy and dicts in classvars are very common
