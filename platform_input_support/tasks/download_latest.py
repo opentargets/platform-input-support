@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from loguru import logger
+
 from platform_input_support.config.models import TaskDefinition
 from platform_input_support.helpers import google_helper
 from platform_input_support.helpers.download import download
@@ -37,8 +39,7 @@ class DownloadLatest(Task):
                     newest_file = f
 
         if newest_file:
-            # TODO MORE APPEND LOGS
-            self.append_log(f'latest file is `{newest_file}`')
+            logger.info(f'latest file is `{newest_file}`')
             download(newest_file, destination)
             return 'download successful'
         else:

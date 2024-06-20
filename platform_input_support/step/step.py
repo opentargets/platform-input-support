@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from platform_input_support.config import task_definitions
+from platform_input_support.config import settings, task_definitions
 from platform_input_support.manifest.step_reporter import StepReporter
 from platform_input_support.task import PREPROCESS_TASKS, task_registry
+from platform_input_support.util.logger import format_task_log
 from platform_input_support.util.misc import real_name
 
 if TYPE_CHECKING:
@@ -29,7 +30,17 @@ class Step(StepReporter):
                 self.main_task_definitions.append(t)
 
     def _run_task(self, task: 'Task') -> 'TaskManifest':
+        def sink_task(message):
+            task._manifest.log.append(message)
+
         with logger.contextualize(task=task.name):
+            logger.add(
+                sink_task,
+                filter=lambda record: record['extra'].get('task') == task.name,
+                format=format_task_log,
+                level=settings.log_level,
+            )
+
             task.run()
         return task._manifest
 
