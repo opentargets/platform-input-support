@@ -1,27 +1,27 @@
 from dataclasses import dataclass
 
-from platform_input_support.config.models import TaskMapping
+from platform_input_support.config import scratchpad
+from platform_input_support.config.models import TaskDefinition
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task import Task
-from platform_input_support.util import scratchpad
 
 
 @dataclass
-class GetFileListMapping(TaskMapping):
+class GetFileListDefinition(TaskDefinition):
     source: str
     pattern: str
-    scratchpad_key: str
+    sentinel: str
 
 
 class GetFileList(Task):
-    def __init__(self, config: TaskMapping):
-        super().__init__(config)
-        self.config: GetFileListMapping
+    def __init__(self, definition: TaskDefinition):
+        super().__init__(definition)
+        self.definition: GetFileListDefinition
 
     @report_to_manifest
     def run(self):
-        source, pattern = self.config.source, self.config.pattern
+        source, pattern, sentinel = self.definition.source, self.definition.pattern, self.definition.sentinel
         file_list: list[str] = []
 
         if pattern.startswith('!'):
@@ -30,7 +30,7 @@ class GetFileList(Task):
             file_list = google_helper.list(source, include=pattern)
 
         if len(file_list):
-            scratchpad.store(self.config.scratchpad_key, file_list)
-            return f'{len(file_list)} files with pattern {pattern} found in {source}'
+            scratchpad.store(sentinel, file_list)
+            return f'{len(file_list)} files with pattern `{pattern}` found in `{source}`'
         else:
-            raise ValueError(f'no files found in {source} with pattern {pattern}')
+            raise ValueError(f'no files found in `{source}` with pattern `{pattern}`')

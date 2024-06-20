@@ -1,18 +1,19 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from pydantic import BaseModel
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.helpers.download import DownloadHelper
+from platform_input_support.config.models import TaskDefinition
+from platform_input_support.helpers.download import download
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.manifest.models import TaskManifest
 from platform_input_support.task import Task
 
 
 @dataclass
-class DownloadMapping(TaskMapping):
+class DownloadDefinition(TaskDefinition):
     source: str
-    destination: str
+    destination: Path
 
 
 class DownloadManifest(TaskManifest, BaseModel):
@@ -21,11 +22,11 @@ class DownloadManifest(TaskManifest, BaseModel):
 
 
 class Download(Task):
-    def __init__(self, config: TaskMapping):
-        super().__init__(config)
-        self.config: DownloadMapping
+    def __init__(self, definition: TaskDefinition):
+        super().__init__(definition)
+        self.definition: DownloadDefinition
 
     @report_to_manifest
     def run(self) -> str:
-        d = DownloadHelper(self.config.source, self.config.destination)
-        return d.download()
+        download(self.definition.source, self.definition.destination)
+        return 'download successful'

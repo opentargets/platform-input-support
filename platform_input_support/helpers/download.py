@@ -8,7 +8,7 @@ from urllib3 import Retry
 
 from platform_input_support.helpers import google_helper
 from platform_input_support.util.errors import DownloadError
-from platform_input_support.util.misc import check_dir
+from platform_input_support.util.misc import check_dir, get_full_path
 
 # we are going to download big files, better to use a big chunk size
 CHUNK_SIZE = 1024 * 1024 * 10
@@ -17,6 +17,7 @@ CHUNK_SIZE = 1024 * 1024 * 10
 def download(src: str, dst: Path | None = None) -> Path:
     if dst is None:
         dst = Path(src.split('/')[-1].split('?')[0])
+    dst = get_full_path(dst)
     logger.info(f'downloading `{src}` to `{dst}`')
     check_dir(dst)
 

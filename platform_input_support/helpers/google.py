@@ -36,7 +36,7 @@ class GoogleHelper:
             logger.warning('`gcs_url` setting and `PIS_GCS_URL` env var are missing')
             return
 
-        # check if the configured bucket exists
+        # check if the bucket exists
         try:
             if not self.bucket_exists(settings.gcs_url):
                 logger.critical(f'`{settings.gcs_url}` does not exist')
