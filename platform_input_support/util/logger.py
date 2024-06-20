@@ -1,14 +1,12 @@
 import sys
-from pathlib import Path
 
 from loguru import logger
 
-from platform_input_support.config.models import ConfigMapping
+from platform_input_support.util.misc import get_full_path
 
 
-def init_logger(config: ConfigMapping) -> None:
-    log_level = config.log_level
-    log_filename = Path(config.output_path) / 'output.log'
+def init_logger(log_level: str) -> None:
+    log_filename = get_full_path('output.log')
 
     def format_log(record):
         task = '<y>{extra[task]}</>::' if record['extra'].get('task') else ''
