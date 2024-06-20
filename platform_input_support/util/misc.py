@@ -14,8 +14,9 @@ if TYPE_CHECKING:
 
 
 def check_dir(path: Path) -> None:
-    logger.debug(f'checking dir `{path}`')
     parent = get_full_path(path).parent
+    # TODO: logger sink that adds to manifest
+    logger.debug(f'checking dir `{parent}`')
 
     if parent.is_dir():
         logger.debug(f'dir `{parent}` exists')
@@ -25,10 +26,17 @@ def check_dir(path: Path) -> None:
     else:
         logger.info(f'dir `{parent}` does not exist, creating it')
         try:
-            Path(parent).mkdir(parents=True)
+            Path(parent).mkdir(parents=True, exist_ok=True)
         except OSError as e:
             logger.critical(f'error creating dir: {e}')
             sys.exit(1)
+
+    if path.is_file():
+        logger.info(f'file `{path}` already exists, deleting')
+        try:
+            path.unlink()
+        except OSError as e:
+            logger.critical(f'error deleting file: {e}')
 
 
 def get_full_path(path: Path | str) -> Path:
@@ -41,7 +49,7 @@ def date_str(d: datetime) -> str:
 
 def real_name(t: 'Task | TaskDefinition') -> str:
     if getattr(t, 'name', None):
-        return t.name
+        return t.name.split(' ')[0]
     elif isinstance(t, dict):
         name = t.get('name')
         if name:
