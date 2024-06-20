@@ -10,7 +10,7 @@ from google.cloud import storage
 from google.cloud.exceptions import NotFound
 from loguru import logger
 
-from platform_input_support.config import config
+from platform_input_support.config import settings
 from platform_input_support.util.errors import HelperError, NotFoundError
 
 GOOGLE_SCOPES = [
@@ -23,7 +23,7 @@ class GoogleHelper:
     def __init__(self):
         try:
             credentials, project_id = auth.default(scopes=GOOGLE_SCOPES)
-            logger.debug(f'gcp authenticated on project {project_id}')
+            logger.debug(f'gcp authenticated on project `{project_id}`')
         except auth_exceptions.DefaultCredentialsError as e:
             logger.critical(f'error authenticating on gcp: {e}')
             sys.exit(1)
@@ -32,14 +32,14 @@ class GoogleHelper:
         self.client = storage.Client(credentials=credentials)
         self.is_ready = False
 
-        if config.gcs_url is None:
+        if settings.gcs_url is None:
             logger.warning('`gcs_url` setting and `PIS_GCS_URL` env var are missing')
             return
 
         # check if the configured bucket exists
         try:
-            if not self.bucket_exists(config.gcs_url):
-                logger.critical(f'{config.gcs_url} does not exist')
+            if not self.bucket_exists(settings.gcs_url):
+                logger.critical(f'`{settings.gcs_url}` does not exist')
                 sys.exit(1)
         except HelperError as e:
             logger.critical(f'error checking google cloud storage url: {e}')
@@ -61,12 +61,12 @@ class GoogleHelper:
         try:
             self.client.get_bucket(bucket_name)
         except NotFound:
-            logger.warning(f'bucket {bucket_name} not found')
+            logger.warning(f'bucket `{bucket_name}` not found')
             return False
         except GoogleAPICallError as e:
             raise HelperError(f'error checking bucket: {e}')
 
-        logger.debug(f'bucket {bucket_name} exists and is readable')
+        logger.debug(f'bucket `{bucket_name}` exists and is readable')
         return True
 
     def download(self, url: str, destination: Path | None = None) -> str | None:
@@ -85,15 +85,15 @@ class GoogleHelper:
             except NotFound:
                 # downloading to memory is used for the manifest
                 # we do not panic if the file is not there
-                logger.warning(f'file {url} not found')
+                logger.warning(f'file `{url}` not found')
                 return None
 
             try:
                 decoded_blob = blob_str.decode('utf-8')
-            except UnicodeDecodeError:
-                raise HelperError(f'error decoding file {url}')
+            except UnicodeDecodeError as e:
+                raise HelperError(f'error decoding file `{url}`: {e}')
 
-            logger.debug(f'downloaded {url}')
+            logger.debug(f'downloaded `{url}`')
             return decoded_blob
 
         else:
@@ -106,7 +106,7 @@ class GoogleHelper:
             except OSError as e:
                 raise HelperError(f'error writing file: {e}')
 
-            logger.debug(f'downloaded {url} to {destination}')
+            logger.debug(f'downloaded `{url}` to `{destination}`')
 
     def upload(self, source: str, destination: str):
         bucket_name, file_path = self._parse_url(destination)
@@ -125,7 +125,7 @@ class GoogleHelper:
         except OSError as e:
             raise HelperError(f'error reading file: {e}')
 
-        logger.debug(f'uploaded {source} to {destination}')
+        logger.debug(f'uploaded `{source}` to `{destination}`')
 
     @staticmethod
     def _is_file(blob: storage.Blob, prefix: str | None) -> bool:
@@ -159,7 +159,7 @@ class GoogleHelper:
             file_list = [blob for blob in file_list if exclude not in blob.name]
 
         if not file_list:
-            logger.warning(f'no files found in {url}')
+            logger.warning(f'no files found in `{url}`')
             return []
 
         return [f'gs://{bucket_name}/{blob.name}' for blob in file_list]
@@ -170,7 +170,7 @@ class GoogleHelper:
         try:
             bucket = self.client.get_bucket(bucket_name)
         except NotFound:
-            raise NotFoundError(f'bucket or file {url} not found')
+            raise NotFoundError(f'bucket or file `{url}` not found')
         except GoogleAPICallError as e:
             raise HelperError(f'error getting creation date: {e}')
 
