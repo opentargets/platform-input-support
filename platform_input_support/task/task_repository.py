@@ -4,11 +4,16 @@ import sys
 from importlib import import_module
 from inspect import getmembers, isclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.task import Task
+from platform_input_support.manifest.models import TaskManifest
+from platform_input_support.util.misc import real_name
+
+if TYPE_CHECKING:
+    from platform_input_support.config.models import TaskDefinition
+    from platform_input_support.task import Task
 
 TASKS_DIR = Path(__file__).parent.parent / 'tasks'
 TASKS_MODULE = 'platform_input_support.tasks'
@@ -24,10 +29,10 @@ class TaskRepository:
 
     def _register_task(self, task_name: str, task_class: type[Task]):
         self.tasks[task_name] = task_class
-        logger.debug(f'registered task {task_name}')
+        logger.debug(f'registered task `{task_name}`')
 
     def register_tasks(self):
-        logger.debug(f'registering tasks from {TASKS_DIR}')
+        logger.debug(f'registering tasks from `{TASKS_DIR}`')
 
         for file_path in TASKS_DIR.glob('*.py'):
             filename = file_path.stem
@@ -41,31 +46,37 @@ class TaskRepository:
                     self._register_task(filename, obj)
                     break
 
-    def instantiate(self, config: TaskMapping) -> Task:
-        task_class_name = config.real_name()
+    def instantiate(self, task_definition: TaskDefinition) -> Task:
+        task_class_name = real_name(task_definition)
 
         # get task class from the repository
         try:
             task_class = self.tasks[task_class_name]
         except KeyError:
-            logger.critical(f'invalid task name: {task_class_name}')
+            logger.critical(f'invalid task name: `{task_class_name}`')
             sys.exit(1)
 
-        # import task module and get config class
+        # import task module and get task definition and manifest classes
         task_module = import_module(task_class.__module__)
-        config_class_name = f'{task_class.__name__}Mapping'
+        task_definition_class_name = f'{task_class.__name__}Definition'
+        task_manifest_class_name = f'{task_class.__name__}Manifest'
         try:
-            config_class: type[TaskMapping] = getattr(task_module, config_class_name)
+            task_definition_class: type[TaskDefinition] = getattr(task_module, task_definition_class_name)
+            task_manifest_class: type[TaskManifest] = getattr(task_module, task_manifest_class_name, TaskManifest)
         except AttributeError:
-            logger.critical(f'{task_class.__name__} task is invalid, {config_class_name}ConfigMapping class not found')
+            logger.critical(f'`{task_class.__name__}` task missing definition or manifest classes')
             sys.exit(1)
 
-        # create config and task instances
+        # create task definition and manifest instances
         try:
-            config = config_class(**config.config_dict, config_dict=config.config_dict)
+            definition = task_definition_class.model_validate(task_definition.model_dump())
+            manifest = task_manifest_class(name=definition.name)
         except TypeError as e:
-            logger.critical(f'invalid config for {task_class}: {e}')
+            logger.critical(f'invalid definition for `{task_class}`: {e}')
             sys.exit(1)
 
-        # instantiate and return a subclass instance
-        return task_class(config)
+        # create task and attach manifest
+        task = task_class(definition)
+        task._manifest = manifest
+
+        return task
