@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from enum import StrEnum, auto
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class Status(StrEnum):
@@ -12,13 +12,11 @@ class Status(StrEnum):
     VALIDATION_PASSED = auto()
 
 
-class TaskManifest(BaseModel):
+class TaskManifest(BaseModel, extra='allow'):
     name: str
     status: Status = Status.NOT_COMPLETED
     created: datetime = datetime.now(UTC)
     log: list[str] = []
-
-    model_config = ConfigDict(extra='allow')
 
 
 class StepManifest(BaseModel):

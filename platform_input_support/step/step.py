@@ -5,7 +5,7 @@ from loguru import logger
 
 from platform_input_support.config import task_definitions
 from platform_input_support.manifest.step_reporter import StepReporter
-from platform_input_support.task import PREPROCESS_TASKS, task_repository
+from platform_input_support.task import PREPROCESS_TASKS, task_registry
 from platform_input_support.util.misc import real_name
 
 if TYPE_CHECKING:
@@ -36,12 +36,12 @@ class Step(StepReporter):
     def run(self):
         logger.info(f'running {len(self.preprocess_task_definitions)} preprocess tasks')
         for td in self.preprocess_task_definitions:
-            t = task_repository.instantiate(td)
+            t = task_registry.instantiate(td)
             self._run_task(t)
 
         tasks_to_run: list[Task] = []
         for td in self.main_task_definitions:
-            t = task_repository.instantiate(td)
+            t = task_registry.instantiate(td)
             tasks_to_run.append(t)
 
         logger.info(f'running {len(tasks_to_run)} main tasks')

@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 from xmlrpc.client import Boolean
 
-from pydantic import AfterValidator, BaseModel, ConfigDict
+from pydantic import AfterValidator, BaseModel
 
 LOG_LEVELS = Literal['TRACE', 'DEBUG', 'INFO', 'SUCCESS', 'WARNING', 'ERROR', 'CRITICAL']
 
@@ -12,9 +12,8 @@ def gcs_url_is_valid(url: str) -> str:
     return url
 
 
-class TaskDefinition(BaseModel):
+class TaskDefinition(BaseModel, extra='allow'):
     name: str
-    model_config = ConfigDict(extra='allow')
 
 
 class EnvVarSettings(BaseModel):
