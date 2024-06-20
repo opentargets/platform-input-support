@@ -9,10 +9,10 @@ from elasticsearch import ElasticsearchException as ESError
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 
-from platform_input_support.config import config
-from platform_input_support.config.models import TaskMapping
+from platform_input_support.config.models import TaskDefinition
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task import Task
+from platform_input_support.util.misc import check_dir, get_full_path
 
 BUFFER_SIZE = 100000
 
@@ -22,7 +22,7 @@ class ElasticsearchError(Exception):
 
 
 @dataclass
-class ElasticsearchMapping(TaskMapping):
+class ElasticsearchDefinition(TaskDefinition):
     url: str
     destination: str
     index: str
@@ -30,52 +30,39 @@ class ElasticsearchMapping(TaskMapping):
 
 
 class Elasticsearch(Task):
-    def __init__(self, config: TaskMapping):
-        super().__init__(config)
-        self.config: ElasticsearchMapping
+    def __init__(self, definition: TaskDefinition):
+        super().__init__(definition)
+        self.definition: ElasticsearchDefinition
         self.es: Es
         self.doc_count: int = 0
         self.doc_written: int = 0
 
-    def _prepare_path(self) -> Path:
-        destination = Path(f'{config.output_path}/{self.config.destination}/{self.config.index}.jsonl')
-
-        try:
-            logger.info(f'ensuring path {destination.parent} exists and {destination.name} does not')
-            destination.parent.mkdir(parents=True, exist_ok=True)
-        except OSError as e:
-            raise ElasticsearchError(f'error creating path {self.config.destination}: {e}')
-
-        if destination.is_file():
-            raise ElasticsearchError(f'file {self.config.destination} already exists')
-
-        return destination
-
     @report_to_manifest
     def run(self):
-        destination = self._prepare_path()
+        url = self.definition.url
+        index = self.definition.index
+        destination = get_full_path(f'{self.definition.destination}/{index}.jsonl')
+        fields = self.definition.fields
+        check_dir(destination)
 
+        logger.debug(f'connecting to `{url}`')
         try:
-            logger.debug(f'connecting to {self.config.url}')
-            self.es = Es(self.config.url)
+            self.es = Es(url)
         except ESError as e:
             raise ElasticsearchError(f'connection error: {e}')
 
-        index, fields = self.config.index, self.config.fields
-        source: Search
-        logger.debug(f'scanning index {index} with fields {fields}')
-
+        logger.debug(f'scanning index `{index}` with fields `{fields}`')
         try:
             self.doc_count = self.es.count(index=index)['count']
         except ESError as e:
-            raise ElasticsearchError(f'error getting index count on index {index}: {e}')
-        logger.info(f'index {index} has {self.doc_count} documents')
+            raise ElasticsearchError(f'error getting index count on index `{index}`: {e}')
+        logger.info(f'index `{index}` has {self.doc_count} documents')
 
+        search = Search(using=self.es, index=index)
         try:
-            search = Search(using=self.es, index=index)
             source = search.source(fields=list(fields))
         except ESError as e:
-            raise ElasticsearchError(f'scan error on index {index}: {e}')
+            raise ElasticsearchError(f'scan error on index `{index}`: {e}')
 
         doc_buffer: list[dict[str, Any]] = []
 
@@ -94,12 +81,12 @@ class Elasticsearch(Task):
 
             doc_buffer.append(doc)
             if len(doc_buffer) >= BUFFER_SIZE:
-                logger.trace('emtying buffer')
+                logger.trace('flushing buffer')
                 self._write_docs(doc_buffer, destination)
                 doc_buffer.clear()
 
         self._write_docs(doc_buffer, destination)
-        return f'wrote {self.doc_written}/{self.doc_count} documents to {destination}'
+        return f'wrote {self.doc_written}/{self.doc_count} documents to `{destination}`'
 
     def _write_docs(self, docs: list[dict[str, Any]], destination: Path):
         try:
@@ -110,8 +97,8 @@ class Elasticsearch(Task):
             self.doc_written += len(docs)
 
         except OSError as e:
-            raise ElasticsearchError(f'error writing to {destination}: {e}')
+            raise ElasticsearchError(f'error writing to `{destination}`: {e}')
 
-        logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to {destination}')
+        logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to `{destination}`')
         logger.trace(f'the dict was taking up {sys.getsizeof(docs)} bytes of memory')
         docs.clear()

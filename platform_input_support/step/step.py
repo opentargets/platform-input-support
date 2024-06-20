@@ -1,60 +1,51 @@
 from multiprocessing.pool import Pool
+from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskMapping
-from platform_input_support.manifest.models import StepManifest, TaskManifest
+from platform_input_support.config import task_definitions
 from platform_input_support.manifest.step_reporter import StepReporter
-from platform_input_support.task import PREPROCESS_TASKS, Task, task_repository
+from platform_input_support.task import PREPROCESS_TASKS, task_repository
+from platform_input_support.util.misc import real_name
+
+if TYPE_CHECKING:
+    from platform_input_support.config.models import TaskDefinition
+    from platform_input_support.manifest.models import TaskManifest
+    from platform_input_support.task import Task
 
 PARALLEL_STEP_COUNT = 5
 
 
 class Step(StepReporter):
-    def __init__(
-        self,
-        name: str,
-        *,
-        task_mappings: list[TaskMapping],
-        manifest: StepManifest,
-    ):
-        super().__init__(name, manifest=manifest)
-        self.main_task_mappings: list[TaskMapping] = []
-        self.preprocess_task_mappings: list[TaskMapping] = []
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.main_task_definitions: list[TaskDefinition] = []
+        self.preprocess_task_definitions: list[TaskDefinition] = []
 
-        for t in task_mappings:
-            if t.real_name() in PREPROCESS_TASKS:
-                self.preprocess_task_mappings.append(t)
+        for t in task_definitions:
+            if real_name(t) in PREPROCESS_TASKS:
+                self.preprocess_task_definitions.append(t)
             else:
-                self.main_task_mappings.append(t)
+                self.main_task_definitions.append(t)
 
-    def _run_task(self, task: Task) -> TaskManifest:
+    def _run_task(self, task: 'Task') -> 'TaskManifest':
         with logger.contextualize(task=task.name):
             task.run()
         return task._manifest
 
     def run(self):
-        if not self.must_run():
-            logger.info(f'step {self.name} already completed, and no force flag set, skipping')
-            return
-
-        self.start()
-
-        logger.info(f'running {len(self.preprocess_task_mappings)} preprocess tasks')
-        for tm in self.preprocess_task_mappings:
-            t = task_repository.instantiate(tm)
+        logger.info(f'running {len(self.preprocess_task_definitions)} preprocess tasks')
+        for td in self.preprocess_task_definitions:
+            t = task_repository.instantiate(td)
             self._run_task(t)
 
         tasks_to_run: list[Task] = []
-        for tm in self.main_task_mappings:
-            t = task_repository.instantiate(tm)
-            t.attach_manifest(self.get_task_manifest(t))
-            if t.must_run():
-                tasks_to_run.append(t)
-            else:
-                logger.info(f'task {t.name} already completed, skipping')
+        for td in self.main_task_definitions:
+            t = task_repository.instantiate(td)
+            tasks_to_run.append(t)
 
         logger.info(f'running {len(tasks_to_run)} main tasks')
         pool = Pool(PARALLEL_STEP_COUNT)
         task_result_manifests = pool.map(self._run_task, tasks_to_run)
-        self.end(task_result_manifests)
+
+        self.complete(task_result_manifests)

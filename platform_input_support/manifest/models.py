@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict
 
 
 class Status(StrEnum):
-    NOT_SET = auto()
     NOT_COMPLETED = auto()
     FAILED = auto()
     COMPLETED = auto()
