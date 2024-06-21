@@ -19,3 +19,7 @@ class Task(TaskReporter):
 
     def run(self) -> str | None:
         pass
+
+
+class PreTask(Task):
+    pass
