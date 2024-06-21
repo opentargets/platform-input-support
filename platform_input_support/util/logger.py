@@ -1,4 +1,6 @@
 import sys
+from collections.abc import Callable
+from contextlib import contextmanager
 from types import TracebackType
 from typing import TYPE_CHECKING
 
@@ -9,7 +11,6 @@ from platform_input_support.util.fs import get_full_path
 
 if TYPE_CHECKING:
     from platform_input_support.task import Task
-from contextlib import contextmanager
 
 
 def get_exception_info(record_exception) -> tuple[str, str, str]:
@@ -35,15 +36,22 @@ def get_exception_info(record_exception) -> tuple[str, str, str]:
     return name, function, line
 
 
-def format_task_log(record):
-    name, function, line = get_exception_info(record.get('exception'))
+def get_format_log(include_task: bool = True) -> Callable[..., str]:
+    def format_log(record):
+        name, function, line = get_exception_info(record.get('exception'))
+        task = '<y>{extra[task]}</>::' if include_task and record['extra'].get('task') else ''
+        trail = '\n{exception}' if include_task else ''
 
-    return (
-        '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
-        '<lvl>{level: <8}</> | '
-        f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
-        ' - <lvl>{message}</>'
-    )
+        return (
+            '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
+            '<lvl>{level: <8}</> | '
+            f'{task}'
+            f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
+            ' - <lvl>{message}</>'
+            f'{trail}'
+        )
+
+    return format_log
 
 
 @contextmanager
@@ -53,7 +61,7 @@ def task_logging(task: 'Task'):
         logger.add(
             sink=sink_task,
             filter=lambda record: record['extra'].get('task') == task.name,
-            format=format_task_log,
+            format=get_format_log(include_task=False),
             level=settings.log_level,
         )
 
@@ -62,24 +70,11 @@ def task_logging(task: 'Task'):
 
 def init_logger(log_level: str) -> None:
     log_filename = get_full_path('output.log')
-
-    def format_log(record):
-        name, function, line = get_exception_info(record.get('exception'))
-        task = '<y>{extra[task]}</>::' if record['extra'].get('task') else ''
-
-        return (
-            '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
-            '<lvl>{level: <8}</> | '
-            f'{task}'
-            f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
-            ' - <lvl>{message}</>\n{exception}'
-        )
-
     handlers = [
         {
             'sink': sys.stdout,
             'level': log_level,
-            'format': format_log,
+            'format': get_format_log(),
         },
         {
             'sink': log_filename,
