@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+from threading import Event
 
 from loguru import logger
 
@@ -22,7 +23,7 @@ class DownloadLatest(Task):
         self.definition: DownloadLatestDefinition
 
     @report_to_manifest
-    def run(self):
+    def run(self, abort: Event):
         source, destination = self.definition.source, self.definition.destination
 
         if isinstance(source, str):

@@ -35,7 +35,7 @@ class Step(StepReporter):
                 task.fail(TaskAbortedError())
             else:
                 try:
-                    task.run()
+                    task.run(abort)
                 except Exception as e:
                     task.fail(e)
             return task._manifest

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from threading import Event
 
 from platform_input_support.config import scratchpad
 from platform_input_support.config.models import TaskDefinition
@@ -21,7 +22,7 @@ class GetFileList(PreTask):
         self.definition: GetFileListDefinition
 
     @report_to_manifest
-    def run(self):
+    def run(self, abort: Event):
         source, pattern, sentinel = self.definition.source, self.definition.pattern, self.definition.sentinel
         file_list: list[str] = []
 
