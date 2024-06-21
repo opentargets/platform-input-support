@@ -4,17 +4,18 @@ from platform_input_support.config import scratchpad
 from platform_input_support.config.models import TaskDefinition
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Task
+from platform_input_support.task import PreTask
 
 
 @dataclass
 class GetFileListDefinition(TaskDefinition):
+    is_pre: bool = True
     source: str
     pattern: str
     sentinel: str
 
 
-class GetFileList(Task):
+class GetFileList(PreTask):
     def __init__(self, definition: TaskDefinition):
         super().__init__(definition)
         self.definition: GetFileListDefinition

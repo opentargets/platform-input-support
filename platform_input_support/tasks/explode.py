@@ -12,7 +12,7 @@ from platform_input_support.config import scratchpad, task_definitions
 from platform_input_support.config.models import TaskDefinition
 from platform_input_support.helpers.download import download
 from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Task
+from platform_input_support.task import PreTask
 from platform_input_support.util.misc import list_str
 
 
@@ -24,7 +24,7 @@ class ExplodeDefinition(TaskDefinition):
     foreach_function_args: dict[str, Any] | None = None
 
 
-class Explode(Task):
+class Explode(PreTask):
     def __init__(self, definition: TaskDefinition):
         super().__init__(definition)
         self.definition: ExplodeDefinition
