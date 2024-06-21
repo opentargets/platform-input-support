@@ -39,7 +39,7 @@ def report_to_manifest(func):
                 self.start()
 
                 # add custom fields from definition to the manifest
-                self._manifest = self._manifest.model_copy(update=self.definition.__dict__, deep=True)
+                self._manifest = self._manifest.model_copy(update={'definition': self.definition.__dict__}, deep=True)
 
             result = func(self, *args, **kwargs)
 

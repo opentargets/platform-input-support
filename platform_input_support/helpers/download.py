@@ -15,7 +15,9 @@ from platform_input_support.util.fs import check_dir, get_full_path
 CHUNK_SIZE = 1024 * 1024 * 10
 
 
-def download(src: str, dst: Path) -> Path:
+def download(src: str, dst: Path | str) -> Path:
+    if isinstance(dst, str):
+        dst = Path(src)
     dst = get_full_path(dst)
     logger.info(f'preparing to download `{src}` to `{dst}`')
     check_dir(dst)
