@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+from threading import Event
 
 from pydantic import BaseModel
 
@@ -27,6 +28,6 @@ class Download(Task):
         self.definition: DownloadDefinition
 
     @report_to_manifest
-    def run(self) -> str:
-        download(self.definition.source, self.definition.destination)
+    def run(self, abort: Event):
+        download(self.definition.source, self.definition.destination, abort=abort)
         return 'download successful'

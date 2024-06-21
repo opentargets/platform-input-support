@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from threading import Event
 
 from loguru import logger
 
@@ -18,7 +19,7 @@ class HelloWorld(Task):
         self.definition: HelloWorldDefinition
 
     @report_to_manifest
-    def run(self):
+    def run(self, abort: Event):
         who = self.definition.who
 
         logger.info(f'hello, {who}!')

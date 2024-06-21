@@ -201,25 +201,25 @@ steps:
     - name: explode homologues
       foreach:
         - species: caenorhabditis_elegans
-        # - species: canis_lupus_familiaris
-        # - species: cavia_porcellus
-        # - species: danio_rerio
-        # - species: drosophila_melanogaster
-        # - species: macaca_mulatta
-        # - species: mus_musculus
-        # - species: oryctolagus_cuniculusiter
-        # - species: pan_troglodytes
-        # - species: rattus_norvegicus
-        # - species: sus_scrofa
-        # - species: xenopus_tropicalis
-        # - species: homo_sapiens
+        - species: canis_lupus_familiaris
+        - species: cavia_porcellus
+        - species: danio_rerio
+        - species: drosophila_melanogaster
+        - species: macaca_mulatta
+        - species: mus_musculus
+        - species: oryctolagus_cuniculusiter
+        - species: pan_troglodytes
+        - species: rattus_norvegicus
+        - species: sus_scrofa
+        - species: xenopus_tropicalis
+        - species: homo_sapiens
       do:
-        # - name: download ${species} gene dictionary
-        #   source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${species}/${species}.json
-        #   destination: target-inputs/homologue/gene_dictionary/${species}.json
-        # - name: download ${species} protein homologies
-        #   source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
-        #   destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
+        - name: download ${species} gene dictionary
+          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${species}/${species}.json
+          destination: target-inputs/homologue/gene_dictionary/${species}.json
+        - name: download ${species} protein homologies
+          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
+          destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
         - name: download ${species} ncrna homologies
           source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
           destination: target-inputs/homologue/homologies/ncrna-${species}.tsv.gz

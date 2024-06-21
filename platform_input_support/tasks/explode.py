@@ -2,6 +2,7 @@ import json
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
+from threading import Event
 from typing import Any, cast
 
 import jq
@@ -29,7 +30,7 @@ class Explode(PreTask):
         self.definition: ExplodeDefinition
 
     @report_to_manifest
-    def run(self):
+    def run(self, abort: Event):
         do = self.definition.do
         foreach = self.definition.foreach
         foreach_function = self.definition.foreach_function

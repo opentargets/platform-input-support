@@ -24,7 +24,6 @@ class HelperError(PISError):
 class DownloadError(PISError):
     def __init__(self, src: str, error: Exception):
         msg = f'error downloading `{src}`: {error}'
-        logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
 
 
