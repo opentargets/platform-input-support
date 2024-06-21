@@ -1,3 +1,4 @@
+import re
 import sys
 
 from loguru import logger
@@ -26,8 +27,15 @@ class DownloadError(PISError):
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
 
+
+class TaskAbortedError(PISError):
+    def __init__(self):
+        super().__init__('a previous task failed, task aborted')
+
+
 class ScratchpadError(PISError):
     def __init__(self, sentinel: str):
-        msg = f'key `{sentinel}` not found in scratchpad'
+        sentinel_label = re.sub(r'[^a-z.]', '', sentinel)
+        msg = f'key `{sentinel_label}` not found in scratchpad'
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
