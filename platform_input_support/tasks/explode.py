@@ -1,5 +1,4 @@
 import json
-import pathlib
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -53,7 +52,6 @@ class Explode(PreTask):
             func = cast(Callable[..., list[dict[str, str]]], func_obj)
             args_str = list_str(foreach_function_args, dict_values=True)
             logger.info(f'calling function `{foreach_function}` with args `{args_str}`')
-
             foreach = func(**foreach_function_args)
 
         foreach = foreach or []
@@ -74,9 +72,9 @@ class Explode(PreTask):
 
 
 def urls_from_json(source: str, destination: str, json_path: str) -> list[dict[str, str]]:
-    dst = download(source, pathlib.Path(destination))
-    file_content = dst.read_text()
+    destination_file = download(source, destination)
+    file_content = destination_file.read_text()
     json_data = json.loads(file_content)
-    urls = jq.compile(json_path).input_value(json_data).all()
+    sources = jq.compile(json_path).input_value(json_data).all()
 
-    return [{'source': url, 'destination': url.split('/')[-1]} for url in urls]
+    return [{'source': source, 'destination': source.split('/')[-1]} for source in sources]
