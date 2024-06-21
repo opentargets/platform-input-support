@@ -12,7 +12,8 @@ from loguru import logger
 from platform_input_support.config.models import TaskDefinition
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task import Task
-from platform_input_support.util.misc import check_dir, get_full_path
+from platform_input_support.util.fs import check_dir, get_full_path
+from platform_input_support.util.misc import list_str
 
 BUFFER_SIZE = 100000
 
@@ -41,17 +42,17 @@ class Elasticsearch(Task):
     def run(self):
         url = self.definition.url
         index = self.definition.index
-        destination = get_full_path(f'{self.definition.destination}/{index}.jsonl')
         fields = self.definition.fields
+        destination = get_full_path(f'{self.definition.destination}/{index}.jsonl')
         check_dir(destination)
 
-        logger.debug(f'connecting to `{url}`')
+        logger.debug(f'connecting to elasticsearch at `{url}`')
         try:
             self.es = Es(url)
         except ESError as e:
             raise ElasticsearchError(f'connection error: {e}')
 
-        logger.debug(f'scanning index `{index}` with fields `{fields}`')
+        logger.debug(f'scanning index `{index}` with fields `{list_str(fields)}`')
         try:
             self.doc_count = self.es.count(index=index)['count']
         except ESError as e:

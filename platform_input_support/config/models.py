@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Annotated, Literal
-from xmlrpc.client import Boolean
 
 from pydantic import AfterValidator, BaseModel
 
@@ -21,7 +20,7 @@ class EnvVarSettings(BaseModel):
     config_file: Path | None = None
     work_dir: Path | None = None
     gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
-    force: Boolean | None = None
+    force: bool | None = None
     log_level: LOG_LEVELS | None = None
 
 

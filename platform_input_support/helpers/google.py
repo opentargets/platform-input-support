@@ -78,6 +78,7 @@ class GoogleHelper:
             raise NotFoundError(bucket_name)
 
         blob = bucket.blob(file_path)
+        decoded_blob = None
 
         if destination is None:
             try:
@@ -93,9 +94,6 @@ class GoogleHelper:
             except UnicodeDecodeError as e:
                 raise HelperError(f'error decoding file `{url}`: {e}')
 
-            logger.debug(f'downloaded `{url}`')
-            return decoded_blob
-
         else:
             try:
                 blob.download_to_filename(destination)
@@ -106,7 +104,8 @@ class GoogleHelper:
             except OSError as e:
                 raise HelperError(f'error writing file: {e}')
 
-            logger.debug(f'downloaded `{url}` to `{destination}`')
+        logger.success('download completed')
+        return decoded_blob
 
     def upload(self, source: str, destination: str):
         bucket_name, file_path = self._parse_url(destination)
