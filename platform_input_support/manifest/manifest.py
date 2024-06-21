@@ -9,7 +9,8 @@ from platform_input_support.config import settings
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest.models import RootManifest, Status
 from platform_input_support.util.errors import PISError
-from platform_input_support.util.misc import date_str, get_full_path
+from platform_input_support.util.fs import get_full_path
+from platform_input_support.util.misc import date_str
 
 if TYPE_CHECKING:
     from platform_input_support.step import Step

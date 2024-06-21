@@ -2,15 +2,23 @@
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
+  "version": "2.0.0",
   "configurations": [
     {
       "name": "platform-input-support",
       "type": "debugpy",
       "request": "launch",
       "module": "poetry",
-      "args": ["run", "platform_input_support", "-s", "homologues"],
+      "args": ["run", "platform_input_support", "-s", "${input:stepName}"],
       "justMyCode": false,
+    }
+  ],
+  "inputs": [
+    {
+      "id": "stepName",
+      "type": "promptString",
+      "description": "Enter the step name",
+      "default": "so"
     }
   ]
 }

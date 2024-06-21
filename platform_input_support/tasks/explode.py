@@ -1,3 +1,5 @@
+import json
+import pathlib
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -11,6 +13,7 @@ from platform_input_support.config.models import TaskDefinition
 from platform_input_support.helpers.download import download
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.task import Task
+from platform_input_support.util.misc import list_str
 
 
 @dataclass
@@ -48,12 +51,10 @@ class Explode(Task):
                 sys.exit(1)
 
             func = cast(Callable[..., list[dict[str, str]]], func_obj)
-            logger.info(f'calling function `{foreach_function}` with args `{foreach_function_args}`')
+            args_str = list_str(foreach_function_args, dict_values=True)
+            logger.info(f'calling function `{foreach_function}` with args `{args_str}`')
 
-            try:
-                foreach = func(**foreach_function_args)
-            except Exception as e:
-                self.fail(Exception(f'error running foreach function `{foreach_function}`: {e}'))
+            foreach = func(**foreach_function_args)
 
         foreach = foreach or []
         logger.info(f'exploding {len(do)} tasks by {len(foreach)} iterations')
@@ -72,9 +73,10 @@ class Explode(Task):
         return f'exploded into {new_tasks} new tasks'
 
 
-def urls_from_json(url: str, json_path: str) -> list[dict[str, str]]:
-    json_file = download(url)
-    json = json_file.read_text()
-    urls = jq.compile(json_path).input_value(json).all()
+def urls_from_json(source: str, destination: str, json_path: str) -> list[dict[str, str]]:
+    dst = download(source, pathlib.Path(destination))
+    file_content = dst.read_text()
+    json_data = json.loads(file_content)
+    urls = jq.compile(json_path).input_value(json_data).all()
 
     return [{'source': url, 'destination': url.split('/')[-1]} for url in urls]

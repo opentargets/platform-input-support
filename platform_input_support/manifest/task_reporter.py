@@ -1,3 +1,4 @@
+import sys
 from functools import wraps
 
 from loguru import logger
@@ -19,7 +20,7 @@ class TaskReporter:
 
     def fail(self, error: Exception):
         self._manifest.status = Status.FAILED
-        logger.error(f'task failed: {error}')
+        logger.opt(exception=sys.exc_info()).error(f'task failed: {error}')
 
     def pass_validation(self, log: str):
         self._manifest.status = Status.VALIDATION_PASSED
@@ -27,7 +28,7 @@ class TaskReporter:
 
     def fail_validation(self, error: Exception):
         self._manifest.status = Status.VALIDATION_FAILED
-        logger.error(f'failed validation: {error}')
+        logger.opt(exception=sys.exc_info()).error(f'failed validation: {error}')
 
 
 def report_to_manifest(func):
