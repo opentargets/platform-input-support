@@ -25,3 +25,9 @@ class DownloadError(PISError):
         msg = f'error downloading `{src}`: {error}'
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
+
+class ScratchpadError(PISError):
+    def __init__(self, sentinel: str):
+        msg = f'key `{sentinel}` not found in scratchpad'
+        logger.opt(exception=sys.exc_info()).error(msg)
+        super().__init__(msg)
