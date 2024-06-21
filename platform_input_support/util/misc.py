@@ -1,45 +1,10 @@
-import os
-import sys
 from datetime import datetime
-from pathlib import Path
-from typing import TYPE_CHECKING
-
-from loguru import logger
-
-from platform_input_support.config import settings
+from typing import TYPE_CHECKING, Any
+from xmlrpc.client import Boolean
 
 if TYPE_CHECKING:
     from platform_input_support.config.models import TaskDefinition
     from platform_input_support.task import Task
-
-
-def check_dir(path: Path) -> None:
-    parent = get_full_path(path).parent
-    logger.debug(f'checking directory `{parent}`')
-
-    if parent.is_dir():
-        logger.debug('directory exists')
-        if not os.access(parent, os.W_OK):
-            logger.critical('directory is not writtable')
-            sys.exit(1)
-    else:
-        logger.info('directory does not exist, creating it')
-        try:
-            Path(parent).mkdir(parents=True, exist_ok=True)
-        except OSError as e:
-            logger.critical(f'error creating dir: {e}')
-            sys.exit(1)
-
-    if path.is_file():
-        logger.info(f'file `{path}` already exists, deleting')
-        try:
-            path.unlink()
-        except OSError as e:
-            logger.critical(f'error deleting file: {e}')
-
-
-def get_full_path(path: Path | str) -> Path:
-    return (Path(settings.work_dir) / path).resolve()
 
 
 def date_str(d: datetime) -> str:
@@ -54,3 +19,16 @@ def real_name(t: 'Task | TaskDefinition') -> str:
         if name:
             return name.split(' ')[0]
     raise ValueError(f'invalid task definition: {t}')
+
+
+def list_str(a_list: Any, dict_values: Boolean = False) -> str:
+    if isinstance(a_list, list):
+        return ', '.join(map(str, a_list))
+    elif isinstance(a_list, dict):
+        if dict_values:
+            return ', '.join([f'{k}={v}' for k, v in a_list.items()])
+        else:
+            return ', '.join([k for k, v in a_list.items()])
+    elif isinstance(a_list, str):
+        return a_list
+    return str(a_list)

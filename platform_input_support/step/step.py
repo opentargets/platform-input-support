@@ -20,14 +20,9 @@ PARALLEL_STEP_COUNT = 5
 class Step(StepReporter):
     def __init__(self, name: str):
         super().__init__(name)
-        self.main_task_definitions: list[TaskDefinition] = []
-        self.preprocess_task_definitions: list[TaskDefinition] = []
 
-        for t in task_definitions:
-            if real_name(t) in PREPROCESS_TASKS:
-                self.preprocess_task_definitions.append(t)
-            else:
-                self.main_task_definitions.append(t)
+    def _split_tasks(self) -> list['TaskDefinition']:
+        return [task_definitions.pop(i) for i, t in enumerate(task_definitions) if real_name(t) in PREPROCESS_TASKS]
 
     def _run_task(self, task: 'Task') -> 'TaskManifest':
         def sink_task(message):
@@ -45,13 +40,17 @@ class Step(StepReporter):
         return task._manifest
 
     def run(self):
-        logger.info(f'running {len(self.preprocess_task_definitions)} preprocess tasks')
-        for td in self.preprocess_task_definitions:
+        # run preprocess tasks
+        tds = self._split_tasks()
+        logger.info(f'running {len(tds)} preprocess tasks')
+        for td in tds:
             t = task_registry.instantiate(td)
-            self._run_task(t)
+            task_result_manifest = self._run_task(t)
+            self.add_task_reports(task_result_manifest)
 
+        # run main tasks
         tasks_to_run: list[Task] = []
-        for td in self.main_task_definitions:
+        for td in task_definitions:
             t = task_registry.instantiate(td)
             tasks_to_run.append(t)
 
@@ -59,4 +58,5 @@ class Step(StepReporter):
         pool = Pool(PARALLEL_STEP_COUNT)
         task_result_manifests = pool.map(self._run_task, tasks_to_run)
 
-        self.complete(task_result_manifests)
+        self.add_task_reports(task_result_manifests)
+        self.complete()

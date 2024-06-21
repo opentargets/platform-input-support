@@ -4,8 +4,8 @@ from loguru import logger
 
 from platform_input_support.config import settings
 from platform_input_support.step import Step
+from platform_input_support.util.fs import check_dir
 from platform_input_support.util.logger import init_logger
-from platform_input_support.util.misc import check_dir
 
 
 def main():

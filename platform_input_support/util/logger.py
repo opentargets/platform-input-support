@@ -1,15 +1,41 @@
 import sys
+from types import TracebackType
 
 from loguru import logger
 
-from platform_input_support.util.misc import get_full_path
+from platform_input_support.util.fs import get_full_path
+
+
+def get_exception_info(record_exception) -> tuple[str, str, str]:
+    name = '{name}'
+    function = '{function}'
+    line = '{line}'
+
+    if record_exception is not None:
+        tb: TracebackType
+        _, _, tb = record_exception
+
+        # go back in the stack to the first frame originated inside the app
+        app_name = globals()['__package__'].split('.')[0]
+        while tb.tb_next:
+            next_name = tb.tb_next.tb_frame.f_globals.get('__name__', None)
+            if app_name not in next_name:
+                break
+            name = next_name
+            tb = tb.tb_next
+        function = tb.tb_frame.f_code.co_name
+        line = str(tb.tb_lineno)
+
+    return name, function, line
 
 
 def format_task_log(record):
+    name, function, line = get_exception_info(record.get('exception'))
+
     return (
         '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
         '<lvl>{level: <8}</> | '
-        '<c>{name}</>:<c>{function}</>:<c>{line}</>'
+        f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
         ' - <lvl>{message}</>'
     )
 
@@ -18,13 +44,14 @@ def init_logger(log_level: str) -> None:
     log_filename = get_full_path('output.log')
 
     def format_log(record):
+        name, function, line = get_exception_info(record.get('exception'))
         task = '<y>{extra[task]}</>::' if record['extra'].get('task') else ''
 
         return (
             '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
             '<lvl>{level: <8}</> | '
             f'{task}'
-            '<c>{name}</>:<c>{function}</>:<c>{line}</>'
+            f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
             ' - <lvl>{message}</>\n{exception}'
         )
 

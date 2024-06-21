@@ -6,8 +6,10 @@ class StepReporter:
         self.name = name
         self._manifest = StepManifest(name=self.name)
 
-    def complete(self, task_manifests: list[TaskManifest]):
-        self._manifest.tasks = task_manifests
+    def add_task_reports(self, task_manifests: list[TaskManifest] | TaskManifest):
+        self._manifest.tasks.extend(task_manifests if isinstance(task_manifests, list) else [task_manifests])
+
+    def complete(self):
         self._manifest.status = Status.COMPLETED
         for task in self._manifest.tasks:
             if task.status not in [Status.COMPLETED, Status.VALIDATION_PASSED]:
