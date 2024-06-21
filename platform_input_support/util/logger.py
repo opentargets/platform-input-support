@@ -1,3 +1,4 @@
+import os
 import sys
 from collections.abc import Callable
 from contextlib import contextmanager
@@ -13,6 +14,9 @@ if TYPE_CHECKING:
     from platform_input_support.task import Task
 
 
+HIDE_EXCEPTIONS = os.getenv('PIS_HIDE_EXCEPTIONS', 'false').lower() in ['true', '1', 'yes', 'y', 'on', 't']
+
+
 def get_exception_info(record_exception) -> tuple[str, str, str]:
     name = '{name}'
     function = '{function}'
@@ -21,6 +25,9 @@ def get_exception_info(record_exception) -> tuple[str, str, str]:
     if record_exception is not None:
         tb: TracebackType
         _, _, tb = record_exception
+
+        if tb is None:
+            return name, function, line
 
         # go back in the stack to the first frame originated inside the app
         app_name = globals()['__package__'].split('.')[0]
@@ -41,6 +48,9 @@ def get_format_log(include_task: bool = True) -> Callable[..., str]:
         name, function, line = get_exception_info(record.get('exception'))
         task = '<y>{extra[task]}</>::' if include_task and record['extra'].get('task') else ''
         trail = '\n{exception}' if include_task else ''
+
+        if HIDE_EXCEPTIONS:
+            trail = trail.replace('{exception}', '')
 
         return (
             '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
