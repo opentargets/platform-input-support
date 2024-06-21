@@ -1,3 +1,5 @@
+from threading import Event
+
 from loguru import logger
 
 from platform_input_support.config import scratchpad
@@ -17,7 +19,7 @@ class Task(TaskReporter):
 
         logger.debug(f'initialized task `{self.name}`')
 
-    def run(self) -> str | None:
+    def run(self, abort: Event) -> str | None:
         pass
 
 
