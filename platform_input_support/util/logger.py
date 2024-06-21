@@ -1,9 +1,15 @@
 import sys
 from types import TracebackType
+from typing import TYPE_CHECKING
 
 from loguru import logger
 
+from platform_input_support.config import settings
 from platform_input_support.util.fs import get_full_path
+
+if TYPE_CHECKING:
+    from platform_input_support.task import Task
+from contextlib import contextmanager
 
 
 def get_exception_info(record_exception) -> tuple[str, str, str]:
@@ -38,6 +44,20 @@ def format_task_log(record):
         f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
         ' - <lvl>{message}</>'
     )
+
+
+@contextmanager
+def task_logging(task: 'Task'):
+    with logger.contextualize(task=task.name):
+        sink_task = lambda message: task._manifest.log.append(message)
+        logger.add(
+            sink=sink_task,
+            filter=lambda record: record['extra'].get('task') == task.name,
+            format=format_task_log,
+            level=settings.log_level,
+        )
+
+        yield
 
 
 def init_logger(log_level: str) -> None:
