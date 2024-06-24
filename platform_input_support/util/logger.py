@@ -14,9 +14,6 @@ if TYPE_CHECKING:
     from platform_input_support.task import Task
 
 
-HIDE_EXCEPTIONS = os.getenv('PIS_HIDE_EXCEPTIONS', 'false').lower() in ['true', '1', 'yes', 'y', 'on', 't']
-
-
 def get_exception_info(record_exception) -> tuple[str, str, str]:
     name = '{name}'
     function = '{function}'
@@ -49,7 +46,8 @@ def get_format_log(include_task: bool = True) -> Callable[..., str]:
         task = '<y>{extra[task]}</>::' if include_task and record['extra'].get('task') else ''
         trail = '\n{exception}' if include_task else ''
 
-        if HIDE_EXCEPTIONS:
+        # debug flag to hide exceptions in logs (they are too verbose when checking the log flow)
+        if os.getenv('PIS_HIDE_EXCEPTIONS', 'false').lower() in ['true', '1', 'yes', 'y', 'on', 't']:
             trail = trail.replace('{exception}', '')
 
         return (
@@ -66,13 +64,21 @@ def get_format_log(include_task: bool = True) -> Callable[..., str]:
 
 @contextmanager
 def task_logging(task: 'Task'):
+    """Context manager that appends log messages to the task's manifest.
+
+    Args:
+        task (Task): The task to log messages to.
+
+    Yields:
+        None
+    """
     with logger.contextualize(task=task.name):
         sink_task = lambda message: task._manifest.log.append(message)
         logger.add(
             sink=sink_task,
             filter=lambda record: record['extra'].get('task') == task.name,
             format=get_format_log(include_task=False),
-            level=settings.log_level,
+            level=settings().log_level,
         )
 
         yield

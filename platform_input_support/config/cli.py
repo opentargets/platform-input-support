@@ -1,14 +1,16 @@
 import argparse
+import os
 
 from loguru import logger
 from pydantic_core import PydanticUndefinedType
 
-from platform_input_support.config.env import ENV_VAR_PREFIX
+from platform_input_support.config.env import ENV_PREFIX
 from platform_input_support.config.models import CliSettings, Settings
 
 
-def to_env_var(name: str) -> str:
-    return f'{ENV_VAR_PREFIX}_{name.upper()}'
+def to_env(var: str) -> str:
+    """Convert a setting name to an environment variable name."""
+    return f'{ENV_PREFIX}_{var.upper()}'
 
 
 def parse_cli() -> CliSettings:
@@ -17,11 +19,10 @@ def parse_cli() -> CliSettings:
     class HelpFormatter(argparse.HelpFormatter):
         def _get_help_string(self, action):
             if action.default is not argparse.SUPPRESS:
-                action.help = f'{action.help} (environment variable: {to_env_var(action.dest)})'
+                action.help = f'{action.help} (environment variable: {to_env(action.dest)})'
                 default_value = Settings.model_fields[action.dest].default
-                if not isinstance(default_value, PydanticUndefinedType):
+                if default_value != '' and not isinstance(default_value, PydanticUndefinedType):  # noqa: PLC1901
                     action.help += f' (default: {default_value})'
-
             return f'{action.help}'
 
     parser = argparse.ArgumentParser(
@@ -32,7 +33,7 @@ def parse_cli() -> CliSettings:
     parser.add_argument(
         '-s',
         '--step',
-        required=True,
+        required=to_env('step') not in os.environ,
         help='The step to run',
     )
 
@@ -76,4 +77,5 @@ def parse_cli() -> CliSettings:
 
     settings_vars = vars(parser.parse_args())
     settings_dict = {k: v for k, v in settings_vars.items() if v is not None}
+
     return CliSettings.model_validate(settings_dict)

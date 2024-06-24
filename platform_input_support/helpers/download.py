@@ -29,9 +29,9 @@ class AbortableStreamWrapper:
 
 def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
     if isinstance(dst, str):
-        dst = Path(src)
+        dst = Path(dst)
     dst = get_full_path(dst)
-    logger.info(f'preparing to download `{src}` to `{dst}`')
+    logger.info(f'preparing to download {src} to {dst}')
     check_dir(dst)
 
     # download from google sheets
@@ -66,7 +66,7 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
 
         # unknown protocol
         else:
-            raise ValueError(f'unknown protocol `{proto}`')
+            raise ValueError(f'unknown protocol {proto}')
 
     return dst
 

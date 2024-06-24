@@ -10,7 +10,7 @@ class PISError(Exception):
 
 class NotFoundError(PISError):
     def __init__(self, resource: str):
-        msg = f'`{resource}` not found'
+        msg = f'{resource} not found'
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
 
@@ -23,7 +23,7 @@ class HelperError(PISError):
 
 class DownloadError(PISError):
     def __init__(self, src: str, error: Exception):
-        msg = f'error downloading `{src}`: {error}'
+        msg = f'error downloading {src}: {error}'
         super().__init__(msg)
 
 
@@ -35,6 +35,6 @@ class TaskAbortedError(PISError):
 class ScratchpadError(PISError):
     def __init__(self, sentinel: str):
         sentinel_label = re.sub(r'[^a-z.]', '', sentinel)
-        msg = f'key `{sentinel_label}` not found in scratchpad'
+        msg = f'key {sentinel_label} not found in scratchpad'
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)

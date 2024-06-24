@@ -27,7 +27,7 @@ class Manifest:
 
         # try fetching manifest from google cloud storage
         if google_helper.is_ready:
-            manifest_path = f'{settings.gcs_url}/{MANIFEST_FILENAME}'
+            manifest_path = f'{settings().gcs_url}/{MANIFEST_FILENAME}'
             try:
                 manifest_str = google_helper.download(manifest_path)
             except PISError:
@@ -40,7 +40,7 @@ class Manifest:
             try:
                 manifest_str = manifest_path.read_text()
             except FileNotFoundError:
-                logger.warning(f'manifest file not found in `{manifest_path}`')
+                logger.warning(f'manifest file not found in {manifest_path}')
                 return None
             except (OSError, PermissionError, ValueError) as e:
                 logger.critical(f'error reading manifest file: {e}')
@@ -52,7 +52,7 @@ class Manifest:
             logger.critical(f'error validating manifest file: {e}')
             sys.exit(1)
 
-        logger.success(f'previous manifest found: {date_str(manifest.modified)}')
+        logger.info(f'previous manifest found: {date_str(manifest.modified)}')
         return manifest
 
     def _save_local_manifest(self):
@@ -76,6 +76,6 @@ class Manifest:
         for name, manifest in self._manifest.steps.items():
             if manifest.status is not Status.COMPLETED:
                 self._manifest.status = Status.FAILED
-                self._manifest.log.append(f'step `{name}` failed')
+                self._manifest.log.append(f'step {name} failed')
 
         self._save_local_manifest()
