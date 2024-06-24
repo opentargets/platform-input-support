@@ -37,7 +37,7 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
     # download from google sheets
     if src.startswith('https://docs.google.com/spreadsheets/d'):
         logger.info('starting google sheets download')
-        s = google_helper.get_session()
+        s = google_helper().get_session()
         _download(src, dst, s, abort)
 
     else:
@@ -62,7 +62,7 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
         # download from google storage
         elif proto == 'gs':
             logger.info('starting google storage download')
-            google_helper.download(src, dst)
+            google_helper().download(src, dst)
 
         # unknown protocol
         else:

@@ -27,13 +27,13 @@ class DownloadLatest(Task):
         source, destination = self.definition.source, self.definition.destination
 
         if isinstance(source, str):
-            source = google_helper.list(source)
+            source = google_helper().list(source)
 
         newest_date = None
         newest_file = None
 
         for f in source:
-            modification_date = google_helper.get_modification_date(f)
+            modification_date = google_helper().get_modification_date(f)
             if modification_date:
                 if not newest_date or modification_date > newest_date:
                     newest_date = modification_date
