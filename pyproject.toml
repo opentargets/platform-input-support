@@ -18,7 +18,9 @@ loguru = "==0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 poetry = "^1.8.3"
+coverage = "^7.5.3"
 pytest = "==7.4.3"
+pytest-mock = "^3.14.0"
 ruff = "==0.4.6"
 
 [build-system]
@@ -27,6 +29,13 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 platform_input_support = "platform_input_support.core:main"
+
+[tool.pytest.ini_options]
+testpaths = ["platform_input_support"]
+
+[tool.coverage.report]
+omit = ["**/*_test.py"]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 target-version = 'py312'
@@ -149,7 +158,7 @@ extend-safe-fixes = [
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
-multiline-quotes = 'single'
+multiline-quotes = 'double'
 docstring-quotes = 'double'
 avoid-escape = true
 

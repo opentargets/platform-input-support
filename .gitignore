@@ -1,8 +1,10 @@
 # Various python files
+coverage.xml
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .cache
+.coverage
 .ruff_cache/
 .venv/
 
