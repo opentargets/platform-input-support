@@ -38,3 +38,10 @@ class ScratchpadError(PISError):
         msg = f'key {sentinel_label} not found in scratchpad'
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
+
+
+class StepFailedError(PISError):
+    def __init__(self, step: str):
+        msg = f'step {step} failed'
+        logger.opt(exception=sys.exc_info()).error(msg)
+        super().__init__(msg)

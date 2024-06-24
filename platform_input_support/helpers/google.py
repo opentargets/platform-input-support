@@ -107,7 +107,7 @@ class GoogleHelper:
         logger.info('download completed')
         return decoded_blob
 
-    def upload(self, source: str, destination: str):
+    def upload(self, source: Path, destination: str) -> None:
         bucket_name, file_path = self._parse_url(destination)
 
         try:

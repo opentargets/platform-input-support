@@ -17,17 +17,17 @@ CHUNK_SIZE = 1024 * 1024 * 10
 
 
 class AbortableStreamWrapper:
-    def __init__(self, stream, abort):
+    def __init__(self, stream, abort_event):
         self.stream = stream
-        self.abort = abort
+        self.abort_event = abort_event
 
     def read(self, *args, **kwargs):
-        if self.abort and self.abort.is_set():
+        if self.abort_event and self.abort_event.is_set():
             raise TaskAbortedError
         return self.stream.read(*args, **kwargs)
 
 
-def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
+def download(src: str, dst: Path | str, *, abort_event: Event | None = None) -> Path:
     if isinstance(dst, str):
         dst = Path(dst)
     dst = get_full_path(dst)
@@ -38,7 +38,7 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
     if src.startswith('https://docs.google.com/spreadsheets/d'):
         logger.info('starting google sheets download')
         s = google_helper().get_session()
-        _download(src, dst, s, abort)
+        _download(src, dst, s, abort_event)
 
     else:
         proto = src.split(':')[0]
@@ -57,7 +57,7 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
 
             s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
             s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
-            _download(src, dst, s, abort)
+            _download(src, dst, s, abort_event)
 
         # download from google storage
         elif proto == 'gs':
@@ -71,12 +71,12 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
     return dst
 
 
-def _download(src: str, dst: Path, s: requests.Session, abort: Event | None = None):
+def _download(src: str, dst: Path, s: requests.Session, abort_event: Event | None = None):
     r = s.get(src, stream=True, timeout=(10, None))
     r.raise_for_status()
 
     # Wrap r.raw with an AbortableStreamWrapper
-    abortable_stream = AbortableStreamWrapper(r.raw, abort)
+    abortable_stream = AbortableStreamWrapper(r.raw, abort_event)
     # Ensure we decode the content
     abortable_stream.stream.read = functools.partial(
         abortable_stream.stream.read,

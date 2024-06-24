@@ -301,7 +301,7 @@ steps:
   so:
     - name: download so
       source: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.json
-      # destination: so-inputs/so.json
+      destination: so-inputs/so.json
 
   target:
     - name: download hgnc complete set

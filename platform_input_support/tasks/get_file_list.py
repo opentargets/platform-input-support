@@ -2,27 +2,27 @@ from dataclasses import dataclass
 from threading import Event
 
 from platform_input_support.config import scratchpad
-from platform_input_support.config.models import TaskDefinition
+from platform_input_support.config.models import PretaskDefinition
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import PreTask
+from platform_input_support.task import Pretask
 
 
 @dataclass
-class GetFileListDefinition(TaskDefinition):
+class GetFileListDefinition(PretaskDefinition):
     is_pre: bool = True
     source: str
     pattern: str
     sentinel: str
 
 
-class GetFileList(PreTask):
-    def __init__(self, definition: TaskDefinition):
+class GetFileList(Pretask):
+    def __init__(self, definition: PretaskDefinition):
         super().__init__(definition)
         self.definition: GetFileListDefinition
 
     @report_to_manifest
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         source, pattern, sentinel = self.definition.source, self.definition.pattern, self.definition.sentinel
         file_list: list[str] = []
 
