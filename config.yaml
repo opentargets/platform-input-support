@@ -207,7 +207,7 @@ steps:
         - species: drosophila_melanogaster
         - species: macaca_mulatta
         - species: mus_musculus
-        - species: oryctolagus_cuniculusiter
+        - species: oryctolagus_cuniculus
         - species: pan_troglodytes
         - species: rattus_norvegicus
         - species: sus_scrofa
