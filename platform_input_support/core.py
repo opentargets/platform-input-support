@@ -32,6 +32,7 @@ def main():
     # check conditions in the work directory
     check_dir(settings().work_dir)
 
+    # instantiate and run the step given as argument
     step = Step(settings().step)
     step.run()
 
