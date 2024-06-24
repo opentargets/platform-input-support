@@ -9,28 +9,28 @@ import jq
 from loguru import logger
 
 from platform_input_support.config import scratchpad, task_definitions
-from platform_input_support.config.models import TaskDefinition
+from platform_input_support.config.models import PretaskDefinition, TaskDefinition
 from platform_input_support.helpers.download import download
 from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import PreTask
+from platform_input_support.task import Pretask
 from platform_input_support.util.misc import list_str
 
 
 @dataclass
-class ExplodeDefinition(TaskDefinition):
+class ExplodeDefinition(PretaskDefinition):
     do: list[dict]
     foreach: list[dict[str, str]] | None = None
     foreach_function: str | None = None
     foreach_function_args: dict[str, Any] | None = None
 
 
-class Explode(PreTask):
+class Explode(Pretask):
     def __init__(self, definition: TaskDefinition):
         super().__init__(definition)
         self.definition: ExplodeDefinition
 
     @report_to_manifest
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         do = self.definition.do
         foreach = self.definition.foreach
         foreach_function = self.definition.foreach_function

@@ -1,9 +1,12 @@
-from threading import Event
+import sys
 
+from git import TYPE_CHECKING
 from loguru import logger
 
-from platform_input_support.manifest.models import Status, StepManifest, TaskManifest
-from platform_input_support.manifest.util import recount
+from platform_input_support.manifest.models import Result, StepManifest
+
+if TYPE_CHECKING:
+    from platform_input_support.task import Task
 
 
 class StepReporter:
@@ -11,19 +14,38 @@ class StepReporter:
         self.name = name
         self._manifest = StepManifest(name=self.name)
 
-    def add_task_report(self, task_manifest: TaskManifest, abort: Event):
-        self._manifest.tasks.append(task_manifest)
-        if task_manifest.status not in [Status.COMPLETED, Status.VALIDATION_PASSED]:
-            abort.set()
-
-    def complete(self):
-        self._manifest.status = Status.COMPLETED
-        recount(self._manifest.tasks, self._manifest)
-
-    def fail(self, reason: str, error: Exception | None = None):
-        self._manifest.status = Status.FAILED
-        msg = f'step {self.name} failed: {reason}'
+    def stage(self, log: str):
+        self._manifest.result = Result.STAGED
+        msg = f'step staged: {log}'
         self._manifest.log.append(msg)
-        logger.critical(msg)
-        if error:
-            self._manifest.log.append(str(error))
+        logger.info(msg)
+
+    def complete(self, log: str):
+        self._manifest.result = Result.COMPLETED
+        msg = f'step completed: {log}'
+        self._manifest.log.append(msg)
+        logger.success(msg)
+
+    def validate(self, log: str):
+        self._manifest.result = Result.VALIDATED
+        msg = f'step validated: {log}'
+        self._manifest.log.append(msg)
+        logger.success(msg)
+
+    def fail(self, log: str):
+        self._manifest.result = Result.FAILED
+        msg = f'step failed: {log}'
+        self._manifest.log.append(msg)
+        logger.opt(exception=sys.exc_info()).error(msg)
+
+    def abort(self):
+        self._manifest.result = Result.ABORTED
+        msg = 'step aborted'
+        self._manifest.log.append(msg)
+        logger.warning(msg)
+
+    def add_task(self, task: 'Task'):
+        self._manifest.tasks.append(task._manifest)
+        msg = f'task {task.name} {task._manifest.result}'
+        self._manifest.log.append(msg)
+        logger.info(msg)

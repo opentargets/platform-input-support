@@ -19,7 +19,7 @@ class HelloWorld(Task):
         self.definition: HelloWorldDefinition
 
     @report_to_manifest
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         who = self.definition.who
 
         logger.info(f'hello, {who}!')

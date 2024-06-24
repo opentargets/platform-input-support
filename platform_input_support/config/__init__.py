@@ -4,10 +4,11 @@ from platform_input_support.config.scratchpad import Scratchpad
 
 if TYPE_CHECKING:
     from platform_input_support.config.config import Config
-    from platform_input_support.config.models import TaskDefinition
+    from platform_input_support.config.models import BaseTaskDefinition
 
 _config: 'Config | None' = None
-_task_definitions: 'list[TaskDefinition] | None' = None
+_steps: 'list[str] | None' = None
+_task_definitions: 'list[BaseTaskDefinition] | None' = None
 _scratchpad: 'Scratchpad | None' = None
 
 
@@ -37,6 +38,24 @@ def settings():
         init_config()
     assert _config is not None
     return _config.settings
+
+
+def steps():
+    """Return the steps.
+
+    If the steps have not been loaded, they will be loaded from the configuration
+    file. The steps are stored for subsequent calls.
+
+    Returns:
+        list[str]: The steps.
+    """
+    global _config  # noqa: PLW0602
+    global _steps  # noqa: PLW0603
+    init_config()
+    assert _config is not None
+    if _steps is None:
+        _steps = _config.yaml_dict['steps']
+    return _steps or []
 
 
 def task_definitions():
