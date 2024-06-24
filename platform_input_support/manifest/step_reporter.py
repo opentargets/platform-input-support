@@ -3,6 +3,7 @@ from threading import Event
 from loguru import logger
 
 from platform_input_support.manifest.models import Status, StepManifest, TaskManifest
+from platform_input_support.manifest.util import recount
 
 
 class StepReporter:
@@ -17,30 +18,7 @@ class StepReporter:
 
     def complete(self):
         self._manifest.status = Status.COMPLETED
-
-        total = len(self._manifest.tasks)
-        success = 0
-        failed = 0
-        aborted = 0
-
-        for task in self._manifest.tasks:
-            self._manifest.log.append(f'task {task.name} {task.status.value}')
-
-            if task.status == Status.NOT_COMPLETED:
-                self._manifest.status = Status.FAILED
-                logger.error(f'task {task.name} was interrupted for an unknown reason')
-            if task.status == Status.ABORTED:
-                self._manifest.status = Status.FAILED
-                aborted += 1
-            elif task.status == Status.FAILED:
-                self._manifest.status = Status.FAILED
-                failed += 1
-            else:
-                success += 1
-
-        failed_summary = f', {failed}/{total} tasks failed' if failed else ''
-        aborted_summary = f', {aborted}/{total} tasks aborted' if aborted else ''
-        self._manifest.log.append(f'step summary: {success}/{total} tasks succeeded{failed_summary}{aborted_summary}')
+        recount(self._manifest.tasks, self._manifest)
 
     def fail(self, reason: str, error: Exception | None = None):
         self._manifest.status = Status.FAILED
