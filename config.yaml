@@ -39,7 +39,7 @@ steps:
       destination: chembl-inputs/drugbank.csv.gz
     - name: elasticsearch chembl drug indications
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs
+      destination: chembl-inputs/chembl_${chembl_release_version}_drug_indication.jsonl
       index: chembl_${chembl_release_version}_drug_indication
       fields:
         - _metadata
@@ -49,7 +49,7 @@ steps:
         - indication_refs
     - name: elasticsearch chembl mechanisms of action
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs
+      destination: chembl-inputs/chembl_${chembl_release_version}_mechanism.jsonl
       index: chembl_${chembl_release_version}_mechanism
       fields:
         - _metadata
@@ -62,7 +62,7 @@ steps:
         - parent_molecule_chembl_id
     - name: elasticsearch chembl molecules
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs
+      destination: chembl-inputs/chembl_${chembl_release_version}_molecule.jsonl
       index: chembl_${chembl_release_version}_molecule
       fields:
         - molecule_chembl_id
@@ -79,7 +79,7 @@ steps:
         - molecule_structures
     - name: elasticsearch chembl targets
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs
+      destination: chembl-inputs/chembl_${chembl_release_version}_target.jsonl
       index: chembl_${chembl_release_version}_target
       fields:
         - _metadata
@@ -89,7 +89,7 @@ steps:
         - pref_name
     - name: elasticsearch chembl drug warnings
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs
+      destination: chembl-inputs/chembl_${chembl_release_version}_drug_warning.jsonl
       index: chembl_${chembl_release_version}_drug_warning
       fields:
         - _metadata
@@ -202,24 +202,24 @@ steps:
       foreach:
         - species: caenorhabditis_elegans
         - species: canis_lupus_familiaris
-        - species: cavia_porcellus
-        - species: danio_rerio
-        - species: drosophila_melanogaster
-        - species: macaca_mulatta
-        - species: mus_musculus
-        - species: oryctolagus_cuniculus
-        - species: pan_troglodytes
-        - species: rattus_norvegicus
-        - species: sus_scrofa
-        - species: xenopus_tropicalis
-        - species: homo_sapiens
+        # - species: cavia_porcellus
+        # - species: danio_rerio
+        # - species: drosophila_melanogaster
+        # - species: macaca_mulatta
+        # - species: mus_musculus
+        # - species: oryctolagus_cuniculus
+        # - species: pan_troglodytes
+        # - species: rattus_norvegicus
+        # - species: sus_scrofa
+        # - species: xenopus_tropicalis
+        # - species: homo_sapiens
       do:
-        - name: download ${species} gene dictionary
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${species}/${species}.json
-          destination: target-inputs/homologue/gene_dictionary/${species}.json
-        - name: download ${species} protein homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
-          destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
+        # - name: download ${species} gene dictionary
+        #   source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${species}/${species}.json
+        #   destination: target-inputs/homologue/gene_dictionary/${species}.json
+        # - name: download ${species} protein homologies
+        #   source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
+        #   destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
         - name: download ${species} ncrna homologies
           source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
           destination: target-inputs/homologue/homologies/ncrna-${species}.tsv.gz
@@ -301,7 +301,7 @@ steps:
   so:
     - name: download so
       source: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.json
-      destination: so-inputs/so.json
+      # destination: so-inputs/so.json
 
   target:
     - name: download hgnc complete set
