@@ -13,11 +13,11 @@ class Task(TaskReporter):
         self.definition = definition
 
         # replace templates in the definition strings
-        for key, value in vars(self.definition).items():
+        for key, value in self.definition.model_dump().items():
             if isinstance(value, str):
-                setattr(self.definition, key, scratchpad.replace(value))
+                setattr(self.definition, key, scratchpad().replace(value))
 
-        logger.debug(f'initialized task `{self.name}`')
+        logger.debug(f'initialized task {self.name}')
 
     def run(self, abort: Event) -> str | None:
         pass

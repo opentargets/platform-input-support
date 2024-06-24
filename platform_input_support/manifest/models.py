@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 class Status(StrEnum):
     NOT_COMPLETED = auto()
+    ABORTED = auto()
     FAILED = auto()
     COMPLETED = auto()
     VALIDATION_FAILED = auto()

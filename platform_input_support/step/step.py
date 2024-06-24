@@ -24,7 +24,7 @@ class Step(StepReporter):
         super().__init__(name)
 
     def _get_pre_tasks(self) -> list['TaskDefinition']:
-        return [task_definitions.pop(i) for i, t in enumerate(task_definitions) if task_registry.is_pre(t)]
+        return [task_definitions().pop(i) for i, t in enumerate(task_definitions()) if task_registry().is_pre(t)]
 
     def _run_task_wrap(self, args):
         return self._run_task(*args)
@@ -47,7 +47,7 @@ class Step(StepReporter):
             # run preprocess tasks
             logger.info('running pretasks')
             for td in self._get_pre_tasks():
-                t = task_registry.instantiate(td)
+                t = task_registry().instantiate(td)
                 self.add_task_report(self._run_task(t, abort), abort)
 
             # make sure all pretasks passed
@@ -57,9 +57,9 @@ class Step(StepReporter):
 
             # instantiate the main tasks that have to be run
             tasks_to_run: list[Task] = []
-            for td in task_definitions:
+            for td in task_definitions():
                 try:
-                    t = task_registry.instantiate(td)
+                    t = task_registry().instantiate(td)
                 except ScratchpadError as e:
                     self.fail('some tasks failed to initialize', e)
                     return

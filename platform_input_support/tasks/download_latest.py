@@ -40,8 +40,8 @@ class DownloadLatest(Task):
                     newest_file = f
 
         if newest_file:
-            logger.info(f'latest file is `{newest_file}`')
+            logger.info(f'latest file is {newest_file}')
             download(newest_file, destination)
             return 'download successful'
         else:
-            raise ValueError(f'no files found in `{source}`')
+            raise ValueError(f'no files found in {source}')

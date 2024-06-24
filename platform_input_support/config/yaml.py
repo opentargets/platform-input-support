@@ -1,34 +1,104 @@
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
 from loguru import logger
+from pydantic import ValidationError
 
 from platform_input_support.config.models import TaskDefinition, YamlSettings
-from platform_input_support.config.scratchpad import Scratchpad
 
 
-def parse_yaml(config_file: Path) -> tuple[YamlSettings, dict[str, list[TaskDefinition]], Scratchpad]:
-    logger.debug(f'parsing yaml file `{config_file}`')
-
+def load_yaml_file(config_file: Path) -> str:
+    logger.debug(f'loading yaml file {config_file}')
     try:
-        yaml_str = Path.read_text(config_file)
+        return Path.read_text(config_file)
     except (FileNotFoundError, PermissionError, OSError) as e:
         logger.critical(f'error reading config file: {e}')
         sys.exit(1)
 
+
+def parse_yaml_string(yaml_string: str) -> dict:
+    logger.debug('parsing yaml string')
     try:
-        yaml_dict = yaml.safe_load(yaml_str)
+        return yaml.safe_load(yaml_string) or {}
     except yaml.YAMLError as e:
         logger.critical(f'error parsing config file: {e}')
         sys.exit(1)
 
-    step_definitions_dict = yaml_dict.pop('steps', {})
-    scratchpad_dict = yaml_dict.pop('scratchpad', {})
-    settings_dict = {k: v for k, v in yaml_dict.items() if v is not None}
 
-    settings = YamlSettings.model_validate(settings_dict)
-    scratchpad = Scratchpad.model_validate({'sentinel_dict': scratchpad_dict})
-    step_definitions = {k: [TaskDefinition.model_validate(t) for t in v] for k, v in step_definitions_dict.items()}
+def parse_yaml(config_file: Path) -> dict[str, Any]:
+    """Parse a yaml file.
 
-    return settings, step_definitions, scratchpad
+    This function loads a yaml file, parses its content, and returns it as a
+    dictionary. If the file cannot be read or the content cannot be parsed, the
+    program will log an error and exit.
+
+    Args:
+        config_file (Path): The path to the yaml file.
+
+    Returns:
+        dict: The parsed yaml content.
+    """
+    yaml_str = load_yaml_file(config_file)
+    return parse_yaml_string(yaml_str)
+
+
+def get_yaml_settings(yaml_dict: dict[str, Any]) -> YamlSettings:
+    """Validate the yaml settings.
+
+    This function validates the yaml settings against the YamlSettings model. If
+    the settings are invalid, the program will log an error and exit.
+
+    Args:
+        yaml_dict (dict[str, Any]): The yaml settings.
+
+    Returns:
+        YamlSettings: The validated yaml settings.
+    """
+    try:
+        return YamlSettings.model_validate(yaml_dict)
+    except ValidationError as e:
+        logger.critical(f'error validating yaml settings: {e}')
+        sys.exit(1)
+
+
+def get_yaml_stepdefs(yaml_dict: dict[str, Any]) -> dict[str, list[TaskDefinition]]:
+    """Validate the yaml step definitions.
+
+    This function validates the yaml step definitions against the TaskDefinition model.
+    If the step definitions are invalid, the program will log an error and exit.
+
+    Args:
+        yaml_dict (dict[str, Any]): The yaml step definitions.
+
+    Returns:
+        dict[str, list[TaskDefinition]]: The validated yaml step definitions.
+    """
+    steps = yaml_dict.get('steps', {})
+
+    # this part must be validated separately, as this dict does not have a model
+    if not isinstance(steps, dict):
+        logger.critical('steps must be a dictionary')
+        sys.exit(1)
+    try:
+        return {k: [TaskDefinition.model_validate(td) for td in v] for k, v in steps.items()}
+    except ValidationError as e:
+        logger.critical(f'error validating yaml stepdefs: {e}')
+        sys.exit(1)
+
+
+def get_yaml_sentinel_dict(yaml_dict: dict[str, Any]) -> dict[str, Any]:
+    """Get the yaml sentinel dictionary.
+
+    This function returns the sentinel dictionary for a scratchpad from the yaml
+    settings. If the sentinel dictionary is not present, an empty dictionary is
+    returned.
+
+    Args:
+        yaml_dict (dict[str, Any]): The yaml settings.
+
+    Returns:
+        dict[str, Any]: The sentinel dictionary.
+    """
+    return yaml_dict.get('scratchpad', {})
