@@ -3,6 +3,8 @@ from importlib.metadata import version
 from loguru import logger
 
 from platform_input_support.config import init_config, settings, task_definitions
+from platform_input_support.helpers import init_google_helper
+from platform_input_support.manifest.manifest import Manifest
 from platform_input_support.step import Step
 from platform_input_support.task import init_task_registry
 from platform_input_support.util.fs import check_dir
@@ -17,6 +19,9 @@ def main():
 
     # initialize logger
     init_logger(settings().log_level)
+
+    # initialize google helper
+    init_google_helper()
 
     # initialize task registry
     init_task_registry()
