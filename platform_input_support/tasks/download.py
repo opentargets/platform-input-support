@@ -4,7 +4,7 @@ from threading import Event
 
 from pydantic import BaseModel
 
-from platform_input_support.config.models import TaskDefinition
+from platform_input_support.config.models import MainTaskDefinition, TaskDefinition
 from platform_input_support.helpers.download import download
 from platform_input_support.manifest import report_to_manifest
 from platform_input_support.manifest.models import TaskManifest
@@ -12,9 +12,8 @@ from platform_input_support.task import Task
 
 
 @dataclass
-class DownloadDefinition(TaskDefinition):
+class DownloadDefinition(MainTaskDefinition):
     source: str
-    destination: Path
 
 
 class DownloadManifest(TaskManifest, BaseModel):
