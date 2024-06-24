@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from loguru import logger
@@ -8,6 +9,7 @@ from pydantic_core import PydanticSerializationError
 from platform_input_support.config import settings
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest.models import RootManifest, Status
+from platform_input_support.manifest.util import recount
 from platform_input_support.util.errors import PISError
 from platform_input_support.util.fs import get_full_path
 from platform_input_support.util.misc import date_str
@@ -20,16 +22,16 @@ MANIFEST_FILENAME = 'manifest.json'
 
 class Manifest:
     def __init__(self):
-        self._manifest = RootManifest()
+        self._manifest = self._fetch_manifest() or RootManifest()
 
     def _fetch_manifest(self) -> RootManifest | None:
         manifest_str: str | None = None
 
         # try fetching manifest from google cloud storage
-        if google_helper.is_ready:
+        if google_helper().is_ready:
             manifest_path = f'{settings().gcs_url}/{MANIFEST_FILENAME}'
             try:
-                manifest_str = google_helper.download(manifest_path)
+                manifest_str = google_helper().download(manifest_path)
             except PISError:
                 logger.warning('manifest file not found in gcs')
 
@@ -52,7 +54,7 @@ class Manifest:
             logger.critical(f'error validating manifest file: {e}')
             sys.exit(1)
 
-        logger.info(f'previous manifest found: {date_str(manifest.modified)}')
+        logger.info(f'previous manifest found, last modified {date_str(manifest.modified)}')
         return manifest
 
     def _save_local_manifest(self):
@@ -70,12 +72,10 @@ class Manifest:
             logger.critical(f'error writing manifest file: {e}')
             sys.exit(1)
 
-    def end(self, step: 'Step'):
-        self._manifest.steps[step.name] = step._manifest
+    def complete(self, step: 'Step'):
         self._manifest.status = Status.COMPLETED
-        for name, manifest in self._manifest.steps.items():
-            if manifest.status is not Status.COMPLETED:
-                self._manifest.status = Status.FAILED
-                self._manifest.log.append(f'step {name} failed')
+        self._manifest.steps[step.name] = step._manifest
+        self._manifest.modified = datetime.now()
+        recount(self._manifest.steps, self._manifest)
 
         self._save_local_manifest()

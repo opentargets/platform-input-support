@@ -34,4 +34,5 @@ class RootManifest(BaseModel):
     status: Status = Status.NOT_COMPLETED
     created: datetime = datetime.now(UTC)
     modified: datetime = datetime.now(UTC)
+    log: list[str] = []
     steps: dict[str, StepManifest] = {}
