@@ -7,8 +7,8 @@ if TYPE_CHECKING:
     from platform_input_support.task import Task
 
 
-def date_str(d: datetime) -> str:
-    return d.strftime('%Y-%m-%d %H:%M:%S')
+def date_str(d: datetime | None = None) -> str:
+    return (d or datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
 
 
 def real_name(t: 'Task | TaskDefinition') -> str:
