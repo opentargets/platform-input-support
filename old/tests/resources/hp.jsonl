@@ -1,5 +1,0 @@
-{"@id":"obo:HP_0031436","@type":"owl:Class","IAO_0000115":"A speech pattern characterized by abnormally elevated variability of the pitch of the voice.","date":"2017-09-16T12:39:11Z","created_by":"peter","label":"Increased pitch variability of speech","subClassOf":"obo:HP_0031434"}
-{"@id":"obo:HP_0031437","@type":"owl:Class","IAO_0000115":"Exposure of pregnant women to toxins from any source, such as environmental toxins or chemicals, that may potentially cause problems such as miscarriage, preterm delivery, low birth weight, and, in some cases, developmental delays in infants.","date":"2017-09-16T13:01:58Z","created_by":"peter","hasExactSynonym":"Exposure during pregnancy","label":"Pregnancy exposure","subClassOf":"obo:HP_0002686"}
-{"@id":"_:b100268","@type":"owl:Class","intersectionOf":{"@list":["obo:CHEBI_16831","_:b39116"]}}
-{"@id":"_:b100287","@type":"owl:Class","intersectionOf":{"@list":["obo:UBERON_0001727","_:b127072"]}}
-{"@id":"obo:HP_3000001","@type":"owl:Class","IAO_0100001":"HP:0001627","id":"HP:3000001","label":"obsolete Abnormal heart morphology","owl:deprecated":true}
