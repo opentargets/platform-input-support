@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 from loguru import logger
 from pydantic import ValidationError
 
-from platform_input_support.config.models import TaskDefinition
+from platform_input_support.config.models import BaseTaskDefinition
 from platform_input_support.manifest.models import TaskManifest
-from platform_input_support.task import PreTask
+from platform_input_support.task import Pretask
 from platform_input_support.util.misc import real_name
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ TASKS_MODULE = 'platform_input_support.tasks'
 class TaskRegistry:
     def __init__(self):
         self.tasks: dict[str, type[Task]] = {}
-        self.task_definitions: dict[str, type[TaskDefinition]] = {}
+        self.task_definitions: dict[str, type[BaseTaskDefinition]] = {}
         self.task_manifests: dict[str, type[TaskManifest]] = {}
         self.pre_tasks: list[str] = []
 
@@ -29,7 +29,7 @@ class TaskRegistry:
     def _filename_to_class(filename: str) -> str:
         return filename.replace('_', ' ').title().replace(' ', '')
 
-    def is_pre(self, task_definition: TaskDefinition) -> bool:
+    def is_pretask(self, task_definition: BaseTaskDefinition) -> bool:
         return real_name(task_definition) in self.pre_tasks
 
     def register_tasks(self):
@@ -40,19 +40,17 @@ class TaskRegistry:
             task_module = importlib.import_module(f'{TASKS_MODULE}.{task_name}')
             task_class_name = self._filename_to_class(task_name)
 
-            # if the task is a PreTask, add it to the list
+            # if the task is a Pretask, add it to the list
             task_class = getattr(task_module, task_class_name)
-            if issubclass(task_class.__base__, PreTask):
+            if issubclass(task_class.__base__, Pretask):
                 self.pre_tasks.append(task_name)
 
             # add task and its task_definition and manifest to the registry
             self.tasks[task_name] = task_class
-            self.task_definitions[task_name] = getattr(task_module, f'{task_class_name}Definition', TaskDefinition)
+            self.task_definitions[task_name] = getattr(task_module, f'{task_class_name}Definition', BaseTaskDefinition)
             self.task_manifests[task_name] = getattr(task_module, f'{task_class_name}Manifest', TaskManifest)
 
-            logger.debug(f'registered task {task_name}')
-
-    def instantiate(self, task_definition: TaskDefinition) -> 'Task':
+    def instantiate(self, task_definition: BaseTaskDefinition) -> 'Task':
         task_class_name = real_name(task_definition)
 
         # get task class from the registry

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from platform_input_support.config.models import TaskDefinition, YamlSettings
+from platform_input_support.config.models import BaseTaskDefinition, YamlSettings
 from platform_input_support.config.yaml import (
     get_yaml_sentinel_dict,
     get_yaml_settings,
@@ -254,7 +254,7 @@ def test_get_yaml_stepdefs_valid_data():
     assert 'step_1' in stepdefs
     assert isinstance(stepdefs['step_1'], list)
     assert len(stepdefs['step_1']) == 1
-    assert isinstance(stepdefs['step_1'][0], TaskDefinition)
+    assert isinstance(stepdefs['step_1'][0], BaseTaskDefinition)
     assert stepdefs['step_1'][0].model_dump() == {
         'name': 'download file 1',
         'source': 'http://example.com/file1.txt',
@@ -263,7 +263,7 @@ def test_get_yaml_stepdefs_valid_data():
     assert 'step_2' in stepdefs
     assert isinstance(stepdefs['step_2'], list)
     assert len(stepdefs['step_2']) == 1
-    assert isinstance(stepdefs['step_2'][0], TaskDefinition)
+    assert isinstance(stepdefs['step_2'][0], BaseTaskDefinition)
     assert stepdefs['step_2'][0].model_dump() == {
         'name': 'download file 2',
         'source': 'http://example.com/file2.txt',

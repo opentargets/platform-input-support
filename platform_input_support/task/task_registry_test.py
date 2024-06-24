@@ -5,15 +5,15 @@ from threading import Event
 import pytest
 from loguru import logger
 
-from platform_input_support.config.models import TaskDefinition
+from platform_input_support.config.models import BaseTaskDefinition, PretaskDefinition
 from platform_input_support.manifest.models import TaskManifest
-from platform_input_support.task import PreTask, Task, TaskRegistry
+from platform_input_support.task import Pretask, Task, TaskRegistry
 
 dummy_task_module = types.ModuleType('dummy')
 dummy_pre_task_module = types.ModuleType('dummy_pre')
 
 
-class DummyDefinition(TaskDefinition):
+class DummyDefinition(BaseTaskDefinition):
     dummy: bool = True
 
 
@@ -21,9 +21,8 @@ class Dummy(Task):
     def __init__(self, definition: DummyDefinition):
         # do not call super, we do everything here manually for the test
         self.name = definition.name
-        self.definition = definition
 
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         logger.info('dummy task')
 
 
@@ -33,16 +32,16 @@ dummy_task_module.Dummy = Dummy  # type: ignore[attr-defined]
 sys.modules['dummy'] = dummy_task_module
 
 
-class DummyPreDefinition(TaskDefinition):
+class DummyPreDefinition(PretaskDefinition):
     dummy_pre: bool = True
 
 
-class DummyPre(PreTask):
+class DummyPre(Pretask):
     def __init__(self, definition: DummyPreDefinition):
         self.name = definition.name
         self.definition = definition
 
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         logger.info('dummy pretask')
 
 
@@ -76,7 +75,7 @@ def patch_path_glob(monkeypatch):
 
 @pytest.fixture
 def task_definition():
-    return TaskDefinition(name='test_task', source='source.txt', destination='dest.txt')  # type: ignore[attr-defined]
+    return BaseTaskDefinition(name='test_task')  # type: ignore[attr-defined]
 
 
 @pytest.fixture
@@ -86,7 +85,7 @@ def task_manifest():
 
 @pytest.fixture
 def pretask(definition):
-    return PreTask(definition=definition)
+    return Pretask(definition=definition)
 
 
 @pytest.fixture
@@ -114,12 +113,12 @@ def test_register_pretask(patch_import_module, patch_path_glob):
     assert 'dummy_pre' in task_registry.pre_tasks
 
 
-def test_is_pre(patch_import_module, patch_path_glob):
+def test_is_pretask(patch_import_module, patch_path_glob):
     task_registry = TaskRegistry()
     task_registry.register_tasks()
 
-    assert not task_registry.is_pre(TaskDefinition(name='dummy'))
-    assert task_registry.is_pre(TaskDefinition(name='dummy_pre'))
+    assert not task_registry.is_pretask(BaseTaskDefinition(name='dummy'))
+    assert task_registry.is_pretask(BaseTaskDefinition(name='dummy_pre'))
 
 
 def test_instantiate_valid_task(patch_import_module, patch_path_glob, monkeypatch):
@@ -131,7 +130,7 @@ def test_instantiate_valid_task(patch_import_module, patch_path_glob, monkeypatc
 
     assert isinstance(new_task, Task)
     assert isinstance(new_task, Dummy)
-    assert isinstance(new_task.definition, TaskDefinition)
+    assert isinstance(new_task.definition, BaseTaskDefinition)
     assert isinstance(new_task.definition, DummyDefinition)
     assert isinstance(new_task._manifest, TaskManifest)
     assert new_task.definition.dummy is False
@@ -140,7 +139,7 @@ def test_instantiate_valid_task(patch_import_module, patch_path_glob, monkeypatc
 def test_instantiate_invalid_task(patch_import_module, patch_path_glob):
     task_registry = TaskRegistry()
     task_registry.register_tasks()
-    new_task_definition = TaskDefinition(name='invalid')
+    new_task_definition = BaseTaskDefinition(name='invalid')
 
     with pytest.raises(SystemExit) as e:
         task_registry.instantiate(new_task_definition)

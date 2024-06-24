@@ -6,9 +6,9 @@ from loguru import logger
 from pydantic import ValidationError
 from pydantic_core import PydanticSerializationError
 
-from platform_input_support.config import settings
+from platform_input_support.config import settings, steps
 from platform_input_support.helpers import google_helper
-from platform_input_support.manifest.models import RootManifest, Status
+from platform_input_support.manifest.models import RootManifest, StepManifest
 from platform_input_support.manifest.util import recount
 from platform_input_support.util.errors import PISError
 from platform_input_support.util.fs import get_full_path
@@ -22,7 +22,13 @@ MANIFEST_FILENAME = 'manifest.json'
 
 class Manifest:
     def __init__(self):
-        self._manifest = self._fetch_manifest() or RootManifest()
+        self._manifest = self._fetch_manifest() or self._init_manifest()
+
+    def _init_manifest(self) -> RootManifest:
+        new_manifest = RootManifest()
+        for step in steps():
+            new_manifest.steps[step] = StepManifest(name=step)
+        return new_manifest
 
     def _fetch_manifest(self) -> RootManifest | None:
         manifest_str: str | None = None
@@ -57,7 +63,15 @@ class Manifest:
         logger.info(f'previous manifest found, last modified {date_str(manifest.modified)}')
         return manifest
 
-    def _save_local_manifest(self):
+    def update(self, step: 'Step'):
+        self._manifest.steps[step.name] = step._manifest
+        self._manifest.modified = datetime.now()
+        self._manifest.result = step._manifest.result
+
+        recount(self._manifest)
+
+    def save(self):
+        """Save the manifest to the local file system."""
         manifest_path = get_full_path(MANIFEST_FILENAME)
 
         try:
@@ -72,10 +86,6 @@ class Manifest:
             logger.critical(f'error writing manifest file: {e}')
             sys.exit(1)
 
-    def complete(self, step: 'Step'):
-        self._manifest.status = Status.COMPLETED
-        self._manifest.steps[step.name] = step._manifest
-        self._manifest.modified = datetime.now()
-        recount(self._manifest.steps, self._manifest)
-
-        self._save_local_manifest()
+    def upload(self):
+        """Upload the manifest to google cloud storage."""
+        print('UPLOAD MANIFEST')

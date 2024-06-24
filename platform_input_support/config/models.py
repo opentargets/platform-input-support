@@ -11,7 +11,7 @@ def gcs_url_is_valid(url: str) -> str:
     return url
 
 
-class TaskDefinition(BaseModel, extra='allow'):
+class BaseTaskDefinition(BaseModel, extra='allow'):
     """Task definition model.
 
     This model is used to define a task in a step. It is extended in subclasses
@@ -24,8 +24,12 @@ class TaskDefinition(BaseModel, extra='allow'):
     name: str
 
 
-class MainTaskDefinition(TaskDefinition, BaseModel, extra='allow'):
+class TaskDefinition(BaseTaskDefinition, BaseModel, extra='allow'):
     destination: Path
+
+
+class PretaskDefinition(BaseTaskDefinition, BaseModel, extra='allow'):
+    pass
 
 
 class EnvSettings(BaseModel):

@@ -1,4 +1,4 @@
-from platform_input_support.task.task import PreTask, Task
+from platform_input_support.task.task import Pretask, Task
 from platform_input_support.task.task_registry import TaskRegistry
 from platform_input_support.util.errors import PISError
 

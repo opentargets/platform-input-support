@@ -4,7 +4,7 @@ import pytest
 
 from platform_input_support.config import settings
 from platform_input_support.config.config import Config
-from platform_input_support.config.models import CliSettings, EnvSettings, Settings, TaskDefinition, YamlSettings
+from platform_input_support.config.models import BaseTaskDefinition, CliSettings, EnvSettings, Settings, YamlSettings
 
 
 @pytest.fixture
@@ -68,9 +68,9 @@ def test_settings_is_single_instance():
 
 
 def test_get_task_definitions(c):
-    c.yaml_dict = {'steps': {'step_1': [{'name': 'task_1'}]}}
+    c.yaml_dict = {'steps': {'step_1': [{'name': 'task_1', 'destination': '.'}]}}
 
-    assert c.get_task_definitions() == [TaskDefinition(name='task_1')]
+    assert c.get_task_definitions() == [BaseTaskDefinition(name='task_1')]
 
 
 def test_get_task_definitions_validation_error(c):

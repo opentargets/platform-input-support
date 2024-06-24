@@ -27,7 +27,7 @@ class ElasticsearchError(Exception):
 @dataclass
 class ElasticsearchDefinition(TaskDefinition):
     url: str
-    destination: str
+    destination: Path
     index: str
     fields: list[str]
 
@@ -41,7 +41,7 @@ class Elasticsearch(Task):
         self.doc_written: int = 0
 
     @report_to_manifest
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         url = self.definition.url
         index = self.definition.index
         fields = self.definition.fields
@@ -88,7 +88,7 @@ class Elasticsearch(Task):
                 self._write_docs(doc_buffer, destination)
                 doc_buffer.clear()
 
-                if abort and abort.is_set():
+                if abort_event and abort_event.is_set():
                     raise TaskAbortedError
 
         self._write_docs(doc_buffer, destination)

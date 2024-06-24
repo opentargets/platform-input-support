@@ -23,7 +23,7 @@ class DownloadLatest(Task):
         self.definition: DownloadLatestDefinition
 
     @report_to_manifest
-    def run(self, abort: Event):
+    def run(self, abort_event: Event):
         source, destination = self.definition.source, self.definition.destination
 
         if isinstance(source, str):

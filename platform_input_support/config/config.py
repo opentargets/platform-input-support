@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from platform_input_support.config.cli import parse_cli
 from platform_input_support.config.env import parse_env
-from platform_input_support.config.models import Settings, TaskDefinition
+from platform_input_support.config.models import BaseTaskDefinition, Settings
 from platform_input_support.config.yaml import get_yaml_settings, parse_yaml
 from platform_input_support.util.misc import list_str
 
@@ -54,14 +54,14 @@ class Config:
             logger.critical(f'invalid step: {self.settings.step}')
             raise SystemExit(1)
 
-    def get_task_definitions(self) -> list[TaskDefinition]:
+    def get_task_definitions(self) -> list[BaseTaskDefinition]:
         """Validate the task definitions.
 
         Makes sure the task definitions specified in the configuration file for
         the step the application is going to run are valid.
 
         Returns:
-            list[TaskDefinition]: The list of task definitions.
+            list[BaseTaskDefinition]: The list of task definitions.
         """
         step = self.settings.step
         ts = self.yaml_dict['steps'].get(step)
@@ -71,7 +71,7 @@ class Config:
             raise SystemExit(1)
 
         try:
-            return [TaskDefinition(**t) for t in ts]
+            return [BaseTaskDefinition(**t) for t in ts]
         except ValidationError as e:
             logger.critical(f'invalid task definition for: {e}')
             raise SystemExit(1)

@@ -6,7 +6,7 @@ import yaml
 from loguru import logger
 from pydantic import ValidationError
 
-from platform_input_support.config.models import TaskDefinition, YamlSettings
+from platform_input_support.config.models import BaseTaskDefinition, YamlSettings
 
 
 def load_yaml_file(config_file: Path) -> str:
@@ -63,17 +63,18 @@ def get_yaml_settings(yaml_dict: dict[str, Any]) -> YamlSettings:
         sys.exit(1)
 
 
-def get_yaml_stepdefs(yaml_dict: dict[str, Any]) -> dict[str, list[TaskDefinition]]:
+def get_yaml_stepdefs(yaml_dict: dict[str, Any]) -> dict[str, list[BaseTaskDefinition]]:
     """Validate the yaml step definitions.
 
-    This function validates the yaml step definitions against the TaskDefinition model.
-    If the step definitions are invalid, the program will log an error and exit.
+    This function validates the yaml step definitions against the BaseTaskDefinition
+    model. If the step definitions are invalid, the program will log an error and
+    exit.
 
     Args:
         yaml_dict (dict[str, Any]): The yaml step definitions.
 
     Returns:
-        dict[str, list[TaskDefinition]]: The validated yaml step definitions.
+        dict[str, list[BaseTaskDefinition]]: The validated yaml step definitions.
     """
     steps = yaml_dict.get('steps', {})
 
@@ -82,7 +83,7 @@ def get_yaml_stepdefs(yaml_dict: dict[str, Any]) -> dict[str, list[TaskDefinitio
         logger.critical('steps must be a dictionary')
         sys.exit(1)
     try:
-        return {k: [TaskDefinition.model_validate(td) for td in v] for k, v in steps.items()}
+        return {k: [BaseTaskDefinition.model_validate(td) for td in v] for k, v in steps.items()}
     except ValidationError as e:
         logger.critical(f'error validating yaml stepdefs: {e}')
         sys.exit(1)
