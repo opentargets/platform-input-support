@@ -41,18 +41,18 @@ class Explode(PreTask):
             sys.exit(1)
 
         description = self.name.split(' ', 1)[1] if ' ' in self.name else ''
-        logger.info(f'exploding `{description}`')
+        logger.info(f'exploding {description}')
 
         # if foreach_function is set, call the function and use its return value as the foreach list
         if foreach_function:
             func_obj = globals().get(foreach_function)
             if not func_obj:
-                logger.critical(f'function `{foreach_function}` not found')
+                logger.critical(f'function {foreach_function} not found')
                 sys.exit(1)
 
             func = cast(Callable[..., list[dict[str, str]]], func_obj)
             args_str = list_str(foreach_function_args, dict_values=True)
-            logger.info(f'calling function `{foreach_function}` with args `{args_str}`')
+            logger.info(f'calling function {foreach_function} with args {args_str}')
             foreach = func(**foreach_function_args)
 
         foreach = foreach or []
@@ -61,12 +61,12 @@ class Explode(PreTask):
 
         for d in foreach:
             for k1, v1 in d.items():
-                scratchpad.store(k1, v1)
+                scratchpad().store(k1, v1)
 
             for task in do:
-                task_definition = {k2: scratchpad.replace(v2) for k2, v2 in task.items()}
+                task_definition = {k2: scratchpad().replace(v2) for k2, v2 in task.items()}
                 t = TaskDefinition.model_validate(task_definition)
-                task_definitions.append(t)
+                task_definitions().append(t)
                 new_tasks += 1
 
         return f'exploded into {new_tasks} new tasks'

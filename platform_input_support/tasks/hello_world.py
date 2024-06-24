@@ -24,4 +24,4 @@ class HelloWorld(Task):
 
         logger.info(f'hello, {who}!')
 
-        return f'completed task hello_world for `{who}`'
+        return f'completed task hello_world for {who}'

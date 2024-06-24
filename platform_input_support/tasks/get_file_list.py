@@ -32,7 +32,7 @@ class GetFileList(PreTask):
             file_list = google_helper.list(source, include=pattern)
 
         if len(file_list):
-            scratchpad.store(sentinel, file_list)
-            return f'{len(file_list)} files with pattern `{pattern}` found in `{source}`'
+            scratchpad().store(sentinel, file_list)
+            return f'{len(file_list)} files with pattern {pattern} found in {source}'
         else:
-            raise ValueError(f'no files found in `{source}` with pattern `{pattern}`')
+            raise ValueError(f'no files found in {source} with pattern {pattern}')

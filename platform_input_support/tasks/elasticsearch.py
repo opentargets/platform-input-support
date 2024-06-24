@@ -48,24 +48,24 @@ class Elasticsearch(Task):
         destination = get_full_path(f'{self.definition.destination}/{index}.jsonl')
         check_dir(destination)
 
-        logger.debug(f'connecting to elasticsearch at `{url}`')
+        logger.debug(f'connecting to elasticsearch at {url}')
         try:
             self.es = Es(url)
         except ESError as e:
             raise ElasticsearchError(f'connection error: {e}')
 
-        logger.debug(f'scanning index `{index}` with fields `{list_str(fields)}`')
+        logger.debug(f'scanning index {index} with fields {list_str(fields)}')
         try:
             self.doc_count = self.es.count(index=index)['count']
         except ESError as e:
-            raise ElasticsearchError(f'error getting index count on index `{index}`: {e}')
-        logger.info(f'index `{index}` has {self.doc_count} documents')
+            raise ElasticsearchError(f'error getting index count on index {index}: {e}')
+        logger.info(f'index {index} has {self.doc_count} documents')
 
         search = Search(using=self.es, index=index)
         try:
             source = search.source(fields=list(fields))
         except ESError as e:
-            raise ElasticsearchError(f'scan error on index `{index}`: {e}')
+            raise ElasticsearchError(f'scan error on index {index}: {e}')
 
         doc_buffer: list[dict[str, Any]] = []
 
@@ -92,7 +92,7 @@ class Elasticsearch(Task):
                     raise TaskAbortedError
 
         self._write_docs(doc_buffer, destination)
-        return f'wrote {self.doc_written}/{self.doc_count} documents to `{destination}`'
+        return f'wrote {self.doc_written}/{self.doc_count} documents to {destination}'
 
     def _write_docs(self, docs: list[dict[str, Any]], destination: Path):
         try:
@@ -103,8 +103,8 @@ class Elasticsearch(Task):
             self.doc_written += len(docs)
 
         except OSError as e:
-            raise ElasticsearchError(f'error writing to `{destination}`: {e}')
+            raise ElasticsearchError(f'error writing to {destination}: {e}')
 
-        logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to `{destination}`')
+        logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to {destination}')
         logger.trace(f'the dict was taking up {sys.getsizeof(docs)} bytes of memory')
         docs.clear()

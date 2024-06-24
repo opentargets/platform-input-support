@@ -4,6 +4,7 @@ from functools import wraps
 from loguru import logger
 
 from platform_input_support.manifest.models import Status, TaskManifest
+from platform_input_support.util.errors import TaskAbortedError
 
 
 class TaskReporter:
@@ -19,8 +20,12 @@ class TaskReporter:
         logger.success(f'task completed: {log}')
 
     def fail(self, error: Exception):
-        self._manifest.status = Status.FAILED
-        logger.opt(exception=sys.exc_info()).error(f'task failed: {error}')
+        if isinstance(error, TaskAbortedError):
+            self._manifest.status = Status.ABORTED
+            logger.warning('task aborted')
+        else:
+            self._manifest.status = Status.FAILED
+            logger.opt(exception=sys.exc_info()).error(f'task failed: {error}')
 
     def pass_validation(self, log: str):
         self._manifest.status = Status.VALIDATION_PASSED

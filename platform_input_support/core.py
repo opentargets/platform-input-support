@@ -2,21 +2,35 @@ from importlib.metadata import version
 
 from loguru import logger
 
-from platform_input_support.config import settings
+from platform_input_support.config import init_config, settings, task_definitions
 from platform_input_support.step import Step
+from platform_input_support.task import init_task_registry
 from platform_input_support.util.fs import check_dir
 from platform_input_support.util.logger import init_logger
 
 
 def main():
-    init_logger(settings.log_level)
     logger.info(f'starting platform input support v{version("platform_input_support")}')
-    check_dir(settings.work_dir)
 
-    step = Step(settings.step)
+    # initialize config
+    init_config()
+
+    # initialize logger
+    init_logger(settings().log_level)
+
+    # initialize task registry
+    init_task_registry()
+
+    # initialize task definitions for the designated step
+    task_definitions()
+
+    # check conditions in the work directory
+    check_dir(settings().work_dir)
+
+    step = Step(settings().step)
     step.run()
 
-    print('Done! Step manifest:', step._manifest.model_dump_json(indent=2))
+    print('step manifest:', step._manifest.model_dump_json(indent=2))
 
 
 if __name__ == '__main__':
