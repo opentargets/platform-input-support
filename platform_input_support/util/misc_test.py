@@ -5,11 +5,6 @@ import pytest
 from platform_input_support.util.misc import date_str, real_name
 
 
-def test_date_str():
-    test_datetime = datetime(2023, 1, 1, 12, 0, 0)
-    assert date_str(test_datetime) == '2023-01-01 12:00:00'
-
-
 @pytest.fixture
 def mock_task_definition():
     class MockTaskDefinition:
@@ -24,6 +19,15 @@ def mock_task():
         name = 'Test Task One'
 
     return MockTask()
+
+
+def test_date_str():
+    test_datetime = datetime(2023, 1, 1, 12, 0, 0)
+    assert date_str(test_datetime) == '2023-01-01 12:00:00'
+
+
+def test_date_str_with_none():
+    assert date_str(None) == datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 def test_real_name_with_task(mock_task):
