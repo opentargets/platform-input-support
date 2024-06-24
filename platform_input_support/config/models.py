@@ -24,6 +24,10 @@ class TaskDefinition(BaseModel, extra='allow'):
     name: str
 
 
+class MainTaskDefinition(TaskDefinition, BaseModel, extra='allow'):
+    destination: Path
+
+
 class EnvSettings(BaseModel):
     step: str | None = None
     config_file: Path | None = None

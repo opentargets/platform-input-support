@@ -45,7 +45,7 @@ class Elasticsearch(Task):
         url = self.definition.url
         index = self.definition.index
         fields = self.definition.fields
-        destination = get_full_path(f'{self.definition.destination}/{index}.jsonl')
+        destination = get_full_path(self.definition.destination)
         check_dir(destination)
 
         logger.debug(f'connecting to elasticsearch at {url}')
