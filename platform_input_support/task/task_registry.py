@@ -68,8 +68,11 @@ class TaskRegistry:
         try:
             task_definition = task_definition_class.model_validate(task_definition.model_dump())
             manifest = task_manifest_class(name=task_definition.name)
-        except ValidationError as e:
-            logger.critical(f'invalid task_definition for {task_class}: {e}')
+        except ValidationError as ve:
+            # log a clear message if there are missing fields, otherwise error message
+            msg = ', '.join([str(e['loc'][0]) for e in ve.errors() if e['type'] == 'missing'])
+            msg = f'missing fields: {msg}' if msg else ve
+            logger.critical(f'invalid task_definition for task {task_class.__name__}: {msg}')
             sys.exit(1)
 
         # create task and attach manifest
