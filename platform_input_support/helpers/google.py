@@ -104,7 +104,7 @@ class GoogleHelper:
             except OSError as e:
                 raise HelperError(f'error writing file: {e}')
 
-        logger.info('download completed')
+        logger.debug('download completed')
         return decoded_blob
 
     def upload(self, source: Path, destination: str) -> None:

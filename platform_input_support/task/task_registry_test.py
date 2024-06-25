@@ -22,7 +22,7 @@ class Dummy(Task):
         # do not call super, we do everything here manually for the test
         self.name = definition.name
 
-    def run(self, abort_event: Event):
+    def run(self, abort: Event) -> str | None:
         logger.info('dummy task')
 
 
@@ -41,7 +41,7 @@ class DummyPre(Pretask):
         self.name = definition.name
         self.definition = definition
 
-    def run(self, abort_event: Event):
+    def run(self, abort: Event) -> str | None:
         logger.info('dummy pretask')
 
 

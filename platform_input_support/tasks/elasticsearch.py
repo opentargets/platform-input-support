@@ -3,16 +3,14 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Event
-from typing import Any
+from typing import Any, Self
 
 from elasticsearch import Elasticsearch as Es
 from elasticsearch import ElasticsearchException as ESError
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 
-from platform_input_support.config.models import TaskDefinition
-from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Task
+from platform_input_support.tasks import Task, TaskDefinition, report
 from platform_input_support.util.errors import TaskAbortedError
 from platform_input_support.util.fs import check_dir, get_full_path
 from platform_input_support.util.misc import list_str
@@ -40,8 +38,8 @@ class Elasticsearch(Task):
         self.doc_count: int = 0
         self.doc_written: int = 0
 
-    @report_to_manifest
-    def run(self, abort_event: Event):
+    @report
+    def run(self, *, abort: Event) -> Self:
         url = self.definition.url
         index = self.definition.index
         fields = self.definition.fields
@@ -88,11 +86,12 @@ class Elasticsearch(Task):
                 self._write_docs(doc_buffer, destination)
                 doc_buffer.clear()
 
-                if abort_event and abort_event.is_set():
+                if abort and abort.is_set():
                     raise TaskAbortedError
 
         self._write_docs(doc_buffer, destination)
-        return f'wrote {self.doc_written}/{self.doc_count} documents to {destination}'
+        logger.success(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
+        return self
 
     def _write_docs(self, docs: list[dict[str, Any]], destination: Path):
         try:
