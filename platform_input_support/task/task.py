@@ -1,11 +1,13 @@
 from threading import Event
+from typing import Self
 
 from loguru import logger
 
 from platform_input_support.config import scratchpad, settings
 from platform_input_support.config.models import BaseTaskDefinition, TaskDefinition
 from platform_input_support.helpers import google_helper
-from platform_input_support.manifest.task_reporter import TaskReporter
+from platform_input_support.manifest.task_reporter import TaskReporter, report
+from platform_input_support.util.errors import PISError
 from platform_input_support.util.fs import get_full_path
 
 
@@ -21,17 +23,25 @@ class Task(TaskReporter):
 
         logger.debug(f'initialized task {self.name}')
 
-    def run(self, abort_event: Event) -> str | None:
-        pass
+    @report
+    def run(self, *, abort: Event) -> Self:
+        return self
 
-    def upload(self) -> None:
+    @report
+    def validate(self, *, abort: Event) -> Self:
+        return self
+
+    @report
+    def upload(self, *, abort: Event) -> Self:
         if not isinstance(self.definition, TaskDefinition):
-            logger.warning(f'attempting to upload {self.name}, which is a non-uploadable task')
-            return
+            raise PISError(f'attempting to upload {self.name}, which is a non-uploadable task')
 
         source = get_full_path(self.definition.destination)
         destination = f'{settings().gcs_url}/{self.definition.destination!s}'
+
         google_helper().upload(source, destination)
+        logger.success('upload successful')
+        return self
 
 
 class Pretask(Task):

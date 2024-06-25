@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from threading import Event
+from typing import Self
+
+from loguru import logger
 
 from platform_input_support.config import scratchpad
-from platform_input_support.config.models import PretaskDefinition
 from platform_input_support.helpers import google_helper
-from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Pretask
+from platform_input_support.tasks import Pretask, PretaskDefinition, report
 
 
 @dataclass
@@ -21,8 +22,8 @@ class GetFileList(Pretask):
         super().__init__(definition)
         self.definition: GetFileListDefinition
 
-    @report_to_manifest
-    def run(self, abort_event: Event):
+    @report
+    def run(self, *, abort: Event) -> Self:
         source, pattern, sentinel = self.definition.source, self.definition.pattern, self.definition.sentinel
         file_list: list[str] = []
 
@@ -33,6 +34,7 @@ class GetFileList(Pretask):
 
         if len(file_list):
             scratchpad().store(sentinel, file_list)
-            return f'{len(file_list)} files with pattern {pattern} found in {source}'
+            logger.success(f'{len(file_list)} files with pattern {pattern} found in {source}')
+            return self
         else:
             raise ValueError(f'no files found in {source} with pattern {pattern}')

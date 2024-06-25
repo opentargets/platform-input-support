@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Event
+from typing import Self
 
-from platform_input_support.config.models import TaskDefinition
+from loguru import logger
+
 from platform_input_support.helpers.download import download
-from platform_input_support.manifest import report_to_manifest
-from platform_input_support.manifest.models import TaskManifest
-from platform_input_support.task import Task
+from platform_input_support.tasks import Task, TaskDefinition, TaskManifest, report
 
 
 @dataclass
@@ -25,7 +25,8 @@ class Download(Task):
         super().__init__(definition)
         self.definition: DownloadDefinition
 
-    @report_to_manifest
-    def run(self, abort_event: Event):
-        download(self.definition.source, self.definition.destination, abort_event=abort_event)
-        return 'download successful'
+    @report
+    def run(self, *, abort: Event) -> Self:
+        download(self.definition.source, self.definition.destination, abort=abort)
+        logger.success('download successful')
+        return self
