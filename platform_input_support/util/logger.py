@@ -44,11 +44,13 @@ def get_format_log(include_task: bool = True) -> Callable[..., str]:
     def format_log(record):
         name, function, line = get_exception_info(record.get('exception'))
         task = '<y>{extra[task]}</>::' if include_task and record['extra'].get('task') else ''
-        trail = '\n{exception}' if include_task else ''
+        trail = '\n' if include_task else ''
+
+        exception = os.getenv('PIS_SHOW_EXCEPTIONS', 'false').lower() in ['true', '1', 'yes', 'y']
 
         # debug flag to hide exceptions in logs (they are too verbose when checking the log flow)
-        if os.getenv('PIS_HIDE_EXCEPTIONS', 'false').lower() in ['true', '1', 'yes', 'y', 'on', 't']:
-            trail = trail.replace('{exception}', '')
+        if exception and include_task:
+            trail = '\n{exception}'  # noqa: RUF027
 
         return (
             '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '

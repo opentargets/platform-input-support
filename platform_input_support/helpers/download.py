@@ -9,7 +9,7 @@ from loguru import logger
 from urllib3 import Retry
 
 from platform_input_support.helpers import google_helper
-from platform_input_support.util.errors import DownloadError, TaskAbortedError
+from platform_input_support.util.errors import TaskAbortedError
 from platform_input_support.util.fs import check_dir, get_full_path
 
 # we are going to download big files, better to use a big chunk size
@@ -17,35 +17,35 @@ CHUNK_SIZE = 1024 * 1024 * 10
 
 
 class AbortableStreamWrapper:
-    def __init__(self, stream, abort_event):
+    def __init__(self, stream, abort):
         self.stream = stream
-        self.abort_event = abort_event
+        self.abort = abort
 
     def read(self, *args, **kwargs):
-        if self.abort_event and self.abort_event.is_set():
+        if self.abort and self.abort.is_set():
             raise TaskAbortedError
         return self.stream.read(*args, **kwargs)
 
 
-def download(src: str, dst: Path | str, *, abort_event: Event | None = None) -> Path:
+def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
     if isinstance(dst, str):
         dst = Path(dst)
     dst = get_full_path(dst)
-    logger.info(f'preparing to download {src} to {dst}')
+    logger.debug(f'preparing to download {src} to {dst}')
     check_dir(dst)
 
     # download from google sheets
     if src.startswith('https://docs.google.com/spreadsheets/d'):
-        logger.info('starting google sheets download')
+        logger.debug('starting google sheets download')
         s = google_helper().get_session()
-        _download(src, dst, s, abort_event)
+        _download(src, dst, s, abort)
 
     else:
         proto = src.split(':')[0]
 
         # download from http/https
         if proto in ['http', 'https']:
-            logger.info('starting http(s) download')
+            logger.debug('starting http(s) download')
 
             s = requests.Session()
             retries = Retry(
@@ -57,11 +57,11 @@ def download(src: str, dst: Path | str, *, abort_event: Event | None = None) -> 
 
             s.mount('http://', requests.adapters.HTTPAdapter(max_retries=retries))
             s.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
-            _download(src, dst, s, abort_event)
+            _download(src, dst, s, abort)
 
         # download from google storage
         elif proto == 'gs':
-            logger.info('starting google storage download')
+            logger.debug('starting google storage download')
             google_helper().download(src, dst)
 
         # unknown protocol
@@ -71,12 +71,12 @@ def download(src: str, dst: Path | str, *, abort_event: Event | None = None) -> 
     return dst
 
 
-def _download(src: str, dst: Path, s: requests.Session, abort_event: Event | None = None):
+def _download(src: str, dst: Path, s: requests.Session, abort: Event | None = None):
     r = s.get(src, stream=True, timeout=(10, None))
     r.raise_for_status()
 
     # Wrap r.raw with an AbortableStreamWrapper
-    abortable_stream = AbortableStreamWrapper(r.raw, abort_event)
+    abortable_stream = AbortableStreamWrapper(r.raw, abort)
     # Ensure we decode the content
     abortable_stream.stream.read = functools.partial(
         abortable_stream.stream.read,
@@ -85,7 +85,4 @@ def _download(src: str, dst: Path, s: requests.Session, abort_event: Event | Non
 
     # Write the content to the destination file
     with open(dst, 'wb') as f:
-        try:
-            shutil.copyfileobj(abortable_stream, f)
-        except Exception as e:
-            raise DownloadError(src, e)
+        shutil.copyfileobj(abortable_stream, f)

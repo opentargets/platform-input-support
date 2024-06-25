@@ -3,16 +3,14 @@ import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from threading import Event
-from typing import Any, cast
+from typing import Any, Self, cast
 
 import jq
 from loguru import logger
 
 from platform_input_support.config import scratchpad, task_definitions
-from platform_input_support.config.models import PretaskDefinition, TaskDefinition
 from platform_input_support.helpers.download import download
-from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task import Pretask
+from platform_input_support.tasks import Pretask, PretaskDefinition, TaskDefinition, report
 from platform_input_support.util.misc import list_str
 
 
@@ -29,8 +27,8 @@ class Explode(Pretask):
         super().__init__(definition)
         self.definition: ExplodeDefinition
 
-    @report_to_manifest
-    def run(self, abort_event: Event):
+    @report
+    def run(self, *, abort: Event) -> Self:
         do = self.definition.do
         foreach = self.definition.foreach
         foreach_function = self.definition.foreach_function
@@ -69,7 +67,8 @@ class Explode(Pretask):
                 task_definitions().append(t)
                 new_tasks += 1
 
-        return f'exploded into {new_tasks} new tasks'
+        logger.success(f'exploded into {new_tasks} new tasks')
+        return self
 
 
 def urls_from_json(source: str, destination: str, json_path: str) -> list[dict[str, str]]:

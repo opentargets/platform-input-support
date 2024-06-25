@@ -1,14 +1,13 @@
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Event
+from typing import Self
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskDefinition
 from platform_input_support.helpers import google_helper
 from platform_input_support.helpers.download import download
-from platform_input_support.manifest import report_to_manifest
-from platform_input_support.task.task import Task
+from platform_input_support.tasks import Task, TaskDefinition, report
 
 
 @dataclass
@@ -22,8 +21,8 @@ class DownloadLatest(Task):
         super().__init__(definition)
         self.definition: DownloadLatestDefinition
 
-    @report_to_manifest
-    def run(self, abort_event: Event):
+    @report
+    def run(self, *, abort: Event) -> Self:
         source, destination = self.definition.source, self.definition.destination
 
         if isinstance(source, str):
@@ -42,6 +41,7 @@ class DownloadLatest(Task):
         if newest_file:
             logger.info(f'latest file is {newest_file}')
             download(newest_file, destination)
-            return 'download successful'
+            logger.success('download successful')
+            return self
         else:
             raise ValueError(f'no files found in {source}')

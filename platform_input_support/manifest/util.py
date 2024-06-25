@@ -4,10 +4,10 @@ from platform_input_support.util.misc import date_str
 
 def recount(manifest: RootManifest | StepManifest) -> None:
     if isinstance(manifest, RootManifest):
-        item_type = 'steps'
         items = manifest.steps
+        item_type = 'steps' if len(items) > 1 else 'step'
     elif isinstance(manifest, StepManifest):
-        item_type = 'tasks'
+        item_type = 'tasks' if len(manifest.tasks) > 1 else 'task'
         items = manifest.tasks
 
     counts = {str(r): 0 for r in Result}
@@ -16,5 +16,6 @@ def recount(manifest: RootManifest | StepManifest) -> None:
         counts[str(i.result)] += 1
 
     manifest.log.append(f'---- [ {date_str()} run summary ]----')
-    for i in counts:
-        manifest.log.append(f'{counts[i]} {i.lower()} {item_type}')
+    for k, v in counts.items():
+        if v > 0:
+            manifest.log.append(f'{v} {k} {item_type}')

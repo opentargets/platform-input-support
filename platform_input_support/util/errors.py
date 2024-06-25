@@ -41,7 +41,5 @@ class ScratchpadError(PISError):
 
 
 class StepFailedError(PISError):
-    def __init__(self, step: str):
-        msg = f'step {step} failed'
-        logger.opt(exception=sys.exc_info()).error(msg)
-        super().__init__(msg)
+    def __init__(self, step: str = '', func: str = ''):
+        super().__init__(f'step {step} {func} failed')
