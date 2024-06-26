@@ -49,3 +49,7 @@ class StepFailedError(PISError):
 class ValidationError(PISError):
     def __init__(self):
         super().__init__('validation failed')
+
+
+class PreconditionFailedError(PISError):
+    pass

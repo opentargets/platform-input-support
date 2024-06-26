@@ -1,9 +1,9 @@
-import datetime
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from google import auth
-from google.api_core.exceptions import GoogleAPICallError
+from google.api_core.exceptions import GoogleAPICallError, PreconditionFailed
 from google.auth import exceptions as auth_exceptions
 from google.auth.transport.requests import AuthorizedSession
 from google.cloud import storage
@@ -11,7 +11,7 @@ from google.cloud.exceptions import NotFound
 from loguru import logger
 
 from platform_input_support.config import settings
-from platform_input_support.util.errors import HelperError, NotFoundError
+from platform_input_support.util.errors import HelperError, NotFoundError, PreconditionFailedError
 
 GOOGLE_SCOPES = [
     'https://www.googleapis.com/auth/cloud-platform',
@@ -69,7 +69,7 @@ class GoogleHelper:
         logger.debug(f'bucket {bucket_name} exists and is readable')
         return True
 
-    def download(self, url: str, destination: Path | None = None) -> str | None:
+    def download_to_string(self, url: str) -> tuple[str | None, int | None]:
         bucket_name, file_path = self._parse_url(url)
 
         try:
@@ -80,32 +80,40 @@ class GoogleHelper:
         blob = bucket.blob(file_path)
         decoded_blob = None
 
-        if destination is None:
-            try:
-                blob_str = blob.download_as_string()
-            except NotFound:
-                # downloading to memory is used for the manifest
-                # we do not panic if the file is not there
-                logger.warning(f'file {url} not found')
-                return None
+        try:
+            blob_str = blob.download_as_string()
+        except NotFound:
+            # downloading to memory is used for the manifest
+            # we do not panic if the file is not there
+            logger.warning(f'file {url} not found')
+            return (None, None)
 
-            try:
-                decoded_blob = blob_str.decode('utf-8')
-            except UnicodeDecodeError as e:
-                raise HelperError(f'error decoding file {url}: {e}')
+        try:
+            decoded_blob = blob_str.decode('utf-8')
+        except UnicodeDecodeError as e:
+            raise HelperError(f'error decoding file {url}: {e}')
+        return (decoded_blob, blob.generation)
 
-        else:
-            try:
-                blob.download_to_filename(destination)
-            except NotFound:
-                raise NotFoundError(url)
-            except GoogleAPICallError as e:
-                raise HelperError(f'error downloading file: {e}')
-            except OSError as e:
-                raise HelperError(f'error writing file: {e}')
+    def download_to_file(self, url: str, destination: Path) -> None:
+        bucket_name, file_path = self._parse_url(url)
+
+        try:
+            bucket = self.client.get_bucket(bucket_name)
+        except NotFound:
+            raise NotFoundError(bucket_name)
+
+        blob = bucket.blob(file_path)
+
+        try:
+            blob.download_to_filename(destination)
+        except NotFound:
+            raise NotFoundError(url)
+        except GoogleAPICallError as e:
+            raise HelperError(f'error downloading file: {e}')
+        except OSError as e:
+            raise HelperError(f'error writing file: {e}')
 
         logger.debug('download completed')
-        return decoded_blob
 
     def upload(self, source: Path, destination: str) -> None:
         bucket_name, file_path = self._parse_url(destination)
@@ -119,6 +127,36 @@ class GoogleHelper:
 
         try:
             blob.upload_from_filename(source)
+        except GoogleAPICallError as e:
+            raise HelperError(f'error uploading file: {e}')
+        except OSError as e:
+            raise HelperError(f'error reading file: {e}')
+
+        logger.debug(f'uploaded {source} to {destination}')
+
+    # TODO: This must be thoroughly tested!
+    def upload_safe(
+        self,
+        source: Path,
+        destination: str,
+        generation: int,
+    ) -> None:
+        bucket_name, file_path = self._parse_url(destination)
+
+        try:
+            bucket = self.client.get_bucket(bucket_name)
+        except NotFound:
+            raise NotFoundError(bucket_name)
+
+        blob = bucket.blob(file_path)
+
+        logger.trace(f'uploading file with generation {generation}')
+        try:
+            blob.upload_from_filename(source, if_generation_match=generation)
+        except PreconditionFailed:
+            logger.trace('file upload failed due to generation mismatch')
+            blob.reload()
+            raise PreconditionFailedError(f'generation mismatch: local={generation}, remote={blob.generation}')
         except GoogleAPICallError as e:
             raise HelperError(f'error uploading file: {e}')
         except OSError as e:
@@ -163,7 +201,7 @@ class GoogleHelper:
 
         return [f'gs://{bucket_name}/{blob.name}' for blob in file_list]
 
-    def get_modification_date(self, url: str) -> datetime.datetime | None:
+    def get_modification_date(self, url: str) -> datetime | None:
         bucket_name, file_path = self._parse_url(url)
 
         try:
