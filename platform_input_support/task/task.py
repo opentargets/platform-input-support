@@ -1,3 +1,4 @@
+from pathlib import Path
 from threading import Event
 from typing import Self
 
@@ -18,7 +19,7 @@ class Task(TaskReporter):
 
         # replace templates in the definition strings
         for key, value in self.definition.model_dump().items():
-            if isinstance(value, str):
+            if isinstance(value, str | Path):
                 setattr(self.definition, key, scratchpad().replace(value))
 
         logger.debug(f'initialized task {self.name}')
