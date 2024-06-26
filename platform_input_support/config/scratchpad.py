@@ -1,4 +1,5 @@
 import ast
+from pathlib import Path
 from string import Template
 from typing import Any
 
@@ -44,7 +45,7 @@ class Scratchpad:
         """
         self.sentinel_dict[key] = value
 
-    def replace(self, sentinel: str) -> str:
+    def replace(self, sentinel: str | Path) -> str:
         """Replace placeholders in a string with the corresponding values.
 
         Args:
@@ -57,7 +58,7 @@ class Scratchpad:
             ScratchpadError: If a placeholder in the string does not have a
                 corresponding value in the scratchpad.
         """
-        replacer = TemplateWithDots(sentinel)
+        replacer = TemplateWithDots(str(sentinel))
 
         try:
             replaced_value = replacer.substitute(self.sentinel_dict)
