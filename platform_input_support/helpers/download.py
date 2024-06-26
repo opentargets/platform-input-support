@@ -14,6 +14,7 @@ from platform_input_support.util.fs import check_dir, get_full_path
 
 # we are going to download big files, better to use a big chunk size
 CHUNK_SIZE = 1024 * 1024 * 10
+REQUEST_TIMEOUT = 10
 
 
 class AbortableStreamWrapper:
@@ -72,7 +73,7 @@ def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
 
 
 def _download(src: str, dst: Path, s: requests.Session, abort: Event | None = None):
-    r = s.get(src, stream=True, timeout=(10, None))
+    r = s.get(src, stream=True, timeout=(REQUEST_TIMEOUT, None))
     r.raise_for_status()
 
     # Wrap r.raw with an AbortableStreamWrapper
