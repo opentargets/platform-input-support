@@ -1,5 +1,6 @@
 import re
 import sys
+from pathlib import Path
 
 from loguru import logger
 
@@ -33,8 +34,8 @@ class TaskAbortedError(PISError):
 
 
 class ScratchpadError(PISError):
-    def __init__(self, sentinel: str):
-        sentinel_label = re.sub(r'[^a-z.]', '', sentinel)
+    def __init__(self, sentinel: str | Path):
+        sentinel_label = re.sub(r'[^a-z.]', '', str(sentinel))
         msg = f'key {sentinel_label} not found in scratchpad'
         logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
