@@ -1,4 +1,5 @@
 import sys
+import time
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -10,7 +11,7 @@ from platform_input_support.config import settings, steps
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest.models import RootManifest, StepManifest
 from platform_input_support.manifest.util import recount
-from platform_input_support.util.errors import PISError
+from platform_input_support.util.errors import HelperError, PISError, PreconditionFailedError
 from platform_input_support.util.fs import get_full_path
 from platform_input_support.util.misc import date_str
 
@@ -18,26 +19,35 @@ if TYPE_CHECKING:
     from platform_input_support.step import Step
 
 MANIFEST_FILENAME = 'manifest.json'
+UPLOAD_TIMEOUT = 3
 
 
 class Manifest:
     def __init__(self):
-        self._manifest = self._fetch_manifest() or self._init_manifest()
+        self._manifest: RootManifest
+        self.generation: int
+        self.relevant_step: Step
 
-    def _init_manifest(self) -> RootManifest:
-        new_manifest = RootManifest()
-        for step in steps():
-            new_manifest.steps[step] = StepManifest(name=step)
-        return new_manifest
+        self._init_manifest()
 
-    def _fetch_manifest(self) -> RootManifest | None:
+    def _init_manifest(self):
+        manifest, generation = self._fetch_manifest()
+        if not manifest:
+            manifest = RootManifest()
+            for step in steps():
+                manifest.steps[step] = StepManifest(name=step)
+        self._manifest = manifest
+        self.generation = generation or 0
+
+    def _fetch_manifest(self) -> tuple[RootManifest | None, int | None]:
         manifest_str: str | None = None
+        generation: int | None = None
 
         # try fetching manifest from google cloud storage
         if google_helper().is_ready:
             manifest_path = f'{settings().gcs_url}/{MANIFEST_FILENAME}'
             try:
-                manifest_str = google_helper().download(manifest_path)
+                manifest_str, generation = google_helper().download_to_string(manifest_path)
             except PISError:
                 logger.warning('manifest file not found in gcs')
 
@@ -49,7 +59,7 @@ class Manifest:
                 manifest_str = manifest_path.read_text()
             except FileNotFoundError:
                 logger.warning(f'manifest file not found in {manifest_path}')
-                return None
+                return (None, None)
             except (OSError, PermissionError, ValueError) as e:
                 logger.critical(f'error reading manifest file: {e}')
                 sys.exit(1)
@@ -61,9 +71,11 @@ class Manifest:
             sys.exit(1)
 
         logger.info(f'previous manifest found, last modified {date_str(manifest.modified)}')
-        return manifest
+        logger.trace(f'previous manifest generation = {generation}')
+        return (manifest, generation)
 
     def update(self, step: 'Step'):
+        self.relevant_step = step
         self._manifest.steps[step.name] = step._manifest
         self._manifest.modified = datetime.now()
         self._manifest.result = step._manifest.result
@@ -88,4 +100,28 @@ class Manifest:
 
     def upload(self):
         """Upload the manifest to google cloud storage."""
-        print('UPLOAD MANIFEST')
+        manifest_path = get_full_path(MANIFEST_FILENAME)
+
+        logger.debug(f'uploading manifest to {settings().gcs_url}')
+
+        uploaded = False
+        while not uploaded:
+            try:
+                google_helper().upload_safe(
+                    manifest_path,
+                    f'{settings().gcs_url}/{MANIFEST_FILENAME}',
+                    self.generation,
+                )
+                uploaded = True
+            except PreconditionFailedError as e:
+                logger.debug(f'{e}, retrying after {UPLOAD_TIMEOUT} seconds...')
+                time.sleep(UPLOAD_TIMEOUT)
+
+                # recreate manifest, fetching the latest version
+                self._init_manifest()
+                self.update(self.relevant_step)
+                self.save()
+
+            except HelperError as e:
+                logger.critical(f'error uploading manifest file: {e}')
+                sys.exit(1)
