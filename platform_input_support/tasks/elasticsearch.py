@@ -14,6 +14,8 @@ from platform_input_support.tasks import Task, TaskDefinition, report
 from platform_input_support.util.errors import TaskAbortedError
 from platform_input_support.util.fs import check_dir, get_full_path
 from platform_input_support.util.misc import list_str
+from platform_input_support.validators import v
+from platform_input_support.validators.elasticsearch import counts
 
 BUFFER_SIZE = 20000
 
@@ -91,6 +93,10 @@ class Elasticsearch(Task):
 
         self._write_docs(doc_buffer, destination)
         logger.success(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
+
+        # forget about elasticsearch connection
+        self.es.close()
+        del self.es
         return self
 
     def _write_docs(self, docs: list[dict[str, Any]], destination: Path):
@@ -107,3 +113,13 @@ class Elasticsearch(Task):
         logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to {destination}')
         logger.trace(f'the dict was taking up {sys.getsizeof(docs)} bytes of memory')
         docs.clear()
+
+    def validate(self, *, abort: Event) -> Self:
+        v(
+            counts,
+            self.definition.url,
+            self.definition.index,
+            self.definition.destination,
+        )
+
+        return self

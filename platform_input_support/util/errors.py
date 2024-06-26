@@ -44,3 +44,8 @@ class ScratchpadError(PISError):
 class StepFailedError(PISError):
     def __init__(self, step: str = '', func: str = ''):
         super().__init__(f'step {step} {func} failed')
+
+
+class ValidationError(PISError):
+    def __init__(self):
+        super().__init__('validation failed')
