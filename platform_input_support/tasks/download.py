@@ -7,6 +7,8 @@ from loguru import logger
 
 from platform_input_support.helpers.download import download
 from platform_input_support.tasks import Task, TaskDefinition, TaskManifest, report
+from platform_input_support.validators import v
+from platform_input_support.validators.file import file_exists, file_size
 
 
 @dataclass
@@ -29,4 +31,11 @@ class Download(Task):
     def run(self, *, abort: Event) -> Self:
         download(self.definition.source, self.definition.destination, abort=abort)
         logger.success('download successful')
+        return self
+
+    @report
+    def validate(self, *, abort: Event) -> Self:
+        v(file_exists, self.definition.destination)
+        v(file_size, self.definition.source, self.definition.destination)
+
         return self
