@@ -10,9 +10,13 @@ class PISError(Exception):
 
 
 class NotFoundError(PISError):
-    def __init__(self, resource: str):
-        msg = f'{resource} not found'
-        logger.opt(exception=sys.exc_info()).error(msg)
+    def __init__(self, msg: str):
+        super().__init__(msg)
+
+
+class PISCriticalError(PISError):
+    def __init__(self, msg: str):
+        logger.opt(exception=sys.exc_info()).critical(msg)
         super().__init__(msg)
 
 

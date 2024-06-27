@@ -69,7 +69,7 @@ class GoogleHelper:
         logger.debug(f'bucket {bucket_name} exists and is readable')
         return True
 
-    def download_to_string(self, url: str) -> tuple[str | None, int | None]:
+    def download_to_string(self, url: str) -> tuple[str, int] | None:
         bucket_name, file_path = self._parse_url(url)
 
         try:
@@ -83,15 +83,14 @@ class GoogleHelper:
         try:
             blob_str = blob.download_as_string()
         except NotFound:
-            # downloading to memory is used for the manifest
-            # we do not panic if the file is not there
             logger.warning(f'file {url} not found')
-            return (None, None)
+            raise NotFoundError(f'file {url} not found')
 
         try:
             decoded_blob = blob_str.decode('utf-8')
         except UnicodeDecodeError as e:
             raise HelperError(f'error decoding file {url}: {e}')
+        assert blob.generation is not None
         return (decoded_blob, blob.generation)
 
     def download_to_file(self, url: str, destination: Path) -> None:
@@ -137,7 +136,7 @@ class GoogleHelper:
     # TODO: This must be thoroughly tested!
     def upload_safe(
         self,
-        source: Path,
+        content: str,
         destination: str,
         generation: int,
     ) -> None:
@@ -152,7 +151,7 @@ class GoogleHelper:
 
         logger.trace(f'uploading file with generation {generation}')
         try:
-            blob.upload_from_filename(source, if_generation_match=generation)
+            blob.upload_from_string(content, if_generation_match=generation)
         except PreconditionFailed:
             logger.trace('file upload failed due to generation mismatch')
             blob.reload()
@@ -162,7 +161,7 @@ class GoogleHelper:
         except OSError as e:
             raise HelperError(f'error reading file: {e}')
 
-        logger.debug(f'uploaded {source} to {destination}')
+        logger.debug(f'uploaded blob to {destination}')
 
     @staticmethod
     def _is_file(blob: storage.Blob, prefix: str | None) -> bool:

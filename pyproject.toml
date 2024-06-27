@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.12"
 elasticsearch = "==7.17.6"
 elasticsearch-dsl = "==7.4.1"
+filelock = "^3.15.4"
 google-cloud-storage = "==2.16.0"
 jq = "^1.7.0"
 pydantic = "^2.7.4"
@@ -19,6 +20,7 @@ loguru = "==0.7.2"
 [tool.poetry.group.dev.dependencies]
 poetry = "^1.8.3"
 coverage = "^7.5.3"
+freezegun = "^1.5.1"
 pytest = "==7.4.3"
 pytest-mock = "^3.14.0"
 ruff = "==0.4.6"
@@ -32,6 +34,7 @@ platform_input_support = "platform_input_support.core:main"
 
 [tool.pytest.ini_options]
 testpaths = ["platform_input_support"]
+filterwarnings = "ignore:.*google._upb*" # warning from google protobuf library
 
 [tool.coverage.report]
 omit = ["**/*_test.py"]
