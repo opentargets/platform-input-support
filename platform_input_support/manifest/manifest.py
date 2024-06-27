@@ -1,8 +1,8 @@
-import sys
 import time
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from filelock import FileLock, Timeout
 from loguru import logger
 from pydantic import ValidationError
 from pydantic_core import PydanticSerializationError
@@ -11,7 +11,12 @@ from platform_input_support.config import settings, steps
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest.models import RootManifest, StepManifest
 from platform_input_support.manifest.util import recount
-from platform_input_support.util.errors import HelperError, PISError, PreconditionFailedError
+from platform_input_support.util.errors import (
+    HelperError,
+    NotFoundError,
+    PISCriticalError,
+    PreconditionFailedError,
+)
 from platform_input_support.util.fs import get_full_path
 from platform_input_support.util.misc import date_str
 
@@ -25,103 +30,98 @@ UPLOAD_TIMEOUT = 3
 class Manifest:
     def __init__(self):
         self._manifest: RootManifest
-        self.generation: int
-        self.relevant_step: Step
+        self._generation: int
+        self._relevant_step_manifest: StepManifest
 
         self._init_manifest()
 
     def _init_manifest(self):
-        manifest, generation = self._fetch_manifest()
-        if not manifest:
-            manifest = RootManifest()
-            for step in steps():
-                manifest.steps[step] = StepManifest(name=step)
-        self._manifest = manifest
-        self.generation = generation or 0
+        manifest_str, self._generation = self._load_gcs() or self._load_local() or (None, 0)
+        if manifest_str is None:
+            self._manifest = self._create_empty()
+            self._generation = 0
+            logger.info('no prior manifest loaded')
+        else:
+            self._manifest = self._validate(manifest_str)
+            logger.info(f'prior manifest loaded {date_str(self._manifest.modified)}')
 
-    def _fetch_manifest(self) -> tuple[RootManifest | None, int | None]:
-        manifest_str: str | None = None
-        generation: int | None = None
-
-        # try fetching manifest from google cloud storage
-        if google_helper().is_ready:
-            manifest_path = f'{settings().gcs_url}/{MANIFEST_FILENAME}'
-            try:
-                manifest_str, generation = google_helper().download_to_string(manifest_path)
-            except PISError:
-                logger.warning('manifest file not found in gcs')
-
-        # try fetching manifest from local file system
-        if not manifest_str:
-            manifest_path = get_full_path(MANIFEST_FILENAME)
-
-            try:
-                manifest_str = manifest_path.read_text()
-            except FileNotFoundError:
-                logger.warning(f'manifest file not found in {manifest_path}')
-                return (None, None)
-            except (OSError, PermissionError, ValueError) as e:
-                logger.critical(f'error reading manifest file: {e}')
-                sys.exit(1)
-
+    def _load_gcs(self) -> tuple[str, int] | None:
+        if not google_helper().is_ready:
+            raise PISCriticalError('google cloud storage helper did not initialize correctly')
+        manifest_path = f'{settings().gcs_url}/{MANIFEST_FILENAME}'
         try:
-            manifest = RootManifest().model_validate_json(manifest_str)
+            return google_helper().download_to_string(manifest_path)
+        except NotFoundError:
+            logger.info(f'no manifest file in {manifest_path}')
+            return None
+
+    def _load_local(self) -> tuple[str, int] | None:
+        manifest_path = get_full_path(MANIFEST_FILENAME)
+        try:
+            return (manifest_path.read_text(), 0)
+        except FileNotFoundError:
+            logger.info(f'no manifest file in {manifest_path}')
+            return None
+        except (OSError, PermissionError, ValueError) as e:
+            raise PISCriticalError(f'error reading manifest file: {e}')
+
+    def _validate(self, manifest_str: str) -> RootManifest:
+        try:
+            return RootManifest().model_validate_json(manifest_str)
         except ValidationError as e:
-            logger.critical(f'error validating manifest file: {e}')
-            sys.exit(1)
+            raise PISCriticalError(f'error validating manifest: {e}')
 
-        logger.info(f'previous manifest found, last modified {date_str(manifest.modified)}')
-        logger.trace(f'previous manifest generation = {generation}')
-        return (manifest, generation)
+    def _create_empty(self) -> RootManifest:
+        manifest = RootManifest()
+        for step in steps():
+            manifest.steps[step] = StepManifest(name=step)
+        return manifest
 
-    def update(self, step: 'Step'):
-        self.relevant_step = step
-        self._manifest.steps[step.name] = step._manifest
-        self._manifest.modified = datetime.now()
-        self._manifest.result = step._manifest.result
-
-        recount(self._manifest)
-
-    def save(self):
-        """Save the manifest to the local file system."""
-        manifest_path = get_full_path(MANIFEST_FILENAME)
-
+    def _serialize(self) -> str:
         try:
-            json_str = self._manifest.model_dump_json(indent=2, serialize_as_any=True)
+            return self._manifest.model_dump_json(indent=2, serialize_as_any=True)
         except PydanticSerializationError as e:
-            logger.critical(f'error serializing manifest: {e}')
-            sys.exit(1)
+            raise PISCriticalError(f'error serializing manifest: {e}')
 
-        try:
-            manifest_path.write_text(json_str)
-        except OSError as e:
-            logger.critical(f'error writing manifest file: {e}')
-            sys.exit(1)
-
-    def upload(self):
-        """Upload the manifest to google cloud storage."""
+    def _save_local(self):
         manifest_path = get_full_path(MANIFEST_FILENAME)
+        lock_path = f'{manifest_path}.lock'
+        manifest_str = self._serialize()
+        lock = FileLock(lock_path, timeout=5)
+        try:
+            lock.acquire()
+            manifest_path.write_text(manifest_str)
+            lock.release()
+            logger.debug(f'manifest saved locally to {manifest_path}')
+        except (OSError, Timeout) as e:
+            raise PISCriticalError(f'error writing manifest file: {e}')
 
-        logger.debug(f'uploading manifest to {settings().gcs_url}')
+    def _refresh_from_gcs(self):
+        self._init_manifest()
+        self.update_step(self._relevant_step)
+        self._save_local()
 
+    def _save_gcs(self):
         uploaded = False
+        blob_name = f'{settings().gcs_url}/{MANIFEST_FILENAME}'
         while not uploaded:
             try:
-                google_helper().upload_safe(
-                    manifest_path,
-                    f'{settings().gcs_url}/{MANIFEST_FILENAME}',
-                    self.generation,
-                )
+                google_helper().upload_safe(self._serialize(), blob_name, self._generation)
                 uploaded = True
             except PreconditionFailedError as e:
                 logger.debug(f'{e}, retrying after {UPLOAD_TIMEOUT} seconds...')
                 time.sleep(UPLOAD_TIMEOUT)
-
-                # recreate manifest, fetching the latest version
-                self._init_manifest()
-                self.update(self.relevant_step)
-                self.save()
-
+                self._refresh_from_gcs()
             except HelperError as e:
-                logger.critical(f'error uploading manifest file: {e}')
-                sys.exit(1)
+                raise PISCriticalError(f'error uploading manifest: {e}')
+
+    def update_step(self, step: 'Step'):
+        self._relevant_step = step
+        self._manifest.steps[step.name] = step._manifest
+        self._manifest.modified = datetime.now()
+        self._manifest.result = step._manifest.result
+        recount(self._manifest)
+
+    def complete(self):
+        self._save_local()
+        self._save_gcs()

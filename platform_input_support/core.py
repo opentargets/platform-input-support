@@ -25,9 +25,8 @@ def main():
     step.execute()
 
     manifest = Manifest()
-    manifest.update(step)
-    manifest.save()
-    manifest.upload()
+    manifest.update_step(step)
+    manifest.complete()
 
 
 if __name__ == '__main__':
