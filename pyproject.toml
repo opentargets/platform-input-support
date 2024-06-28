@@ -169,7 +169,7 @@ avoid-escape = true
 fixture-parentheses = false
 mark-parentheses = false
 parametrize-names-type = 'tuple'
-parametrize-values-type = 'tuple'
+parametrize-values-type = 'list'
 parametrize-values-row-type = 'tuple'
 
 [tool.ruff.lint.pydocstyle]

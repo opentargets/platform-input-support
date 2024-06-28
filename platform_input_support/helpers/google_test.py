@@ -20,29 +20,6 @@ urls: list[tuple[str, tuple[str, str | None]]] = [
     ('http://bucket.storage.googleapis.com/folder/file.txt', ('bucket', 'folder/file.txt')),
 ]
 
-bad_buckets: list[str] = ['bucket$', 'BUCKET', 'bucket-', '-bucket', 'bu']
-
-is_blob_shallow_inputs: list[tuple[str, str | None, bool]] = [
-    ('file.txt', None, True),
-    ('file.txt', '', True),
-    ('file.txt', '/', True),
-    ('file', None, True),
-    ('file', '', True),
-    ('prefix/file.txt', 'prefix/', True),
-    ('prefix/file.txt', 'prefix', True),
-    ('/prefix/file.txt', '/prefix/', True),
-    ('/prefix/file.txt', '/prefix', True),
-    ('/prefix/file.txt', 'prefix/', False),
-    ('/dir/', None, False),
-    ('/dir/', '', False),
-    ('/dir/', '/dir', False),
-    ('prefix/dir/', '/prefix', False),
-    ('/dir/file.txt', '', False),
-    ('/prefix/dir/file.txt', '/prefix/', False),
-    ('', '', False),
-    ('/', '', False),
-]
-
 test_list_input: list[str] = [
     'file_1.txt',
     'file_2.xls',
@@ -74,12 +51,33 @@ def mock_parse_url():
         yield mock_parse_url
 
 
-@pytest.mark.parametrize(('input', 'expected'), urls)
+@pytest.mark.parametrize(
+    ('input', 'expected'),
+    [
+        ('gs://bucket/file.txt', ('bucket', 'file.txt')),
+        ('gs://bucket', ('bucket', None)),
+        ('gs://bucket/file.txt/extra', ('bucket', 'file.txt/extra')),
+        ('bucket/file.txt', ('bucket', 'file.txt')),
+        ('bucket', ('bucket', None)),
+        ('bucket/file.txt/extra', ('bucket', 'file.txt/extra')),
+        ('http://bucket/file.txt', ('bucket', 'file.txt')),
+        ('http://bucket.storage.googleapis.com/folder/file.txt', ('bucket', 'folder/file.txt')),
+    ],
+)
 def test_parse_url(input, expected):
     assert GoogleHelper._parse_url(input) == expected
 
 
-@pytest.mark.parametrize('input', bad_buckets)
+@pytest.mark.parametrize(
+    'input',
+    [
+        'bucket$',
+        'BUCKET',
+        'bucket-',
+        '-bucket',
+        'bu',
+    ],
+)
 def test_parse_bad_buckets(input):
     with pytest.raises(HelperError):
         GoogleHelper._parse_url(input)
@@ -244,7 +242,29 @@ def test_upload_safe_ko(mock_parse_url):
         g.upload_safe('data', 'gs://bucket/file.txt', 123)
 
 
-@pytest.mark.parametrize(('blob_name', 'prefix', 'result'), is_blob_shallow_inputs)
+@pytest.mark.parametrize(
+    ('blob_name', 'prefix', 'result'),
+    [
+        ('file.txt', None, True),
+        ('file.txt', '', True),
+        ('file.txt', '/', True),
+        ('file', None, True),
+        ('file', '', True),
+        ('prefix/file.txt', 'prefix/', True),
+        ('prefix/file.txt', 'prefix', True),
+        ('/prefix/file.txt', '/prefix/', True),
+        ('/prefix/file.txt', '/prefix', True),
+        ('/prefix/file.txt', 'prefix/', False),
+        ('/dir/', None, False),
+        ('/dir/', '', False),
+        ('/dir/', '/dir', False),
+        ('prefix/dir/', '/prefix', False),
+        ('/dir/file.txt', '', False),
+        ('/prefix/dir/file.txt', '/prefix/', False),
+        ('', '', False),
+        ('/', '', False),
+    ],
+)
 def test_is_blob_shallow(blob_name, prefix, result):
     assert GoogleHelper._is_blob_shallow(blob_name, prefix) == result
 

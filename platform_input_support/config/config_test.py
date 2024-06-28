@@ -68,7 +68,7 @@ def test_settings_is_single_instance():
 
 
 def test_get_task_definitions(c):
-    c.yaml_dict = {'steps': {'step_1': [{'name': 'task_1', 'destination': '.'}]}}
+    c.yaml_dict = {'steps': {'step_1': [{'name': 'task_1'}]}}
 
     assert c.get_task_definitions() == [BaseTaskDefinition(name='task_1')]
 
