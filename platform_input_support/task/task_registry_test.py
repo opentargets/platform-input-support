@@ -1,11 +1,12 @@
 import sys
 import types
 from threading import Event
+from typing import Self
 
 import pytest
 from loguru import logger
 
-from platform_input_support.config.models import BaseTaskDefinition, PretaskDefinition
+from platform_input_support.config.models import BaseTaskDefinition, PretaskDefinition, TaskDefinition
 from platform_input_support.manifest.models import TaskManifest
 from platform_input_support.task import Pretask, Task, TaskRegistry
 
@@ -18,12 +19,13 @@ class DummyDefinition(BaseTaskDefinition):
 
 
 class Dummy(Task):
-    def __init__(self, definition: DummyDefinition):
-        # do not call super, we do everything here manually for the test
-        self.name = definition.name
+    def __init__(self, definition: TaskDefinition):
+        super().__init__(definition)
+        self.definition: DummyDefinition
 
-    def run(self, abort: Event) -> str | None:
+    def run(self, *, abort: Event) -> Self:
         logger.info('dummy task')
+        return self
 
 
 dummy_task_module.DummyDefinition = DummyDefinition  # type: ignore[attr-defined]
@@ -38,11 +40,12 @@ class DummyPreDefinition(PretaskDefinition):
 
 class DummyPre(Pretask):
     def __init__(self, definition: DummyPreDefinition):
-        self.name = definition.name
-        self.definition = definition
+        super().__init__(definition)
+        self.definition: DummyPreDefinition
 
-    def run(self, abort: Event) -> str | None:
+    def run(self, *, abort: Event) -> Self:
         logger.info('dummy pretask')
+        return self
 
 
 dummy_pre_task_module.DummyPreDefinition = DummyPreDefinition  # type: ignore[attr-defined]
@@ -130,9 +133,9 @@ def test_instantiate_valid_task(patch_import_module, patch_path_glob, monkeypatc
 
     assert isinstance(new_task, Task)
     assert isinstance(new_task, Dummy)
+    assert isinstance(new_task._manifest, TaskManifest)
     assert isinstance(new_task.definition, BaseTaskDefinition)
     assert isinstance(new_task.definition, DummyDefinition)
-    assert isinstance(new_task._manifest, TaskManifest)
     assert new_task.definition.dummy is False
 
 
