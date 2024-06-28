@@ -1,3 +1,4 @@
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -48,37 +49,53 @@ class GoogleHelper:
         # if the credentials are good and the bucket exists, the google helper is ready
         self.is_ready = True
 
-    @staticmethod
-    def _parse_url(url: str) -> tuple[str, str | None]:
+    @classmethod
+    def _parse_url(cls, url: str) -> tuple[str, str | None]:
+        if url.startswith('http'):
+            url = url.replace('https://', '').replace('http://', '').replace('.storage.googleapis.com', '')
+
         url_parts = url.replace('gs://', '').split('/', 1)
         bucket_name = url_parts[0]
+
+        bucket_re = r'^[a-z0-9][a-z0-9-_.]{2,221}[a-z0-9]$'
+        if re.match(bucket_re, bucket_name) is None:
+            raise HelperError(f'invalid bucket name: {bucket_name}')
+
         file_path = url_parts[1] if len(url_parts) > 1 else None
         return bucket_name, file_path
 
-    def bucket_exists(self, url: str) -> bool:
+    def _get_bucket(self, url: str) -> storage.Bucket:
         bucket_name, _ = self._parse_url(url)
-
         try:
-            self.client.get_bucket(bucket_name)
+            return self.client.get_bucket(bucket_name)
         except NotFound:
-            logger.warning(f'bucket {bucket_name} not found')
-            return False
+            raise NotFoundError(bucket_name)
         except GoogleAPICallError as e:
             raise HelperError(f'error checking bucket: {e}')
 
+    def _prepare_blob(self, bucket: storage.Bucket, url: str):
+        _, file_path = self._parse_url(url)
+        if file_path is None:
+            raise HelperError(f'invalid file path: {url}')
+        try:
+            blob = bucket.blob(file_path)
+        except GoogleAPICallError as e:
+            raise HelperError(f'error preparing blob: {e}')
+        return blob
+
+    def bucket_exists(self, url: str) -> bool:
+        bucket_name, _ = self._parse_url(url)
+        try:
+            self._get_bucket(bucket_name)
+        except NotFoundError:
+            logger.warning(f'bucket {bucket_name} not found')
+            return False
         logger.debug(f'bucket {bucket_name} exists and is readable')
         return True
 
     def download_to_string(self, url: str) -> tuple[str, int] | None:
-        bucket_name, file_path = self._parse_url(url)
-
-        try:
-            bucket = self.client.get_bucket(bucket_name)
-        except NotFound:
-            raise NotFoundError(bucket_name)
-
-        blob = bucket.blob(file_path)
-        decoded_blob = None
+        bucket = self._get_bucket(url)
+        blob = self._prepare_blob(bucket, url)
 
         try:
             blob_str = blob.download_as_string()
@@ -86,6 +103,7 @@ class GoogleHelper:
             logger.warning(f'file {url} not found')
             raise NotFoundError(f'file {url} not found')
 
+        decoded_blob = None
         try:
             decoded_blob = blob_str.decode('utf-8')
         except UnicodeDecodeError as e:
@@ -94,60 +112,30 @@ class GoogleHelper:
         return (decoded_blob, blob.generation)
 
     def download_to_file(self, url: str, destination: Path) -> None:
-        bucket_name, file_path = self._parse_url(url)
-
-        try:
-            bucket = self.client.get_bucket(bucket_name)
-        except NotFound:
-            raise NotFoundError(bucket_name)
-
-        blob = bucket.blob(file_path)
+        bucket = self._get_bucket(url)
+        blob = self._prepare_blob(bucket, url)
 
         try:
             blob.download_to_filename(destination)
         except NotFound:
             raise NotFoundError(url)
-        except GoogleAPICallError as e:
+        except (GoogleAPICallError, OSError) as e:
             raise HelperError(f'error downloading file: {e}')
-        except OSError as e:
-            raise HelperError(f'error writing file: {e}')
-
         logger.debug('download completed')
 
     def upload(self, source: Path, destination: str) -> None:
-        bucket_name, file_path = self._parse_url(destination)
-
-        try:
-            bucket = self.client.get_bucket(bucket_name)
-        except NotFound:
-            raise NotFoundError(bucket_name)
-
-        blob = bucket.blob(file_path)
+        bucket = self._get_bucket(destination)
+        blob = self._prepare_blob(bucket, destination)
 
         try:
             blob.upload_from_filename(source)
-        except GoogleAPICallError as e:
+        except (GoogleAPICallError, OSError) as e:
             raise HelperError(f'error uploading file: {e}')
-        except OSError as e:
-            raise HelperError(f'error reading file: {e}')
-
         logger.debug(f'uploaded {source} to {destination}')
 
-    # TODO: This must be thoroughly tested!
-    def upload_safe(
-        self,
-        content: str,
-        destination: str,
-        generation: int,
-    ) -> None:
-        bucket_name, file_path = self._parse_url(destination)
-
-        try:
-            bucket = self.client.get_bucket(bucket_name)
-        except NotFound:
-            raise NotFoundError(bucket_name)
-
-        blob = bucket.blob(file_path)
+    def upload_safe(self, content: str, destination: str, generation: int) -> None:
+        bucket = self._get_bucket(destination)
+        blob = self._prepare_blob(bucket, destination)
 
         logger.trace(f'uploading file with generation {generation}')
         try:
@@ -156,61 +144,45 @@ class GoogleHelper:
             logger.trace('file upload failed due to generation mismatch')
             blob.reload()
             raise PreconditionFailedError(f'generation mismatch: local={generation}, remote={blob.generation}')
-        except GoogleAPICallError as e:
+        except (GoogleAPICallError, OSError) as e:
             raise HelperError(f'error uploading file: {e}')
-        except OSError as e:
-            raise HelperError(f'error reading file: {e}')
 
         logger.debug(f'uploaded blob to {destination}')
 
     @staticmethod
-    def _is_file(blob: storage.Blob, prefix: str | None) -> bool:
-        blob_name = str(blob.name).replace(prefix or '', '')
-        return '/' not in blob_name and not blob_name.endswith('/')
-
-    def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
-        bucket_name, prefix = self._parse_url(url)
-
+    def _is_blob_shallow(blob_name: str, prefix: str | None) -> bool:
         # make sure we select the given path, not all prefixes
         if prefix is not None and not prefix.endswith('/'):
             prefix = f'{prefix}/'
 
-        file_list = []
-        try:
-            bucket = self.client.get_bucket(bucket_name)
-        except NotFound:
-            raise NotFoundError(bucket_name)
-        except GoogleAPICallError as e:
-            raise HelperError(f'error getting bucket: {e}')
+        if not blob_name or blob_name == prefix:
+            return False
 
-        blobs = list(bucket.list_blobs(prefix=prefix))
+        blob_name = blob_name.replace(prefix or '', '', 1)
+        return '/' not in blob_name and not blob_name.endswith('/')
+
+    def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
+        bucket_name, prefix = GoogleHelper._parse_url(url)
+        bucket = self._get_bucket(bucket_name)
+        blob_names: list[str] = [n.name for n in list(bucket.list_blobs(prefix=prefix))]
 
         # filter out blobs that have longer prefixes
-        file_list = [blob for blob in blobs if self._is_file(blob, prefix)]
+        blob_name_list = [n for n in blob_names if self._is_blob_shallow(n, prefix)]
 
         # filter out blobs using include/exclude
         if include is not None:
-            file_list = [blob for blob in file_list if include in blob.name]
+            blob_name_list = [blob_name for blob_name in blob_name_list if include in blob_name]
         elif exclude is not None:
-            file_list = [blob for blob in file_list if exclude not in blob.name]
+            blob_name_list = [blob_name for blob_name in blob_name_list if exclude not in blob_name]
 
-        if not file_list:
+        if len(blob_name_list) == 0:
             logger.warning(f'no files found in {url}')
-            return []
 
-        return [f'gs://{bucket_name}/{blob.name}' for blob in file_list]
+        return [f'gs://{blob_name}' for blob_name in blob_name_list]
 
     def get_modification_date(self, url: str) -> datetime | None:
-        bucket_name, file_path = self._parse_url(url)
-
-        try:
-            bucket = self.client.get_bucket(bucket_name)
-        except NotFound:
-            raise NotFoundError(f'bucket or file {url} not found')
-        except GoogleAPICallError as e:
-            raise HelperError(f'error getting creation date: {e}')
-
-        blob = bucket.blob(file_path)
+        bucket = self._get_bucket(url)
+        blob = self._prepare_blob(bucket, url)
         blob.reload()
         return blob.updated
 
