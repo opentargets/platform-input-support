@@ -9,11 +9,11 @@ from platform_input_support.util.logger import get_exception_info, get_format_lo
 
 
 @pytest.fixture
-def hide_exceptions_with_flag():
-    original = os.environ.get('PIS_HIDE_EXCEPTIONS', '')
-    os.environ['PIS_HIDE_EXCEPTIONS'] = 'true'
+def show_exceptions_with_flag():
+    original = os.environ.get('PIS_SHOW_EXCEPTIONS', '')
+    os.environ['PIS_SHOW_EXCEPTIONS'] = 'true'
     yield
-    os.environ['PIS_HIDE_EXCEPTIONS'] = original
+    os.environ['PIS_SHOW_EXCEPTIONS'] = original
 
 
 @pytest.fixture
@@ -73,13 +73,13 @@ def test_format_log_without_exception():
     assert '{exception}' not in formatted
 
 
-def test_format_log_with_hide_exceptions_flag(hide_exceptions_with_flag):
+def test_format_log_with_show_exceptions_flag(show_exceptions_with_flag):
     formatter = get_format_log()
     record = {'extra': {}, 'message': 'Test message'}
 
     formatted = formatter(record)
 
-    assert '{exception}' not in formatted
+    assert '{exception}' in formatted
 
 
 def test_format_log_with_exception(monkeypatch):
@@ -92,7 +92,7 @@ def test_format_log_with_exception(monkeypatch):
 
     formatted = formatter(record)
 
-    assert '{exception}' in formatted
+    assert '{exception}' not in formatted
 
 
 def test_task_logging_context_manager(config):
