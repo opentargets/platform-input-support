@@ -10,7 +10,7 @@ from platform_input_support.util.fs import get_full_path
 # fastest way to count lines is calling wc -l
 def _wccount(filename):
     out = subprocess.Popen(
-        ['wc', '-l', filename],
+        ['/usr/bin/wc', '-l', filename],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     ).communicate()[0]
