@@ -115,8 +115,8 @@ def test_task_logging_context_manager(config):
         assert len(task._manifest.log) == 1
 
 
-def test_init_logger(monkeypatch, capsys):
-    test_file_path = Path('/tmp/pis_test_output.log')  # noqa: S108
+def test_init_logger(monkeypatch, capsys, tmp_path):
+    test_file_path = tmp_path / 'pis_test_output.log'
     monkeypatch.setattr('platform_input_support.util.logger.get_full_path', lambda x: test_file_path)
 
     init_logger('DEBUG')
