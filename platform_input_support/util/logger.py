@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 def get_exception_info(record_exception) -> tuple[str, str, str]:
     name = '{name}'
-    function = '{function}'
+    func = '{function}'
     line = '{line}'
 
     if record_exception is not None:
@@ -24,7 +24,7 @@ def get_exception_info(record_exception) -> tuple[str, str, str]:
         _, _, tb = record_exception
 
         if tb is None:
-            return name, function, line
+            return name, func, line
 
         # go back in the stack to the first frame originated inside the app
         app_name = globals()['__package__'].split('.')[0]
@@ -34,15 +34,15 @@ def get_exception_info(record_exception) -> tuple[str, str, str]:
                 break
             name = next_name
             tb = tb.tb_next
-        function = tb.tb_frame.f_code.co_name
+        func = tb.tb_frame.f_code.co_name
         line = str(tb.tb_lineno)
 
-    return name, function, line
+    return name, func, line
 
 
 def get_format_log(include_task: bool = True) -> Callable[..., str]:
     def format_log(record):
-        name, function, line = get_exception_info(record.get('exception'))
+        name, func, line = get_exception_info(record.get('exception'))
         task = '<y>{extra[task]}</>::' if include_task and record['extra'].get('task') else ''
         trail = '\n' if include_task else ''
 
@@ -56,7 +56,7 @@ def get_format_log(include_task: bool = True) -> Callable[..., str]:
             '<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | '
             '<lvl>{level: <8}</> | '
             f'{task}'
-            f'<c>{name}</>:<c>{function}</>:<c>{line}</>'
+            f'<c>{name}</>:<c>{func}</>:<c>{line}</>'
             ' - <lvl>{message}</>'
             f'{trail}'
         )

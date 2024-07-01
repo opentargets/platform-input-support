@@ -37,8 +37,6 @@ def test_config_initialization(c):
 def test_validate_step_valid(c):
     c.settings.step = 'step_1'
 
-    assert True  # No exception means the step is valid
-
 
 def test_validate_step_empty(c):
     c.settings.step = ''
