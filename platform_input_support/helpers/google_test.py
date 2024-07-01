@@ -16,8 +16,8 @@ urls: list[tuple[str, tuple[str, str | None]]] = [
     ('bucket/file.txt', ('bucket', 'file.txt')),
     ('bucket', ('bucket', None)),
     ('bucket/file.txt/extra', ('bucket', 'file.txt/extra')),
-    ('http://bucket/file.txt', ('bucket', 'file.txt')),
-    ('http://bucket.storage.googleapis.com/folder/file.txt', ('bucket', 'folder/file.txt')),
+    ('https://bucket/file.txt', ('bucket', 'file.txt')),
+    ('https://bucket.storage.googleapis.com/folder/file.txt', ('bucket', 'folder/file.txt')),
 ]
 
 test_list_input: list[str] = [
@@ -60,8 +60,8 @@ def mock_parse_url():
         ('bucket/file.txt', ('bucket', 'file.txt')),
         ('bucket', ('bucket', None)),
         ('bucket/file.txt/extra', ('bucket', 'file.txt/extra')),
-        ('http://bucket/file.txt', ('bucket', 'file.txt')),
-        ('http://bucket.storage.googleapis.com/folder/file.txt', ('bucket', 'folder/file.txt')),
+        ('https://bucket/file.txt', ('bucket', 'file.txt')),
+        ('https://bucket.storage.googleapis.com/folder/file.txt', ('bucket', 'folder/file.txt')),
     ],
 )
 def test_parse_url(input, expected):

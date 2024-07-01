@@ -23,14 +23,14 @@ CONFIG_DICT_VALID = {
         'step_1': [
             {
                 'name': 'download file 1',
-                'source': 'http://example.com/file1.txt',
+                'source': 'https://example.com/file1.txt',
                 'destination': 'somewhere/file1.txt',
             }
         ],
         'step_2': [
             {
                 'name': 'download file 2',
-                'source': 'http://example.com/file2.txt',
+                'source': 'https://example.com/file2.txt',
                 'destination': 'somewhere/file2.txt',
             }
         ],
@@ -87,11 +87,11 @@ force: no
 steps:
   step_1:
     - name: download file 1
-      source: http://example.com/file1.txt
+      source: https://example.com/file1.txt
       destination: somewhere/file1.txt
   step_2:
     - name: download file 2
-      source: http://example.com/file2.txt
+      source: https://example.com/file2.txt
       destination: somewhere/file2.txt
 scratchpad:
   some.label.to.replace: thisvalue
@@ -121,11 +121,11 @@ force: no
 steps:
     step_1:
       - name: download file 1
-        source: http://example.com/file1.txt
+        source: https://example.com/file1.txt
         destination: somewhere/file1.txt
     step_2:
       - name: download file 2
-        source: http://example.com/file2.txt
+        source: https://example.com/file2.txt
         destination: somewhere/file2.txt
 """
 
@@ -257,7 +257,7 @@ def test_get_yaml_stepdefs_valid_data():
     assert isinstance(stepdefs['step_1'][0], BaseTaskDefinition)
     assert stepdefs['step_1'][0].model_dump() == {
         'name': 'download file 1',
-        'source': 'http://example.com/file1.txt',
+        'source': 'https://example.com/file1.txt',
         'destination': 'somewhere/file1.txt',
     }
     assert 'step_2' in stepdefs
@@ -266,7 +266,7 @@ def test_get_yaml_stepdefs_valid_data():
     assert isinstance(stepdefs['step_2'][0], BaseTaskDefinition)
     assert stepdefs['step_2'][0].model_dump() == {
         'name': 'download file 2',
-        'source': 'http://example.com/file2.txt',
+        'source': 'https://example.com/file2.txt',
         'destination': 'somewhere/file2.txt',
     }
 
