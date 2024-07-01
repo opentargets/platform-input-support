@@ -35,9 +35,9 @@ def test_get_exception_info_with_exception():
         raise ValueError('Test exception')
     except ValueError:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        name, function, line = get_exception_info((exc_type, exc_value, exc_traceback))
+        name, func, line = get_exception_info((exc_type, exc_value, exc_traceback))
 
-        assert name and function and line
+        assert name and func and line
         assert line.isdigit()  # Line number should be a digit
 
 
@@ -52,11 +52,11 @@ def test_get_exception_info_with_deep_exception():
         a()
     except FileNotFoundError:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        name, function, line = get_exception_info((exc_type, exc_value, exc_traceback))
+        name, func, line = get_exception_info((exc_type, exc_value, exc_traceback))
 
-        assert name and function and line
+        assert name and func and line
         assert name == 'platform_input_support.util.logger_test'
-        assert function == 'b'
+        assert func == 'b'
         assert line.isdigit()  # Line number should be a digit
 
 

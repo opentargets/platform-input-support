@@ -62,7 +62,7 @@ class Manifest:
         except FileNotFoundError:
             logger.info(f'no manifest file in {manifest_path}')
             return None
-        except (OSError, PermissionError, ValueError) as e:
+        except (ValueError, OSError) as e:
             raise PISCriticalError(f'error reading manifest file: {e}')
 
     def _validate(self, manifest_str: str) -> RootManifest:
