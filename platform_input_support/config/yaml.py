@@ -13,7 +13,7 @@ def load_yaml_file(config_file: Path) -> str:
     logger.debug(f'loading yaml file {config_file}')
     try:
         return Path.read_text(config_file)
-    except (FileNotFoundError, PermissionError, OSError) as e:
+    except OSError as e:
         logger.critical(f'error reading config file: {e}')
         sys.exit(1)
 
