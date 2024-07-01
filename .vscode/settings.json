@@ -1,11 +1,23 @@
 {
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+  },
+  "ruff.nativeServer": true,
+  "ruff.lint.enable": true,
+  "ruff.organizeImports": true,
   "python.analysis.autoImportCompletions": true,
   "python.analysis.typeCheckingMode": "standard",
-
+  "python.languageServer": "Pylance",
   "files.exclude": {
     "**/__pycache__": true,
     "**/.pytest_cache": true,
     "**/.ruff_cache": true,
     "**/.venv": true,
+    ".coverage": true,
+    "coverage.xml": true,
   },
 }
