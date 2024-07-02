@@ -15,5 +15,5 @@ __pycache__/
 # output working directory
 work/
 
-# terraform
-terraform.tfstate
+# credentials file
+credentials.json
