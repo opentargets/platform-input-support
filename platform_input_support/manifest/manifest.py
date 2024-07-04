@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from filelock import FileLock, Timeout
 from loguru import logger
 from pydantic import ValidationError
-from pydantic_core import PydanticSerializationError
 
 from platform_input_support.config import settings, steps
 from platform_input_support.helpers import google_helper
@@ -80,7 +79,7 @@ class Manifest:
     def _serialize(self) -> str:
         try:
             return self._manifest.model_dump_json(indent=2, serialize_as_any=True)
-        except PydanticSerializationError as e:
+        except ValueError as e:
             raise PISCriticalError(f'error serializing manifest: {e}')
 
     def _save_local(self):
