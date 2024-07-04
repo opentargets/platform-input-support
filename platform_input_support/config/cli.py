@@ -2,7 +2,6 @@ import argparse
 import os
 
 from loguru import logger
-from pydantic_core import PydanticUndefinedType
 
 from platform_input_support.config.env import ENV_PREFIX
 from platform_input_support.config.models import CliSettings, Settings
@@ -21,7 +20,7 @@ def parse_cli() -> CliSettings:
             if action.default is not argparse.SUPPRESS:
                 action.help = f'{action.help} (environment variable: {to_env(action.dest)})'
                 default_value = Settings.model_fields[action.dest].default
-                if default_value != '' and not isinstance(default_value, PydanticUndefinedType):  # noqa: PLC1901
+                if default_value != '':  # noqa: PLC1901
                     action.help += f' (default: {default_value})'
             return f'{action.help}'
 
