@@ -1,3 +1,4 @@
+import sys
 from importlib.metadata import version
 
 from loguru import logger
@@ -27,6 +28,10 @@ def main():
     manifest = Manifest()
     manifest.update_step(step)
     manifest.complete()
+
+    if not manifest.is_completed():
+        logger.error('step did not complete successfully')
+        sys.exit(1)
 
 
 if __name__ == '__main__':
