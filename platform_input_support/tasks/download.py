@@ -22,6 +22,9 @@ class Download(Task):
         super().__init__(definition)
         self.definition: DownloadDefinition
 
+    def is_google_spreadsheet(self) -> bool:
+        return self.definition.source.startswith('https://docs.google.com/spreadsheets/')
+
     @report
     def run(self, *, abort: Event) -> Self:
         download(self.definition.source, self.definition.destination, abort=abort)
@@ -31,6 +34,12 @@ class Download(Task):
     @report
     def validate(self, *, abort: Event) -> Self:
         v(file_exists, self.definition.destination)
+
+        # skip size validation for google spreadsheet
+        if self.is_google_spreadsheet():
+            logger.warning('skipping validation for google spreadsheet')
+            return self
+
         v(file_size, self.definition.source, self.definition.destination)
 
         return self
