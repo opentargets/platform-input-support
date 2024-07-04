@@ -9,7 +9,7 @@ from pydantic_core import PydanticSerializationError
 
 from platform_input_support.config import settings, steps
 from platform_input_support.helpers import google_helper
-from platform_input_support.manifest.models import RootManifest, StepManifest
+from platform_input_support.manifest.models import Result, RootManifest, StepManifest
 from platform_input_support.manifest.util import recount
 from platform_input_support.util.errors import (
     HelperError,
@@ -125,3 +125,8 @@ class Manifest:
     def complete(self):
         self._save_local()
         self._save_gcs()
+
+        logger.info(f'manifest closed, result: {self._manifest.result}')
+
+    def is_completed(self) -> bool:
+        return self._manifest.result == Result.COMPLETED
