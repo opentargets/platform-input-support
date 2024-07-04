@@ -8,22 +8,27 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-elasticsearch = "==7.17.6"
+elasticsearch = "==7.17.6"        # must be ^7.0.0 to be compatible with chembl es server
 elasticsearch-dsl = "==7.4.1"
 filelock = "^3.15.4"
 google-cloud-storage = "==2.16.0"
 jq = "^1.7.0"
+loguru = "==0.7.2"
 pydantic = "^2.7.4"
 PyYAML = "==6.0.1"
-loguru = "==0.7.2"
+requests = "^2.32.3"
+urllib3 = "<=2"                   # must be <= 2 for elasticsearch
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 poetry = "^1.8.3"
 coverage = "^7.5.3"
 freezegun = "^1.5.1"
 pytest = "==7.4.3"
 pytest-mock = "^3.14.0"
+
+[tool.poetry.group.dev.dependencies]
 ruff = "==0.4.6"
+deptry = "^0.16.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -39,6 +44,9 @@ filterwarnings = "ignore:.*google._upb*" # warning from google protobuf library
 [tool.coverage.report]
 omit = ["**/*_test.py"]
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
+
+[tool.deptry]
+extend_exclude = ["[0-9a-zA-Z_/]+_test.py"]
 
 [tool.ruff]
 target-version = 'py312'
