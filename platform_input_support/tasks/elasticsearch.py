@@ -6,7 +6,7 @@ from threading import Event
 from typing import Any, Self
 
 from elasticsearch import Elasticsearch as Es
-from elasticsearch import ElasticsearchException as ESError
+from elasticsearch.exceptions import ApiError as ESError
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 
@@ -40,6 +40,12 @@ class Elasticsearch(Task):
         self.doc_count: int = 0
         self.doc_written: int = 0
 
+    # destroy es connection to avoid pickling issues with multiprocessing
+    def close_es(self):
+        if hasattr(self, 'es'):
+            self.es.close()
+            del self.es
+
     @report
     def run(self, *, abort: Event) -> Self:
         url = self.definition.url
@@ -52,12 +58,14 @@ class Elasticsearch(Task):
         try:
             self.es = Es(url)
         except ESError as e:
+            self.close_es()
             raise ElasticsearchError(f'connection error: {e}')
 
         logger.debug(f'scanning index {index} with fields {list_str(fields)}')
         try:
             self.doc_count = self.es.count(index=index)['count']
         except ESError as e:
+            self.close_es()
             raise ElasticsearchError(f'error getting index count on index {index}: {e}')
         logger.info(f'index {index} has {self.doc_count} documents')
 
@@ -65,6 +73,7 @@ class Elasticsearch(Task):
         try:
             source = search.source(fields=list(fields))
         except ESError as e:
+            self.close_es()
             raise ElasticsearchError(f'scan error on index {index}: {e}')
 
         doc_buffer: list[dict[str, Any]] = []
@@ -93,10 +102,7 @@ class Elasticsearch(Task):
 
         self._write_docs(doc_buffer, destination)
         logger.success(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
-
-        # forget about elasticsearch connection
-        self.es.close()
-        del self.es
+        self.close_es()
         return self
 
     def _write_docs(self, docs: list[dict[str, Any]], destination: Path):
@@ -108,6 +114,7 @@ class Elasticsearch(Task):
             self.doc_written += len(docs)
 
         except OSError as e:
+            self.close_es()
             raise ElasticsearchError(f'error writing to {destination}: {e}')
 
         logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to {destination}')
