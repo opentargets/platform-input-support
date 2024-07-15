@@ -1,0 +1,68 @@
+#!/bin/bash
+
+RUFF_CMD='poetry run ruff check'
+DEPTRY_CMD='poetry run deptry .'
+PYTEST_CMD='poetry run pytest -qq'
+
+CYAN=$(echo -e $"\033[0;36m")
+RED=$(echo -e $"\033[1;31m")
+WHITE=$(echo -e $"\033[1;37m")
+RESET=$(echo -e $"\033[0;0m")
+
+STATUS=0
+
+_get_files() {
+    local i
+    unset FILES
+    while IFS= read -r -d $'\0' file; do
+        FILES[i++]="$file"
+    done < <(git diff --name-only --diff-filter=ACMR --staged -z "$@")
+}
+
+
+# ruff
+_get_files '*.py'
+if [[ ${#FILES[@]} -ne 0 ]]; then
+    if ! RESULT=$(CLICOLOR_FORCE=1 $RUFF_CMD "${FILES[@]}"); then
+        STATUS=1
+        echo "${RED}There are ruff issues in your code:${RESET}"
+        echo
+        echo "$RESULT"
+        echo
+    fi
+fi
+
+
+# deptry
+if [[ ${#FILES[@]} -ne 0 ]]; then
+    if ! RESULT=$($DEPTRY_CMD 2>&1); then
+        STATUS=1
+        echo "${RED}There are deptry issues in your code:${RESET}"
+        echo
+        echo "$RESULT"
+        echo
+    fi
+fi
+
+# pytest
+if ! RESULT=$($PYTEST_CMD); then
+    STATUS=1
+    echo "${RED}Some tests failed:${RESET}"
+    echo
+    echo "$RESULT"
+    echo
+fi
+
+if [[ $STATUS != 0 ]] ; then
+    # claim stdin back
+    exec < /dev/tty
+    echo
+    read -r -p "${RED}Do you wish to commit anyway ${CYAN}[${WHITE}y${CYAN}/${WHITE}N${CYAN}]${RESET}? " yn
+    case $yn in
+        [Yy]* ) exit 0;;
+        [Nn]* ) exit $STATUS;;
+        * ) exit $STATUS;;
+    esac
+fi
+
+exit $STATUS
