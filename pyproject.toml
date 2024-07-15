@@ -5,6 +5,7 @@ description = "Open Target's Platform Input Support Application"
 authors = ["Open Targets core team"]
 license = "Apache-2.0"
 readme = "README.md"
+exclude = ["**/*_test.py"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
