@@ -1,5 +1,6 @@
 # Various python files
 coverage.xml
+htmlcov
 __pycache__/
 *.py[cod]
 .pytest_cache/
