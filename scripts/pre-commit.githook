@@ -11,6 +11,28 @@ RESET=$(echo -e $"\033[0;0m")
 
 STATUS=0
 
+# Check if poetry is installed
+if ! command -v poetry &> /dev/null; then
+    echo "${RED}Poetry is not installed${RESET}"
+    exit 1
+fi
+
+# Check if poetry.lock is up to date
+if ! poetry check -q; then
+    echo "${RED}poetry.lock is not up to date, run 'poetry lock'${RESET}"
+    exit 1
+fi
+
+# Check if dependencies are installed
+DRY_RUN_OUTPUT=$(poetry install --dry-run | grep '\- Installing' | grep -v 'Skipped')
+if [ -n "$DRY_RUN_OUTPUT" ]; then
+    echo "${CYAN}Installing missing dependencies...${RESET}"
+    if ! poetry install; then
+        echo "${RED}Failed to install dependencies.${RESET}"
+        exit 1
+    fi
+fi
+
 _get_files() {
     local i
     unset FILES
