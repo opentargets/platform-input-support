@@ -22,7 +22,6 @@ class PISCriticalError(PISError):
 
 class HelperError(PISError):
     def __init__(self, msg: str):
-        logger.opt(exception=sys.exc_info()).error(msg)
         super().__init__(msg)
 
 
