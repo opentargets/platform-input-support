@@ -87,7 +87,7 @@ def test_get_bucket_existing(mock_parse_url):
     g = GoogleHelper()
     g.client = MagicMock(storage.Client)
 
-    g._get_bucket('gs://bucket')
+    g._get_bucket('bucket')
 
     g.client.get_bucket.assert_called_once_with('bucket')
 
@@ -115,7 +115,7 @@ def test_prepare_blob_existing(mock_parse_url):
     g.client = MagicMock(storage.Client)
     bucket = MagicMock(storage.Bucket)
 
-    b = g._prepare_blob(bucket, 'gs://bucket/file.txt')
+    b = g._prepare_blob(bucket, 'file.txt')
 
     bucket.blob.assert_called_once_with('file.txt')
     assert b == bucket.blob.return_value
