@@ -6,7 +6,7 @@ from threading import Event
 from typing import Any, Self
 
 from elasticsearch import Elasticsearch as Es
-from elasticsearch.exceptions import ApiError as ESError
+from elasticsearch.exceptions import ElasticsearchException
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 
@@ -57,14 +57,14 @@ class Elasticsearch(Task):
         logger.debug(f'connecting to elasticsearch at {url}')
         try:
             self.es = Es(url)
-        except ESError as e:
+        except ElasticsearchException as e:
             self.close_es()
             raise ElasticsearchError(f'connection error: {e}')
 
         logger.debug(f'scanning index {index} with fields {list_str(fields)}')
         try:
             self.doc_count = self.es.count(index=index)['count']
-        except ESError as e:
+        except ElasticsearchException as e:
             self.close_es()
             raise ElasticsearchError(f'error getting index count on index {index}: {e}')
         logger.info(f'index {index} has {self.doc_count} documents')
@@ -72,7 +72,7 @@ class Elasticsearch(Task):
         search = Search(using=self.es, index=index)
         try:
             source = search.source(fields=list(fields))
-        except ESError as e:
+        except ElasticsearchException as e:
             self.close_es()
             raise ElasticsearchError(f'scan error on index {index}: {e}')
 
