@@ -20,7 +20,7 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=1 \
 
 COPY platform_input_support ./platform_input_support
 
-RUN poetry install
+RUN poetry install --only=main
 
 ENTRYPOINT ["poetry", "run", "platform_input_support"]
 CMD []
