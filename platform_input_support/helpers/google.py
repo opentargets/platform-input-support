@@ -64,8 +64,7 @@ class GoogleHelper:
         file_path = url_parts[1] if len(url_parts) > 1 else None
         return bucket_name, file_path
 
-    def _get_bucket(self, url: str) -> storage.Bucket:
-        bucket_name, _ = self._parse_url(url)
+    def _get_bucket(self, bucket_name: str) -> storage.Bucket:
         try:
             return self.client.get_bucket(bucket_name)
         except NotFound:
@@ -73,12 +72,11 @@ class GoogleHelper:
         except GoogleAPICallError as e:
             raise HelperError(f'error checking bucket: {e}')
 
-    def _prepare_blob(self, bucket: storage.Bucket, url: str):
-        _, file_path = self._parse_url(url)
-        if file_path is None:
-            raise HelperError(f'invalid file path: {url}')
+    def _prepare_blob(self, bucket: storage.Bucket, prefix: str | None) -> storage.Blob:
+        if prefix is None:
+            raise HelperError(f'invalid prefix: {prefix}')
         try:
-            blob = bucket.blob(file_path)
+            blob = bucket.blob(prefix)
         except GoogleAPICallError as e:
             raise HelperError(f'error preparing blob: {e}')
         return blob
@@ -94,8 +92,9 @@ class GoogleHelper:
         return True
 
     def download_to_string(self, url: str) -> tuple[str, int] | None:
-        bucket = self._get_bucket(url)
-        blob = self._prepare_blob(bucket, url)
+        bucket_name, prefix = self._parse_url(url)
+        bucket = self._get_bucket(bucket_name)
+        blob = self._prepare_blob(bucket, prefix)
 
         try:
             blob_str = blob.download_as_string()
@@ -112,8 +111,9 @@ class GoogleHelper:
         return (decoded_blob, blob.generation)
 
     def download_to_file(self, url: str, destination: Path) -> None:
-        bucket = self._get_bucket(url)
-        blob = self._prepare_blob(bucket, url)
+        bucket_name, prefix = self._parse_url(url)
+        bucket = self._get_bucket(bucket_name)
+        blob = self._prepare_blob(bucket, prefix)
 
         try:
             blob.download_to_filename(destination)
@@ -124,8 +124,9 @@ class GoogleHelper:
         logger.debug('download completed')
 
     def upload(self, source: Path, destination: str) -> None:
-        bucket = self._get_bucket(destination)
-        blob = self._prepare_blob(bucket, destination)
+        bucket_name, prefix = self._parse_url(destination)
+        bucket = self._get_bucket(bucket_name)
+        blob = self._prepare_blob(bucket, prefix)
 
         try:
             blob.upload_from_filename(source)
@@ -134,8 +135,9 @@ class GoogleHelper:
         logger.debug(f'uploaded {source} to {destination}')
 
     def upload_safe(self, content: str, destination: str, generation: int) -> None:
-        bucket = self._get_bucket(destination)
-        blob = self._prepare_blob(bucket, destination)
+        bucket_name, prefix = self._parse_url(destination)
+        bucket = self._get_bucket(bucket_name)
+        blob = self._prepare_blob(bucket, prefix)
 
         logger.trace(f'uploading file with generation {generation}')
         try:
@@ -162,8 +164,9 @@ class GoogleHelper:
         return '/' not in blob_name and not blob_name.endswith('/')
 
     def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
-        bucket_name, prefix = GoogleHelper._parse_url(url)
+        bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
+
         blob_names: list[str] = [n.name for n in list(bucket.list_blobs(prefix=prefix))]
 
         # filter out blobs that have longer prefixes
@@ -178,11 +181,12 @@ class GoogleHelper:
         if len(blob_name_list) == 0:
             logger.warning(f'no files found in {url}')
 
-        return [f'gs://{blob_name}' for blob_name in blob_name_list]
+        return [f'gs://{bucket_name}/{blob_name}' for blob_name in blob_name_list]
 
     def get_modification_date(self, url: str) -> datetime | None:
-        bucket = self._get_bucket(url)
-        blob = self._prepare_blob(bucket, url)
+        bucket_name, prefix = self._parse_url(url)
+        bucket = self._get_bucket(bucket_name)
+        blob = self._prepare_blob(bucket, prefix)
         blob.reload()
         return blob.updated
 
