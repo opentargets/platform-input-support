@@ -9,6 +9,7 @@ help: ## Show the help message
 git: .git/hooks/pre-commit ## install the pre-commit hook
 
 .venv:
+	@poetry config virtualenvs.in-project true
 	@echo installing dependencies
 	@poetry install -q
 
