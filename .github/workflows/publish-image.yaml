@@ -4,6 +4,8 @@ on:
   release:
     types:
       - published
+    branches:
+      - master
 
 jobs:
   push-to-quay-and-gcr:
@@ -19,6 +21,10 @@ jobs:
       TAG: ${{ github.ref_name }}
 
     steps:
+      - id: prepare-tag
+        name: Prepare tag
+        run: echo "TAG=$(echo $TAG | sed 's/^v//')" >> $GITHUB_ENV
+
       - id: checkout
         name: Check out repo
         uses: actions/checkout@v4
@@ -58,9 +64,9 @@ jobs:
           push: true
           tags: |
             quay.io/opentargets/platform-input-support-test:latest
-            quay.io/opentargets/platform-input-support-test:${{ github.ref_name }}
+            quay.io/opentargets/platform-input-support-test:${{ env.TAG }}
             europe-west1-docker.pkg.dev/open-targets-eu-dev/platform-input-support-test/platform-input-support-test:latest
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/platform-input-support-test/platform-input-support-test:${{ github.ref_name }}
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/platform-input-support-test/platform-input-support-test:${{ env.TAG }}
 
       - id: generate-attestations
         name: Generate artifact attestation
