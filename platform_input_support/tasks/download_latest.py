@@ -7,6 +7,7 @@ from loguru import logger
 
 from platform_input_support.helpers import google_helper
 from platform_input_support.helpers.download import download
+from platform_input_support.manifest.models import Resource
 from platform_input_support.tasks import Task, TaskDefinition, report
 
 
@@ -41,6 +42,7 @@ class DownloadLatest(Task):
         if newest_file:
             logger.info(f'latest file is {newest_file}')
             download(newest_file, destination)
+            self.resource = Resource(source=newest_file, destination=str(destination))
             logger.success('download successful')
             return self
         else:

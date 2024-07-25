@@ -15,6 +15,11 @@ class Result(StrEnum):
     ABORTED = auto()    # step or task was aborted
 
 
+class Resource(BaseModel):
+    source: str
+    destination: str
+
+
 class TaskManifest(BaseModel, extra='allow'):
     name: str
     result: Result = Result.PENDING
@@ -29,6 +34,7 @@ class StepManifest(BaseModel):
     created: datetime = datetime.now(UTC)
     log: list[str] = []
     tasks: list[TaskManifest] = []
+    resources: list[Resource] = []
 
 
 class RootManifest(BaseModel):

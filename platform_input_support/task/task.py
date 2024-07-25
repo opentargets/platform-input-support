@@ -1,6 +1,6 @@
 from pathlib import Path
 from threading import Event
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from loguru import logger
 
@@ -11,11 +11,15 @@ from platform_input_support.manifest.task_reporter import TaskReporter, report
 from platform_input_support.util.errors import PISError
 from platform_input_support.util.fs import get_full_path
 
+if TYPE_CHECKING:
+    from platform_input_support.manifest.models import Resource
+
 
 class Task(TaskReporter):
     def __init__(self, definition: BaseTaskDefinition):
         super().__init__(definition.name)
         self.definition = definition
+        self.resource: Resource
 
         # replace templates in the definition strings
         for key, value in self.definition.model_dump().items():

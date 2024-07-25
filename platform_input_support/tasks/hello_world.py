@@ -1,10 +1,12 @@
 from dataclasses import dataclass
+from pathlib import Path
 from threading import Event
 from typing import Self
 
 from loguru import logger
 
 from platform_input_support.config.models import TaskDefinition
+from platform_input_support.manifest.models import Resource
 from platform_input_support.manifest.task_reporter import report
 from platform_input_support.task import Task
 
@@ -12,6 +14,7 @@ from platform_input_support.task import Task
 @dataclass
 class HelloWorldDefinition(TaskDefinition):
     who: str = 'world'
+    destination: Path = Path('/path/to/output/file.txt')
 
 
 class HelloWorld(Task):
@@ -21,9 +24,15 @@ class HelloWorld(Task):
 
     @report
     def run(self, *, abort: Event) -> Self:
+        # configure
         who = self.definition.who
 
-        logger.info(f'hello, {who}!')
+        # write a example string to the destination file
+        output_file = Path(self.definition.destination)
+        output_file.write_text(f'Hello, {who}!')
+
+        # set the resource
+        self.resource = Resource(source='hello_world', destination=str(output_file))
 
         logger.success(f'completed task hello_world for {who}')
         return self
