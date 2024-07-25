@@ -49,6 +49,10 @@ class Downloader:
             # Write the content to the destination file
             with open(dst, 'wb') as f:
                 shutil.copyfileobj(abortable_stream, f)
+        else:
+            with open(dst, 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
 
 
 class HttpDownloader(Downloader):
