@@ -6,6 +6,7 @@ from typing import Self
 from loguru import logger
 
 from platform_input_support.helpers.download import download
+from platform_input_support.manifest.models import Resource
 from platform_input_support.tasks import Task, TaskDefinition, report
 from platform_input_support.validators import v
 from platform_input_support.validators.file import file_exists, file_size
@@ -28,6 +29,7 @@ class Download(Task):
     @report
     def run(self, *, abort: Event) -> Self:
         download(self.definition.source, self.definition.destination, abort=abort)
+        self.resource = Resource(source=self.definition.source, destination=str(self.definition.destination))
         logger.success('download successful')
         return self
 

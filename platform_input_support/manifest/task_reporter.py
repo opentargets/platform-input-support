@@ -3,7 +3,7 @@ from functools import wraps
 
 from loguru import logger
 
-from platform_input_support.manifest.models import Result, TaskManifest
+from platform_input_support.manifest.models import Resource, Result, TaskManifest
 from platform_input_support.util.errors import TaskAbortedError
 
 
@@ -11,6 +11,7 @@ class TaskReporter:
     def __init__(self, name: str):
         self.name = name
         self._manifest: TaskManifest
+        self._resources: list[Resource] = []
 
     def staged(self, log: str):
         self._manifest.result = Result.STAGED
@@ -53,6 +54,7 @@ def report(func):
             elif func.__name__ == 'validate':
                 self.validated(result.name)
             elif func.__name__ == 'upload':
+                self._resources.append(result.resource)
                 self.completed(result.name)
             return result
         except Exception as e:

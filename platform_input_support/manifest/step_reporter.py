@@ -51,6 +51,7 @@ class StepReporter:
             for i, t in enumerate(self._manifest.tasks):
                 if t.name == task.name:
                     self._manifest.tasks[i] = task._manifest
+                    self._manifest.resources.extend(task._resources)
                     inserted = True
                     break
             if not inserted:

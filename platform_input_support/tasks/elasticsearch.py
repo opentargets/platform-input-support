@@ -10,6 +10,7 @@ from elasticsearch.exceptions import ElasticsearchException
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 
+from platform_input_support.manifest.models import Resource
 from platform_input_support.tasks import Task, TaskDefinition, report
 from platform_input_support.util.errors import TaskAbortedError
 from platform_input_support.util.fs import check_dir, get_full_path
@@ -102,6 +103,7 @@ class Elasticsearch(Task):
 
         self._write_docs(doc_buffer, destination)
         logger.success(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
+        self.resource = Resource(source=f'{url}/{index}', destination=str(self.definition.destination))
         self.close_es()
         return self
 
