@@ -380,7 +380,7 @@ steps:
       sentinel: cosmic_file_list
     - name: download_latest cosmic
       source: ${cosmic_file_list}
-      destination: evidence-files/cosmic.json.gz
+      destination: evidence-files/cosmic-hallmarks.json.gz
 
   target_engine:
     - name: download protein atlas
