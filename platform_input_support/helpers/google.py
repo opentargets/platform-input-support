@@ -66,6 +66,7 @@ class GoogleHelper:
 
     def _get_bucket(self, bucket_name: str) -> storage.Bucket:
         try:
+            logger.trace(f'getting bucket {bucket_name}')
             return self.client.get_bucket(bucket_name)
         except NotFound:
             raise NotFoundError(bucket_name)
@@ -84,6 +85,7 @@ class GoogleHelper:
         return blob
 
     def bucket_exists(self, url: str) -> bool:
+        logger.trace(f'checking if bucket exists: {url}')
         bucket_name, _ = self._parse_url(url)
         try:
             self._get_bucket(bucket_name)
@@ -94,6 +96,7 @@ class GoogleHelper:
         return True
 
     def download_to_string(self, url: str) -> tuple[str, int] | None:
+        logger.trace(f'downloading {url} to memory')
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
         blob = self._prepare_blob(bucket, prefix)
@@ -113,6 +116,7 @@ class GoogleHelper:
         return (decoded_blob, blob.generation)
 
     def download_to_file(self, url: str, destination: Path) -> None:
+        logger.trace(f'downloading {url} to {destination}')
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
         blob = self._prepare_blob(bucket, prefix)
@@ -126,6 +130,7 @@ class GoogleHelper:
         logger.debug('download completed')
 
     def upload(self, source: Path, destination: str) -> None:
+        logger.trace(f'uploading {source} to {destination}')
         bucket_name, prefix = self._parse_url(destination)
         bucket = self._get_bucket(bucket_name)
         blob = self._prepare_blob(bucket, prefix)
@@ -137,11 +142,11 @@ class GoogleHelper:
         logger.debug(f'uploaded {source} to {destination}')
 
     def upload_safe(self, content: str, destination: str, generation: int) -> None:
+        logger.trace(f'uploading file with generation {generation}')
         bucket_name, prefix = self._parse_url(destination)
         bucket = self._get_bucket(bucket_name)
         blob = self._prepare_blob(bucket, prefix)
 
-        logger.trace(f'uploading file with generation {generation}')
         try:
             blob.upload_from_string(content, if_generation_match=generation)
         except PreconditionFailed:
@@ -187,6 +192,7 @@ class GoogleHelper:
         return [f'gs://{bucket_name}/{blob_name}' for blob_name in blob_name_list]
 
     def get_modification_date(self, url: str) -> datetime | None:
+        logger.trace(f'getting modification date for {url}')
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
         blob = self._prepare_blob(bucket, prefix)
