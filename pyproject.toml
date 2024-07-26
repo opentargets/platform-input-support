@@ -36,6 +36,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
+pis = "platform_input_support.core:main"
 platform_input_support = "platform_input_support.core:main"
 
 [tool.pytest.ini_options]

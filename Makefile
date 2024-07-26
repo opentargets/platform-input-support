@@ -22,8 +22,11 @@ coverage: .venv ## Generate and show coverage reports
 clean: ## Clean up
 	@rm -rf .venv coverage.xml .coverage .pytest_cache .ruff_cache
 
+install: .venv ## Create virtual environment and install dependencies
+	@poetry install
+
 run: .venv ## Runs the step specified by `step` argument
-	@poetry run platform_input_support -s $(step)
+	@[ -n "$(step)" ] && poetry run pis -s $(step) || poetry run pis -h
 
 .PHONY: git test help
 .DEFAULT_GOAL: help

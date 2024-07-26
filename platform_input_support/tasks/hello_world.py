@@ -9,6 +9,8 @@ from platform_input_support.config.models import TaskDefinition
 from platform_input_support.manifest.models import Resource
 from platform_input_support.manifest.task_reporter import report
 from platform_input_support.task import Task
+from platform_input_support.validators import v
+from platform_input_support.validators.file import file_exists
 
 
 @dataclass
@@ -35,4 +37,9 @@ class HelloWorld(Task):
         self.resource = Resource(source='hello_world', destination=str(output_file))
 
         logger.success(f'completed task hello_world for {who}')
+        return self
+
+    @report
+    def validate(self, *, abort: Event) -> Self:
+        v(file_exists, self.definition.destination)
         return self
