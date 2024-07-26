@@ -49,8 +49,7 @@ def steps():
     Returns:
         list[str]: The steps.
     """
-    global _config  # noqa: PLW0602
-    global _steps  # noqa: PLW0603
+    global _config, _steps  # noqa: PLW0602, PLW0603
     init_config()
     assert _config is not None
     if _steps is None:
@@ -67,8 +66,7 @@ def task_definitions():
     Returns:
         list[TaskDefinitions]: The task definitions.
     """
-    global _config  # noqa: PLW0602
-    global _task_definitions  # noqa: PLW0603
+    global _config, _task_definitions  # noqa: PLW0602, PLW0603
     init_config()
     assert _config is not None
     if _task_definitions is None:
@@ -85,8 +83,7 @@ def scratchpad():
     Returns:
         Scratchpad: The scratchpad.
     """
-    global _config  # noqa: PLW0602
-    global _scratchpad  # noqa: PLW0603
+    global _config, _scratchpad  # noqa: PLW0602, PLW0603
     init_config()
     assert _config is not None
     if _scratchpad is None:
