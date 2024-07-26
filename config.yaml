@@ -224,7 +224,6 @@ steps:
           source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
           destination: target-inputs/homologue/homologies/ncrna-${species}.tsv.gz
 
-
   interactions:
     - name: download ensembl interactions grch38
       source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/gtf/homo_sapiens/Homo_sapiens.GRCh38.${ensembl_release_version}.chr.gtf.gz
@@ -239,7 +238,7 @@ steps:
       source: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
       destination: interactions-inputs/rna_central_ensembl.tsv
     - name: download_latest string interactions
-      source: otar001-core/stringInteractions
+      source: gs://otar001-core/stringInteractions
       destination: interactions-inputs/string-interactions.txt.gz
 
   literature:
@@ -249,7 +248,7 @@ steps:
 
   mouse_phenotypes:
     - name: download_latest mouse phenotypes
-      source: otar001-core/MousePhenotypes
+      source: gs://otar001-core/MousePhenotypes
       destination: mouse-phenotypes-inputs/mouse_phenotypes.json.gz
 
   openfda:
@@ -277,18 +276,18 @@ steps:
 
   pharmacogenomics:
     - name: download_latest pharmacogenomics
-      source: otar012-eva/pharmacogenomics
+      source: gs://otar012-eva/pharmacogenomics
       destination: pharmacogenomics-inputs/pharmacogenomics.json.gz
 
   ppp_evidence:
-    - name: download_latest validation lab
-      source: otar013-ppp/validation_lab
+    - name: download_latest validation_lab
+      source: gs://otar013-ppp/validation_lab
       destination: evidence-files/validation_lab.json.gz
     - name: download_latest encore
-      source: otar013-ppp/encore
+      source: gs://otar013-ppp/encore
       destination: evidence-files/encore.json.gz
     - name: download_latest ot_crispr
-      source: otar013-ppp/ot_crispr
+      source: gs://otar013-ppp/ot_crispr
       destination: evidence-files/ot_crispr.json.gz
 
   reactome:
