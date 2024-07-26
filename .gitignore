@@ -8,6 +8,7 @@ __pycache__/
 .coverage
 .ruff_cache/
 .venv/
+dist/
 
 # PyCharm files
 .idea
