@@ -70,7 +70,9 @@ class GoogleHelper:
         except NotFound:
             raise NotFoundError(bucket_name)
         except GoogleAPICallError as e:
-            raise HelperError(f'error checking bucket: {e}')
+            raise HelperError(f'google api error checking bucket {bucket_name}: {e}')
+        except Exception as e:
+            raise HelperError(f'error checking bucket {bucket_name}: {e}')
 
     def _prepare_blob(self, bucket: storage.Bucket, prefix: str | None) -> storage.Blob:
         if prefix is None:
@@ -120,7 +122,7 @@ class GoogleHelper:
         except NotFound:
             raise NotFoundError(url)
         except (GoogleAPICallError, OSError) as e:
-            raise HelperError(f'error downloading file: {e}')
+            raise HelperError(f'error downloading {url}: {e}')
         logger.debug('download completed')
 
     def upload(self, source: Path, destination: str) -> None:
@@ -131,7 +133,7 @@ class GoogleHelper:
         try:
             blob.upload_from_filename(source)
         except (GoogleAPICallError, OSError) as e:
-            raise HelperError(f'error uploading file: {e}')
+            raise HelperError(f'error uploading {source}: {e}')
         logger.debug(f'uploaded {source} to {destination}')
 
     def upload_safe(self, content: str, destination: str, generation: int) -> None:
@@ -147,7 +149,7 @@ class GoogleHelper:
             blob.reload()
             raise PreconditionFailedError(f'generation mismatch: local={generation}, remote={blob.generation}')
         except (GoogleAPICallError, OSError) as e:
-            raise HelperError(f'error uploading file: {e}')
+            raise HelperError(f'error uploading file to {destination}: {e}')
 
         logger.debug(f'uploaded blob to {destination}')
 
