@@ -199,5 +199,29 @@ class GoogleHelper:
         blob.reload()
         return blob.updated
 
+    def get_newest(self, url_list: list[str]) -> str | None:
+        logger.trace(f'getting newest file from {url_list}')
+        bucket_names, paths = zip(*[self._parse_url(url) for url in url_list], strict=True)
+
+        if len(set(bucket_names)) > 1:
+            raise HelperError('all urls must have the same bucket name')
+
+        bucket_name = bucket_names[0]
+        bucket = self._get_bucket(bucket_name)
+
+        blobs = [self._prepare_blob(bucket, path) for path in paths]
+        newest_date = None
+        newest_blob = None
+
+        for blob in blobs:
+            blob.reload()
+            if not blob.updated:
+                continue
+            if not newest_date or blob.updated > newest_date:
+                newest_date = blob.updated
+                newest_blob = blob
+
+        return f'gs://{bucket_name}/{newest_blob.name}' if newest_blob else None
+
     def get_session(self) -> AuthorizedSession:
         return AuthorizedSession(self.credentials)
