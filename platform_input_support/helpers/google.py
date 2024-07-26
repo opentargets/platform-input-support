@@ -165,7 +165,8 @@ class GoogleHelper:
         blob_name = blob_name.replace(prefix or '', '', 1)
         return '/' not in blob_name and not blob_name.endswith('/')
 
-    def list(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
+    def list_blobs(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
+        logger.trace(f'listing files in {url}')
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
 

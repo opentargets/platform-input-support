@@ -28,9 +28,9 @@ class GetFileList(Pretask):
         file_list: list[str] = []
 
         if pattern.startswith('!'):
-            file_list = google_helper().list(source, exclude=pattern[1:])
+            file_list = google_helper().list_blobs(source, exclude=pattern[1:])
         else:
-            file_list = google_helper().list(source, include=pattern)
+            file_list = google_helper().list_blobs(source, include=pattern)
 
         if len(file_list):
             scratchpad().store(sentinel, file_list)

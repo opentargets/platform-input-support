@@ -269,12 +269,12 @@ def test_is_blob_shallow(blob_name, prefix, result):
     assert GoogleHelper._is_blob_shallow(blob_name, prefix) == result
 
 
-def test_list_returns_some_files(mock_parse_url):
+def test_list_blobs_returns_some_files(mock_parse_url):
     g = GoogleHelper()
     g._get_bucket = MagicMock()
     g._get_bucket.return_value.list_blobs.return_value = [storage.Blob(n, 't') for n in test_list_input]
 
-    blob_names = g.list('testpath')
+    blob_names = g.list_blobs('testpath')
 
     assert len(blob_names) == len(test_list_output)
 
@@ -285,7 +285,7 @@ def test_list_returns_no_files(mock_parse_url, caplog):
     g._get_bucket.return_value.list_blobs.return_value = []
     logger.add(caplog.handler, level='TRACE', format='{message}')
 
-    blob_names = g.list('testpath')
+    blob_names = g.list_blobs('testpath')
 
     assert 'no files found in testpath' in caplog.text
     assert len(blob_names) == 0
@@ -296,7 +296,7 @@ def test_list_include_files(mock_parse_url):
     g._get_bucket = MagicMock()
     g._get_bucket.return_value.list_blobs.return_value = [storage.Blob(n, 't') for n in test_list_input]
 
-    blob_names = g.list('testpath', include='csv')
+    blob_names = g.list_blobs('testpath', include='csv')
 
     assert len(blob_names) == 2
 
@@ -306,6 +306,6 @@ def test_list_include_exclude(mock_parse_url):
     g._get_bucket = MagicMock()
     g._get_bucket.return_value.list_blobs.return_value = [storage.Blob(n, 't') for n in test_list_input]
 
-    blob_names = g.list('testpath', exclude='txt')
+    blob_names = g.list_blobs('testpath', exclude='txt')
 
     assert len(blob_names) == 3
