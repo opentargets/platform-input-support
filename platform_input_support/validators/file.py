@@ -26,8 +26,11 @@ def file_size(source: str, destination: Path) -> bool:
     )
     resp.raise_for_status()
     remote_size = 0
-    if 'Content-Length' in resp.headers:
-        remote_size = int(resp.headers['Content-Length'])
+    if 'Content-Length' not in resp.headers:
+        logger.warning('no content-length header in response, cannot validate file size')
+        return True
+
+    remote_size = int(resp.headers['Content-Length'])
     local_size = Path(get_full_path(destination)).stat().st_size
 
     logger.trace(f'checking if {remote_size} == {local_size}')
