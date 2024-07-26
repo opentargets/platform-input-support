@@ -25,9 +25,9 @@ class TaskReporter:
         self._manifest.result = Result.VALIDATED
         logger.success(f'task validated: {log}')
 
-    def failed(self, error: Exception):
+    def failed(self, error: Exception, where: str):
         self._manifest.result = Result.FAILED
-        logger.opt(exception=sys.exc_info()).error(f'task failed: {error}')
+        logger.opt(exception=sys.exc_info()).error(f'task failed {where}: {error}')
 
     def aborted(self):
         self._manifest.result = Result.ABORTED
@@ -62,6 +62,6 @@ def report(func):
             if isinstance(e, TaskAbortedError):
                 self.aborted()
             else:
-                self.failed(f'function {func.__name__} failed: {e}')
+                self.failed(e, func.__name__)
 
     return wrapper
