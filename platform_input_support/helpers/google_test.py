@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -309,3 +310,41 @@ def test_list_include_exclude(mock_parse_url):
     blob_names = g.list_blobs('testpath', exclude='txt')
 
     assert len(blob_names) == 3
+
+
+def test_get_newest():
+    g = GoogleHelper()
+    g._get_bucket = MagicMock()
+    g._prepare_blob = MagicMock()
+    mock_blob_1 = MagicMock()
+    mock_blob_2 = MagicMock()
+    mock_blob_1.updated = datetime(2021, 1, 1)
+    mock_blob_2.updated = datetime(2021, 1, 2)
+    mock_blob_2.name = 'file2.txt'
+    g._prepare_blob.side_effect = [mock_blob_1, mock_blob_2]
+
+    newest = g.get_newest(['gs://bucket/file1.txt', 'gs://bucket/file2.txt'])
+
+    assert newest == 'gs://bucket/file2.txt'
+
+
+def test_get_newest_no_files():
+    g = GoogleHelper()
+    g._get_bucket = MagicMock()
+    g._prepare_blob = MagicMock()
+    mock_blob_1 = MagicMock()
+    mock_blob_2 = MagicMock()
+    mock_blob_1.updated = None
+    mock_blob_2.updated = None
+    g._prepare_blob.side_effect = [mock_blob_1, mock_blob_2]
+
+    newest = g.get_newest(['gs://bucket/file1.txt', 'gs://bucket/file2.txt'])
+
+    assert newest is None
+
+
+def test_get_newest_different_buckets():
+    g = GoogleHelper()
+
+    with pytest.raises(HelperError):
+        g.get_newest(['gs://bucket1/file1.txt', 'gs://bucket2/file2.txt'])
