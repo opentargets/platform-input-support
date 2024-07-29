@@ -8,9 +8,11 @@
       "name": "platform-input-support",
       "type": "debugpy",
       "request": "launch",
-      "module": "poetry",
-      "args": ["run", "platform_input_support", "-s", "${input:stepName}"],
-      "justMyCode": false,
+      "program": "${workspaceFolder}/platform_input_support/core.py",
+      "args": [
+        "-s",
+        "${input:stepName}"
+      ],
     }
   ],
   "inputs": [
