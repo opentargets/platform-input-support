@@ -1,3 +1,4 @@
+import ssl
 import sys
 from importlib.metadata import version
 
@@ -19,6 +20,8 @@ def main():
     init_logger(settings().log_level)
     init_google_helper()
     init_task_registry()
+
+    logger.debug(f'using {ssl.OPENSSL_VERSION}')
 
     check_dir(settings().work_dir)
 
