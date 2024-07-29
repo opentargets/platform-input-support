@@ -6,7 +6,7 @@ from threading import Event
 from typing import Any, Self
 
 from elasticsearch import Elasticsearch as Es
-from elasticsearch.exceptions import ElasticsearchException
+from elasticsearch.exceptions import ApiError as ElasticsearchException
 from elasticsearch_dsl import Search, utils
 from loguru import logger
 

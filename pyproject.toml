@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "platform-input-support"
-version = "24.2.6-dev.1"
+version = "24.2.6-dev.2"
 description = "Open Target's Platform Input Support Application"
 authors = ["Open Targets core team"]
 license = "Apache-2.0"
