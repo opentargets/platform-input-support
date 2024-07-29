@@ -9,12 +9,12 @@ REQUEST_TIMEOUT = 10
 
 
 def file_exists(path: Path) -> bool:
-    logger.trace(f'checking if {path} exists')
+    logger.trace(path)
     return get_full_path(path).exists()
 
 
 def file_size(source: str, destination: Path) -> bool:
-    logger.trace(f'checking if {source} and {destination} are the same size')
+    logger.debug(f'checking if {source} and {destination} are the same size')
 
     # this ensures no gzip encoding is used
     headers = {'accept-encoding': 'identity'}
@@ -33,5 +33,5 @@ def file_size(source: str, destination: Path) -> bool:
     remote_size = int(resp.headers['Content-Length'])
     local_size = Path(get_full_path(destination)).stat().st_size
 
-    logger.trace(f'checking if {remote_size} == {local_size}')
+    logger.debug(f'checking if {remote_size} == {local_size}')
     return remote_size == local_size

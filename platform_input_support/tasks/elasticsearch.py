@@ -120,7 +120,7 @@ class Elasticsearch(Task):
             raise ElasticsearchError(f'error writing to {destination}: {e}')
 
         logger.debug(f'wrote {len(docs)} ({self.doc_written}/{self.doc_count}) documents to {destination}')
-        logger.trace(f'the dict was taking up {sys.getsizeof(docs)} bytes of memory')
+        logger.debug(f'the dict was taking up {sys.getsizeof(docs)} bytes of memory')
         docs.clear()
 
     def validate(self, *, abort: Event) -> Self:

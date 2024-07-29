@@ -18,11 +18,11 @@ def _wccount(filename):
 
 
 def counts(url: str, index: str, local_path: Path) -> bool:
-    logger.trace(f'checking if document count at {url}/{index} and {local_path} match')
+    logger.debug(f'checking if document count at {url}/{index} and {local_path} match')
 
     es = Es(url)
     remote_doc_count = es.count(index=index)['count']
     local_doc_count = _wccount(get_full_path(local_path))
 
-    logger.trace(f'checking if {remote_doc_count} == {local_doc_count}')
+    logger.debug(f'checking if {remote_doc_count} == {local_doc_count}')
     return remote_doc_count == local_doc_count
