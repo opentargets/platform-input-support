@@ -1,41 +1,37 @@
-[tool.poetry]
+[project]
 name = "platform-input-support"
-version = "24.2.6-dev.2"
+version = "24.3.0-dev.1"
 description = "Open Target's Platform Input Support Application"
-authors = ["Open Targets core team"]
-license = "Apache-2.0"
 readme = "README.md"
-exclude = ["**/*_test.py"]
+authors = [{ name = "Open Targets core team", email = "devs@opentargets.net" }]
+license = { text = "Apache-2.0" }
+dependencies = [
+  "elasticsearch==7.17.9",    # must be ^7.0.0 to be compatible with chembl es server
+  "elasticsearch-dsl==7.4.1", # ^
+  "filelock",
+  "google-cloud-storage",
+  "jq",
+  "loguru",
+  "pydantic",
+  "PyYAML",
+  "requests",
+  "urllib3",                  # must be <= 2 for elasticsearch, see overrides.txt
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-elasticsearch = "==7.17.9"       # must be ^7.0.0 to be compatible with chembl es server
-elasticsearch-dsl = "==7.4.1"
-filelock = "^3.15.4"
-google-cloud-storage = "^2.18.0"
-jq = "^1.7.0"
-loguru = "^0.7.2"
-pydantic = "^2.8.2"
-PyYAML = "^6.0.1"
-requests = "^2.32.3"
-urllib3 = "^2.2.2"               # must be <= 2 for elasticsearch, see overrides.txt
-
-[tool.poetry.group.test.dependencies]
-poetry = "^1.8.3"
-coverage = "^7.6.0"
-freezegun = "^1.5.1"
-pytest = "==8.2.2"
-pytest-mock = "^3.14.0"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "==0.5.2"
-deptry = "^0.16.2"
+[project.optional-dependencies]
+dev = ["ruff", "deptry"]
+test = ["coverage", "freezegun", "pytest", "pytest-mock"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools == 72.1.0", "wheel"]
 
-[tool.poetry.scripts]
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+exclude = ["**/*_test.py"]
+
+[project.scripts]
 pis = "platform_input_support.core:main"
 platform_input_support = "platform_input_support.core:main"
 

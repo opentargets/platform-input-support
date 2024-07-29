@@ -1,14 +1,16 @@
 # Various python files
+__pycache__/
+dist/
+build/
 coverage.xml
 htmlcov
-__pycache__/
+*.egg-info/
 *.py[cod]
 .pytest_cache/
-.cache
-.coverage
 .ruff_cache/
 .venv/
-dist/
+.cache
+.coverage
 
 # PyCharm files
 .idea

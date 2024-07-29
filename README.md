@@ -5,22 +5,24 @@ Fetch, validate and arrange the data required by the Open Targets Platform ETL p
 
 ## Installation and running
 > [!NOTE]
-> This application uses [Poetry](https://python-poetry.org/docs/#installation) to manage dependencies.
-There are various [ways to install it](https://python-poetry.org/docs/#installation), depending on
-your system.
+> Due to incompatible dependencies between the elasticsearch 7 library and google-cloud-storage,
+> PIS can no longer use Poetry. The dependencies are managed with a `requirements.txt`.
+>
+> We may revisit this in the future, but PIS can be used with pip or [uv](https://astral.sh/blog/uv).
 
 PIS will be uploaded to [Pypi](https://pypi.org/project/platform-input-support/) once it is ready to
 use. In the meantime, you can install it locally by running the following command:
 
 ```bash
-poetry install
+make install
 ```
 
 This will install the dependencies in a virtual environment in the project directory. You can then
 run the application using the following command:
 
 ```bash
-poetry run pis -h
+source .venv/bin/activate
+pis -h
 ```
 
 > [!TIP]
@@ -55,7 +57,7 @@ Development of PIS can be done straight away in the local environment. You can t
 by running a small step, like `so`:
 
 ```bash
-poetry run pis -step so
+pis -step so
 ```
 
 ---
@@ -68,7 +70,7 @@ pipeline run (although the Platform pipeline is larger, PIS is just the first pa
 If needed, a simple bash `for` loop could be used to run multiple steps:
 
 ```bash
-for step in go so; do (poetry run pis -s $step) &; done; wait
+for step in go so; do (pis -s $step) &; done; wait
 ```
 
 But the idea is to put PIS into [the orchestrator](https://github.com/opentargets/orchestration), which

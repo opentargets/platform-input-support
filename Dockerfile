@@ -10,17 +10,11 @@ FROM python:3.12.4-alpine3.20
 
 WORKDIR /app
 
-RUN pip install poetry
-
-COPY pyproject.toml poetry.lock README.md config.yaml ./
-
-ENV POETRY_VIRTUALENVS_IN_PROJECT=1 \
-  POETRY_VIRTUALENVS_CREATE=1 \
-  POETRY_CACHE_DIR=/tmp/poetry_cache
+COPY pyproject.toml requirements.txt README.md config.yaml ./
 
 COPY platform_input_support ./platform_input_support
 
-RUN poetry install --only=main
+RUN pip install --no-deps -r requirements.txt && pip install --no-deps .
 
-ENTRYPOINT ["poetry", "run", "platform_input_support"]
+ENTRYPOINT ["platform_input_support"]
 CMD []

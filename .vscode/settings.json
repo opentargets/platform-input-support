@@ -16,7 +16,6 @@
     "**/__pycache__": true,
     "**/.pytest_cache": true,
     "**/.ruff_cache": true,
-    "**/.venv": true,
     ".coverage": true,
     "coverage.xml": true,
   },

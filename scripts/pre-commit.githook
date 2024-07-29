@@ -1,8 +1,11 @@
 #!/bin/bash
 
-RUFF_CMD='poetry run ruff check'
-DEPTRY_CMD='poetry run deptry .'
-PYTEST_CMD='poetry run pytest -qq'
+# shellcheck disable=SC1091
+source .venv/bin/activate
+
+RUFF_CMD='ruff check'
+DEPTRY_CMD='deptry . --pep621-dev-dependency-groups=test,dev'
+PYTEST_CMD='pytest -qq'
 
 CYAN=$(echo -e $"\033[0;36m")
 RED=$(echo -e $"\033[1;31m")
@@ -10,28 +13,6 @@ WHITE=$(echo -e $"\033[1;37m")
 RESET=$(echo -e $"\033[0;0m")
 
 STATUS=0
-
-# Check if poetry is installed
-if ! command -v poetry &> /dev/null; then
-    echo "${RED}Poetry is not installed${RESET}"
-    exit 1
-fi
-
-# Check if poetry.lock is up to date
-if ! poetry check -q; then
-    echo "${RED}poetry.lock is not up to date, run 'poetry lock'${RESET}"
-    exit 1
-fi
-
-# Check if dependencies are installed
-DRY_RUN_OUTPUT=$(poetry install --dry-run | grep '\- Installing' | grep -v 'Skipped')
-if [ -n "$DRY_RUN_OUTPUT" ]; then
-    echo "${CYAN}Installing missing dependencies...${RESET}"
-    if ! poetry install; then
-        echo "${RED}Failed to install dependencies.${RESET}"
-        exit 1
-    fi
-fi
 
 _get_files() {
     local i
@@ -56,6 +37,7 @@ fi
 
 
 # deptry
+_get_files '*.py'
 if [[ ${#FILES[@]} -ne 0 ]]; then
     if ! RESULT=$($DEPTRY_CMD 2>&1); then
         STATUS=1
@@ -86,5 +68,7 @@ if [[ $STATUS != 0 ]] ; then
         * ) exit $STATUS;;
     esac
 fi
+
+deactivate
 
 exit $STATUS
