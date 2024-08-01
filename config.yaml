@@ -276,7 +276,7 @@ mousephenotypes:
     path: mouse-phenotypes-inputs
 pharmacogenomics:
   gs_downloads_latest:
-  - bucket: otar012-eva/pharmacogenomics
+  - bucket: otar001-core/Pharmacogenetics/json/
     output_filename: pharmacogenomics.json.gz
     path: pharmacogenomics-inputs
 pppevidence:
