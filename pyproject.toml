@@ -1,6 +1,6 @@
 [project]
 name = "platform-input-support"
-version = "24.3.0-dev.1"
+version = "24.3.1"
 description = "Open Target's Platform Input Support Application"
 readme = "README.md"
 authors = [{ name = "Open Targets core team", email = "devs@opentargets.net" }]
