@@ -53,8 +53,15 @@ docker build -t pis .
 > Remember to run `make git` before starting development. This will set up a very simple git hook
 > that does a few checks before committing.
 
-Development of PIS can be done straight away in the local environment. You can test the changes
-by running a small step, like `so`:
+Development of PIS can be done straight away in the local environment. For that, you just need to
+install the package as editable inside the virtual environment:
+
+```bash
+source .venv/bin/activate
+pip install -e .
+```
+
+You can test the changes by running a small step, like `so`:
 
 ```bash
 pis -step so
