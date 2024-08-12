@@ -16,6 +16,8 @@
     "**/__pycache__": true,
     "**/.pytest_cache": true,
     "**/.ruff_cache": true,
+    "*.egg-info": true,
+    "build": true,
     ".coverage": true,
     "coverage.xml": true,
   },
