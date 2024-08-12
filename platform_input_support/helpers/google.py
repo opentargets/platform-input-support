@@ -32,6 +32,9 @@ class GoogleHelper:
         self.credentials = credentials
         self.client = storage.Client(credentials=credentials)
         self.is_ready = False
+        email = getattr(credentials, '_service_account_email', None)
+        if email is not None:
+            logger.debug(f'service account {email}')
 
         if settings().gcs_url is None:
             logger.warning('gcs_url setting and PIS_GCS_URL env var are missing')
