@@ -8,7 +8,6 @@ scratchpad:
   efo_release_version: v3.65.0
   ensembl_release_version: '111'
   chembl_release_version: '34'
-  release: '24.06'
 
 steps:
   baseline_expression:
@@ -371,7 +370,7 @@ steps:
       source: gs://otar001-core/TargetSafety/json
       destination: target-inputs/safety/safetyLiabilities.json.gz
     - name: download_latest tractability
-      source: gs://otar001-core/Tractability/${release}
+      source: gs://otar001-core/Tractability
       destination: target-inputs/tractability/tractability.tsv
     - name: get_file_list cosmic
       source: gs://otar007-cosmic
