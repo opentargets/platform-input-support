@@ -24,6 +24,8 @@ class TaskManifest(BaseModel, extra='allow'):
     name: str
     result: Result = Result.PENDING
     created: datetime = datetime.now(UTC)
+    staged: datetime = datetime.now(UTC)
+    elapsed: float = 0.0
     log: list[str] = []
     definition: dict[str, Any] = {}
 
@@ -32,6 +34,8 @@ class StepManifest(BaseModel):
     name: str
     result: Result = Result.PENDING
     created: datetime = datetime.now(UTC)
+    completed: datetime = datetime.now(UTC)
+    elapsed: float = 0.0
     log: list[str] = []
     tasks: list[TaskManifest] = []
     resources: list[Resource] = []
