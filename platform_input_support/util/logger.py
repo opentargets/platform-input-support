@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from loguru import logger
 
 from platform_input_support.config import settings
-from platform_input_support.util.fs import get_full_path
+from platform_input_support.util.fs import absolute_path
 
 if TYPE_CHECKING:
     from platform_input_support.task import Task
@@ -87,7 +87,7 @@ def task_logging(task: 'Task'):
 
 
 def init_logger(log_level: str) -> None:
-    log_filename = get_full_path('output.log')
+    log_filename = absolute_path('output.log')
     handlers = [
         {
             'sink': sys.stdout,

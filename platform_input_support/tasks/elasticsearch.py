@@ -13,7 +13,7 @@ from loguru import logger
 from platform_input_support.manifest.models import Resource
 from platform_input_support.tasks import Task, TaskDefinition, report
 from platform_input_support.util.errors import TaskAbortedError
-from platform_input_support.util.fs import check_dir, get_full_path
+from platform_input_support.util.fs import absolute_path, check_fs
 from platform_input_support.util.misc import list_str
 from platform_input_support.validators import v
 from platform_input_support.validators.elasticsearch import counts
@@ -52,8 +52,8 @@ class Elasticsearch(Task):
         url = self.definition.url
         index = self.definition.index
         fields = self.definition.fields
-        destination = get_full_path(self.definition.destination)
-        check_dir(destination)
+        destination = absolute_path(self.definition.destination)
+        check_fs(destination)
 
         logger.debug(f'connecting to elasticsearch at {url}')
         try:

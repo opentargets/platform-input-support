@@ -147,11 +147,11 @@ def test_load_gcs_manifest_google_helper_not_ready(mock_init, mock_google_helper
 
 
 @patch('platform_input_support.manifest.manifest.Manifest._load_gcs')
-@patch('platform_input_support.manifest.manifest.get_full_path')
-def test_load_local_manifest_found(mock_get_full_path, mock_load_gcs):
+@patch('platform_input_support.manifest.manifest.absolute_path')
+def test_load_local_manifest_found(mock_absolute_path, mock_load_gcs):
     mock_load_gcs.return_value = None
-    mock_get_full_path.return_value = MagicMock(spec=Path, value='path/to/manifest.json')
-    mock_get_full_path.return_value.read_text.return_value = content_json
+    mock_absolute_path.return_value = MagicMock(spec=Path, value='path/to/manifest.json')
+    mock_absolute_path.return_value.read_text.return_value = content_json
     m = Manifest()
 
     r = m._load_local()
@@ -160,29 +160,29 @@ def test_load_local_manifest_found(mock_get_full_path, mock_load_gcs):
 
 
 @patch('platform_input_support.manifest.manifest.Manifest._load_gcs')
-@patch('platform_input_support.manifest.manifest.get_full_path')
+@patch('platform_input_support.manifest.manifest.absolute_path')
 @patch('platform_input_support.manifest.manifest.Manifest._create_empty')
-def test_load_local_manifest_not_found(mock_create_empty, mock_get_full_path, mock_load_gcs):
+def test_load_local_manifest_not_found(mock_create_empty, mock_absolute_path, mock_load_gcs):
     mock_load_gcs.return_value = None
-    mock_get_full_path.return_value = MagicMock(spec=Path, value='path/to/manifest.json')
-    mock_get_full_path.return_value.read_text.side_effect = FileNotFoundError()
+    mock_absolute_path.return_value = MagicMock(spec=Path, value='path/to/manifest.json')
+    mock_absolute_path.return_value.read_text.side_effect = FileNotFoundError()
     mock_create_empty.return_value = RootManifest()
     m = Manifest()
 
     r = m._load_local()
 
     assert r is None
-    mock_get_full_path.return_value.read_text.assert_called()
+    mock_absolute_path.return_value.read_text.assert_called()
 
 
 @patch('platform_input_support.manifest.manifest.Manifest._load_gcs')
-@patch('platform_input_support.manifest.manifest.get_full_path')
+@patch('platform_input_support.manifest.manifest.absolute_path')
 @patch('platform_input_support.manifest.manifest.Manifest._create_empty')
-def test_load_local_manifest_oserror(mock_create_empty, mock_get_full_path, mock_load_gcs):
+def test_load_local_manifest_oserror(mock_create_empty, mock_absolute_path, mock_load_gcs):
     mock_load_gcs.return_value = None
-    mock_get_full_path.return_value = MagicMock(spec=Path, value='path/to/manifest.json')
+    mock_absolute_path.return_value = MagicMock(spec=Path, value='path/to/manifest.json')
     # First time it's fine, for instantiation of m, then it raises OSError
-    mock_get_full_path.return_value.read_text.side_effect = [None, OSError()]
+    mock_absolute_path.return_value.read_text.side_effect = [None, OSError()]
     mock_create_empty.return_value = RootManifest()
     m = Manifest()
 
@@ -205,10 +205,10 @@ def test_create_empty(mock_init, mock_steps):
 @patch('platform_input_support.manifest.manifest.Manifest._init_manifest')
 @patch('platform_input_support.manifest.manifest.Manifest._serialize')
 @patch('platform_input_support.manifest.manifest.FileLock')
-@patch('platform_input_support.manifest.manifest.get_full_path')
-def test_save_local_ok(mock_get_full_path, mock_file_lock, mock_serialize, mock_init_manifest, tmp_path):
+@patch('platform_input_support.manifest.manifest.absolute_path')
+def test_save_local_ok(mock_absolute_path, mock_file_lock, mock_serialize, mock_init_manifest, tmp_path):
     manifest_path = tmp_path / 'manifest.json'
-    mock_get_full_path.return_value = manifest_path
+    mock_absolute_path.return_value = manifest_path
     mock_serialize.return_value = content_json
     mock_file_lock.return_value.acquire = lambda: True
     m = Manifest()
@@ -222,10 +222,10 @@ def test_save_local_ok(mock_get_full_path, mock_file_lock, mock_serialize, mock_
 @patch('platform_input_support.manifest.manifest.Manifest._init_manifest')
 @patch('platform_input_support.manifest.manifest.Manifest._serialize')
 @patch('platform_input_support.manifest.manifest.FileLock')
-@patch('platform_input_support.manifest.manifest.get_full_path')
-def test_save_local_ko(mock_get_full_path, mock_file_lock, mock_serialize, mock_init_manifest, tmp_path):
-    mock_get_full_path.return_value = MagicMock(spec=Path, value=tmp_path / 'manifest.json')
-    mock_get_full_path.return_value.write_text.side_effect = OSError
+@patch('platform_input_support.manifest.manifest.absolute_path')
+def test_save_local_ko(mock_absolute_path, mock_file_lock, mock_serialize, mock_init_manifest, tmp_path):
+    mock_absolute_path.return_value = MagicMock(spec=Path, value=tmp_path / 'manifest.json')
+    mock_absolute_path.return_value.write_text.side_effect = OSError
     mock_serialize.return_value = content_json
     mock_file_lock.return_value.acquire = lambda: True
     m = Manifest()
@@ -237,11 +237,11 @@ def test_save_local_ko(mock_get_full_path, mock_file_lock, mock_serialize, mock_
 @patch('platform_input_support.manifest.manifest.Manifest._init_manifest')
 @patch('platform_input_support.manifest.manifest.Manifest._serialize')
 @patch('platform_input_support.manifest.manifest.FileLock')
-@patch('platform_input_support.manifest.manifest.get_full_path')
-def test_save_local_timeout(mock_get_full_path, mock_file_lock, mock_serialize, mock_init_manifest, tmp_path):
+@patch('platform_input_support.manifest.manifest.absolute_path')
+def test_save_local_timeout(mock_absolute_path, mock_file_lock, mock_serialize, mock_init_manifest, tmp_path):
     manifest_path = tmp_path / 'manifest.json'
     lockfile_path = tmp_path / 'manifest.json.lock'
-    mock_get_full_path.return_value = manifest_path
+    mock_absolute_path.return_value = manifest_path
     mock_serialize.return_value = content_json
     mock_file_lock.return_value.acquire.side_effect = [Timeout(lockfile_path)]
     m = Manifest()

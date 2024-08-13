@@ -20,8 +20,8 @@ git: .venv install .git/hooks/pre-commit ## install the pre-commit hook
 
 install: .venv/installed ## Create virtual environment and install dependencies
 
-install-dev: .venv/installed ## Install the package in editable mode, for development inside the virtual environment
-  @source .venv/bin/activate; pip install --editable .; deactivate
+install-dev: .venv/installed install ## Install the package in editable mode, for development inside the virtual environment
+	@source .venv/bin/activate; pip install --editable .; deactivate
 
 # test related targets
 test: .venv install ## Run the tests

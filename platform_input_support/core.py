@@ -17,13 +17,13 @@ def main():
     logger.info(f'starting platform input support v{version("platform_input_support")}')
 
     init_config()
+    check_dir(settings().work_dir)
+
     init_logger(settings().log_level)
     init_google_helper()
     init_task_registry()
 
     logger.debug(f'using {ssl.OPENSSL_VERSION}')
-
-    check_dir(settings().work_dir)
 
     step = Step(settings().step)
     step.execute()

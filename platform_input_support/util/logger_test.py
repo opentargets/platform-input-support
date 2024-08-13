@@ -19,6 +19,7 @@ def show_exceptions_with_flag():
 @pytest.fixture
 def config():
     os.environ['PIS_STEP'] = 'so'
+    sys.argv = sys.argv[:1]  # remove any arguments passed to pytest
     from platform_input_support.config import settings
 
     settings()
@@ -117,7 +118,7 @@ def test_task_logging_context_manager(config):
 
 def test_init_logger(monkeypatch, capsys, tmp_path):
     test_file_path = tmp_path / 'pis_test_output.log'
-    monkeypatch.setattr('platform_input_support.util.logger.get_full_path', lambda x: test_file_path)
+    monkeypatch.setattr('platform_input_support.util.logger.absolute_path', lambda x: test_file_path)
 
     init_logger('DEBUG')
     logger.info('Test info message')
