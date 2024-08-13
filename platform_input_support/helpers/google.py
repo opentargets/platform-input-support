@@ -202,6 +202,9 @@ class GoogleHelper:
         return blob.updated
 
     def get_newest(self, url_list: list[str]) -> str | None:
+        if len(url_list) == 0:
+            return None
+
         logger.trace(url_list)
         bucket_names, paths = zip(*[self._parse_url(url) for url in url_list], strict=True)
 
