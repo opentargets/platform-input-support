@@ -1,4 +1,5 @@
 import sys
+from datetime import UTC, datetime
 from functools import wraps
 from typing import TYPE_CHECKING
 
@@ -17,19 +18,21 @@ class StepReporter:
 
     def staged(self, log: str):
         self._manifest.result = Result.STAGED
-        msg = f'step staged: {log}'
-        self._manifest.log.append(msg)
-        logger.info(msg)
-
-    def completed(self, log: str):
-        self._manifest.result = Result.COMPLETED
         msg = f'step completed: {log}'
         self._manifest.log.append(msg)
-        logger.success(msg)
+        logger.info(msg)
 
     def validated(self, log: str):
         self._manifest.result = Result.VALIDATED
         msg = f'step validated: {log}'
+        self._manifest.log.append(msg)
+        logger.success(msg)
+
+    def completed(self, log: str):
+        self._manifest.result = Result.COMPLETED
+        self._manifest.completed = datetime.now(UTC)
+        self._manifest.elapsed = (self._manifest.completed - self._manifest.created).total_seconds()
+        msg = f'step completed: {log}, total run time: {self._manifest.elapsed:.2f}s'
         self._manifest.log.append(msg)
         logger.success(msg)
 

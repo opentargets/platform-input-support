@@ -1,4 +1,5 @@
 import sys
+from datetime import UTC, datetime
 from functools import wraps
 
 from loguru import logger
@@ -15,15 +16,17 @@ class TaskReporter:
 
     def staged(self, log: str):
         self._manifest.result = Result.STAGED
-        logger.info(f'task staged: {log}')
-
-    def completed(self, log: str):
-        self._manifest.result = Result.COMPLETED
-        logger.success(f'task completed: {log}')
+        self._manifest.staged = datetime.now(UTC)
+        self._manifest.elapsed = (self._manifest.staged - self._manifest.created).total_seconds()
+        logger.info(f'task staged in {self._manifest.elapsed:.2f}s')
 
     def validated(self, log: str):
         self._manifest.result = Result.VALIDATED
         logger.success(f'task validated: {log}')
+
+    def completed(self, log: str):
+        self._manifest.result = Result.COMPLETED
+        logger.success(f'task completed: {log}')
 
     def failed(self, error: Exception, where: str):
         self._manifest.result = Result.FAILED
