@@ -276,7 +276,7 @@ steps:
 
   pharmacogenomics:
     - name: download_latest pharmacogenomics
-      source: gs://otar012-eva/pharmacogenomics
+      source: gs://otar001-core/Pharmacogenetics/json
       destination: pharmacogenomics-inputs/pharmacogenomics.json.gz
 
   ppp_evidence:
