@@ -37,4 +37,4 @@ class DownloadLatest(Task):
             logger.success('download successful')
             return self
         else:
-            raise ValueError(f'no files found in {source}')
+            raise ValueError(f'no files found in {self.definition.source}')
