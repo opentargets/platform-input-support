@@ -24,7 +24,11 @@ def file_size(source: str, destination: Path) -> bool:
         allow_redirects=True,
         timeout=REQUEST_TIMEOUT,
     )
-    resp.raise_for_status()
+
+    if not resp.ok:
+        logger.warning(f'head request returned {resp.status_code}, cannot validate file size')
+        return True
+
     remote_size = 0
     if 'Content-Length' not in resp.headers:
         logger.warning('no content-length header in response, cannot validate file size')
