@@ -1,8 +1,9 @@
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
-from platform_input_support.util.fs import check_dir
+from platform_input_support.util.fs import check_dir, check_file
 
 
 @pytest.fixture
@@ -14,8 +15,10 @@ def mock_path_funcs(monkeypatch):
     monkeypatch.setattr(Path, 'unlink', mock)
 
 
-def test_check_dir_with_existing_dir(tmp_path):
+@patch('platform_input_support.util.fs.absolute_path')
+def test_check_dir_with_existing_dir(mock_absolute_path, tmp_path):
     path = tmp_path / 'existing_dir'
+    mock_absolute_path.return_value = path
     path.mkdir()
 
     check_dir(path)
@@ -23,8 +26,10 @@ def test_check_dir_with_existing_dir(tmp_path):
     assert path.is_dir()
 
 
-def test_check_dir_with_non_existing_dir(tmp_path):
+@patch('platform_input_support.util.fs.absolute_path')
+def test_check_dir_with_non_existing_dir(mock_absolute_path, tmp_path):
     path = tmp_path / 'nothing' / 'afile.txt'
+    mock_absolute_path.return_value = path
 
     assert not path.exists()
 
@@ -46,30 +51,34 @@ def test_check_dir_with_non_existing_dir_oserror(tmp_path, mock_path_funcs):
     assert not path.is_file()
 
 
-def test_check_dir_with_no_permission(tmp_path):
-    path = tmp_path / 'no_permission' / 'afile.txt'
-    path.parent.mkdir()
-    path.parent.chmod(0o000)
+@patch('platform_input_support.util.fs.absolute_path')
+def test_check_dir_with_no_permission(mock_absolute_path, tmp_path):
+    path = tmp_path / 'no_permission'
+    mock_absolute_path.return_value = path
+    path.mkdir()
+    path.chmod(0o000)
 
     with pytest.raises(SystemExit):
         check_dir(path)
 
-    path.parent.chmod(0o755)
-    path.parent.rmdir()
+    path.chmod(0o755)
+    path.rmdir()
 
 
-def test_check_dir_with_existing_file(tmp_path):
+@patch('platform_input_support.util.fs.absolute_path')
+def test_check_file_with_existing_file_is_deleted(mock_absolute_path, tmp_path):
     path = tmp_path / 'existing_file'
+    mock_absolute_path.return_value = path
     path.touch()
 
     assert path.is_file()
 
-    check_dir(path)
+    check_file(path)
 
     assert not path.is_file()
 
 
-def test_check_dir_with_existing_file_oserror(tmp_path, mock_path_funcs):
+def test_check_dir_with_file_oserror(tmp_path, mock_path_funcs):
     path = tmp_path / 'existing_file'
     path.touch()
 

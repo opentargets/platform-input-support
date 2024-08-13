@@ -9,7 +9,7 @@ from platform_input_support.config.models import BaseTaskDefinition, TaskDefinit
 from platform_input_support.helpers import google_helper
 from platform_input_support.manifest.task_reporter import TaskReporter, report
 from platform_input_support.util.errors import PISError
-from platform_input_support.util.fs import get_full_path
+from platform_input_support.util.fs import absolute_path
 
 if TYPE_CHECKING:
     from platform_input_support.manifest.models import Resource
@@ -41,7 +41,7 @@ class Task(TaskReporter):
         if not isinstance(self.definition, TaskDefinition):
             raise PISError(f'attempting to upload {self.name}, which is a non-uploadable task')
 
-        source = get_full_path(self.definition.destination)
+        source = absolute_path(self.definition.destination)
         destination = f'{settings().gcs_url}/{self.definition.destination!s}'
 
         google_helper().upload(source, destination)

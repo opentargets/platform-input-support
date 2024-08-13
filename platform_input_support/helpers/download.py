@@ -10,7 +10,7 @@ from urllib3 import Retry
 
 from platform_input_support.helpers import google_helper
 from platform_input_support.util.errors import HelperError, TaskAbortedError
-from platform_input_support.util.fs import check_dir, get_full_path
+from platform_input_support.util.fs import absolute_path, check_fs
 
 # we are going to download big files, better to use a big chunk size
 CHUNK_SIZE = 1024 * 1024 * 10
@@ -112,8 +112,8 @@ class DownloadHelper:
         logger.debug(f'preparing to download to {dst!r}')
         if isinstance(dst, str):
             dst = Path(dst)
-        dst = get_full_path(dst)
-        check_dir(dst)
+        dst = absolute_path(dst)
+        check_fs(dst)
         return dst
 
     def _get_protocol(self, src: str) -> str:

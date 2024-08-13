@@ -16,7 +16,7 @@ from platform_input_support.util.errors import (
     PISCriticalError,
     PreconditionFailedError,
 )
-from platform_input_support.util.fs import get_full_path
+from platform_input_support.util.fs import absolute_path
 from platform_input_support.util.misc import date_str
 
 if TYPE_CHECKING:
@@ -55,7 +55,7 @@ class Manifest:
             return None
 
     def _load_local(self) -> tuple[str, int] | None:
-        manifest_path = get_full_path(MANIFEST_FILENAME)
+        manifest_path = absolute_path(MANIFEST_FILENAME)
         try:
             return (manifest_path.read_text(), 0)
         except FileNotFoundError:
@@ -83,7 +83,7 @@ class Manifest:
             raise PISCriticalError(f'error serializing manifest: {e}')
 
     def _save_local(self):
-        manifest_path = get_full_path(MANIFEST_FILENAME)
+        manifest_path = absolute_path(MANIFEST_FILENAME)
         lock_path = f'{manifest_path}.lock'
         manifest_str = self._serialize()
         lock = FileLock(lock_path, timeout=5)

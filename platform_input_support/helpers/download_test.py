@@ -27,16 +27,16 @@ def test_get_protocol(download_helper):
     assert download_helper._get_protocol('https://docs.google.com/spreadsheets/d/123') == 'google_sheets'
 
 
-@patch('platform_input_support.helpers.download.get_full_path')
-@patch('platform_input_support.helpers.download.check_dir')
-def test_prepare_destination(mock_check_dir, mock_get_full_path, download_helper):
-    mock_get_full_path.return_value = Path('/full/path')
+@patch('platform_input_support.helpers.download.absolute_path')
+@patch('platform_input_support.helpers.download.check_fs')
+def test_prepare_destination(mock_check_fs, mock_absolute_path, download_helper):
+    mock_absolute_path.return_value = Path('/full/path')
 
     result = download_helper._prepare_destination('/some/path')
 
     assert isinstance(result, Path)
     assert str(result) == '/full/path'
-    mock_check_dir.assert_called_once()
+    mock_check_fs.assert_called_once()
 
 
 @pytest.mark.parametrize(
