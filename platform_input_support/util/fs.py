@@ -59,7 +59,6 @@ def check_dir(path: Path) -> None:
 
     path = absolute_path(path)
     logger.debug(f'checking directory {path}')
-    logger.debug(f'PATH: {path.is_dir()}')
 
     if path.is_dir():
         logger.debug('directory exists')
