@@ -18,12 +18,17 @@ def file_size(source: str, destination: Path) -> bool:
 
     # this ensures no gzip encoding is used
     headers = {'accept-encoding': 'identity'}
-    resp = requests.head(
-        source,
-        headers=headers,
-        allow_redirects=True,
-        timeout=REQUEST_TIMEOUT,
-    )
+
+    try:
+        resp = requests.head(
+            source,
+            headers=headers,
+            allow_redirects=True,
+            timeout=REQUEST_TIMEOUT,
+        )
+    except Exception as e:
+        logger.warning(f'head request failed: {e}')
+        return True
 
     if not resp.ok:
         logger.warning(f'head request returned {resp.status_code}, cannot validate file size')
