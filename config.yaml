@@ -260,6 +260,7 @@ steps:
         source: https://api.fda.gov/download.json
         destination: fda-inputs/fda_events.json
         json_path: .results.drug.event.partitions[].file
+        prefix: https://download.open.fda.gov/drug/event/
       do:
         - name: download fda events ${destination}
           source: ${source}
