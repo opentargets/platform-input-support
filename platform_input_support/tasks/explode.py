@@ -71,10 +71,32 @@ class Explode(Pretask):
         return self
 
 
-def urls_from_json(source: str, destination: str, json_path: str) -> list[dict[str, str]]:
+def urls_from_json(
+    source: str,
+    destination: str,
+    json_path: str,
+    prefix: str | None,
+) -> list[dict[str, str]]:
+    """Get download tasks from a JSON file.
+
+    Args:
+        source (str): URL to the JSON file to download
+        destination (str): Destination path for the JSON file
+        json_path (str): jq path to the URLs to retrieve from the file
+        prefix (str | None): If present, this prefix will be removed from the URLs
+            to generate the destination path where the file will be saved. This is
+            useful in case there are multiple URLs in the JSON file with the same
+            file name that would end up overwriting each other.
+            If this is None, the file name will be used as the destination path.
+    """
     destination_file = download(source, destination)
     file_content = destination_file.read_text()
     json_data = json.loads(file_content)
-    sources = jq.compile(json_path).input_value(json_data).all()
+    srcs = jq.compile(json_path).input_value(json_data).all()
 
-    return [{'source': source, 'destination': source.split('/')[-1]} for source in sources]
+    if prefix:
+        dsts = [source.replace(prefix, '') for source in srcs]
+    else:
+        dsts = [source.split('/')[-1] for source in srcs]
+
+    return [{'source': s, 'destination': d} for s, d in zip(srcs, dsts, strict=True)]
