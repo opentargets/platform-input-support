@@ -13,7 +13,7 @@ from platform_input_support.util.errors import StepFailedError
 from platform_input_support.util.logger import task_logging
 
 if TYPE_CHECKING:
-    from platform_input_support.task import Task
+    from platform_input_support.task import Pretask, Task
 
 PARALLEL_STEP_COUNT = 5
 
@@ -42,21 +42,18 @@ class Step(StepReporter):
     def __init__(self, name: str):
         super().__init__(name)
 
+    def _instantiate_pretasks(self) -> list['Pretask']:
+        logger.debug('instantiating pretasks')
+        return [task_registry().instantiate_p(td) for td in task_definitions() if task_registry().is_pretask(td)]
+
+    def _instantiate_tasks(self) -> list['Task']:
+        logger.debug('instantiating tasks')
+        return [task_registry().instantiate_t(td) for td in task_definitions() if not task_registry().is_pretask(td)]
+
     @report
-    def _init(self, *, abort: Event) -> list['Task']:
-        pretasks = []
-        for i, td in enumerate(task_definitions()):
-            if task_registry().is_pretask(td):
-                pretasks.append(task_definitions().pop(i))
-
-        # run pretasks
-        logger.info('running pretasks')
-        for td in pretasks:
-            t = task_registry().instantiate(td)
-            _executor(t, 'run', abort)
-
-        # instantiate the main tasks that have to be run
-        return [task_registry().instantiate(td) for td in task_definitions()]
+    def _init(self, pretasks: list['Pretask'], *, abort: Event) -> list['Task']:
+        logger.info(f'running {len(pretasks)} pretasks' if len(pretasks) > 0 else 'no pretasks to run in this step')
+        return [_executor(p, 'run', abort) for p in pretasks]
 
     @report
     def _run(self, tasks: list['Task'], *, abort: Event) -> list['Task']:
@@ -66,11 +63,13 @@ class Step(StepReporter):
 
     @report
     def _validate(self, tasks: list['Task'], *, abort: Event) -> list['Task']:
+        logger.info(f'validating {len(task_definitions())} main tasks')
         with XPool(PARALLEL_STEP_COUNT) as validation_pool:
             return validation_pool.xmap('validate', tasks, abort)
 
     @report
     def _upload(self, tasks: list['Task'], *, abort: Event) -> list['Task']:
+        logger.info(f'uploading {len(task_definitions())} main tasks')
         with XPool(PARALLEL_STEP_COUNT) as upload_pool:
             return upload_pool.xmap('upload', tasks, abort)
 
@@ -79,9 +78,15 @@ class Step(StepReporter):
             a = manager.Event()
 
             try:
-                tasks = self._init(abort=a)
+                # pretask process, sequential execution of initialization tasks
+                pretasks = self._instantiate_pretasks()
+
+                pretasks = self._init(pretasks, abort=a)
                 if a.is_set():
                     raise StepFailedError(self.name, 'initialization')
+
+                # main process, parallel execution of resource generating tasks
+                tasks = self._instantiate_tasks()
 
                 tasks = self._run(tasks, abort=a)
                 if a.is_set():
