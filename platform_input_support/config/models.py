@@ -37,7 +37,7 @@ class EnvSettings(BaseModel):
     config_file: Path | None = None
     work_dir: Path | None = None
     gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
-    force: bool | None = None
+    pool: int | None = None
     log_level: LOG_LEVELS | None = None
 
 
@@ -46,14 +46,14 @@ class CliSettings(BaseModel):
     config_file: Path | None = None
     work_dir: Path | None = None
     gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
-    force: bool | None = None
+    pool: int | None = None
     log_level: LOG_LEVELS | None = None
 
 
 class YamlSettings(BaseModel):
     work_dir: Path | None = None
     gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
-    force: bool | None = None
+    pool: int | None = None
     log_level: LOG_LEVELS | None = None
 
 
@@ -76,7 +76,7 @@ class Settings(BaseModel):
         config_file (Path): The path to the configuration file.
         work_dir (Path): The local working directory path.
         gcs_url (str): The Google Cloud Storage URL.
-        force (bool): Whether to force the operation.
+        pool (int): The number of workers in the pool.
         log_level (str): The log level.
     """
 
@@ -84,7 +84,7 @@ class Settings(BaseModel):
     config_file: Path = Path('config.yaml')
     work_dir: Path = Path('./output')
     gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] = ''
-    force: bool = False
+    pool: int = 5
     log_level: LOG_LEVELS = 'INFO'
 
     def merge_model(self, incoming: BaseModel):

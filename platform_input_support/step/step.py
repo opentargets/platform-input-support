@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from platform_input_support.config import task_definitions
+from platform_input_support.config import settings, task_definitions
 from platform_input_support.manifest.step_reporter import StepReporter, report
 from platform_input_support.task import task_registry
 from platform_input_support.util.errors import StepFailedError
@@ -14,8 +14,6 @@ from platform_input_support.util.logger import task_logging
 
 if TYPE_CHECKING:
     from platform_input_support.task import Pretask, Task
-
-PARALLEL_STEP_COUNT = 5
 
 
 def _executor(task: 'Task', func_name: str, abort: Event) -> 'Task':
@@ -58,19 +56,19 @@ class Step(StepReporter):
     @report
     def _run(self, tasks: list['Task'], *, abort: Event) -> list['Task']:
         logger.info(f'running {len(task_definitions())} main tasks')
-        with XPool(PARALLEL_STEP_COUNT) as run_pool:
+        with XPool(settings().pool) as run_pool:
             return run_pool.xmap('run', tasks, abort)
 
     @report
     def _validate(self, tasks: list['Task'], *, abort: Event) -> list['Task']:
         logger.info(f'validating {len(task_definitions())} main tasks')
-        with XPool(PARALLEL_STEP_COUNT) as validation_pool:
+        with XPool(settings().pool) as validation_pool:
             return validation_pool.xmap('validate', tasks, abort)
 
     @report
     def _upload(self, tasks: list['Task'], *, abort: Event) -> list['Task']:
         logger.info(f'uploading {len(task_definitions())} main tasks')
-        with XPool(PARALLEL_STEP_COUNT) as upload_pool:
+        with XPool(settings().pool) as upload_pool:
             return upload_pool.xmap('upload', tasks, abort)
 
     def execute(self):

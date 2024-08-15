@@ -2,7 +2,7 @@
 work_dir: ./work
 gcs_url: gs://open-targets-pre-data-releases/24.06dev-test/input
 log_level: TRACE
-force: no
+pool: 5
 
 scratchpad:
   efo_release_version: v3.68.0
