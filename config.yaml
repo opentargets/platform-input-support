@@ -5,8 +5,8 @@ log_level: TRACE
 force: no
 
 scratchpad:
-  efo_release_version: v3.65.0
-  ensembl_release_version: '111'
+  efo_release_version: v3.68.0
+  ensembl_release_version: '112'
   chembl_release_version: '34'
 
 steps:
