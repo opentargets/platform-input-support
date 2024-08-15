@@ -28,7 +28,7 @@ def check_file(path: Path) -> None:
     logger.debug(f'checking file {path}')
 
     if path.is_file():
-        logger.info(f'file {path} already exists, deleting')
+        logger.warning(f'file {path} already exists, deleting')
         try:
             path.unlink()
         except OSError as e:
@@ -67,7 +67,7 @@ def check_dir(path: Path) -> None:
             sys.exit(1)
         logger.debug('directory is writtable')
     else:
-        logger.info('directory does not exist, creating it')
+        logger.debug('directory does not exist, creating it')
         try:
             Path(path).mkdir(parents=True, exist_ok=True)
         except OSError as e:
@@ -99,7 +99,7 @@ def check_fs(path: Path) -> None:
     """
     check_dir(path.parent)
     check_file(path)
-    logger.info('file and directory checks passed')
+    logger.success('file and directory checks passed')
 
 
 def absolute_path(path: Path | str) -> Path:

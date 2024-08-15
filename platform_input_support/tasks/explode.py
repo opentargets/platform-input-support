@@ -39,7 +39,7 @@ class Explode(Pretask):
             sys.exit(1)
 
         description = self.name.split(' ', 1)[1] if ' ' in self.name else ''
-        logger.info(f'exploding {description}')
+        logger.debug(f'exploding {description}')
 
         # if foreach_function is set, call the function and use its return value as the foreach list
         if foreach_function:
@@ -50,11 +50,11 @@ class Explode(Pretask):
 
             func = cast(Callable[..., list[dict[str, str]]], func_obj)
             args_str = list_str(foreach_function_args, dict_values=True)
-            logger.info(f'calling function {foreach_function} with args {args_str}')
+            logger.debug(f'calling function {foreach_function} with args {args_str}')
             foreach = func(**foreach_function_args)
 
         foreach = foreach or []
-        logger.info(f'exploding {len(do)} tasks by {len(foreach)} iterations')
+        logger.debug(f'exploding {len(do)} tasks by {len(foreach)} iterations')
         new_tasks = 0
 
         for d in foreach:
