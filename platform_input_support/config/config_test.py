@@ -29,7 +29,7 @@ def test_config_initialization(c):
         'config_file': Path('test_cli.yaml'),
         'work_dir': Path('./somewhere'),
         'gcs_url': 'gs://bucket/path/to/file',
-        'force': False,
+        'pool': 5,
         'log_level': 'INFO',
     }
 

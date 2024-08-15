@@ -10,14 +10,14 @@ from platform_input_support.config.models import EnvSettings
 def test_parse_env_with_variables(monkeypatch):
     monkeypatch.setenv(f'{ENV_PREFIX}_STEP', 'go')
     monkeypatch.setenv(f'{ENV_PREFIX}_CONFIG_FILE', '/path/to/file')
-    monkeypatch.setenv(f'{ENV_PREFIX}_FORCE', 'y')
+    monkeypatch.setenv(f'{ENV_PREFIX}_POOL', '5')
 
     settings = parse_env()
 
     assert isinstance(settings, EnvSettings)
     assert settings.step == 'go'
     assert settings.config_file == Path('/path/to/file')
-    assert settings.force
+    assert settings.pool == 5
 
 
 def test_parse_env_without_relevant_variables(monkeypatch):
@@ -31,7 +31,7 @@ def test_parse_env_without_relevant_variables(monkeypatch):
 
 
 def test_parse_env_with_invalid_variables(monkeypatch):
-    monkeypatch.setenv(f'{ENV_PREFIX}_FORCE', 'this_is_not_a_boolean')
+    monkeypatch.setenv(f'{ENV_PREFIX}_POOL', 'this_is_not_an_integer')
 
     with pytest.raises(SystemExit):
         parse_env()

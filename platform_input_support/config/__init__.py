@@ -28,7 +28,7 @@ def settings():
         config_file (Path): The path to the configuration file.
         work_dir (Path): The local working directory path.
         gcs_url (str): The Google Cloud Storage URL.
-        force (bool): Whether to force the operation.
+        pool (int): The number of workers in the pool.
         log_level (str): The log level.
 
     Returns:

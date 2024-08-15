@@ -84,20 +84,21 @@ def test_parse_cli_with_gcs_url_argument(monkeypatch):
     assert settings.gcs_url == 'gs://bucket/path'
 
 
-def test_parse_cli_with_force_argument(monkeypatch):
+def test_parse_cli_with_pool_argument(monkeypatch):
     monkeypatch.setattr(
         'sys.argv',
         [
             'cli.py',
+            '--pool',
+            '10',
             '--step',
             'validation',
-            '--force',
         ],
     )
 
     settings = parse_cli()
 
-    assert settings.force
+    assert settings.pool == 10
 
 
 def test_parse_cli_help_contains_env_var_and_default(monkeypatch, capsys):
@@ -111,5 +112,5 @@ def test_parse_cli_help_contains_env_var_and_default(monkeypatch, capsys):
     captured = capsys.readouterr()
     out = clean_output(captured.out)
 
-    assert '(environment variable: PIS_FORCE)' in out
-    assert '(default: False)' in out
+    assert '(environment variable: PIS_POOL)' in out
+    assert '(default: 5)' in out

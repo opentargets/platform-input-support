@@ -59,12 +59,12 @@ def parse_cli() -> CliSettings:
     )
 
     parser.add_argument(
-        '-f',
-        '--force',
-        action='store_const',
-        const='y',
-        help='Force the execution of the step, repeating all of the tasks that '
-        'compose it, even if they were already completed.',
+        '-p',
+        '--pool',
+        type=int,
+        help='The number of worker proccesses that will be spawned to run tasks'
+        'in the step in parallel. It should be similar to the number of cores,'
+        'but could be higher because there is a lot of I/O blocking.',
     )
 
     parser.add_argument(

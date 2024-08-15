@@ -18,7 +18,7 @@ CONFIG_DICT_VALID = {
     'work_dir': './somewhere',
     'gcs_url': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
-    'force': False,
+    'pool': 5,
     'steps': {
         'step_1': [
             {
@@ -40,13 +40,13 @@ CONFIG_DICT_VALID = {
     },
 }
 
-CONFIG_DICT_INVALID = {'force': 'not_a_bool'}
+CONFIG_DICT_INVALID = {'pool': 'not_an_int'}
 
 CONFIG_DICT_STEPS_ARE_LIST = {
     'work_dir': './somewhere',
     'gcs_url': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
-    'force': False,
+    'pool': '5',
     'steps': [
         {
             'name': 'download file 1',
@@ -58,7 +58,7 @@ CONFIG_DICT_STEPS_ARE_INVALID = {
     'work_dir': './somewhere',
     'gcs_url': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
-    'force': False,
+    'pool': '5',
     'steps': {
         'step_1': [
             {
@@ -72,7 +72,7 @@ CONFIG_DICT_MISSING_STEPS = {
     'work_dir': './somewhere',
     'gcs_url': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
-    'force': False,
+    'pool': '5',
     'scratchpad': {
         'some.label.to.replace': 'thisvalue',
     },
@@ -83,7 +83,7 @@ YAML_CONTENT_VALID = """
 work_dir: ./somewhere
 gcs_url: gs://bucket/path/to/file
 log_level: INFO
-force: no
+pool: 5
 steps:
   step_1:
     - name: download file 1
@@ -108,7 +108,7 @@ YAML_CONTENT_MISSING_STEPS = """
 work_dir: ./somewhere
 gcs_url: gs://bucket/path/to/file
 log_level: INFO
-force: no
+pool: 5
 scratchpad:
   some.label.to.replace: thisvalue
 """
@@ -117,7 +117,7 @@ YAML_CONTENT_MISSING_SCRATCHPAD = """
 work_dir: ./somewhere
 gcs_url: gs://bucket/path/to/file
 log_level: INFO
-force: no
+pool: 5
 steps:
     step_1:
       - name: download file 1
@@ -235,7 +235,7 @@ def test_get_yaml_settings_valid():
     assert isinstance(settings, YamlSettings)
     assert settings.work_dir == Path('./somewhere')
     assert settings.gcs_url == 'gs://bucket/path/to/file'
-    assert settings.force is False
+    assert settings.pool == 5
     assert settings.log_level == 'INFO'
 
 

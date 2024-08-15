@@ -24,6 +24,7 @@ def main():
     init_task_registry()
 
     logger.debug(f'using {ssl.OPENSSL_VERSION}')
+    logger.debug(f'running with {settings().pool} worker processes')
 
     step = Step(settings().step)
     step.execute()
