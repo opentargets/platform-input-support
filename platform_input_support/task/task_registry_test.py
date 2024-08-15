@@ -129,7 +129,7 @@ def test_instantiate_valid_task(patch_import_module, patch_path_glob, monkeypatc
     task_registry.register_tasks()
     new_task_definition = DummyDefinition(name='dummy', dummy=False)
 
-    new_task = task_registry.instantiate(new_task_definition)
+    new_task = task_registry.instantiate_t(new_task_definition)
 
     assert isinstance(new_task, Task)
     assert isinstance(new_task, Dummy)
@@ -145,7 +145,7 @@ def test_instantiate_invalid_task(patch_import_module, patch_path_glob):
     new_task_definition = BaseTaskDefinition(name='invalid')
 
     with pytest.raises(SystemExit) as e:
-        task_registry.instantiate(new_task_definition)
+        task_registry.instantiate_t(new_task_definition)
 
     assert e.type is SystemExit
     assert e.value.code == 1
@@ -159,7 +159,7 @@ def test_instantiate_invalid_task_definition(patch_import_module, patch_path_glo
     new_task_definition.dummy = 'invalid'  # type: ignore[attr-assignment]
 
     with pytest.raises(SystemExit) as e:
-        task_registry.instantiate(new_task_definition)
+        task_registry.instantiate_t(new_task_definition)
 
     assert e.type is SystemExit
     assert e.value.code == 1

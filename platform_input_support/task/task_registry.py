@@ -1,18 +1,14 @@
 import importlib
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from loguru import logger
 from pydantic import ValidationError
 
 from platform_input_support.config.models import BaseTaskDefinition
 from platform_input_support.manifest.models import TaskManifest
-from platform_input_support.task import Pretask
+from platform_input_support.task import Pretask, Task
 from platform_input_support.util.misc import real_name
-
-if TYPE_CHECKING:
-    from platform_input_support.task import Task
 
 TASKS_DIR = Path(__file__).parent.parent / 'tasks'
 TASKS_MODULE = 'platform_input_support.tasks'
@@ -50,7 +46,7 @@ class TaskRegistry:
             self.task_definitions[task_name] = getattr(task_module, f'{task_class_name}Definition', BaseTaskDefinition)
             self.task_manifests[task_name] = getattr(task_module, f'{task_class_name}Manifest', TaskManifest)
 
-    def instantiate(self, task_definition: BaseTaskDefinition) -> 'Task':
+    def _instantiate(self, task_definition: BaseTaskDefinition) -> 'Task | Pretask':
         task_class_name = real_name(task_definition)
 
         # get task class from the registry
@@ -78,3 +74,13 @@ class TaskRegistry:
         task._manifest = manifest
 
         return task
+
+    def instantiate_t(self, task_definition: BaseTaskDefinition) -> 'Task':
+        task = self._instantiate(task_definition)
+        assert isinstance(task, Task)
+        return task
+
+    def instantiate_p(self, pretask_definition: BaseTaskDefinition) -> 'Pretask':
+        pretask = self._instantiate(pretask_definition)
+        assert isinstance(pretask, Pretask)
+        return pretask
