@@ -99,7 +99,7 @@ def check_fs(path: Path) -> None:
     """
     check_dir(path.parent)
     check_file(path)
-    logger.success('file and directory checks passed')
+    logger.debug('file and directory checks passed')
 
 
 def absolute_path(path: Path | str) -> Path:

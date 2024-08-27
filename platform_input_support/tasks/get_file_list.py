@@ -34,7 +34,7 @@ class GetFileList(Pretask):
 
         if len(file_list):
             scratchpad().store(sentinel, file_list)
-            logger.success(f'{len(file_list)} files with pattern {pattern} found in {source}')
+            logger.info(f'{len(file_list)} files with pattern {pattern} found in {source}')
             return self
         else:
             raise ValueError(f'no files found in {source} with pattern {pattern}')

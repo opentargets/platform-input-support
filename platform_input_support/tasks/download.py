@@ -30,7 +30,7 @@ class Download(Task):
     def run(self, *, abort: Event) -> Self:
         download(self.definition.source, self.definition.destination, abort=abort)
         self.resource = Resource(source=self.definition.source, destination=str(self.definition.destination))
-        logger.success('download successful')
+        logger.debug('download successful')
         return self
 
     @report

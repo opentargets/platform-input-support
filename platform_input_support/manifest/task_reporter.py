@@ -18,7 +18,7 @@ class TaskReporter:
         self._manifest.result = Result.STAGED
         self._manifest.staged = datetime.now(UTC)
         self._manifest.elapsed = (self._manifest.staged - self._manifest.created).total_seconds()
-        logger.info(f'task staged in {self._manifest.elapsed:.2f}s')
+        logger.success(f'task staged: ran for {self._manifest.elapsed:.2f}s')
 
     def validated(self, log: str):
         self._manifest.result = Result.VALIDATED

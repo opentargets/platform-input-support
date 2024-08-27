@@ -67,7 +67,7 @@ class Explode(Pretask):
                 task_definitions().append(t)
                 new_tasks += 1
 
-        logger.success(f'exploded into {new_tasks} new tasks')
+        logger.info(f'exploded into {new_tasks} new tasks')
         return self
 
 

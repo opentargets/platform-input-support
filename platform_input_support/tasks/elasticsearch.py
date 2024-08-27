@@ -92,7 +92,7 @@ class Elasticsearch(Task):
             raise ElasticsearchError(f'error scanning index {index}: {e}')
 
         self._write_docs(buffer, destination)
-        logger.success(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
+        logger.debug(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
         self.resource = Resource(source=f'{url}/{index}', destination=str(self.definition.destination))
         self.close_es()
         return self
