@@ -1,13 +1,14 @@
 [project]
 name = "platform-input-support"
-version = "24.5.0"
+version = "24.5.1"
 description = "Open Target's Platform Input Support Application"
 readme = "README.md"
+requires-python = ">=3.12"
 authors = [{ name = "Open Targets core team", email = "devs@opentargets.net" }]
 license = { text = "Apache-2.0" }
 dependencies = [
   "elasticsearch==7.17.9",    # must be ^7.0.0 to be compatible with chembl es server
-  "elasticsearch-dsl==7.4.1", # ^
+  "elasticsearch-dsl==7.4.1",
   "filelock",
   "google-cloud-storage",
   "jq",
@@ -15,15 +16,27 @@ dependencies = [
   "pydantic",
   "PyYAML",
   "requests",
-  "urllib3",                  # must be <= 2 for elasticsearch, see overrides.txt
+  "urllib3",                  # must be <= 2 for elasticsearch, see overrides
+]
+
+[tool.uv]
+override-dependencies = [
+  "urllib3>=2.2.0", # must be <= 2 for elasticsearch
 ]
 
 [project.optional-dependencies]
-dev = ["ruff", "deptry"]
-test = ["coverage", "freezegun", "pytest", "pytest-mock"]
+dev = ["ruff==0.6.1", "deptry==0.19.1"]
+
+test = [
+  "coverage==7.6.1",
+  "freezegun==1.5.1",
+  "pytest==8.3.2",
+  "pytest-mock==3.14.0",
+]
 
 [build-system]
-requires = ["setuptools == 72.1.0", "wheel"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.setuptools]
 include-package-data = false

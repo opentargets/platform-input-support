@@ -1,2 +1,0 @@
-# Overrides for Elasticsearch dependency on urllib < 2
-urllib3>=2.2.0

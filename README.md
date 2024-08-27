@@ -4,24 +4,26 @@ Fetch, validate and arrange the data required by the Open Targets Platform ETL p
 
 
 ## Installation and running
-> [!NOTE]
-> Due to incompatible dependencies between the elasticsearch 7 library and google-cloud-storage,
-> PIS can no longer use Poetry. The dependencies are managed with a `requirements.txt`.
->
-> We may revisit this in the future, but PIS can be used with pip or [uv](https://astral.sh/blog/uv).
+PIS uses [UV]([http](https://docs.astral.sh/uv/) as its package manager, it is compatible with PIP,
+so you can also fall back to it if you feel more comfortable.
 
-PIS will be uploaded to [Pypi](https://pypi.org/project/platform-input-support/) once it is ready to
-use. In the meantime, you can install it locally by running the following command:
+> [!NOTE]
+> PIS will be uploaded to [Pypi](https://pypi.org/project/platform-input-support/) once it is ready to
+> use. In the meantime, you can run it locally with make or directly by using uv:
+
+To run PIS with UV, you can use the following commands:
 
 ```bash
-make install
+uv run pis -h
 ```
 
-This will install the dependencies in a virtual environment in the project directory. You can then
-run the application using the following command:
+it handles the installation of the dependencies in a virtual environment and runs the application, so
+it would be similar to:
 
 ```bash
+virtualenv .venv
 source .venv/bin/activate
+pip install .
 pis -h
 ```
 
