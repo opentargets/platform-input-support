@@ -5,16 +5,12 @@
 #
 # docker run -v /path/to/credentials.json:/app/credentials.json -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json pis -s so
 
-
 FROM python:3.12.4-alpine3.20
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+ADD . /app
 
 WORKDIR /app
+RUN uv sync --frozen
 
-COPY pyproject.toml requirements.txt README.md config.yaml ./
-
-COPY platform_input_support ./platform_input_support
-
-RUN pip install --no-deps -r requirements.txt && pip install --no-deps .
-
-ENTRYPOINT ["platform_input_support"]
-CMD []
+ENTRYPOINT ["uv", "run", "platform_input_support"]
