@@ -5,9 +5,11 @@ from pathlib import Path
 from threading import Event
 from typing import Any, Self
 
+import elasticsearch
+import elasticsearch.helpers
 from elasticsearch import Elasticsearch as Es
 from elasticsearch.exceptions import ElasticsearchException
-from elasticsearch_dsl import Search, utils
+from elasticsearch.helpers import ScanError
 from loguru import logger
 
 from platform_input_support.manifest.models import Resource
@@ -70,38 +72,26 @@ class Elasticsearch(Task):
             raise ElasticsearchError(f'error getting index count on index {index}: {e}')
         logger.info(f'index {index} has {self.doc_count} documents')
 
-        search = Search(using=self.es, index=index)
+        buffer: list[dict[str, Any]] = []
         try:
-            source = search.source(fields=list(fields))
-        except ElasticsearchException as e:
-            self.close_es()
-            raise ElasticsearchError(f'scan error on index {index}: {e}')
+            for hit in elasticsearch.helpers.scan(
+                client=self.es,
+                index=index,
+                query={'query': {'match_all': {}}, '_source': fields},
+            ):
+                buffer.append(hit)
+                if len(buffer) >= BUFFER_SIZE:
+                    logger.trace('flushing buffer')
+                    self._write_docs(buffer, destination)
+                    buffer.clear()
 
-        doc_buffer: list[dict[str, Any]] = []
+                    if abort and abort.is_set():
+                        raise TaskAbortedError
+        except ScanError as e:
+            logger.warning(f'error scanning index {index}: {e}')
+            raise ElasticsearchError(f'error scanning index {index}: {e}')
 
-        for hit in source.scan():
-            doc: dict[str, Any] = {}
-
-            for field in fields:
-                f = hit[field]
-
-                if isinstance(f, utils.AttrList):
-                    doc[field] = f._l_
-                elif isinstance(f, utils.AttrDict):
-                    doc[field] = f._d_
-                else:
-                    doc[field] = f
-
-            doc_buffer.append(doc)
-            if len(doc_buffer) >= BUFFER_SIZE:
-                logger.trace('flushing buffer')
-                self._write_docs(doc_buffer, destination)
-                doc_buffer.clear()
-
-                if abort and abort.is_set():
-                    raise TaskAbortedError
-
-        self._write_docs(doc_buffer, destination)
+        self._write_docs(buffer, destination)
         logger.success(f'wrote {self.doc_written}/{self.doc_count} documents to {destination}')
         self.resource = Resource(source=f'{url}/{index}', destination=str(self.definition.destination))
         self.close_es()
