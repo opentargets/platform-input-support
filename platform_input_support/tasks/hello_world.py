@@ -36,7 +36,7 @@ class HelloWorld(Task):
         # set the resource
         self.resource = Resource(source='hello_world', destination=str(output_file))
 
-        logger.success(f'completed task hello_world for {who}')
+        logger.info(f'completed task hello_world for {who}')
         return self
 
     @report

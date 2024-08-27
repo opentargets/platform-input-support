@@ -18,9 +18,9 @@ class StepReporter:
 
     def staged(self, log: str):
         self._manifest.result = Result.STAGED
-        msg = f'step completed: {log}'
+        msg = f'step staged: {log}'
         self._manifest.log.append(msg)
-        logger.info(msg)
+        logger.success(msg)
 
     def validated(self, log: str):
         self._manifest.result = Result.VALIDATED
@@ -32,7 +32,7 @@ class StepReporter:
         self._manifest.result = Result.COMPLETED
         self._manifest.completed = datetime.now(UTC)
         self._manifest.elapsed = (self._manifest.completed - self._manifest.created).total_seconds()
-        msg = f'step completed: {log}, total run time: {self._manifest.elapsed:.2f}s'
+        msg = f'step completed: {log}, ran for: {self._manifest.elapsed:.2f}s'
         self._manifest.log.append(msg)
         logger.success(msg)
 
@@ -80,7 +80,7 @@ def report(func):
             if func.__name__ == '_run':
                 self.staged(f'ran {len(result)} tasks')
             elif func.__name__ == '_validate':
-                self.validated(f'validated {len(result)} tasks')
+                self.validated(f'checked {len(result)} tasks')
             elif func.__name__ == '_upload':
                 self.completed(f'uploaded {len(result)} tasks')
             return result

@@ -45,7 +45,6 @@ class Task(TaskReporter):
         destination = f'{settings().gcs_url}/{self.definition.destination!s}'
 
         google_helper().upload(source, destination)
-        logger.success('upload successful')
         return self
 
 

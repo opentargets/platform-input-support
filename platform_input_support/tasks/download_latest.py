@@ -34,7 +34,7 @@ class DownloadLatest(Task):
             logger.info(f'latest file is {newest_file}')
             download(newest_file, destination)
             self.resource = Resource(source=newest_file, destination=str(destination))
-            logger.success('download successful')
+            logger.info('download successful')
             return self
         else:
             raise ValueError(f'no files found in {self.definition.source}')
