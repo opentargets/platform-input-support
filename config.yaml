@@ -5,9 +5,9 @@ log_level: TRACE
 pool: 5
 
 scratchpad:
-  efo_release_version: v3.68.0
-  ensembl_release_version: '112'
-  chembl_release_version: '34'
+  efo_version: v3.68.0
+  ensembl_version: '112'
+  chembl_version: '34'
 
 steps:
   baseline_expression:
@@ -17,7 +17,7 @@ steps:
 
   disease:
     - name: download efo otar_slim
-      source: https://github.com/EBISPOT/efo/releases/download/${efo_release_version}/efo_otar_slim.owl
+      source: https://github.com/EBISPOT/efo/releases/download/${efo_version}/efo_otar_slim.owl
       destination: ontology-inputs/ontology-efo.owl
     - name: download hpo
       source: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2021-10-10/hp.json
@@ -38,8 +38,8 @@ steps:
       destination: chembl-inputs/drugbank.csv.gz
     - name: elasticsearch chembl drug indications
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_release_version}_drug_indication.jsonl
-      index: chembl_${chembl_release_version}_drug_indication
+      destination: chembl-inputs/chembl_${chembl_version}_drug_indication.jsonl
+      index: chembl_${chembl_version}_drug_indication
       fields:
         - _metadata
         - molecule_chembl_id
@@ -48,8 +48,8 @@ steps:
         - indication_refs
     - name: elasticsearch chembl mechanisms of action
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_release_version}_mechanism.jsonl
-      index: chembl_${chembl_release_version}_mechanism
+      destination: chembl-inputs/chembl_${chembl_version}_mechanism.jsonl
+      index: chembl_${chembl_version}_mechanism
       fields:
         - _metadata
         - molecule_chembl_id
@@ -61,8 +61,8 @@ steps:
         - parent_molecule_chembl_id
     - name: elasticsearch chembl molecules
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_release_version}_molecule.jsonl
-      index: chembl_${chembl_release_version}_molecule
+      destination: chembl-inputs/chembl_${chembl_version}_molecule.jsonl
+      index: chembl_${chembl_version}_molecule
       fields:
         - molecule_chembl_id
         - molecule_hierarchy
@@ -78,8 +78,8 @@ steps:
         - molecule_structures
     - name: elasticsearch chembl targets
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_release_version}_target.jsonl
-      index: chembl_${chembl_release_version}_target
+      destination: chembl-inputs/chembl_${chembl_version}_target.jsonl
+      index: chembl_${chembl_version}_target
       fields:
         - _metadata
         - target_chembl_id
@@ -88,8 +88,8 @@ steps:
         - pref_name
     - name: elasticsearch chembl drug warnings
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_release_version}_drug_warning.jsonl
-      index: chembl_${chembl_release_version}_drug_warning
+      destination: chembl-inputs/chembl_${chembl_version}_drug_warning.jsonl
+      index: chembl_${chembl_version}_drug_warning
       fields:
         - _metadata
         - molecule_chembl_id
@@ -214,18 +214,18 @@ steps:
         - species: homo_sapiens
       do:
         - name: download ${species} gene dictionary
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/${species}/${species}.json
+          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/json/${species}/${species}.json
           destination: target-inputs/homologue/gene_dictionary/${species}.json
         - name: download ${species} protein homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.protein_default.homologies.tsv.gz
+          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_version}.protein_default.homologies.tsv.gz
           destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
         - name: download ${species} ncrna homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_release_version}.ncrna_default.homologies.tsv.gz
+          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_version}.ncrna_default.homologies.tsv.gz
           destination: target-inputs/homologue/homologies/ncrna-${species}.tsv.gz
 
   interactions:
     - name: download ensembl interactions grch38
-      source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/gtf/homo_sapiens/Homo_sapiens.GRCh38.${ensembl_release_version}.chr.gtf.gz
+      source: https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.GRCh38.${ensembl_version}.chr.gtf.gz
       destination: interactions-inputs/Homo_sapiens.GRCh38.chr.gtf.gz
     - name: download human 9606 idmapping
       source: https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
@@ -338,7 +338,7 @@ steps:
       source: https://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gpa.gz
       destination: target-inputs/go/goa_human_eco.gpa.gz
     - name: download ensembl vertebrates
-      source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/species_EnsemblVertebrates.txt
+      source: https://ftp.ensembl.org/pub/release-${ensembl_version}/species_EnsemblVertebrates.txt
       destination: target-inputs/homologue/species_EnsemblVertebrates.txt
     - name: download homosapiens gene_info
       source: https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
@@ -353,7 +353,7 @@ steps:
       source: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
       destination: target-inputs/project-scores/essentiality_matrices.zip
     - name: download ensembl
-      source: https://ftp.ensembl.org/pub/release-${ensembl_release_version}/json/homo_sapiens/homo_sapiens.json
+      source: https://ftp.ensembl.org/pub/release-${ensembl_version}/json/homo_sapiens/homo_sapiens.json
       destination: target-inputs/ensembl/homo_sapiens.jsonl
     - name: download_latest essentiality
       source: gs://otar000-evidence_input/Essentiality/json
