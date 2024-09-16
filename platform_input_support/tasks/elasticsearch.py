@@ -79,7 +79,7 @@ class Elasticsearch(Task):
                 index=index,
                 query={'query': {'match_all': {}}, '_source': fields},
             ):
-                buffer.append(hit)
+                buffer.append(hit['_source'])
                 if len(buffer) >= BUFFER_SIZE:
                     logger.trace('flushing buffer')
                     self._write_docs(buffer, destination)
