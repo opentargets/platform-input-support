@@ -4,7 +4,7 @@ Fetch, validate and arrange the data required by the Open Targets Platform ETL p
 
 
 ## Installation and running
-PIS uses [UV]([http](https://docs.astral.sh/uv/) as its package manager, it is compatible with PIP,
+PIS uses [UV](https://docs.astral.sh/uv/) as its package manager, it is compatible with PIP,
 so you can also fall back to it if you feel more comfortable.
 
 > [!NOTE]
