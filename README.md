@@ -4,7 +4,7 @@ Fetch, validate and arrange the data required by the Open Targets Platform ETL p
 
 
 ## Installation and running
-PIS uses [UV](https://docs.astral.sh/uv/) as its package manager, it is compatible with PIP,
+PIS uses [UV](https://docs.astral.sh/uv/) as its package manager. It is compatible with PIP,
 so you can also fall back to it if you feel more comfortable.
 
 > [!NOTE]
@@ -55,18 +55,19 @@ docker build -t pis .
 > Remember to run `make git` before starting development. This will set up a very simple git hook
 > that does a few checks before committing.
 
-Development of PIS can be done straight away in the local environment. For that, you just need to
-install the package as editable inside the virtual environment:
+Development of PIS can be done straight away in the local environment. You can run the application
+just like before (`uv run pis`) to check the changes you make. Alternatively, you can run the app
+from inside the virtual environment:
 
 ```bash
 source .venv/bin/activate
-pip install -e .
+pis -h
 ```
 
 You can test the changes by running a small step, like `so`:
 
 ```bash
-pis -step so
+uv run pis --step so
 ```
 
 ---
