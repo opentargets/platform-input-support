@@ -8,7 +8,7 @@
       "name": "platform-input-support",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/platform_input_support/core.py",
+      "program": "${workspaceFolder}/src/platform_input_support/core.py",
       "args": [
         "-s",
         "${input:stepName}"

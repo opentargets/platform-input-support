@@ -14,15 +14,12 @@ clean: ## Clean up
 	@chmod +x .git/hooks/pre-commit
 	@echo pre-commit hook installed
 
-git: .git/hooks/pre-commit ## install the pre-commit hook
+git: .install .git/hooks/pre-commit ## install the pre-commit hook
 
 .venv/bin/pytest: # If we have pytest, it means we have installed dev dependencies
 	@uv sync --all-extras --dev --quiet
 
 .install: .venv/bin/pytest
-
-dev: .install ## Run the development environment script
-	@if [ -n "$(step)" ]; then uv run platform_input_support/core.py -s $(step); else uv run platform_input_support/core.py -h; fi
 
 test: .install ## Run the tests
 	@source .venv/bin/activate; pytest; deactivate

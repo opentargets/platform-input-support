@@ -4,7 +4,7 @@
 source .venv/bin/activate
 
 RUFF_CMD='ruff check'
-DEPTRY_CMD='deptry . --pep621-dev-dependency-groups=test,dev'
+DEPTRY_CMD='deptry src --pep621-dev-dependency-groups=test,dev'
 PYTEST_CMD='pytest -qq'
 
 CYAN=$(echo -e $"\033[0;36m")
