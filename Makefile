@@ -10,7 +10,7 @@ clean: ## Clean up
 
 ### DEVELOPMENT TARGETS ###
 .git/hooks/pre-commit:
-	@ln -s $(shell pwd)/scripts/pre-commit.githook .git/hooks/pre-commit
+	@ln -s $(shell pwd)/pre-commit.githook .git/hooks/pre-commit
 	@chmod +x .git/hooks/pre-commit
 	@echo pre-commit hook installed
 
