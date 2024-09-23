@@ -1,3 +1,5 @@
+"""File system utilities."""
+
 import os
 import sys
 from pathlib import Path
@@ -12,17 +14,13 @@ def check_file(path: Path) -> None:
 
     The function will make sure that a file does not exist in the given path.
 
-    Warning:
-        The function will delete the file if it already exists.
+    .. warning:: The function will delete the file if it already exists.
 
-    Args:
-        path (Path): The path to check. Must be a file.
-
-    Raises:
-        SystemExit: If there is an error deleting the file.
-
-    Returns:
-        None: If all checks pass.
+    :param path: The path to check. Must be a file.
+    :type path: Path
+    :raises SystemExit: If there is an error deleting the file.
+    :return: `None` if all checks pass.
+    :rtype: None
     """
     path = absolute_path(path)
     logger.debug(f'checking file {path}')
@@ -43,15 +41,12 @@ def check_dir(path: Path) -> None:
     The function will make sure that the directory exists and is writable. If it
     does not exist, the function will attempt to create it.
 
-    Args:
-        path (Path): The path to check. Must be a directory.
-
-    Raises:
-        SystemExit: If the directory is not writable.
-        SystemExit: If there is an error creating the directory.
-
-    Returns:
-        None: If all checks pass.
+    :param path: The path to check. Must be a directory.
+    :type path: Path
+    :raises SystemExit: If the directory is not writable.
+    :raises SystemExit: If there is an error creating the directory.
+    :return: `None` if all checks pass.
+    :rtype: None
     """
     if path.is_file():
         logger.critical('path exists and is a file, expected a directory')
@@ -83,19 +78,15 @@ def check_fs(path: Path) -> None:
     directory exists and is writable. If the parent directory does not exist, the
     function will attempt to create it.
 
-    Warning:
-        The function will delete the file if it already exists.
+    .. warning:: The function will delete the file if it already exists.
 
-    Args:
-        path (Path): The path to check. Must be a file.
-
-    Raises:
-        SystemExit: If the file already exists.
-        SystemExit: If the parent directory is not writable.
-        SystemExit: If there is an error creating the parent directory.
-
-    Returns:
-        None: If all checks pass.
+    :param path: The path to check. Must be a file.
+    :type path: Path
+    :raises SystemExit: If the file already exists.
+    :raises SystemExit: If the parent directory is not writable.
+    :raises SystemExit: If there is an error creating the parent directory.
+    :return: `None` if all checks pass.
+    :rtype: None
     """
     check_dir(path.parent)
     check_file(path)
@@ -108,11 +99,10 @@ def absolute_path(path: Path | str) -> Path:
     The function will try to figure if the path contains the work directory. If
     not, it will be prepended.
 
-    Args:
-        path (Path | str): The path to the file or directory.
-
-    Returns:
-        str: The full path of the file or directory.
+    :param path: The path to the file or directory.
+    :type path: Path | str
+    :return: The full path of the file or directory.
+    :rtype: Path
     """
     work_dir = Path(settings().work_dir)
 

@@ -1,8 +1,17 @@
+"""Manifest utility functions."""
+
 from platform_input_support.manifest.models import Result, RootManifest, StepManifest
 from platform_input_support.util.misc import date_str
 
 
 def recount(manifest: RootManifest | StepManifest) -> None:
+    """Recount the results of the manifest.
+
+    This function will recount the results of the manifest and log the summary.
+
+    :param manifest: The manifest to recount.
+    :type manifest: RootManifest | StepManifest
+    """
     if isinstance(manifest, RootManifest):
         items = manifest.steps
         item_type = 'steps' if len(items) > 1 else 'step'

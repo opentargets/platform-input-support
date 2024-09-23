@@ -1,3 +1,5 @@
+"""Main entry point for the platform input support tool."""
+
 import ssl
 import sys
 from importlib.metadata import version
@@ -14,6 +16,20 @@ from platform_input_support.util.logger import init_logger
 
 
 def main():
+    """Main entry point for the platform input support tool.
+
+    This function will run when the package is invoked from the command line. It will:
+
+    1. Initialize the configuration.
+    2. Make some checks on the working directory.
+    3. Initialize the logger.
+    4. Initialize the Google Cloud helper.
+    5. Initialize the task registry, loading all tasks in the tasks module.
+    6. Create a step object based on the configuration.
+    7. Execute the step.
+    8. Create a manifest object and update it with the step information.
+    9. Complete the manifest, saving it both locally and on Google Cloud.
+    """
     logger.info(f'starting platform input support v{version("platform_input_support")}')
 
     init_config()

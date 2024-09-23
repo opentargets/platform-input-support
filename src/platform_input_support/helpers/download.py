@@ -1,3 +1,5 @@
+"""Helper that downloads files from various sources."""
+
 import functools
 import shutil
 from pathlib import Path
@@ -18,18 +20,46 @@ REQUEST_TIMEOUT = 10
 
 
 class AbortableStreamWrapper:
+    """A wrapper around a stream that can be aborted.
+
+    This class wraps a stream and in every read operation, it will raise a
+    :class:`platform_input_support.util.errors.TaskAbortedError` if the abort event
+    is set. This is useful to abort downloads when another task fails.
+    """
+
     def __init__(self, stream, *, abort: Event):
         self.stream = stream
         self.abort = abort
 
-    def read(self, *args, **kwargs):
+    def read(self, *args, **kwargs) -> bytes:
+        """Read from the stream and raise TaskAbortedError if the abort event is set.
+
+        :return: The data read from the stream.
+        :rtype: bytes
+        :raises TaskAbortedError: If the abort event is set.
+        """
         if self.abort and self.abort.is_set():
             raise TaskAbortedError
         return self.stream.read(*args, **kwargs)
 
 
 class Downloader:
+    """Base class for downloaders."""
+
     def download(self, src: str, dst: Path, *, abort: Event | None = None) -> Path:
+        """Download a file from a source to a destination.
+
+        This method is a no-op and should be overridden by subclasses.
+
+        :param src: The source URL.
+        :type src: str
+        :param dst: The destination path.
+        :type dst: Path
+        :param abort: An event that can be set to abort the download, defaults to `None`
+        :type abort: Event | None, optional
+        :return: The destination path.
+        :rtype: Path
+        """
         return dst
 
     @staticmethod
@@ -56,7 +86,10 @@ class Downloader:
 
 
 class HttpDownloader(Downloader):
+    """Downloader for HTTP and HTTPS URLs."""
+
     def download(self, src: str, dst: Path, *, abort: Event | None = None) -> Path:
+        """Download a file from an HTTP or HTTPS URL."""
         logger.debug('starting http(s) download')
         session = self._create_session_with_retries()
         self._download(src, dst, session, abort=abort)
@@ -76,7 +109,10 @@ class HttpDownloader(Downloader):
 
 
 class GoogleSheetsDownloader(Downloader):
+    """Downloader for Google Sheets URLs."""
+
     def download(self, src: str, dst: Path, *, abort: Event | None = None) -> Path:
+        """Download a Google Sheet."""
         logger.debug('starting Google Sheets download')
         session = google_helper().get_session()
         self._download(src, dst, session, abort=abort)
@@ -84,13 +120,18 @@ class GoogleSheetsDownloader(Downloader):
 
 
 class GoogleStorageDownloader(Downloader):
+    """Downloader for Google Storage URLs."""
+
     def download(self, src: str, dst: Path, *, abort: Event | None = None) -> Path:
+        """Download a file from Google Storage."""
         logger.debug('starting google storage download')
         google_helper().download_to_file(src, dst)
         return dst
 
 
 class DownloadHelper:
+    """Helper that downloads files from various sources."""
+
     def __init__(self):
         self.strategies = {
             'google_sheets': GoogleSheetsDownloader(),
@@ -100,6 +141,7 @@ class DownloadHelper:
         }
 
     def download(self, src: str, dst: Path | str, abort: Event | None = None) -> Path:
+        """Download a file."""
         dst = self._prepare_destination(dst)
         protocol = self._get_protocol(src)
 
@@ -123,4 +165,5 @@ class DownloadHelper:
 
 
 def download(src: str, dst: Path | str, *, abort: Event | None = None) -> Path:
+    """Instantiate a DownloadHelper and download a file."""
     return DownloadHelper().download(src, dst, abort=abort)

@@ -1,3 +1,5 @@
+"""Manifest class for managing the manifest file."""
+
 import time
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -27,6 +29,8 @@ UPLOAD_TIMEOUT = 3
 
 
 class Manifest:
+    """Manifest class for managing the manifest file."""
+
     def __init__(self):
         self._manifest: RootManifest
         self._generation: int
@@ -115,6 +119,11 @@ class Manifest:
                 raise PISCriticalError(f'error uploading manifest: {e}')
 
     def update_step(self, step: 'Step'):
+        """Update the manifest with the step.
+
+        :param step: The step to update the manifest with.
+        :type step: Step
+        """
         self._relevant_step = step
         self._manifest.steps[step.name] = step._manifest
         self._manifest.modified = datetime.now()
@@ -122,10 +131,16 @@ class Manifest:
         recount(self._manifest)
 
     def complete(self):
+        """Close the manifest and save it."""
         self._save_local()
         self._save_gcs()
 
         logger.info(f'manifest closed, result: {self._manifest.result}')
 
     def is_completed(self) -> bool:
+        """Return whether the manifest is completed.
+
+        :return: Whether the manifest is completed.
+        :rtype: bool
+        """
         return self._manifest.result == Result.COMPLETED

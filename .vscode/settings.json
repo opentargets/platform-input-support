@@ -21,4 +21,5 @@
     ".coverage": true,
     "coverage.xml": true,
   },
+  "autoDocstring.docstringFormat": "sphinx",
 }

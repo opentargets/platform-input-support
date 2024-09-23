@@ -1,3 +1,5 @@
+"""This module contains the functions to parse the environment variables."""
+
 import os
 import sys
 
@@ -10,11 +12,22 @@ ENV_PREFIX = 'PIS'
 
 
 def to_setting(name: str) -> str:
-    """Convert an environment variable name to a setting name."""
+    """Converts an environment variable name to a setting name.
+
+    :param name: The environment variable name to convert.
+    :type name: str
+    :return: The setting name.
+    :rtype: str
+    """
     return name[len(f'{ENV_PREFIX}_') :].lower()
 
 
 def parse_env() -> EnvSettings:
+    """Parses the environment variables and returns an EnvSettings object.
+
+    :return: The parsed environment variables.
+    :rtype: EnvSettings
+    """
     logger.debug('parsing environment variables')
 
     # this builds a dict of all environment variables that start with the prefix

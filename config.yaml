@@ -14,7 +14,7 @@ steps:
     - name: download_latest baseline_expression
       source: gs://otar000-evidence_input/BaselineExpression/json
       destination: expression-inputs/baseline_expression.json.gz
-  
+
   biosample:
     - name: download cell ontology
       source: https://github.com/obophenotype/cell-ontology/releases/latest/download/cl.json

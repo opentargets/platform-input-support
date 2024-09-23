@@ -1,3 +1,5 @@
+"""Pretask — get a list of files from a source."""
+
 from dataclasses import dataclass
 from threading import Event
 from typing import Self
@@ -11,13 +13,25 @@ from platform_input_support.tasks import Pretask, PretaskDefinition, report
 
 @dataclass
 class GetFileListDefinition(PretaskDefinition):
-    is_pre: bool = True
+    """Configuration fields for the get_file_list pretask.
+
+    This pretask has the following custom configuration fields:
+        - source (str): The source to list files from.
+        - pattern (str): The pattern to match files against.
+        - sentinel (str): The key to store the file list in the scratchpad.
+    """
+
     source: str
     pattern: str
     sentinel: str
 
 
 class GetFileList(Pretask):
+    """Get a list of files from a source.
+
+    This pretask will list files from a source and store the list in the scratchpad.
+    """
+
     def __init__(self, definition: PretaskDefinition):
         super().__init__(definition)
         self.definition: GetFileListDefinition

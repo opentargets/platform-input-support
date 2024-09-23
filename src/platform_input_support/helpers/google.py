@@ -1,3 +1,5 @@
+"""Google Cloud Storage helper module."""
+
 import re
 import sys
 from datetime import datetime
@@ -21,6 +23,19 @@ GOOGLE_SCOPES = [
 
 
 class GoogleHelper:
+    """Google Cloud Storage helper class.
+
+    This class provides methods to interact with Google Cloud Storage. It stores the
+    Google Cloud Storage client and credentials.
+
+    :ivar credentials: The Google Cloud Storage credentials.
+    :vartype credentials: google.auth.credentials.Credentials
+    :ivar client: The Google Cloud Storage client.
+    :vartype client: google.cloud.storage.client.Client
+    :ivar is_ready: A flag indicating if the helper is ready to use.
+    :vartype is_ready: bool
+    """
+
     def __init__(self):
         try:
             credentials, project_id = auth.default(scopes=GOOGLE_SCOPES)
@@ -87,6 +102,13 @@ class GoogleHelper:
         return blob
 
     def bucket_exists(self, url: str) -> bool:
+        """Check if a bucket exists.
+
+        :param url: The URL of the bucket.
+        :type url: str
+        :return: True if the bucket exists, False otherwise.
+        :rtype: bool
+        """
         logger.trace(url)
         bucket_name, _ = self._parse_url(url)
         try:
@@ -98,6 +120,15 @@ class GoogleHelper:
         return True
 
     def download_to_string(self, url: str) -> tuple[str, int] | None:
+        """Download a file from Google Cloud Storage and return its content as a string.
+
+        :param url: The URL of the file to download.
+        :type url: str
+        :raises NotFoundError: If the file is not found.
+        :raises HelperError: If an error occurs while downloading the file.
+        :return: A tuple containing the file content and its generation number.
+        :rtype: tuple[str, int] | None
+        """
         logger.trace(url)
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
@@ -118,6 +149,15 @@ class GoogleHelper:
         return (decoded_blob, blob.generation)
 
     def download_to_file(self, url: str, destination: Path) -> None:
+        """Download a file from Google Cloud Storage to a local file.
+
+        :param url: The URL of the file to download.
+        :type url: str
+        :param destination: The destination path.
+        :type destination: Path
+        :raises NotFoundError: If the file is not found.
+        :raises HelperError: If an error occurs while downloading the file.
+        """
         logger.trace(destination)
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
@@ -132,6 +172,14 @@ class GoogleHelper:
         logger.debug('download completed')
 
     def upload(self, source: Path, destination: str) -> None:
+        """Upload a file to Google Cloud Storage.
+
+        :param source: The source file.
+        :type source: Path
+        :param destination: The destination URL.
+        :type destination: str
+        :raises HelperError: If an error occurs while uploading the file.
+        """
         logger.trace(destination)
         bucket_name, prefix = self._parse_url(destination)
         bucket = self._get_bucket(bucket_name)
@@ -144,6 +192,17 @@ class GoogleHelper:
         logger.debug(f'uploaded {source} to {destination}')
 
     def upload_safe(self, content: str, destination: str, generation: int) -> None:
+        """Upload a file to Google Cloud Storage, ensuring the generation matches.
+
+        :param content: The file content.
+        :type content: str
+        :param destination: The destination URL.
+        :type destination: str
+        :param generation: The expected generation number of the current remote version.
+        :type generation: int
+        :raises PreconditionFailedError: If the generation number does not match.
+        :raises HelperError: If an error occurs while uploading the file.
+        """
         logger.trace(destination)
         bucket_name, prefix = self._parse_url(destination)
         bucket = self._get_bucket(bucket_name)
@@ -173,6 +232,17 @@ class GoogleHelper:
         return '/' not in blob_name and not blob_name.endswith('/')
 
     def list_blobs(self, url: str, include: str | None = None, exclude: str | None = None) -> list[str]:
+        """List blobs in a bucket.
+
+        :param url: The URL of the bucket.
+        :type url: str
+        :param include: A filter to include only blobs that contain this string, defaults to `None`
+        :type include: str | None, optional
+        :param exclude: A filter to exclude blobs that contain this string, defaults to `None`
+        :type exclude: str | None, optional
+        :return: A list of blob URLs.
+        :rtype: list[str]
+        """
         logger.trace(url)
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
@@ -194,6 +264,13 @@ class GoogleHelper:
         return [f'gs://{bucket_name}/{blob_name}' for blob_name in blob_name_list]
 
     def get_modification_date(self, url: str) -> datetime | None:
+        """Get the modification date of a blob.
+
+        :param url: The URL of the blob.
+        :type url: str
+        :return: The modification date of the blob.
+        :rtype: datetime | None
+        """
         logger.trace(url)
         bucket_name, prefix = self._parse_url(url)
         bucket = self._get_bucket(bucket_name)
@@ -202,6 +279,14 @@ class GoogleHelper:
         return blob.updated
 
     def get_newest(self, url_list: list[str]) -> str | None:
+        """Get the URL of the newest blob from a list of URLs.
+
+        :param url_list: A list of blob URLs.
+        :type url_list: list[str]
+        :raises HelperError: If there are multiple bucket names in the URLs.
+        :return: The URL of the newest blob.
+        :rtype: str | None
+        """
         if len(url_list) == 0:
             return None
 
@@ -229,4 +314,9 @@ class GoogleHelper:
         return f'gs://{bucket_name}/{newest_blob.name}' if newest_blob else None
 
     def get_session(self) -> AuthorizedSession:
+        """Get the current authenticated session.
+
+        :return: An authorized session.
+        :rtype: AuthorizedSession
+        """
         return AuthorizedSession(self.credentials)

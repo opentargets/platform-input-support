@@ -1,3 +1,5 @@
+"""Step module."""
+
 from collections.abc import Callable
 from multiprocessing import Manager
 from multiprocessing.pool import Pool
@@ -32,11 +34,49 @@ def _execute(args):
 
 
 class XPool(Pool):
+    """Extended Pool class.
+
+    This class extends the Pool class to add an xmap method that allows for the execution of
+    a function on a list of tasks, while also providing an abort mechanism.
+    """
+
     def xmap(self, func_name: str, tasks: list['Task'], abort: Event) -> list['Task']:
+        """Execute a function on a list of tasks.
+
+        This is a wrapper for imap_unordered that allows for the execution of a function
+        on a list of tasks with arbitrary parameters without having to clump them together
+        in a single tuple. It also provides an abort mechanism.
+
+        :param func_name: The name of the function to execute on the tasks.
+        :type func_name: str
+        :param tasks: The list of tasks to execute the function on.
+        :type tasks: list[Task]
+        :param abort: The abort event to signal the tasks to stop execution.
+        :type abort: Event
+
+        :return: The list of tasks after the function has been executed on them.
+        :rtype: list[Task]
+        """
         return list(self.imap_unordered(_execute, [(t, func_name, abort) for t in tasks]))
 
 
 class Step(StepReporter):
+    """Step class.
+
+    This class represents a step in the pipeline. A step is a collection of pretasks and
+    tasks. The step will:
+
+    1. Initialize the pretasks.
+    2. Run the pretasks.
+    3. Initialize the tasks.
+    4. Send the tasks to the pool for parallel execution.
+    5. Validate the tasks.
+    6. Upload the tasks.
+
+    :ivar name: The name of the step.
+    :vartype name: str
+    """
+
     def __init__(self, name: str):
         super().__init__(name)
 
@@ -72,6 +112,12 @@ class Step(StepReporter):
             return upload_pool.xmap('upload', tasks, abort)
 
     def execute(self):
+        """Execute the step.
+
+        :raises StepFailedError: If the step execution fails at any point.
+        :return: The step instance itself.
+        :rtype: Step
+        """
         with Manager() as manager:
             a = manager.Event()
 

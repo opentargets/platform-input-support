@@ -1,3 +1,5 @@
+"""Configures the logger for the application."""
+
 import os
 import sys
 from collections.abc import Callable
@@ -15,6 +17,17 @@ if TYPE_CHECKING:
 
 
 def get_exception_info(record_exception) -> tuple[str, str, str]:
+    """Get fields from the exception record.
+
+    This function extracts the name, function and line number from an exception.
+    It will go back in the stack to the first frame originated inside the app,
+    that way it will make sure the error is meaningful in the logs. If we don't
+    do this, the error will be logged as raising from the in the report decorator,
+    which is not very useful.
+
+    Args:
+        record_exception: The exception record.
+    """
     name = '{name}'
     func = '{function}'
     line = '{line}'
@@ -41,6 +54,8 @@ def get_exception_info(record_exception) -> tuple[str, str, str]:
 
 
 def get_format_log(include_task: bool = True) -> Callable[..., str]:
+    """Get the format for the log messages."""
+
     def format_log(record):
         name, func, line = get_exception_info(record.get('exception'))
         task = '<y>{extra[task]}</>::' if include_task and record['extra'].get('task') else ''
@@ -87,6 +102,13 @@ def task_logging(task: 'Task'):
 
 
 def init_logger(log_level: str) -> None:
+    """Initializes the logger.
+
+    PIS uses two handlers by default, one for the console and one for the log file.
+
+    Args:
+        log_level (str): The log level to use.
+    """
     log_filename = absolute_path('output.log')
     handlers = [
         {

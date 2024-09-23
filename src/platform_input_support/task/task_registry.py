@@ -1,3 +1,5 @@
+"""TaskRegistry class handles the registry of tasks."""
+
 import importlib
 import sys
 from pathlib import Path
@@ -15,6 +17,22 @@ TASKS_MODULE = 'platform_input_support.tasks'
 
 
 class TaskRegistry:
+    """TaskRegistry contains the registry of tasks.
+
+    The registry is where platform input support will instantiate tasks from when it
+    reads the configuration file. It contains the mapping of task names to their
+    respective classes, task definitions and manifests.
+
+    :ivar tasks: Mapping of task names to their respective classes.
+    :vartype tasks: dict[str, type[Task]]
+    :ivar task_definitions: Mapping of task names to their respective task definition classes.
+    :vartype task_definitions: dict[str, type[BaseTaskDefinition]]
+    :ivar task_manifests: Mapping of task names to their respective task manifest classes.
+    :vartype task_manifests: dict[str, type[TaskManifest]]
+    :ivar pre_tasks: List of names of the pretasks.
+    :vartype pre_tasks: list[str]
+    """
+
     def __init__(self):
         self.tasks: dict[str, type[Task]] = {}
         self.task_definitions: dict[str, type[BaseTaskDefinition]] = {}
@@ -26,9 +44,17 @@ class TaskRegistry:
         return filename.replace('_', ' ').title().replace(' ', '')
 
     def is_pretask(self, task_definition: BaseTaskDefinition) -> bool:
+        """Return whether the task is a pretask.
+
+        :param task_definition: The task definition to check.
+        :type task_definition: BaseTaskDefinition
+        :return: Whether the task is a pretask.
+        :rtype: bool
+        """
         return real_name(task_definition) in self.pre_tasks
 
     def register_tasks(self):
+        """Register all tasks from the tasks directory."""
         logger.debug(f'registering tasks from {TASKS_DIR}')
 
         for task_path in TASKS_DIR.glob('[!{_}]*.py'):
@@ -76,11 +102,25 @@ class TaskRegistry:
         return task
 
     def instantiate_t(self, task_definition: BaseTaskDefinition) -> 'Task':
+        """Instantiate a task.
+
+        :param task_definition: The task definition to instantiate the task from.
+        :type task_definition: BaseTaskDefinition
+        :return: The instantiated task.
+        :rtype: Task
+        """
         task = self._instantiate(task_definition)
         assert isinstance(task, Task)
         return task
 
     def instantiate_p(self, pretask_definition: BaseTaskDefinition) -> 'Pretask':
+        """Instantiate a pretask.
+
+        :param pretask_definition: The pretask definition to instantiate the pretask from.
+        :type pretask_definition: BaseTaskDefinition
+        :return: The instantiated pretask.
+        :rtype: Pretask
+        """
         pretask = self._instantiate(pretask_definition)
         assert isinstance(pretask, Pretask)
         return pretask

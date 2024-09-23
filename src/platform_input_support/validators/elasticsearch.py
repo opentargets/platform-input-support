@@ -1,3 +1,5 @@
+"""Validators for Elasticsearch."""
+
 import subprocess
 from pathlib import Path
 
@@ -18,7 +20,19 @@ def _wccount(filename):
 
 
 def counts(url: str, index: str, local_path: Path) -> bool:
-    logger.debug(f'checking if document count at {url}/{index} and {local_path} match')
+    """Check if the document counts at the remote and local locations match.
+
+    :param url: The URL of the ElasticSearch instance.
+    :type url: str
+    :param index: The index to scan.
+    :type index: str
+    :param local_path: The path where the documents are stored locally.
+    :type local_path: Path
+
+    :return: True if the document counts match, False otherwise.
+    :rtype: bool
+    """
+    logger.debug(f'checking if document counts at {url}/{index} and {local_path} match')
 
     es = Es(url)
     remote_doc_count = es.count(index=index)['count']

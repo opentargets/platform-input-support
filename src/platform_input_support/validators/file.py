@@ -1,3 +1,5 @@
+"""Validators for files."""
+
 from pathlib import Path
 
 import requests
@@ -9,11 +11,29 @@ REQUEST_TIMEOUT = 10
 
 
 def file_exists(path: Path) -> bool:
+    """Check if a file exists.
+
+    :param path: The path to the file.
+    :type path: Path
+
+    :return: True if the file exists, False otherwise.
+    :rtype: bool
+    """
     logger.trace(path)
     return absolute_path(path).exists()
 
 
 def file_size(source: str, destination: Path) -> bool:
+    """Check if the file size of a remote file matches the local file.
+
+    :param source: The URL of the remote file.
+    :type source: str
+    :param destination: The path to the local file.
+    :type destination: Path
+
+    :return: True if the file sizes match, False otherwise.
+    :rtype: bool
+    """
     logger.debug(f'checking if {source} and {destination} are the same size')
 
     # this ensures no gzip encoding is used
