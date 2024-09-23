@@ -1,3 +1,5 @@
+"""StepReporter class and report decorator for logging and updating steps in the manifest."""
+
 import sys
 from datetime import UTC, datetime
 from functools import wraps
@@ -12,23 +14,28 @@ if TYPE_CHECKING:
 
 
 class StepReporter:
+    """Class for logging and updating steps in the manifest."""
+
     def __init__(self, name: str):
         self.name = name
         self._manifest = StepManifest(name=self.name)
 
     def staged(self, log: str):
+        """Set the step result to STAGED."""
         self._manifest.result = Result.STAGED
         msg = f'step staged: {log}'
         self._manifest.log.append(msg)
         logger.success(msg)
 
     def validated(self, log: str):
+        """Set the step result to VALIDATED."""
         self._manifest.result = Result.VALIDATED
         msg = f'step validated: {log}'
         self._manifest.log.append(msg)
         logger.success(msg)
 
     def completed(self, log: str):
+        """Set the step result to COMPLETED."""
         self._manifest.result = Result.COMPLETED
         self._manifest.completed = datetime.now(UTC)
         self._manifest.elapsed = (self._manifest.completed - self._manifest.created).total_seconds()
@@ -37,18 +44,21 @@ class StepReporter:
         logger.success(msg)
 
     def failed(self, log: str):
+        """Set the step result to FAILED."""
         self._manifest.result = Result.FAILED
         msg = f'step failed: {log}'
         self._manifest.log.append(msg)
         logger.opt(exception=sys.exc_info()).error(msg)
 
     def attach_manifest(self, task: 'Task'):
+        """Attach a task manifest to the step manifest."""
         self._manifest.tasks.append(task._manifest)
         msg = f'task {task.name} {task._manifest.result}'
         self._manifest.log.append(msg)
         logger.info(msg)
 
     def upsert_task_manifests(self, tasks: list['Task']):
+        """Update the step manifest with new task manifests."""
         for task in tasks:
             inserted = False
             for i, t in enumerate(self._manifest.tasks):
@@ -62,6 +72,8 @@ class StepReporter:
 
 
 def report(func):
+    """Decorator for logging and updating steps in the manifest."""
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         try:

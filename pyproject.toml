@@ -1,6 +1,6 @@
 [project]
 name = "platform-input-support"
-version = "24.6.1"
+version = "24.6.2"
 description = "Open Target's Platform Input Support Application"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -104,7 +104,7 @@ select = [
 ]
 
 ignore = [
-  'D1',      # we are missing many docstrings
+  'D107',    # we don't want to document every single init method
   'D213',    # we prefer D212
   'G004',    # we don't care about logging format
   'E226',    # allow omitting whitespace around arithmetic operators
@@ -171,8 +171,8 @@ extend-safe-fixes = [
   'PERF102', # ^ likewise
 ]
 
-[tool.ruff.lint.extend-per-file-ignores]
-'tests/**/test_*.py' = ['S108', 'S602']
+[tool.ruff.lint.per-file-ignores]
+'**/*_test.py' = ['S108', 'S602', 'D']
 '**/__init__.py' = ['F401']
 
 [tool.ruff.lint.flake8-quotes]
@@ -189,4 +189,11 @@ parametrize-values-type = 'list'
 parametrize-values-row-type = 'tuple'
 
 [tool.ruff.lint.pydocstyle]
-convention = "pep257"
+convention = "google"
+ignore-decorators = [
+  "platform_input_support.tasks.report",
+  "platform_input_support.manifest.task_reporter.report",
+]
+
+[tool.ruff.per-file-ignores]
+"*_test.py" = ["D"]

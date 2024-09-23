@@ -1,3 +1,5 @@
+"""This module contains the functions to parse yaml files."""
+
 import sys
 from pathlib import Path
 from typing import Any
@@ -10,6 +12,13 @@ from platform_input_support.config.models import BaseTaskDefinition, YamlSetting
 
 
 def load_yaml_file(config_file: Path) -> str:
+    """Load a yaml file.
+
+    :param config_file: The path to the yaml file.
+    :type config_file: Path
+    :return: The contents of the yaml file.
+    :rtype: str
+    """
     logger.debug(f'loading yaml file {config_file}')
     try:
         return Path.read_text(config_file)
@@ -19,6 +28,13 @@ def load_yaml_file(config_file: Path) -> str:
 
 
 def parse_yaml_string(yaml_string: str) -> dict:
+    """Parse a yaml string.
+
+    :param yaml_string: The yaml string to parse.
+    :type yaml_string: str
+    :return: The parsed yaml content.
+    :rtype: dict
+    """
     logger.debug('parsing yaml string')
     try:
         return yaml.safe_load(yaml_string) or {}
@@ -31,14 +47,15 @@ def parse_yaml(config_file: Path) -> dict[str, Any]:
     """Parse a yaml file.
 
     This function loads a yaml file, parses its content, and returns it as a
-    dictionary. If the file cannot be read or the content cannot be parsed, the
-    program will log an error and exit.
+    dictionary.
 
-    Args:
-        config_file (Path): The path to the yaml file.
+    .. warning:: If the file cannot be read or the content cannot be parsed, the
+        program will log an error and exit.
 
-    Returns:
-        dict: The parsed yaml content.
+    :param config_file: The path to the yaml file.
+    :type config_file: Path
+    :return: The parsed yaml content.
+    :rtype: dict
     """
     yaml_str = load_yaml_file(config_file)
     return parse_yaml_string(yaml_str)
@@ -47,14 +64,15 @@ def parse_yaml(config_file: Path) -> dict[str, Any]:
 def get_yaml_settings(yaml_dict: dict[str, Any]) -> YamlSettings:
     """Validate the yaml settings.
 
-    This function validates the yaml settings against the YamlSettings model. If
-    the settings are invalid, the program will log an error and exit.
+    This function validates the yaml settings against the YamlSettings model.
 
-    Args:
-        yaml_dict (dict[str, Any]): The yaml settings.
+    .. warning:: If the settings are invalid, the program will log an error and
+        exit.
 
-    Returns:
-        YamlSettings: The validated yaml settings.
+    :param yaml_dict: The yaml settings.
+    :type yaml_dict: dict[str, Any]
+    :return: The validated yaml settings.
+    :rtype: YamlSettings
     """
     try:
         return YamlSettings.model_validate(yaml_dict)
@@ -67,14 +85,15 @@ def get_yaml_stepdefs(yaml_dict: dict[str, Any]) -> dict[str, list[BaseTaskDefin
     """Validate the yaml step definitions.
 
     This function validates the yaml step definitions against the BaseTaskDefinition
-    model. If the step definitions are invalid, the program will log an error and
-    exit.
+    model.
 
-    Args:
-        yaml_dict (dict[str, Any]): The yaml step definitions.
+    .. warning:: If the step definitions are invalid, the program will log an error and
+        exit.
 
-    Returns:
-        dict[str, list[BaseTaskDefinition]]: The validated yaml step definitions.
+    :param yaml_dict: The yaml settings.
+    :type yaml_dict: dict[str, Any]
+    :return: The validated yaml step definitions.
+    :rtype: dict[str, list[BaseTaskDefinition]]
     """
     steps = yaml_dict.get('steps', {})
 
@@ -96,10 +115,9 @@ def get_yaml_sentinel_dict(yaml_dict: dict[str, Any]) -> dict[str, Any]:
     settings. If the sentinel dictionary is not present, an empty dictionary is
     returned.
 
-    Args:
-        yaml_dict (dict[str, Any]): The yaml settings.
-
-    Returns:
-        dict[str, Any]: The sentinel dictionary.
+    :param yaml_dict: The yaml settings.
+    :type yaml_dict: dict[str, Any]
+    :return: The sentinel dictionary.
+    :rtype: dict[str, Any]
     """
     return yaml_dict.get('scratchpad', {})

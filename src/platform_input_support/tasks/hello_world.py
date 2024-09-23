@@ -1,3 +1,5 @@
+"""Simple hello world task."""
+
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Event
@@ -5,21 +7,24 @@ from typing import Self
 
 from loguru import logger
 
-from platform_input_support.config.models import TaskDefinition
-from platform_input_support.manifest.models import Resource
-from platform_input_support.manifest.task_reporter import report
-from platform_input_support.task import Task
-from platform_input_support.validators import v
+from platform_input_support.tasks import Resource, Task, TaskDefinition, report, v
 from platform_input_support.validators.file import file_exists
 
 
 @dataclass
 class HelloWorldDefinition(TaskDefinition):
+    """Configuration fields for the hello_world task.
+
+    This task has the following custom configuration fields:
+        - who (str): The person to greet in the output file.
+    """
+
     who: str = 'world'
-    destination: Path = Path('/path/to/output/file.txt')
 
 
 class HelloWorld(Task):
+    """Simple hello world task."""
+
     def __init__(self, definition: TaskDefinition):
         super().__init__(definition)
         self.definition: HelloWorldDefinition

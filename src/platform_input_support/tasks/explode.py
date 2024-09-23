@@ -1,3 +1,5 @@
+"""Pretask — explode tasks based on a list of dictionaries."""
+
 import json
 import sys
 from collections.abc import Callable
@@ -16,6 +18,20 @@ from platform_input_support.util.misc import list_str
 
 @dataclass
 class ExplodeDefinition(PretaskDefinition):
+    """Configuration fields for the explode pretask.
+
+    This pretask has the following custom configuration fields:
+        - do (list[dict]): The tasks to explode. Each task in the list will be
+            duplicated for each iteration of the foreach list.
+        - foreach (list[dict[str, str]] | None): The list of dictionaries to iterate
+            over. Each item in the list will be used to replace the variables in the
+            tasks in the do list.
+        - foreach_function (str | None): If set, this function will be called to get
+            the foreach list. The function must return a list of dictionaries.
+        - foreach_function_args (dict[str, Any] | None): Arguments to pass to the
+            foreach function.
+    """
+
     do: list[dict]
     foreach: list[dict[str, str]] | None = None
     foreach_function: str | None = None
@@ -23,6 +39,16 @@ class ExplodeDefinition(PretaskDefinition):
 
 
 class Explode(Pretask):
+    """Explode tasks based on a list of dictionaries.
+
+    This pretask will duplicate the tasks in the `do` list for each iteration of the
+    `foreach` list. The `foreach` list is a list of dictionaries where each dictionary
+    will be used to replace the variables in the tasks in the `do` list.
+
+    If the `foreach` list is not set, the `foreach_function` will be called to get the
+    list of dictionaries. The function must return a list of dictionaries.
+    """
+
     def __init__(self, definition: TaskDefinition):
         super().__init__(definition)
         self.definition: ExplodeDefinition
@@ -77,17 +103,24 @@ def urls_from_json(
     json_path: str,
     prefix: str | None,
 ) -> list[dict[str, str]]:
-    """Get download tasks from a JSON file.
+    """Get a list of URLs from a JSON file.
 
-    Args:
-        source (str): URL to the JSON file to download
-        destination (str): Destination path for the JSON file
-        json_path (str): jq path to the URLs to retrieve from the file
-        prefix (str | None): If present, this prefix will be removed from the URLs
-            to generate the destination path where the file will be saved. This is
-            useful in case there are multiple URLs in the JSON file with the same
-            file name that would end up overwriting each other.
-            If this is None, the file name will be used as the destination path.
+    This function will download a JSON file from a URL, extract a list of URLs from it
+    using a JQ query, and return a list of dictionaries with the source and destination
+    URLs.
+
+    :param source: The URL of the JSON file to download.
+    :type source: str
+    :param destination: The destination file to save the JSON file to.
+    :type destination: str
+    :param json_path: The JQ query to extract the URLs from the JSON file.
+    :type json_path: str
+    :param prefix: If set, this prefix will be removed from the source URLs to generate
+        the destination file names.
+    :type prefix: str | None
+
+    :return: A list of dictionaries with the source and destination URLs.
+    :rtype: list[dict[str, str]]
     """
     destination_file = download(source, destination)
     file_content = destination_file.read_text()

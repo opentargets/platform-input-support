@@ -1,3 +1,7 @@
+"""Main module in the config package."""
+
+from typing import Any
+
 from loguru import logger
 from pydantic import ValidationError
 
@@ -19,8 +23,7 @@ class Config:
     3. YAML configuration file
     4. Default settings
 
-    Attributes:
-        settings (Settings): The settings object.
+    :ivar Settings settings: The settings object.
     """
 
     def __init__(self):
@@ -60,8 +63,8 @@ class Config:
         Makes sure the task definitions specified in the configuration file for
         the step the application is going to run are valid.
 
-        Returns:
-            list[BaseTaskDefinition]: The list of task definitions.
+        :return: The list of task definitions.
+        :rtype: list[BaseTaskDefinition]
         """
         step = self.settings.step
         ts = self.yaml_dict['steps'].get(step)
@@ -76,10 +79,10 @@ class Config:
             logger.critical(f'invalid task definition for: {e}')
             raise SystemExit(1)
 
-    def get_scratchpad_sentinel_dict(self):
+    def get_scratchpad_sentinel_dict(self) -> dict[str, Any]:
         """Return the sentinel dictionary for the scratchpad.
 
-        Returns:
-            dict[str, Any]: The sentinel dictionary.
+        :return: The sentinel dictionary for the scratchpad.
+        :rtype: dict[str, Any]
         """
         return self.yaml_dict.get('scratchpad', {})

@@ -1,3 +1,10 @@
+"""Scratchpad module.
+
+This module defines the `Scratchpad` class, which is a centralized place to store
+key-value pairs in the configuration of the application. It provides utilities to
+perform template substition.
+"""
+
 import ast
 from pathlib import Path
 from string import Template
@@ -7,17 +14,18 @@ from platform_input_support.util.errors import ScratchpadError
 
 
 class TemplateWithDots(Template):
+    """A subclass of `string.Template` that allows dots in placeholders."""
+
     idpattern = r'(?a:[_a-z][._a-z0-9]*)'
 
 
 class Scratchpad:
     """A class to store and replace placeholders in strings.
 
-    This class is used to store key-value pairs and replace placeholders in
-    strings with the corresponding values. The placeholders are defined in the
-    strings using the dollar sign followed by the placeholder name enclosed in
-    curly braces, e.g., `${person.name}`. The placeholders can have dots in
-    their names to represent nested dictionaries or objects.
+    This class is used to store key-value pairs and replace placeholders in strings with
+    the corresponding values. The placeholders are defined in the strings using the dollar
+    sign followed by the placeholder name enclosed in curly braces, e.g., `${person.name}`.
+    The placeholders can have dots in their names to represent nested dictionaries or objects.
 
     Example:
         >>> scratchpad = Scratchpad()
@@ -25,9 +33,8 @@ class Scratchpad:
         >>> scratchpad.replace('Hello, ${person.name}!')
         'Hello, Alice!'
 
-    Args:
-        sentinel_dict (dict[str, Any], optional): A dictionary with the initial
-        key-value pairs to store in the scratchpad. Defaults to `None`.
+    :ivar sentinel_dict: A dictionary to store the key-value pairs.
+    :vartype sentinel_dict: dict[str, Any]
     """
 
     def __init__(self, sentinel_dict: dict[str, Any] | None = None):
@@ -39,24 +46,22 @@ class Scratchpad:
         Both strings and lists of strings are accepted as values. It might be
         useful to extend it to accept dicts as well.
 
-        Args:
-            key (str): The key to store.
-            value (str | list[str]): The value to store.
+        :param key: The key to store.
+        :type key: str
+        :param value: The value to store.
+        :type value: str | list[str]
         """
         self.sentinel_dict[key] = value
 
     def replace(self, sentinel: str | Path) -> str:
         """Replace placeholders in a string with the corresponding values.
 
-        Args:
-            sentinel (str): The string with placeholders to replace.
-
-        Returns:
-            str: The string with the placeholders replaced by their values.
-
-        Raises:
-            ScratchpadError: If a placeholder in the string does not have a
-                corresponding value in the scratchpad.
+        :param sentinel: The string with placeholders to replace.
+        :type sentinel: str | Path
+        :return: The string with the placeholders replaced by their values.
+        :rtype: str
+        :raises ScratchpadError: If a placeholder in the string does not have a
+            corresponding value in the scratchpad.
         """
         replacer = TemplateWithDots(str(sentinel))
 

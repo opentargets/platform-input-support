@@ -1,3 +1,5 @@
+"""This module contains the functions to parse the command line arguments."""
+
 import argparse
 import os
 
@@ -8,11 +10,22 @@ from platform_input_support.config.models import CliSettings, Settings
 
 
 def to_env(var: str) -> str:
-    """Convert a setting name to an environment variable name."""
+    """Converts a variable name to an environment variable name.
+
+    :param var: The variable name to convert.
+    :type var: str
+    :return: The environment variable name.
+    :rtype: str
+    """
     return f'{ENV_PREFIX}_{var.upper()}'
 
 
 def parse_cli() -> CliSettings:
+    """Parses the command line arguments and returns a CliSettings object.
+
+    :return: The parsed command line arguments.
+    :rtype: CliSettings
+    """
     logger.debug('parsing cli arguments')
 
     class HelpFormatter(argparse.HelpFormatter):
