@@ -53,7 +53,7 @@ docker build -t pis .
 ## Development
 
 > [!NOTE]
-> Take a look at the [API documentation]([https://javfg](https://javfg.github.io/platform-input-support),
+> Take a look at the [API documentation](https://javfg.github.io/platform-input-support),
 > it is a very helpful guide when developing new tasks.
 
 > [!IMPORTANT]
