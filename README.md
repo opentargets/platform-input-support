@@ -57,7 +57,7 @@ docker build -t pis .
 > it is a very helpful guide when developing new tasks.
 
 > [!IMPORTANT]
-> Remember to run `make git` before starting development. This will set up a very simple git hook
+> Remember to run `make dev` before starting development. This will set up a very simple git hook
 > that does a few checks before committing.
 
 Development of PIS can be done straight away in the local environment. You can run the application
