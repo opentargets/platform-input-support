@@ -51,6 +51,11 @@ docker build -t pis .
 ```
 
 ## Development
+
+> [!NOTE]
+> Take a look at the [API documentation]([https://javfg](https://javfg.github.io/platform-input-support),
+> it is a very helpful guide when developing new tasks.
+
 > [!IMPORTANT]
 > Remember to run `make git` before starting development. This will set up a very simple git hook
 > that does a few checks before committing.
