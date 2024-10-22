@@ -3,6 +3,7 @@
 open-targets-gac.json
 mrtarget.data.yml
 opentargets-urlzsource
+gcs_credentials.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -41,6 +42,7 @@ coverage.xml
 # meta dirs
 sessions/
 credentials/
+srv/
 
 # terraform
 terraform.tfstate

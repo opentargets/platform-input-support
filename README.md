@@ -91,16 +91,6 @@ This allows the activation of the service account when running the container ima
 For using an external config file, simply add the option -c and the path where the config file is available
 
 
-## Singularity 
-This is an example how to run singularity using the docker image.
-``` shell
-singularity exec \
-   -B /nfs/ftp/private/otftpuser/output_pis:/usr/src/app/output \
-   docker://quay.io/opentargets/platform-input-support:cm_singularity \
-   conda run --no-cature-output -n pis-py3.8 python3 /usr/src/app/platform-input-support.py -steps drug
-  
-```
-
 ## Run PIS inside EBI infrastructure
 In order to run PIS inside the current EBI infrastructure the best praticse is to use Singularity and LSF.
 
@@ -116,21 +106,6 @@ or
 gcloud config set project open-targets-prod
 
 gcloud auth application-default login
-```
-You can use `singularity/ebi.sh` to run PIS inside the EBI infrastructure.
-```
- ./singularity docker_tag_image step google_storage_path 
-```
-where 
-* docker_tag_image: docker image tag (quay.io) (**under review**)
-* step : Eg. drug 
-* google_storage_path: gs bucket [not mandatory]
-
-```shell
- ./singularity/ebi.sh 21.04 drug 
- 
- ./singularity/ebi.sh 21.04 drug ot-snapshots/21.04/input
-
 ```
 
 
@@ -299,18 +274,6 @@ sh check_corrupted_files.sh
 
 ### Installation command for Google Cloud or Amazon Azure
 Create a linux VM server and run the following commands
-```
-sudo apt update
-sudo apt install git
-sudo apt-get install bzip2 wget
-```
-```
-wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
-bash Anaconda3-2020.07-Linux-x86_64.sh
-source ~/.bashrc
-
-```
-
 ```
 mkdir gitRepo
 cd gitRepo
