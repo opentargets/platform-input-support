@@ -22,6 +22,9 @@ steps:
     - name: download uberon
       source: https://github.com/obophenotype/uberon/releases/latest/download/uberon.json
       destination: biosamples/uberon.json
+    - name: download efo
+      source: https://github.com/EBISPOT/efo/releases/download/${efo_version}/efo.json
+      destination: biosamples/efo.json
 
   disease:
     - name: download efo otar_slim
