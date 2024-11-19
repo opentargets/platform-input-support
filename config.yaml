@@ -1,13 +1,13 @@
 ---
 work_dir: ./work
-gcs_url: gs://open-targets-pre-data-releases/24.06dev-test/input
+gcs_url: gs://open-targets-pre-data-releases/24.12-pis-test/input
 log_level: TRACE
-pool: 5
+pool: 8
 
 scratchpad:
-  efo_version: v3.68.0
-  ensembl_version: '112'
   chembl_version: '34'
+  efo_version: v3.70.0
+  ensembl_version: '113'
 
 steps:
   baseline_expression:
@@ -28,8 +28,8 @@ steps:
 
   disease:
     - name: download efo otar_slim
-      source: https://github.com/EBISPOT/efo/releases/download/${efo_version}/efo_otar_slim.owl
-      destination: ontology-inputs/ontology-efo.owl
+      source: https://github.com/EBISPOT/efo/releases/download/${efo_version}/efo_otar_slim.json
+      destination: ontology-inputs/efo_otar_slim.json
     - name: download hpo
       source: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2021-10-10/hp.json
       destination: ontology-inputs/ontology-hpo.json
@@ -42,7 +42,7 @@ steps:
 
   drug:
     - name: download drugbank vocabulary
-      source: https://go.drugbank.com/releases/5-1-9/downloads/all-drugbank-vocabulary
+      source: gs://open-targets-pre-data-releases/24.09dev/input/chembl-inputs/drugbank_vocabulary.csv
       destination: chembl-inputs/drugbank_vocabulary.csv
     - name: download_latest drugbank
       source: gs://otar001-core/DrugBank/annotation
@@ -188,10 +188,10 @@ steps:
       destination: expression-inputs/expression_hierarchy_curation.tsv
     - name: download tissue translation map
       source: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
-      destination: expression-inputs/tissue-translation-map.json
+      destination: expression-inputs/map_with_efos.jsonl
     - name: download normal tissues
-      source: https://www.proteinatlas.org/download/normal_tissue.tsv.zip
-      destination: expression-inputs/normal_tissue.tsv.gz
+      source: https://www.proteinatlas.org/download/tsv/normal_tissue.tsv.zip
+      destination: expression-inputs/normal_tissue.tsv.zip
     - name: download_latest baseline expression binned
       source: gs://atlas_baseline_expression/baseline_expression_binned
       destination: expression-inputs/baseline_expression_binned.tsv
@@ -207,7 +207,7 @@ steps:
       source: http://purl.obolibrary.org/obo/go.obo
       destination: gene-ontology-inputs/go.obo
 
-  homologues:
+  homologue:
     - name: explode homologues
       foreach:
         - species: caenorhabditis_elegans
@@ -228,10 +228,10 @@ steps:
           source: https://ftp.ensembl.org/pub/release-${ensembl_version}/json/${species}/${species}.json
           destination: target-inputs/homologue/gene_dictionary/${species}.json
         - name: download ${species} protein homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_version}.protein_default.homologies.tsv.gz
+          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_version}.protein_default.homologies.tsv
           destination: target-inputs/homologue/homologies/protein-${species}.tsv.gz
         - name: download ${species} ncrna homologies
-          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_version}.ncrna_default.homologies.tsv.gz
+          source: https://ftp.ensembl.org/pub/release-${ensembl_version}/tsv/ensembl-compara/homologies/${species}/Compara.${ensembl_version}.ncrna_default.homologies.tsv
           destination: target-inputs/homologue/homologies/ncrna-${species}.tsv.gz
 
   interactions:
@@ -316,7 +316,9 @@ steps:
 
   target:
     - name: download hgnc complete set
-      source: https://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
+      source: https://storage.googleapis.com/public-download-files/hgnc/json/json/hgnc_complete_set.json
+      # original source is lost
+      # source: https://ftp.ebi.ac.uk/pub/databases/genenames/new/json/hgnc_complete_set.json
       destination: target-inputs/genenames/hgnc_complete_set.json
     - name: download Ensembl2Reactome
       source: https://reactome.org/download/current/Ensembl2Reactome.txt
@@ -356,16 +358,16 @@ steps:
       destination: target-inputs/ncbi/Homo_sapiens.gene_info.gz
     - name: download gnomad
       source: https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz
-      destination: target-inputs/gnomad/gnomad_lof_by_gene.txt.gz
+      destination: target-inputs/gnomad/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz
     - name: download protein atlas subcellular location
-      source: https://www.proteinatlas.org/download/subcellular_location.tsv.zip
-      destination: target-inputs/hpa/subcellular_location.tsv.gz
+      source: https://www.proteinatlas.org/download/tsv/subcellular_location.tsv.zip
+      destination: target-inputs/hpa/subcellular_location.tsv.zip
     - name: download essentiality matrices
       source: https://cog.sanger.ac.uk/cmp/download/essentiality_matrices.zip
       destination: target-inputs/project-scores/essentiality_matrices.zip
     - name: download ensembl
       source: https://ftp.ensembl.org/pub/release-${ensembl_version}/json/homo_sapiens/homo_sapiens.json
-      destination: target-inputs/ensembl/homo_sapiens.jsonl
+      destination: target-inputs/ensembl/homo_sapiens.json
     - name: download_latest essentiality
       source: gs://otar000-evidence_input/Essentiality/json
       destination: target-inputs/gene-essentiality/essentiality.json.gz
