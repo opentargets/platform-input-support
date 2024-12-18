@@ -18,8 +18,6 @@
     "**/.ruff_cache": true,
     "*.egg-info": true,
     "build": true,
-    ".coverage": true,
-    "coverage.xml": true,
   },
   "autoDocstring.docstringFormat": "sphinx",
 }

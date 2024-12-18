@@ -14,7 +14,7 @@ class PISError(Exception):
 class NotFoundError(PISError):
     """Raise when something is not found."""
 
-    def __init__(self, msg: str):
+    def __init__(self, msg: str | None = None):
         super().__init__(msg)
 
 
@@ -28,6 +28,13 @@ class PISCriticalError(PISError):
 
 class HelperError(PISError):
     """Raise when an error occurs in a helper."""
+
+    def __init__(self, msg: str):
+        super().__init__(msg)
+
+
+class StorageError(PISError):
+    """Raise when an error occurs in a storage class."""
 
     def __init__(self, msg: str):
         super().__init__(msg)

@@ -10,7 +10,7 @@ from loguru import logger
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
-from platform_input_support.helpers import google_helper
+from platform_input_support.storage.google import GoogleStorage
 from platform_input_support.util.errors import HelperError, TaskAbortedError
 from platform_input_support.util.fs import absolute_path, check_fs
 
@@ -114,7 +114,8 @@ class GoogleSheetsDownloader(Downloader):
     def download(self, src: str, dst: Path, *, abort: Event | None = None) -> Path:
         """Download a Google Sheet."""
         logger.debug('starting Google Sheets download')
-        session = google_helper().get_session()
+        google_storage = GoogleStorage()
+        session = google_storage.get_session()
         self._download(src, dst, session, abort=abort)
         return dst
 
@@ -125,7 +126,8 @@ class GoogleStorageDownloader(Downloader):
     def download(self, src: str, dst: Path, *, abort: Event | None = None) -> Path:
         """Download a file from Google Storage."""
         logger.debug('starting google storage download')
-        google_helper().download_to_file(src, dst)
+        google_storage = GoogleStorage()
+        google_storage.download_to_file(src, dst)
         return dst
 
 

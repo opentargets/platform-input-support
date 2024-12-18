@@ -1,5 +1,6 @@
 """Manifest utility functions."""
 
+from platform_input_support.config import settings
 from platform_input_support.manifest.models import Result, RootManifest, StepManifest
 from platform_input_support.util.misc import date_str
 
@@ -25,6 +26,7 @@ def recount(manifest: RootManifest | StepManifest) -> None:
         counts[str(i.result)] += 1
 
     manifest.log.append(f'---- [ {date_str()} run summary ]----')
+    manifest.log.append(', '.join([f'{k}={v}' for k, v in settings().model_dump().items()]))
     for k, v in counts.items():
         if v > 0:
             manifest.log.append(f'{v} {k} {item_type}')

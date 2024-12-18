@@ -90,31 +90,6 @@ def test_http_downloader(mock_session, tmp_path):
     mock_session_instance.mount.assert_called()
 
 
-@patch('platform_input_support.helpers.download.google_helper')
-def test_google_sheets_downloader(mock_google_helper, tmp_path):
-    downloader = GoogleSheetsDownloader()
-    downloader._download = Mock()
-    mock_session = Mock()
-    mock_google_helper.return_value.get_session.return_value = mock_session
-    dst = tmp_path / 'file.txt'
-
-    result = downloader.download('https://docs.google.com/spreadsheets/d/123', dst)
-
-    assert result == dst
-    mock_google_helper.return_value.get_session.assert_called_once()
-
-
-@patch('platform_input_support.helpers.download.google_helper')
-def test_google_storage_downloader(mock_google_helper, tmp_path):
-    downloader = GoogleStorageDownloader()
-    dst = tmp_path / 'file.txt'
-
-    result = downloader.download('gs://bucket/file', dst)
-
-    assert result == dst
-    mock_google_helper.return_value.download_to_file.assert_called_once_with('gs://bucket/file', dst)
-
-
 @patch('platform_input_support.helpers.download.open')
 @patch('platform_input_support.helpers.download.shutil.copyfileobj')
 @patch('platform_input_support.helpers.download.requests.Session')

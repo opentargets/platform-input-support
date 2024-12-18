@@ -67,21 +67,21 @@ def test_parse_cli_with_work_dir_argument(monkeypatch):
     assert settings.work_dir == Path('/somewhere')
 
 
-def test_parse_cli_with_gcs_url_argument(monkeypatch):
+def test_parse_cli_with_remote_uri_argument(monkeypatch):
     monkeypatch.setattr(
         'sys.argv',
         [
             'cli.py',
             '--step',
             'validation',
-            '--gcs-url',
+            '--remote-uri',
             'gs://bucket/path',
         ],
     )
 
     settings = parse_cli()
 
-    assert settings.gcs_url == 'gs://bucket/path'
+    assert settings.remote_uri == 'gs://bucket/path'
 
 
 def test_parse_cli_with_pool_argument(monkeypatch):

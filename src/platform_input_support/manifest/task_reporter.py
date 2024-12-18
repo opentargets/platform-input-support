@@ -6,6 +6,7 @@ from functools import wraps
 
 from loguru import logger
 
+from platform_input_support.config import settings
 from platform_input_support.manifest.models import Resource, Result, TaskManifest
 from platform_input_support.util.errors import TaskAbortedError
 
@@ -66,7 +67,12 @@ def report(func):
             if func.__name__ == 'run':
                 self.staged(result.name)
             elif func.__name__ == 'validate':
-                self.validated(result.name)
+                if settings().remote_uri:
+                    self.validated(result.name)
+                else:
+                    self._resources.append(result.resource)
+                    self.completed(result.name)
+
             elif func.__name__ == 'upload':
                 self._resources.append(result.resource)
                 self.completed(result.name)

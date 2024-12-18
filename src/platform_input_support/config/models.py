@@ -9,16 +9,17 @@ LOG_LEVELS = Literal['TRACE', 'DEBUG', 'INFO', 'SUCCESS', 'WARNING', 'ERROR', 'C
 """The log levels."""
 
 
-def gcs_url_is_valid(url: str) -> str:
-    """Validate a Google Cloud Storage URL.
+def remote_uri_is_valid(uri: str) -> str:
+    """Validate a remote URI.
 
-    :param url: The Google Cloud Storage URL.
-    :type url: str
-    :return: The URL.
+    :param uri: The URI to validate.
+    :type uri: str
+    :return: The URI if it is valid.
     :rtype: str
+    :raises AssertionError: If the URI does not contain a protocol.
     """
-    assert url.startswith('gs://'), 'GCS url must start with gs://'
-    return url
+    assert '://' in uri, 'Remote URI must contain a protocol.'
+    return uri
 
 
 class BaseTaskDefinition(BaseModel, extra='allow'):
@@ -56,7 +57,7 @@ class EnvSettings(BaseModel):
     step: str | None = None
     config_file: Path | None = None
     work_dir: Path | None = None
-    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
+    remote_uri: Annotated[str, AfterValidator(remote_uri_is_valid)] | None = None
     pool: int | None = None
     log_level: LOG_LEVELS | None = None
 
@@ -67,7 +68,7 @@ class CliSettings(BaseModel):
     step: str = ''
     config_file: Path | None = None
     work_dir: Path | None = None
-    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
+    remote_uri: Annotated[str, AfterValidator(remote_uri_is_valid)] | None = None
     pool: int | None = None
     log_level: LOG_LEVELS | None = None
 
@@ -76,7 +77,7 @@ class YamlSettings(BaseModel):
     """YAML settings model."""
 
     work_dir: Path | None = None
-    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] | None = None
+    remote_uri: Annotated[str, AfterValidator(remote_uri_is_valid)] | None = None
     pool: int | None = None
     log_level: LOG_LEVELS | None = None
 
@@ -92,14 +93,14 @@ class Settings(BaseModel):
     precedence over the YAML settings. All fields have defaults so that any field
     left unset after the merge will have a value.
 
-    The :attr:`step` and :attr:`gcs_url` fields are required, but have an empty string
-    as a default value, so objects can be created without setting these fields. Their
-    validation is handled by the CLI/Google helper.
+    The :attr:`step` field is required, but has an empty string as a default value,
+    so objects can be created without setting it. Its validation is handled by
+    Config class.
     """
 
     step: str = ''
     """The step to run. This is a required field, and its validation is handled by
-    :func:`platform_input_support.config.cli.parse_cli`."""
+    :func:`platform_input_support.config.config.Config._validate_step`."""
 
     config_file: Path = Path('config.yaml')
 
@@ -107,9 +108,9 @@ class Settings(BaseModel):
     """The local working directory path. This is where resources will be downloaded
     and the manifest and logs will be written to before upload to the GCS bucket."""
 
-    gcs_url: Annotated[str, AfterValidator(gcs_url_is_valid)] = ''
-    """The Google Cloud Storage URL. This is the place where resources, logs and
-    manifest will be uploaded to."""
+    remote_uri: Annotated[str, AfterValidator(remote_uri_is_valid)] | None = None
+    """The remote working URI. If present, this is where resources, logs and manifest
+    will be uploaded to."""
 
     pool: int = 5
     """The number of workers in the pool where tasks will run."""

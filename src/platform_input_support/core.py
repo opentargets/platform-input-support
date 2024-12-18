@@ -7,7 +7,6 @@ from importlib.metadata import version
 from loguru import logger
 
 from platform_input_support.config import init_config, settings
-from platform_input_support.helpers import init_google_helper
 from platform_input_support.manifest.manifest import Manifest
 from platform_input_support.step import Step
 from platform_input_support.task import init_task_registry
@@ -23,12 +22,11 @@ def main():
     1. Initialize the configuration.
     2. Make some checks on the working directory.
     3. Initialize the logger.
-    4. Initialize the Google Cloud helper.
-    5. Initialize the task registry, loading all tasks in the tasks module.
-    6. Create a step object based on the configuration.
-    7. Execute the step.
-    8. Create a manifest object and update it with the step information.
-    9. Complete the manifest, saving it both locally and on Google Cloud.
+    4. Initialize the task registry, loading all tasks in the tasks module.
+    5. Create a step object based on the configuration.
+    6. Execute the step.
+    7. Create a manifest object and update it with the step information.
+    8. Complete the manifest, saving it both locally and remotely (if configured).
     """
     logger.info(f'starting platform input support v{version("platform_input_support")}')
 
@@ -36,7 +34,6 @@ def main():
     check_dir(settings().work_dir)
 
     init_logger(settings().log_level)
-    init_google_helper()
     init_task_registry()
 
     logger.debug(f'using {ssl.OPENSSL_VERSION}')
