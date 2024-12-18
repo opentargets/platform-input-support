@@ -51,7 +51,7 @@ class StepManifest(BaseModel):
     name: str
     result: Result = Result.PENDING
     created: datetime = datetime.now(UTC)
-    completed: datetime = datetime.now(UTC)
+    completed: datetime | None = None
     elapsed: float = 0.0
     log: list[str] = []
     tasks: list[TaskManifest] = []

@@ -140,9 +140,12 @@ class Step(StepReporter):
                 if a.is_set():
                     raise StepFailedError(self.name, 'validation')
 
-                tasks = self._upload(tasks, abort=a)
-                if a.is_set():
-                    raise StepFailedError(self.name, 'upload')
+                if settings().remote_uri:
+                    tasks = self._upload(tasks, abort=a)
+                    if a.is_set():
+                        raise StepFailedError(self.name, 'upload')
+                else:
+                    logger.info('no remote URI provided, skipping upload phase')
             except Exception as e:
                 a.set()
                 self.failed(f'step execution failed: {e}')

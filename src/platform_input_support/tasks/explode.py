@@ -39,7 +39,7 @@ class ExplodeDefinition(PretaskDefinition):
 
 
 class Explode(Pretask):
-    """Explode tasks based on a list of dictionaries.
+    """Pretask — explode tasks based on a list of dictionaries.
 
     This pretask will duplicate the tasks in the `do` list for each iteration of the
     `foreach` list. The `foreach` list is a list of dictionaries where each dictionary

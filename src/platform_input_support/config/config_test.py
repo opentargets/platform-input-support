@@ -17,7 +17,7 @@ def c(mocker):
     mock_cli.return_value = CliSettings(step='step_1', config_file=Path('test_cli.yaml'))
     mock_env.return_value = EnvSettings(work_dir=Path('./somewhere'))
     mock_yaml.return_value = {'steps': {'step_1': [{'name': 'task_1'}]}}
-    mock_get_yaml_settings.return_value = YamlSettings(gcs_url='gs://bucket/path/to/file')
+    mock_get_yaml_settings.return_value = YamlSettings(remote_uri='gs://bucket/path/to/file')
 
     return Config()
 
@@ -28,7 +28,7 @@ def test_config_initialization(c):
         'step': 'step_1',
         'config_file': Path('test_cli.yaml'),
         'work_dir': Path('./somewhere'),
-        'gcs_url': 'gs://bucket/path/to/file',
+        'remote_uri': 'gs://bucket/path/to/file',
         'pool': 5,
         'log_level': 'INFO',
     }

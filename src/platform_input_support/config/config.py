@@ -41,7 +41,10 @@ class Config:
         settings.merge_model(cli_settings)
 
         self.settings = settings
+        self._validate_step()
         logger.info(f'loaded settings: {list_str(self.settings.model_dump(), dict_values=True)}')
+        if not self.settings.remote_uri:
+            logger.info('no remote URI provided, run will be local')
 
     def _validate_step(self):
         """Validate the step.

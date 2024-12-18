@@ -16,7 +16,7 @@ from platform_input_support.config.yaml import (
 # mock dicts for testing validate_config_parts
 CONFIG_DICT_VALID = {
     'work_dir': './somewhere',
-    'gcs_url': 'gs://bucket/path/to/file',
+    'remote_uri': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
     'pool': 5,
     'steps': {
@@ -44,7 +44,7 @@ CONFIG_DICT_INVALID = {'pool': 'not_an_int'}
 
 CONFIG_DICT_STEPS_ARE_LIST = {
     'work_dir': './somewhere',
-    'gcs_url': 'gs://bucket/path/to/file',
+    'remote_uri': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
     'pool': '5',
     'steps': [
@@ -56,7 +56,7 @@ CONFIG_DICT_STEPS_ARE_LIST = {
 
 CONFIG_DICT_STEPS_ARE_INVALID = {
     'work_dir': './somewhere',
-    'gcs_url': 'gs://bucket/path/to/file',
+    'remote_uri': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
     'pool': '5',
     'steps': {
@@ -70,7 +70,7 @@ CONFIG_DICT_STEPS_ARE_INVALID = {
 
 CONFIG_DICT_MISSING_STEPS = {
     'work_dir': './somewhere',
-    'gcs_url': 'gs://bucket/path/to/file',
+    'remote_uri': 'gs://bucket/path/to/file',
     'log_level': 'INFO',
     'pool': '5',
     'scratchpad': {
@@ -81,7 +81,7 @@ CONFIG_DICT_MISSING_STEPS = {
 # mock yamls for testing parse_yaml
 YAML_CONTENT_VALID = """
 work_dir: ./somewhere
-gcs_url: gs://bucket/path/to/file
+remote_uri: gs://bucket/path/to/file
 log_level: INFO
 pool: 5
 steps:
@@ -106,7 +106,7 @@ steps
 
 YAML_CONTENT_MISSING_STEPS = """
 work_dir: ./somewhere
-gcs_url: gs://bucket/path/to/file
+remote_uri: gs://bucket/path/to/file
 log_level: INFO
 pool: 5
 scratchpad:
@@ -115,7 +115,7 @@ scratchpad:
 
 YAML_CONTENT_MISSING_SCRATCHPAD = """
 work_dir: ./somewhere
-gcs_url: gs://bucket/path/to/file
+remote_uri: gs://bucket/path/to/file
 log_level: INFO
 pool: 5
 steps:
@@ -234,7 +234,7 @@ def test_get_yaml_settings_valid():
 
     assert isinstance(settings, YamlSettings)
     assert settings.work_dir == Path('./somewhere')
-    assert settings.gcs_url == 'gs://bucket/path/to/file'
+    assert settings.remote_uri == 'gs://bucket/path/to/file'
     assert settings.pool == 5
     assert settings.log_level == 'INFO'
 

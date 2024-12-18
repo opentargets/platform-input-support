@@ -1,6 +1,6 @@
 ---
 work_dir: ./work
-gcs_url: gs://open-targets-pre-data-releases/24.12-pis-test/input
+remote_uri: gs://open-targets-pre-data-releases/24.12-pis_test/input
 log_level: TRACE
 pool: 8
 
@@ -165,12 +165,9 @@ steps:
     - name: download_latest reactome
       source: gs://otar006-reactome
       destination: evidence-files/reactome.json.gz
-    - name: get_file_list cosmic
+    - name: download_latest cosmic
       source: gs://otar007-cosmic
       pattern: '!hallmarks'
-      sentinel: cosmic_file_list
-    - name: download_latest cosmic
-      source: ${cosmic_file_list}
       destination: evidence-files/cosmic.json.gz
     - name: download_latest atlas
       source: gs://otar010-atlas
@@ -394,12 +391,9 @@ steps:
     - name: download_latest tractability
       source: gs://otar001-core/Tractability
       destination: target-inputs/tractability/tractability.tsv
-    - name: get_file_list cosmic
+    - name: download_latest cosmic
       source: gs://otar007-cosmic
       pattern: 'hallmarks'
-      sentinel: cosmic_file_list
-    - name: download_latest cosmic
-      source: ${cosmic_file_list}
       destination: target-inputs/hallmarks/cosmic-hallmarks.tsv.gz
 
   target_engine:

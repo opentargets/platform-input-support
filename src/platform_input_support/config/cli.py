@@ -58,17 +58,16 @@ def parse_cli() -> CliSettings:
     parser.add_argument(
         '-w',
         '--work-dir',
-        help='The local working directory path, this is where files will be '
-        'downloaded and the manifest and logs will be written to before upload '
-        'to the GCS bucket.',
+        help='The local working path. This is where files will be downloaded and '
+        'the manifest and logs will be written to.',
     )
 
     parser.add_argument(
-        '-b',
-        '--gcs-url',
-        help='If set, platform-input-support will use this google cloud storage '
-        'url to retrieve the manifest status, and act accordingly to what is '
-        'there. Also, the resulting files will be uploaded there.',
+        '-r',
+        '--remote-uri',
+        help='If set, this URI will be used as remote working path. This is where '
+        'files will be uploaded and the manifest and logs will be written to.'
+        'If omitted, the run will be local only.',
     )
 
     parser.add_argument(
