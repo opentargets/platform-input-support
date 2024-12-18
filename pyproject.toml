@@ -1,7 +1,7 @@
 [project]
-name = "platform-input-support"
-version = "24.6.4"
-description = "Open Target's Platform Input Support Application"
+name = "PIS"
+version = "24.7.0"
+description = "Open Target's Pipeline Input Stage Application"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "Open Targets core team", email = "devs@opentargets.net" }]
@@ -42,15 +42,16 @@ include-package-data = false
 exclude = ["**/*_test.py"]
 
 [project.scripts]
-pis = "platform_input_support.core:main"
-platform_input_support = "platform_input_support.core:main"
+pis = "pis.core:main"
+pipeline_input_stage = "pis.core:main"
+platform_input_support = "pis.core:main" # legacy name
 
 [tool.pytest.ini_options]
-testpaths = ["src/platform_input_support"]
-filterwarnings = "ignore:.*google._upb*"   # warning from google protobuf library
+testpaths = ["src/pis"]
+filterwarnings = "ignore:.*google._upb*" # warning from google protobuf library
 
 [tool.coverage.report]
-omit = ["src/platform_input_support/**/*_test.py"]
+omit = ["src/pis/**/*_test.py"]
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.deptry]
@@ -59,13 +60,9 @@ extend_exclude = ["[0-9a-zA-Z_/]+_test.py"]
 [tool.ruff]
 target-version = 'py312'
 line-length = 120
-
-[tool.ruff.format]
-quote-style = 'single'
-
-[tool.ruff.lint]
 preview = true
 
+[tool.ruff.lint]
 select = [
   'E',      # pycodestyle
   'F',      # pyflakes
@@ -124,8 +121,6 @@ ignore = [
   'B904',    # possibly useful but too noisy
   'COM812',  # trailing commas on multiline lists are nice, but we have 2.5k violations
   'PIE807',  # `lambda: []` is much clearer for `load_default` in schemas
-  'PT004',   # pretty weird + not a pytest convention: https://github.com/astral-sh/ruff/issues/8796
-  'PT005',   # ^ likewise
   'PT011',   # very noisy
   'PT015',   # nice for tests but not so nice elsewhere
   'PT018',   # ^ likewise
@@ -171,9 +166,13 @@ extend-safe-fixes = [
   'PERF102', # ^ likewise
 ]
 
+[tool.ruff.format]
+quote-style = 'single'
+
 [tool.ruff.lint.per-file-ignores]
 '**/*_test.py' = ['S108', 'S602', 'D']
 '**/__init__.py' = ['F401']
+'**/tasks/*.py' = ['D102']
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
@@ -190,10 +189,4 @@ parametrize-values-row-type = 'tuple'
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-ignore-decorators = [
-  "platform_input_support.tasks.report",
-  "platform_input_support.manifest.task_reporter.report",
-]
-
-[tool.ruff.per-file-ignores]
-"*_test.py" = ["D"]
+ignore-decorators = ["pis.tasks.report", "pis.manifest.task_reporter.report"]

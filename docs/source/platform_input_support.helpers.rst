@@ -6,7 +6,7 @@ This package contains utilities used in multiple places throughout the applicati
 helpers.download module
 -----------------------
 
-.. automodule:: platform_input_support.helpers.download
+.. automodule:: pis.helpers.download
    :members:
    :undoc-members:
    :show-inheritance:
@@ -14,7 +14,7 @@ helpers.download module
 helpers.google module
 ---------------------
 
-.. automodule:: platform_input_support.helpers.google
+.. automodule:: pis.helpers.google
    :members:
    :undoc-members:
    :show-inheritance:
@@ -22,7 +22,7 @@ helpers.google module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.helpers
+.. automodule:: pis.helpers
    :members:
    :undoc-members:
    :show-inheritance:

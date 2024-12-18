@@ -1,13 +1,13 @@
 tasks package
 =============
 
-This package contains the tasks that are run by platform_input_support. Any new tasks
+This package contains the tasks that are run by pis. Any new tasks
 should be added to this package.
 
 tasks.download module
 ---------------------
 
-.. automodule:: platform_input_support.tasks.download
+.. automodule:: pis.tasks.download
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ tasks.download module
 tasks.download\_latest module
 -----------------------------
 
-.. automodule:: platform_input_support.tasks.download_latest
+.. automodule:: pis.tasks.download_latest
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ tasks.download\_latest module
 tasks.elasticsearch module
 --------------------------
 
-.. automodule:: platform_input_support.tasks.elasticsearch
+.. automodule:: pis.tasks.elasticsearch
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ tasks.elasticsearch module
 tasks.explode module
 --------------------
 
-.. automodule:: platform_input_support.tasks.explode
+.. automodule:: pis.tasks.explode
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ tasks.explode module
 tasks.get\_file\_list module
 ----------------------------
 
-.. automodule:: platform_input_support.tasks.get_file_list
+.. automodule:: pis.tasks.get_file_list
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ tasks.get\_file\_list module
 tasks.hello\_world module
 -------------------------
 
-.. automodule:: platform_input_support.tasks.hello_world
+.. automodule:: pis.tasks.hello_world
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ tasks.hello\_world module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.tasks
+.. automodule:: pis.tasks
    :members:
    :undoc-members:
    :show-inheritance:

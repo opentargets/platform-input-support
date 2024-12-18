@@ -4,7 +4,7 @@ import sphinx_rtd_theme
 from sphinx.ext.autodoc import ClassDocumenter
 from sphinx.locale import _
 
-project = 'platform-input-support'
+project = 'pis'
 copyright = '2024, Open Targets Team'  # noqa: A001
 author = 'Open Targets Team'
 

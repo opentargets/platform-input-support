@@ -2,7 +2,7 @@ manifest package
 ================
 
 This package contains the manifest models and utilities. The manifest file is a way to
-provide tracking inforamtion on a run of platform input support.
+provide tracking inforamtion on a run of PIS.
 
 .. seealso:: Refer to the `Manifest Specification <https://blog.opentargets.org/provenance-metadata/>`_
    for more information, although the schema has changed slightly since the blog post.
@@ -11,7 +11,7 @@ provide tracking inforamtion on a run of platform input support.
 manifest.manifest module
 ------------------------
 
-.. automodule:: platform_input_support.manifest.manifest
+.. automodule:: pis.manifest.manifest
    :members:
    :undoc-members:
    :show-inheritance:
@@ -19,7 +19,7 @@ manifest.manifest module
 manifest.models module
 ----------------------
 
-.. automodule:: platform_input_support.manifest.models
+.. automodule:: pis.manifest.models
    :members:
    :undoc-members:
    :show-inheritance:
@@ -27,7 +27,7 @@ manifest.models module
 manifest.step\_reporter module
 ------------------------------
 
-.. automodule:: platform_input_support.manifest.step_reporter
+.. automodule:: pis.manifest.step_reporter
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,7 +35,7 @@ manifest.step\_reporter module
 manifest.task\_reporter module
 ------------------------------
 
-.. automodule:: platform_input_support.manifest.task_reporter
+.. automodule:: pis.manifest.task_reporter
    :members:
    :undoc-members:
    :show-inheritance:
@@ -43,7 +43,7 @@ manifest.task\_reporter module
 manifest.util module
 --------------------
 
-.. automodule:: platform_input_support.manifest.util
+.. automodule:: pis.manifest.util
    :members:
    :undoc-members:
    :show-inheritance:
@@ -51,7 +51,7 @@ manifest.util module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.manifest
+.. automodule:: pis.manifest
    :members:
    :undoc-members:
    :show-inheritance:

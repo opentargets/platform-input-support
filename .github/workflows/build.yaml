@@ -63,15 +63,15 @@ jobs:
           context: .
           push: true
           tags: |
-            quay.io/opentargets/platform-input-support-test:latest
-            quay.io/opentargets/platform-input-support-test:${{ env.TAG }}
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/platform-input-support-test/platform-input-support-test:latest
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/platform-input-support-test/platform-input-support-test:${{ env.TAG }}
+            quay.io/opentargets/pis-test:latest
+            quay.io/opentargets/pis-test:${{ env.TAG }}
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis-test/pis-test:latest
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis-test/pis-test:${{ env.TAG }}
 
       - id: generate-attestations
         name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: quay.io/opentargets/platform-input-support-test
+          subject-name: quay.io/opentargets/pis-test
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true

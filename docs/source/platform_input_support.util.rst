@@ -4,7 +4,7 @@ util package
 util.errors module
 ------------------
 
-.. automodule:: platform_input_support.util.errors
+.. automodule:: pis.util.errors
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ util.errors module
 util.fs module
 --------------
 
-.. automodule:: platform_input_support.util.fs
+.. automodule:: pis.util.fs
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ util.fs module
 util.logger module
 ------------------
 
-.. automodule:: platform_input_support.util.logger
+.. automodule:: pis.util.logger
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,7 +28,7 @@ util.logger module
 util.misc module
 ----------------
 
-.. automodule:: platform_input_support.util.misc
+.. automodule:: pis.util.misc
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,7 +36,7 @@ util.misc module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.util
+.. automodule:: pis.util
    :members:
    :undoc-members:
    :show-inheritance:

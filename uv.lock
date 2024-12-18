@@ -329,8 +329,8 @@ wheels = [
 ]
 
 [[package]]
-name = "platform-input-support"
-version = "24.6.4"
+name = "pis"
+version = "24.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "elasticsearch" },

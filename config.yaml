@@ -1,6 +1,6 @@
 ---
 work_dir: ./work
-remote_uri: gs://open-targets-pre-data-releases/24.12-pis_test/input
+#remote_uri: gs://open-targets-pre-data-releases/24.12-pis_test/input
 log_level: TRACE
 pool: 8
 

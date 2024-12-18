@@ -1,4 +1,4 @@
-# Description: Dockerfile for the platform_input_support package
+# Description: Dockerfile for the pis package
 #
 # To run locally, you must have a credentials file for GCP. Assuming you do,
 # you can run the following command:
@@ -13,4 +13,4 @@ ADD . /app
 WORKDIR /app
 RUN uv sync --frozen
 
-ENTRYPOINT ["uv", "run", "platform_input_support"]
+ENTRYPOINT ["uv", "run", "pis"]

@@ -7,7 +7,7 @@ by tasks are correct. Any new validators should be added to this package.
 validators.elasticsearch module
 -------------------------------
 
-.. automodule:: platform_input_support.validators.elasticsearch
+.. automodule:: pis.validators.elasticsearch
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ validators.elasticsearch module
 validators.file module
 ----------------------
 
-.. automodule:: platform_input_support.validators.file
+.. automodule:: pis.validators.file
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ validators.file module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.validators
+.. automodule:: pis.validators
    :members:
    :undoc-members:
    :show-inheritance:

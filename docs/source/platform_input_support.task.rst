@@ -4,7 +4,7 @@ task package
 task.task module
 ----------------
 
-.. automodule:: platform_input_support.task.task
+.. automodule:: pis.task.task
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ task.task module
 task.task\_registry module
 --------------------------
 
-.. automodule:: platform_input_support.task.task_registry
+.. automodule:: pis.task.task_registry
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ task.task\_registry module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.task
+.. automodule:: pis.task
    :members:
    :undoc-members:
    :show-inheritance:
