@@ -1,13 +1,12 @@
 config package
 ==============
 
-This package contains the configuration models, parsers and utilities for
-platform input support.
+This package contains the configuration models, parsers and utilities for PIS.
 
 config.config module
 --------------------
 
-.. automodule:: platform_input_support.config.config
+.. automodule:: pis.config.config
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +15,7 @@ config.config module
 config.models module
 --------------------
 
-.. automodule:: platform_input_support.config.models
+.. automodule:: pis.config.models
    :members:
    :undoc-members:
    :show-inheritance:
@@ -25,7 +24,7 @@ config.models module
 config.cli module
 -----------------
 
-.. automodule:: platform_input_support.config.cli
+.. automodule:: pis.config.cli
    :members:
    :undoc-members:
    :show-inheritance:
@@ -34,7 +33,7 @@ config.cli module
 config.env module
 -----------------
 
-.. automodule:: platform_input_support.config.env
+.. automodule:: pis.config.env
    :members:
    :undoc-members:
    :show-inheritance:
@@ -42,7 +41,7 @@ config.env module
 config.yaml module
 ------------------
 
-.. automodule:: platform_input_support.config.yaml
+.. automodule:: pis.config.yaml
    :members:
    :undoc-members:
    :show-inheritance:
@@ -51,7 +50,7 @@ config.yaml module
 config.scratchpad module
 ------------------------
 
-.. automodule:: platform_input_support.config.scratchpad
+.. automodule:: pis.config.scratchpad
    :members:
    :undoc-members:
    :show-inheritance:
@@ -60,7 +59,7 @@ config.scratchpad module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.config
+.. automodule:: pis.config
    :members:
    :undoc-members:
    :show-inheritance:

@@ -5,10 +5,10 @@
   "version": "2.0.0",
   "configurations": [
     {
-      "name": "platform-input-support",
+      "name": "pis",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/src/platform_input_support/core.py",
+      "program": "${workspaceFolder}/src/pis/core.py",
       "args": [
         "-s",
         "${input:stepName}"

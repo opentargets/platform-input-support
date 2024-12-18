@@ -1,4 +1,4 @@
-# Open Targets: platform-input-support
+# PIS — Open Targets Pipeline Input Stage
 
 Fetch, validate and arrange the data required by the Open Targets Platform ETL pipeline.
 
@@ -8,7 +8,7 @@ PIS uses [UV](https://docs.astral.sh/uv/) as its package manager. It is compatib
 so you can also fall back to it if you feel more comfortable.
 
 > [!NOTE]
-> PIS will be uploaded to [Pypi](https://pypi.org/project/platform-input-support/) once it is ready to
+> PIS will be uploaded to [Pypi](https://pypi.org/) once it is ready to
 > use. In the meantime, you can run it locally with make or directly by using uv:
 
 To run PIS with UV, you can use the following commands:
@@ -41,7 +41,7 @@ command:
 docker run \
   -v /path/to/credentials.json:/app/credentials.json \
   -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
-  quay.io/opentargets/platform-input-support-test:latest -h
+  ghcr.io/javfg/pis:latest -h
 ```
 
 To build your own Docker image, run the following command from the root of the repository:
@@ -53,7 +53,7 @@ docker build -t pis .
 ## Development
 
 > [!NOTE]
-> Take a look at the [API documentation](https://javfg.github.io/platform-input-support),
+> Take a look at the [API documentation](https://javfg.github.io/pis),
 > it is a very helpful guide when developing new tasks.
 
 > [!IMPORTANT]
@@ -78,7 +78,7 @@ uv run pis --step so
 ---
 
 # Structure
-PIS is designed to run a series of steps which prepare the data for the Open Targets Platform ETL.
+PIS is designed to run a series of steps which acquire the data for the Open Targets Platform ETL.
 Only one step is run in every execution, but the idea is still to run them all, we'll call this a
 pipeline run (although the Platform pipeline is larger, PIS is just the first part).
 
@@ -151,7 +151,7 @@ two requirements for the arguments of a task:
 * __Main__ tasks must have a `destination` argument. This is to remember implementers that the purpose
   of a task is to generate something that will be used by the next step in the pipeline.
 
-There is an example task: [`HelloWorld`](platform_input_support/tasks/hello_world.py).
+There is an example task: [`HelloWorld`](src/pis/tasks/hello_world.py).
 
 ## Validators
 Validators are defined in the `validators` module. They are just functions that return a boolean value.

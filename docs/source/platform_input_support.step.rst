@@ -4,7 +4,7 @@ step package
 step.step module
 ----------------
 
-.. automodule:: platform_input_support.step.step
+.. automodule:: pis.step.step
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ step.step module
 Module contents
 ---------------
 
-.. automodule:: platform_input_support.step
+.. automodule:: pis.step
    :members:
    :undoc-members:
    :show-inheritance:
