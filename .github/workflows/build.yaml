@@ -1,4 +1,4 @@
-name: Build docker image and publish to Quay.io and GAR
+name: Build docker image and publish to GHCR and GAR
 
 on:
   release:
@@ -8,7 +8,7 @@ on:
       - master
 
 jobs:
-  push-to-quay-and-gcr:
+  push-to-ghcr-and-gar:
     runs-on: ubuntu-latest
 
     permissions:
@@ -29,13 +29,13 @@ jobs:
         name: Check out repo
         uses: actions/checkout@v4
 
-      - id: auth_quay
-        name: Log in to quay.io
+      - id: auth_ghcr
+        name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USER }}
-          password: ${{ secrets.QUAY_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - id: auth_google
         name: Authenticate to Google Cloud
@@ -57,21 +57,20 @@ jobs:
 
       - id: push
         name: Build and push Docker image
-
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            quay.io/opentargets/pis-test:latest
-            quay.io/opentargets/pis-test:${{ env.TAG }}
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis-test/pis-test:latest
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis-test/pis-test:${{ env.TAG }}
+            ghcr.io/${{ github.repository }}/pis:latest
+            ghcr.io/${{ github.repository }}/pis:${{ env.TAG }}
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis/pis:latest
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis/pis:${{ env.TAG }}
 
       - id: generate-attestations
         name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: quay.io/opentargets/pis-test
+          subject-name: ghcr.io/${{ github.repository }}/pis
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
