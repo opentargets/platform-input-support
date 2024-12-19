@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from pis.config import settings
 from pis.manifest.models import Result, StepManifest
 
 if TYPE_CHECKING:
@@ -93,10 +92,7 @@ def report(func):
             if func.__name__ == '_run':
                 self.staged(f'ran {len(result)} tasks')
             elif func.__name__ == '_validate':
-                if settings().remote_uri:
-                    self.validated(f'checked {len(result)} tasks')
-                else:
-                    self.completed(f'checked {len(result)} tasks')
+                self.validated(f'checked {len(result)} tasks')
             elif func.__name__ == '_upload':
                 self.completed(f'uploaded {len(result)} tasks')
             return result
