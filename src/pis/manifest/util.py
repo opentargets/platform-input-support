@@ -30,3 +30,17 @@ def recount(manifest: RootManifest | StepManifest) -> None:
     for k, v in counts.items():
         if v > 0:
             manifest.log.append(f'{v} {k} {item_type}')
+
+    # decide the overall result
+    if counts[Result.FAILED] > 0:
+        manifest.result = Result.FAILED
+    elif counts[Result.ABORTED] > 0:
+        manifest.result = Result.ABORTED
+    elif counts[Result.PENDING] > 0:
+        manifest.result = Result.PENDING
+    elif counts[Result.STAGED] > 0:
+        manifest.result = Result.STAGED
+    elif counts[Result.VALIDATED] > 0:
+        manifest.result = Result.VALIDATED
+    else:
+        manifest.result = Result.COMPLETED
