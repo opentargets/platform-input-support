@@ -3,12 +3,16 @@
 import sys
 from datetime import UTC, datetime
 from functools import wraps
+from typing import TYPE_CHECKING
 
 from loguru import logger
 
 from pis.config import settings
 from pis.manifest.models import Resource, Result, TaskManifest
 from pis.util.errors import TaskAbortedError
+
+if TYPE_CHECKING:
+    from pis.task import Task
 
 
 class TaskReporter:
@@ -26,14 +30,18 @@ class TaskReporter:
         self._manifest.elapsed = (self._manifest.staged - self._manifest.created).total_seconds()
         logger.success(f'task staged: ran for {self._manifest.elapsed:.2f}s')
 
-    def validated(self, log: str):
+    def validated(self, log: str, resource: Resource | None = None):
         """Set the task result to VALIDATED."""
         self._manifest.result = Result.VALIDATED
+        if resource:
+            self._resources.append(resource.make_absolute())
         logger.success(f'task validated: {log}')
 
-    def completed(self, log: str):
+    def completed(self, log: str, resource: Resource | None = None):
         """Set the task result to COMPLETED."""
         self._manifest.result = Result.COMPLETED
+        if resource:
+            self._resources.append(resource.make_absolute())
         logger.success(f'task completed: {log}')
 
     def failed(self, error: Exception, where: str):
@@ -62,20 +70,14 @@ def report(func):
             elif func.__name__ == 'upload':
                 logger.info('task upload started')
 
-            result = func(self, *args, **kwargs)
+            result: Task = func(self, *args, **kwargs)
 
             if func.__name__ == 'run':
                 self.staged(result.name)
             elif func.__name__ == 'validate':
-                if settings().remote_uri:
-                    self.validated(result.name)
-                else:
-                    self._resources.append(result.resource)
-                    self.completed(result.name)
-
+                self.validated(result.name, result.resource if not settings().remote_uri else None)
             elif func.__name__ == 'upload':
-                self._resources.append(result.resource)
-                self.completed(result.name)
+                self.completed(result.name, result.resource)
             return result
         except Exception as e:
             kwargs['abort'].set()

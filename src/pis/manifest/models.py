@@ -2,9 +2,12 @@
 
 from datetime import UTC, datetime
 from enum import StrEnum, auto
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel
+
+from pis.config import settings
 
 
 class Result(StrEnum):
@@ -31,6 +34,14 @@ class Resource(BaseModel):
 
     source: str
     destination: str
+
+    def make_absolute(self) -> 'Resource':
+        """Make the destination path absolute."""
+        if base_uri := settings().remote_uri:
+            abs_destination = f'{base_uri}/{self.destination}'
+        else:
+            abs_destination = Path(self.destination).absolute().as_posix()
+        return Resource(source=self.source, destination=abs_destination)
 
 
 class TaskManifest(BaseModel, extra='allow'):

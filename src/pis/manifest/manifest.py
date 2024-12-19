@@ -124,7 +124,6 @@ class Manifest:
         self._relevant_step = step
         self._manifest.steps[step.name] = step._manifest
         self._manifest.modified = datetime.now()
-        self._manifest.result = step._manifest.result
         recount(self._manifest)
 
     def complete(self):
@@ -134,10 +133,32 @@ class Manifest:
 
         logger.info(f'manifest closed, result: {self._manifest.result}')
 
+    def run_ok(self) -> bool:
+        """Return whether the run was successful.
+
+        Note a successful run is defined as the step being in validated state if the
+        run is local, or in complete state if the run has a remote URI.
+
+        :return: Whether the run was successful.
+        :rtype: bool
+        """
+        relevant_step_result = self._manifest.steps[self._relevant_step.name].result
+
+        if settings().remote_uri:
+            return relevant_step_result == Result.COMPLETED
+        else:
+            return relevant_step_result == Result.VALIDATED
+
     def is_completed(self) -> bool:
         """Return whether the manifest is completed.
+
+        Note a successful run is defined as all steps in the manifest being in validated
+        state if the run is local, or in complete state if the run has a remote URI.
 
         :return: Whether the manifest is completed.
         :rtype: bool
         """
-        return self._manifest.result == Result.COMPLETED
+        if settings().remote_uri:
+            return self._manifest.result == Result.COMPLETED
+        else:
+            return self._manifest.result == Result.VALIDATED
