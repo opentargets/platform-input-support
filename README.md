@@ -1,6 +1,9 @@
 # PIS — Open Targets Pipeline Input Stage
 
-Fetch, validate and arrange the data required by the Open Targets Platform ETL pipeline.
+Fetch, validate and arrange the data required by the Open Targets data pipeline.
+
+PIS was formerly short for Platform Input Support, but after the merge of the platform
+and genetics products, we believe the name was no longer fitting.
 
 
 ## Installation and running
@@ -17,25 +20,20 @@ To run PIS with UV, you can use the following commands:
 uv run pis -h
 ```
 
-it handles the installation of the dependencies in a virtual environment and runs the application, so
-it would be similar to:
-
-```bash
-virtualenv .venv
-source .venv/bin/activate
-pip install .
-pis -h
-```
-
 > [!TIP]
-> You can also use PIS with [GNU Make](https://www.gnu.org/software/make/). Running `make` without
+> You can also use PIS with [Make](https://www.gnu.org/software/make/). Running `make` without
 any target shows help.
 
 
 ### Running with Docker
-PIS can be run in Docker. To run with Docker, you must have a credentials file for GCP so there is a
-way to authenticate inside the container environment. Assuming you do, you can run the following
-command:
+
+```bash
+docker run ghcr.io/javfg/pis:latest -h
+```
+
+PIS can upload the files it fetches into different cloud storage services. Open Targets uses
+Google Cloud. To enable it in a docker container, you must have a credentials file. Assuming you do,
+you can run the following command:
 
 ```bash
 docker run \
@@ -78,9 +76,9 @@ uv run pis --step so
 ---
 
 # Structure
-PIS is designed to run a series of steps which acquire the data for the Open Targets Platform ETL.
+PIS is designed to run a series of steps which acquire the data for the Open Targets pipeline.
 Only one step is run in every execution, but the idea is still to run them all, we'll call this a
-pipeline run (although the Platform pipeline is larger, PIS is just the first part).
+pipeline run (although the pipeline is larger, PIS is just the first part).
 
 If needed, a simple bash `for` loop could be used to run multiple steps:
 
@@ -88,28 +86,28 @@ If needed, a simple bash `for` loop could be used to run multiple steps:
 for step in go so; do (pis -s $step) &; done; wait
 ```
 
-But the idea is to put PIS into [the orchestrator](https://github.com/opentargets/orchestration), which
+But the idea is to run PIS with the [orchestrator](https://github.com/opentargets/orchestration), which
 uses [Apache Airflow](https://airflow.apache.org/) to run the steps in parallel.
 
 The different steps are defined as a series of tasks in the configuration file. Those tasks must always
 generate a resource. That resource will be used by the next step in the pipeline. The resource is
-validated and uploaded to a Google Cloud Storage bucket.
+validated and can be uploaded into a remote location (we have implemented Google Cloud Storage connectors
+for now).
 
 ## Flow summary
 One execution of PIS will perform the following:
 
 1. Parse command line options, environment variables and configuration file.
-2. Initialize the application by setting up logging and the Google Cloud Storage client.
-3. Load the available tasks into a registry.
-4. Ensure the local work directory exists and is writable.
-5. Run the step, which is divided into four phases:
+2. Load the available tasks into a registry.
+3. Ensure the local work directory exists and is writable.
+4. Run the step, which is divided into four phases:
    1. **Initialization**: A series of _pretasks_ that prepare the execution of the step. Examples are
-       getting a file list, or dynamically spawning tasks to run in the main phase.
+       getting a file list, or dynamically spawning more tasks to run in the main phase.
    2. **Staging**: Main phase of the step. It is made of _tasks_ that perform the actual work. Examples of
        tasks are downloading a file from a remote location, or fetching an index from elasticsearch.
    3. **Validation**: Once tasks have run, a series of validators is executed on the results.
-   4. **Upload**: The resulting resources are uploaded to a Google Cloud Storage bucket.
-6. Write a report of the execution to a manifest file.
+   4. **Upload**: Optionally, the resulting resources are uploaded somewhere.
+5. Write a report of the execution to a manifest file.
 
 > [!IMPORTANT]
 In the staging, validation and upload phases, the tasks are run in parallel.
@@ -128,7 +126,9 @@ are optional. Not implementing a `validate` means no validation will be run on t
 > uses the return value to know the state of the task.
 
 > [!TIP]
-> The `run`, `validate` and `upload` methods have an `abort` [Event](https://docs.python.org/3/library/threading.html#threading.Event) argument that can be used to stop the execution of the task when a general abort
+> The `run`, `validate` and `upload` methods have an `abort`
+> [Event](https://docs.python.org/3/library/threading.html#threading.Event)
+> argument that can be used to stop the execution of the task when a general abort
 > signal is produced anywhere in the step run. This is useful, for example, to stop a download early
 > when another task fails.
 
@@ -173,9 +173,9 @@ The manifest file contains:
 - For each step, a list of reports on all the tasks run by it. These include the resulting state of
   the task, the timestamp, a detailed log, and the whole configuration of the task.
 
-Once a step run has finished, PIS attempts to retrieve a previous manifest from the Google Cloud Storage
-bucket or the local work directory. If it finds one, it will append the new report to it. Then, the
-new manifest is uploaded again, as well as written locally.
+Once a step run has finished, PIS attempts to retrieve a previous manifest from the remote uri that is
+specified in the config file and from the local work directory. If it finds one, it will append the new
+report to it. Then, the new manifest is saved locally and uploaded again.
 
 The manifest management is automated in the tasks, so there is no need to handle it. The base class
 will take care of it. Any errors raised will be caught and logged, and any logs will be also directed
