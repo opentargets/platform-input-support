@@ -1,6 +1,6 @@
 [project]
 name = "PIS"
-version = "24.7.0"
+version = "24.7.1"
 description = "Open Target's Pipeline Input Stage Application"
 readme = "README.md"
 requires-python = ">=3.12"
