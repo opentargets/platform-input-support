@@ -13,7 +13,7 @@ from google.cloud import storage
 from google.cloud.exceptions import NotFound
 from loguru import logger
 
-from pis.helpers import RemoteStorage
+from pis.storage.remote_storage import RemoteStorage
 from pis.util.errors import NotFoundError, PreconditionFailedError, StorageError
 
 GOOGLE_SCOPES = [

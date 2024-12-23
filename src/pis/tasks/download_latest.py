@@ -6,9 +6,9 @@ from typing import Self
 
 from loguru import logger
 
-from pis.helpers import get_remote_storage
-from pis.helpers.download import download
+from pis.storage.remote_storage import get_remote_storage
 from pis.tasks import Resource, Task, TaskDefinition, report
+from pis.util.download import download
 
 
 @dataclass

@@ -8,8 +8,8 @@ from loguru import logger
 
 from pis.config import scratchpad, settings
 from pis.config.models import BaseTaskDefinition, TaskDefinition
-from pis.helpers.remote_storage import get_remote_storage
 from pis.manifest.task_reporter import TaskReporter, report
+from pis.storage.remote_storage import get_remote_storage
 from pis.util.fs import absolute_path
 
 if TYPE_CHECKING:

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pis.helpers import RemoteStorage
+from pis.storage.remote_storage import RemoteStorage
 from pis.util.errors import NotFoundError
 
 
