@@ -15,7 +15,7 @@ help:
 
 
 autobuild:
-	sphinx-autobuild -b html $(SOURCEDIR) $(BUILDDIR)/html $(SPHINXOPTS) $(O) --host localhost --port 8000
+	uv run sphinx-autobuild -b html $(SOURCEDIR) $(BUILDDIR)/html $(SPHINXOPTS) $(O) --host localhost --port 8000
 
 .PHONY: help Makefile autobuild
 
