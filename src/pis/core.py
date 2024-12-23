@@ -47,8 +47,10 @@ def main():
     manifest.complete()
 
     if not manifest.run_ok():
-        logger.error('step did not complete successfully')
+        logger.error(f'step {step.name} did not complete successfully')
         sys.exit(1)
+    else:
+        logger.success(f'step {step.name} completed successfully!')
 
     if not manifest.is_completed():
         logger.warning('there are incomplete steps in the manifest')
