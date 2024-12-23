@@ -36,14 +36,6 @@ tasks.explode module
    :undoc-members:
    :show-inheritance:
 
-tasks.get\_file\_list module
-----------------------------
-
-.. automodule:: pis.tasks.get_file_list
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tasks.hello\_world module
 -------------------------
 

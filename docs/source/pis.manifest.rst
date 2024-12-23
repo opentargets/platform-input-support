@@ -40,14 +40,6 @@ manifest.task\_reporter module
    :undoc-members:
    :show-inheritance:
 
-manifest.util module
---------------------
-
-.. automodule:: pis.manifest.util
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

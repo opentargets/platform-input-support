@@ -27,8 +27,8 @@ def test_get_protocol(download_helper):
     assert download_helper._get_protocol('https://docs.google.com/spreadsheets/d/123') == 'google_sheets'
 
 
-@patch('pis.helpers.download.absolute_path')
-@patch('pis.helpers.download.check_fs')
+@patch('pis.util.download.absolute_path')
+@patch('pis.util.download.check_fs')
 def test_prepare_destination(mock_check_fs, mock_absolute_path, download_helper):
     mock_absolute_path.return_value = Path('/full/path')
 
@@ -66,7 +66,7 @@ def test_download_unknown_protocol(download_helper):
         download_helper.download('ftp://example.com', '/dst')
 
 
-@patch('pis.helpers.download.DownloadHelper.download')
+@patch('pis.util.download.DownloadHelper.download')
 def test_download_function(mock_download):
     mock_download.return_value = Path('/downloaded/file')
 
@@ -76,7 +76,7 @@ def test_download_function(mock_download):
     mock_download.assert_called_once_with('https://example.com', '/dst', abort=None)
 
 
-@patch('pis.helpers.download.requests.Session')
+@patch('pis.util.download.requests.Session')
 def test_http_downloader(mock_session, tmp_path):
     downloader = HttpDownloader()
     downloader._download = Mock()
@@ -90,9 +90,9 @@ def test_http_downloader(mock_session, tmp_path):
     mock_session_instance.mount.assert_called()
 
 
-@patch('pis.helpers.download.open')
-@patch('pis.helpers.download.shutil.copyfileobj')
-@patch('pis.helpers.download.requests.Session')
+@patch('pis.util.download.open')
+@patch('pis.util.download.shutil.copyfileobj')
+@patch('pis.util.download.requests.Session')
 def test_download_with_abort(mock_session, mock_copyfileobj, mock_open):
     downloader = HttpDownloader()
     mock_response = Mock()

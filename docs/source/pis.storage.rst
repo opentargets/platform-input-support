@@ -1,20 +1,20 @@
-helpers package
+storage package
 ===============
 
-This package contains utilities used in multiple places throughout the application.
+This package contains classes for interacting with remote storage services.
 
-helpers.download module
+storage.google module
 -----------------------
 
-.. automodule:: pis.helpers.download
+.. automodule:: pis.storage.google
    :members:
    :undoc-members:
    :show-inheritance:
 
-helpers.google module
+storage.noop module
 ---------------------
 
-.. automodule:: pis.helpers.google
+.. automodule:: pis.storage.noop
    :members:
    :undoc-members:
    :show-inheritance:
@@ -22,7 +22,7 @@ helpers.google module
 Module contents
 ---------------
 
-.. automodule:: pis.helpers
+.. automodule:: pis.storage
    :members:
    :undoc-members:
    :show-inheritance:

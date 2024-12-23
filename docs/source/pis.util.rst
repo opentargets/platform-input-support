@@ -17,6 +17,14 @@ util.fs module
    :undoc-members:
    :show-inheritance:
 
+util.download module
+--------------------
+
+.. automodule:: pis.util.download
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 util.logger module
 ------------------
 

@@ -8,9 +8,9 @@ Subpackages
    :maxdepth: 1
 
    pis.config
-   pis.helpers
    pis.manifest
    pis.step
+   pis.storage
    pis.task
    pis.tasks
    pis.util
