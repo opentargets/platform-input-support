@@ -9,9 +9,8 @@ from loguru import logger
 from pydantic import ValidationError
 
 from pis.config import settings, steps
-from pis.helpers.remote_storage import get_remote_storage
 from pis.manifest.models import Result, RootManifest, StepManifest
-from pis.manifest.util import recount
+from pis.storage.remote_storage import get_remote_storage
 from pis.util.errors import (
     HelperError,
     NotFoundError,
@@ -20,6 +19,7 @@ from pis.util.errors import (
     StorageError,
 )
 from pis.util.fs import absolute_path
+from pis.util.misc import date_str
 
 if TYPE_CHECKING:
     from pis.step import Step
@@ -115,6 +115,36 @@ class Manifest:
         except (OSError, Timeout) as e:
             raise PISCriticalError(f'error writing local manifest to {self._local_path}: {e}')
 
+    def _recount(self) -> None:
+        """Recount the results of the manifest.
+
+        This function will recount the results of the manifest and log the summary.
+
+        :param manifest: The manifest to recount.
+        :type manifest: RootManifest | StepManifest
+        """
+        items = self._manifest.steps
+        item_type = 'steps' if len(items) > 1 else 'step'
+        counts = {str(r): 0 for r in Result}
+
+        for i in list(items.values()) if isinstance(items, dict) else items:
+            counts[str(i.result)] += 1
+
+        self._manifest.log.append(f'---- [ {date_str()} run summary ]----')
+        self._manifest.log.append(', '.join([f'{k}={v}' for k, v in settings().model_dump().items()]))
+        for k, v in counts.items():
+            if v > 0:
+                self._manifest.log.append(f'{v} {k} {item_type}')
+
+        # decide the overall result
+        if counts[Result.FAILED] > 0 or counts[Result.ABORTED] > 0:
+            result = Result.FAILED
+        elif counts[Result.PENDING] > 0:
+            result = Result.PENDING
+        else:
+            result = Result.COMPLETED
+        self._manifest.result = result
+
     def update_step(self, step: 'Step'):
         """Update the manifest with the step.
 
@@ -124,7 +154,7 @@ class Manifest:
         self._relevant_step = step
         self._manifest.steps[step.name] = step._manifest
         self._manifest.modified = datetime.now()
-        recount(self._manifest)
+        self._recount()
 
     def complete(self):
         """Close the manifest and save it."""

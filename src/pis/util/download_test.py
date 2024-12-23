@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from pis.helpers.download import (
+from pis.util.download import (
     DownloadHelper,
     GoogleSheetsDownloader,
     GoogleStorageDownloader,

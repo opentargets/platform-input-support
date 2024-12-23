@@ -6,8 +6,8 @@ from typing import Self
 
 from loguru import logger
 
-from pis.helpers.download import download
 from pis.tasks import Resource, Task, TaskDefinition, report, v
+from pis.util.download import download
 from pis.validators.file import file_exists, file_size
 
 
