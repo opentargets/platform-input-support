@@ -1,4 +1,4 @@
-"""No-op storage helper module."""
+"""No-op storage class."""
 
 from pathlib import Path
 

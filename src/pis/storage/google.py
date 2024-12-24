@@ -1,4 +1,4 @@
-"""Google Cloud Storage helper module."""
+"""Google Cloud Storage class."""
 
 import re
 import sys
