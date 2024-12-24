@@ -1,32 +1,32 @@
 [project]
 name = "PIS"
-version = "24.7.2"
+version = "24.7.3"
 description = "Open Target's Pipeline Input Stage Application"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "Open Targets core team", email = "devs@opentargets.net" }]
 license = { text = "Apache-2.0" }
 dependencies = [
-  "elasticsearch==7.17.12", # must be ^7.0.0 to be compatible with chembl es server
-  "filelock",
-  "google-cloud-storage",
-  "jq",
-  "loguru",
-  "pydantic",
-  "PyYAML",
-  "requests",
-  "urllib3",                # must be <= 2 for elasticsearch, see overrides
+  "elasticsearch==7.17.12",       # must be ^7.0.0 to be compatible with chembl es server
+  "filelock==3.16.1",
+  "google-cloud-storage==2.19.0",
+  "jq==1.8.0",
+  "loguru==0.7.3",
+  "pydantic==2.10.4",
+  "PyYAML==6.0.2",
+  "requests==2.32.3",
+  "urllib3==2.3.0",               # must be <= 2 for elasticsearch, see overrides
 ]
 
 [tool.uv]
 override-dependencies = ["urllib3>=2.2.0"]
 
 [project.optional-dependencies]
-dev = ["ruff==0.6.1", "deptry==0.20.0"]
+dev = ["ruff==0.8.4", "deptry==0.21.2"]
 test = [
-  "coverage==7.6.1",
+  "coverage==7.6.9",
   "freezegun==1.5.1",
-  "pytest==8.3.3",
+  "pytest==8.3.4",
   "pytest-mock==3.14.0",
 ]
 docs = [
