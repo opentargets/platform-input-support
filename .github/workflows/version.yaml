@@ -1,0 +1,52 @@
+name: ensure version has been bumped
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install toml package
+        run: pip install toml
+
+      - name: Check version
+        run: |
+          # Read current version from PR branch
+          CURRENT_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Checkout main branch to compare
+          git fetch origin main
+          git checkout origin/main
+
+          # Read version from main branch
+          MAIN_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+          echo "Main version: $MAIN_VERSION"
+
+          # Checkout back to PR branch
+          git checkout -
+
+          # Compare versions
+          if [ "$CURRENT_VERSION" = "$MAIN_VERSION" ]; then
+            echo "Error: Version has not been bumped from $MAIN_VERSION"
+            exit 1
+          fi
+
+          # Check if new version already exists as a tag
+          if git rev-parse "v$CURRENT_VERSION" >/dev/null 2>&1; then
+            echo "Error: Version v$CURRENT_VERSION already exists as a tag"
+            exit 1
+          fi
+
+          echo "Version v$CURRENT_VERSION is new and has been bumped from v$MAIN_VERSION"
