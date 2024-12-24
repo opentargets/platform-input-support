@@ -3,9 +3,9 @@
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
-RUFF_CMD='ruff check'
-DEPTRY_CMD='deptry src --pep621-dev-dependency-groups=test,dev'
-PYTEST_CMD='pytest -qq'
+RUFF_CMD='uv run ruff check'
+DEPTRY_CMD='uv run deptry src'
+PYTEST_CMD='uv run pytest -qq'
 
 CYAN=$(echo -e $"\033[0;36m")
 RED=$(echo -e $"\033[1;31m")
