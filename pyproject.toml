@@ -1,9 +1,9 @@
 [project]
 name = "PIS"
-version = "24.7.3"
-description = "Open Target's Pipeline Input Stage Application"
+version = "25.0.0-rc.1"
+description = "Open Targets Pipeline Input Stage application"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 authors = [{ name = "Open Targets core team", email = "devs@opentargets.net" }]
 license = { text = "Apache-2.0" }
 dependencies = [
@@ -21,10 +21,12 @@ dependencies = [
 [tool.uv]
 override-dependencies = ["urllib3>=2.2.0"]
 
+[dependency-groups]
+dev = ["ruff==0.8.5", "deptry==0.21.2"]
+
 [project.optional-dependencies]
-dev = ["ruff==0.8.4", "deptry==0.21.2"]
 test = [
-  "coverage==7.6.9",
+  "coverage==7.6.10",
   "freezegun==1.5.1",
   "pytest==8.3.4",
   "pytest-mock==3.14.0",
@@ -68,6 +70,9 @@ pep621_dev_dependency_groups = ["dev", "test", "docs"]
 target-version = 'py312'
 line-length = 120
 preview = true
+
+[tool.ruff.format]
+quote-style = 'single'
 
 [tool.ruff.lint]
 select = [
@@ -173,14 +178,6 @@ extend-safe-fixes = [
   'PERF102', # ^ likewise
 ]
 
-[tool.ruff.format]
-quote-style = 'single'
-
-[tool.ruff.lint.per-file-ignores]
-'**/*_test.py' = ['S108', 'S602', 'D']
-'**/__init__.py' = ['F401']
-'**/tasks/*.py' = ['D102']
-
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
 multiline-quotes = 'double'
@@ -193,6 +190,11 @@ mark-parentheses = false
 parametrize-names-type = 'tuple'
 parametrize-values-type = 'list'
 parametrize-values-row-type = 'tuple'
+
+[tool.ruff.lint.per-file-ignores]
+'**/*_test.py' = ['S108', 'S602', 'D']
+'**/__init__.py' = ['F401']
+'**/tasks/*.py' = ['D102']
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
