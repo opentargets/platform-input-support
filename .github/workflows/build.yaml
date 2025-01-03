@@ -9,6 +9,7 @@ on:
 
 jobs:
   push-to-ghcr-and-gar:
+    name: Build docker image and publish to GHCR and GAR
     runs-on: ubuntu-22.04
 
     permissions:
