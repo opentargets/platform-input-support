@@ -28,7 +28,7 @@ any target shows help.
 ### Running with Docker
 
 ```bash
-docker run ghcr.io/javfg/pis:latest -h
+docker run ghcr.io/opentargets/pis:latest -h
 ```
 
 PIS can upload the files it fetches into different cloud storage services. Open Targets uses
@@ -39,7 +39,7 @@ you can run the following command:
 docker run \
   -v /path/to/credentials.json:/app/credentials.json \
   -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
-  ghcr.io/javfg/pis:latest -h
+  ghcr.io/opentargets/pis:latest -h
 ```
 
 To build your own Docker image, run the following command from the root of the repository:
@@ -51,7 +51,7 @@ docker build -t pis .
 ## Development
 
 > [!NOTE]
-> Take a look at the [API documentation](https://javfg.github.io/pis),
+> Take a look at the [API documentation](https://opentargets.github.io/pis),
 > it is a very helpful guide when developing new tasks.
 
 > [!IMPORTANT]
