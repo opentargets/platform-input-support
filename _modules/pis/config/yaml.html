@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.config.yaml &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../config.html">pis.config</a></li>
+      <li class="breadcrumb-item active">pis.config.yaml</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.config.yaml</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains the functions to parse yaml files.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTaskDefinition</span><span class="p">,</span> <span class="n">YamlSettings</span>
+
+
+<div class="viewcode-block" id="load_yaml_file">
+<a class="viewcode-back" href="../../../pis.config.html#pis.config.yaml.load_yaml_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_yaml_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a yaml file.</span>
+
+<span class="sd">    :param config_file: The path to the yaml file.</span>
+<span class="sd">    :type config_file: Path</span>
+<span class="sd">    :return: The contents of the yaml file.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;loading yaml file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error reading config file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_yaml_string">
+<a class="viewcode-back" href="../../../pis.config.html#pis.config.yaml.parse_yaml_string">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_yaml_string</span><span class="p">(</span><span class="n">yaml_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a yaml string.</span>
+
+<span class="sd">    :param yaml_string: The yaml string to parse.</span>
+<span class="sd">    :type yaml_string: str</span>
+<span class="sd">    :return: The parsed yaml content.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;parsing yaml string&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_string</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error parsing config file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_yaml">
+<a class="viewcode-back" href="../../../pis.config.html#pis.config.yaml.parse_yaml">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_yaml</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a yaml file.</span>
+
+<span class="sd">    This function loads a yaml file, parses its content, and returns it as a</span>
+<span class="sd">    dictionary.</span>
+
+<span class="sd">    .. warning:: If the file cannot be read or the content cannot be parsed, the</span>
+<span class="sd">        program will log an error and exit.</span>
+
+<span class="sd">    :param config_file: The path to the yaml file.</span>
+<span class="sd">    :type config_file: Path</span>
+<span class="sd">    :return: The parsed yaml content.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">load_yaml_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parse_yaml_string</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_yaml_settings">
+<a class="viewcode-back" href="../../../pis.config.html#pis.config.yaml.get_yaml_settings">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_yaml_settings</span><span class="p">(</span><span class="n">yaml_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">YamlSettings</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the yaml settings.</span>
+
+<span class="sd">    This function validates the yaml settings against the YamlSettings model.</span>
+
+<span class="sd">    .. warning:: If the settings are invalid, the program will log an error and</span>
+<span class="sd">        exit.</span>
+
+<span class="sd">    :param yaml_dict: The yaml settings.</span>
+<span class="sd">    :type yaml_dict: dict[str, Any]</span>
+<span class="sd">    :return: The validated yaml settings.</span>
+<span class="sd">    :rtype: YamlSettings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">YamlSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">yaml_dict</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error validating yaml settings: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_yaml_stepdefs">
+<a class="viewcode-back" href="../../../pis.config.html#pis.config.yaml.get_yaml_stepdefs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_yaml_stepdefs</span><span class="p">(</span><span class="n">yaml_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseTaskDefinition</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the yaml step definitions.</span>
+
+<span class="sd">    This function validates the yaml step definitions against the BaseTaskDefinition</span>
+<span class="sd">    model.</span>
+
+<span class="sd">    .. warning:: If the step definitions are invalid, the program will log an error and</span>
+<span class="sd">        exit.</span>
+
+<span class="sd">    :param yaml_dict: The yaml settings.</span>
+<span class="sd">    :type yaml_dict: dict[str, Any]</span>
+<span class="sd">    :return: The validated yaml step definitions.</span>
+<span class="sd">    :rtype: dict[str, list[BaseTaskDefinition]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">yaml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="c1"># this part must be validated separately, as this dict does not have a model</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;steps must be a dictionary&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[</span><span class="n">BaseTaskDefinition</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">td</span><span class="p">)</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">steps</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error validating yaml stepdefs: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_yaml_sentinel_dict">
+<a class="viewcode-back" href="../../../pis.config.html#pis.config.yaml.get_yaml_sentinel_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_yaml_sentinel_dict</span><span class="p">(</span><span class="n">yaml_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the yaml sentinel dictionary.</span>
+
+<span class="sd">    This function returns the sentinel dictionary for a scratchpad from the yaml</span>
+<span class="sd">    settings. If the sentinel dictionary is not present, an empty dictionary is</span>
+<span class="sd">    returned.</span>
+
+<span class="sd">    :param yaml_dict: The yaml settings.</span>
+<span class="sd">    :type yaml_dict: dict[str, Any]</span>
+<span class="sd">    :return: The sentinel dictionary.</span>
+<span class="sd">    :rtype: dict[str, Any]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">yaml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scratchpad&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

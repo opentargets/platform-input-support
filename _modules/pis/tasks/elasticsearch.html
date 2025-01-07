@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.tasks.elasticsearch &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pis.tasks.elasticsearch</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.tasks.elasticsearch</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Download select fields from all documents in a series of ElasticSearch indexes.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Self</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">elasticsearch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">elasticsearch.helpers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">elasticsearch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Elasticsearch</span> <span class="k">as</span> <span class="n">Es</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">elasticsearch.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElasticsearchException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">elasticsearch.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScanError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskDefinition</span><span class="p">,</span> <span class="n">report</span><span class="p">,</span> <span class="n">v</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskAbortedError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.fs</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_path</span><span class="p">,</span> <span class="n">check_fs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.validators.elasticsearch</span><span class="w"> </span><span class="kn">import</span> <span class="n">counts</span>
+
+<span class="n">BUFFER_SIZE</span> <span class="o">=</span> <span class="mi">20000</span>
+
+
+<div class="viewcode-block" id="ElasticsearchError">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.elasticsearch.ElasticsearchError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ElasticsearchError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Elasticsearch errors.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ElasticsearchDefinition">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.elasticsearch.ElasticsearchDefinition">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ElasticsearchDefinition</span><span class="p">(</span><span class="n">TaskDefinition</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration fields for the elasticsearch task.</span>
+
+<span class="sd">    This task has the following custom configuration fields:</span>
+<span class="sd">        - url (str): The URL of the ElasticSearch instance.</span>
+<span class="sd">        - destination (str): The path to write the documents to.</span>
+<span class="sd">        - index (str): The index to scan.</span>
+<span class="sd">        - fields (list[str]): The fields to include in the documents</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span>
+    <span class="n">index</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Elasticsearch">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.elasticsearch.Elasticsearch">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Elasticsearch</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download select fields from all documents in a series of ElasticSearch indexes.</span>
+
+<span class="sd">    This task will scan an ElasticSearch index and write the selected fields from each document</span>
+<span class="sd">    to a file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">TaskDefinition</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">:</span> <span class="n">ElasticsearchDefinition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="p">:</span> <span class="n">Es</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_written</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_es</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the Elasticsearch connection.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;es&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">es</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write documents to the destination file.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc_written</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close_es</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">ElasticsearchError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error writing to </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;wrote </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_written</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_count</span><span class="si">}</span><span class="s1">) documents to </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;the dict was taking up </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> bytes of memory&#39;</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Elasticsearch.run">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.elasticsearch.Elasticsearch.run">[docs]</a>
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">url</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">fields</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">absolute_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">destination</span><span class="p">)</span>
+        <span class="n">check_fs</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connecting to elasticsearch at </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">es</span> <span class="o">=</span> <span class="n">Es</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ElasticsearchException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close_es</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">ElasticsearchError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connection error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;scanning index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> with fields </span><span class="si">{</span><span class="n">list_str</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="n">ElasticsearchException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close_es</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">ElasticsearchError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error getting index count on index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_count</span><span class="si">}</span><span class="s1"> documents&#39;</span><span class="p">)</span>
+
+        <span class="n">buffer</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hit</span> <span class="ow">in</span> <span class="n">elasticsearch</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="p">,</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;match_all&#39;</span><span class="p">:</span> <span class="p">{}},</span> <span class="s1">&#39;_source&#39;</span><span class="p">:</span> <span class="n">fields</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hit</span><span class="p">[</span><span class="s1">&#39;_source&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">BUFFER_SIZE</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;flushing buffer&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_docs</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+                    <span class="n">buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+                    <span class="c1"># we can use this moment to check for abort signals and bail out</span>
+                    <span class="k">if</span> <span class="n">abort</span> <span class="ow">and</span> <span class="n">abort</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="n">TaskAbortedError</span>
+        <span class="k">except</span> <span class="n">ScanError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error scanning index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ElasticsearchError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error scanning index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_docs</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;wrote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_written</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_count</span><span class="si">}</span><span class="s1"> documents to </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">destination</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_close_es</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Elasticsearch.validate">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.elasticsearch.Elasticsearch.validate">[docs]</a>
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="n">v</span><span class="p">(</span>
+            <span class="n">counts</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

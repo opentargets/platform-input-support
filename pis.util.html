@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>util package &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="validators package" href="pis.validators.html" />
+    <link rel="prev" title="tasks package" href="pis.tasks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">util package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.util.errors">util.errors module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.DownloadError"><code class="docutils literal notranslate"><span class="pre">DownloadError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.HelperError"><code class="docutils literal notranslate"><span class="pre">HelperError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.NotFoundError"><code class="docutils literal notranslate"><span class="pre">NotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.PISCriticalError"><code class="docutils literal notranslate"><span class="pre">PISCriticalError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.PISError"><code class="docutils literal notranslate"><span class="pre">PISError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.PreconditionFailedError"><code class="docutils literal notranslate"><span class="pre">PreconditionFailedError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.ScratchpadError"><code class="docutils literal notranslate"><span class="pre">ScratchpadError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.StepFailedError"><code class="docutils literal notranslate"><span class="pre">StepFailedError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.StorageError"><code class="docutils literal notranslate"><span class="pre">StorageError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.TaskAbortedError"><code class="docutils literal notranslate"><span class="pre">TaskAbortedError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.errors.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.util.fs">util.fs module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.fs.absolute_path"><code class="docutils literal notranslate"><span class="pre">absolute_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.fs.check_dir"><code class="docutils literal notranslate"><span class="pre">check_dir()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.fs.check_file"><code class="docutils literal notranslate"><span class="pre">check_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.fs.check_fs"><code class="docutils literal notranslate"><span class="pre">check_fs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.util.download">util.download module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.AbortableStreamWrapper"><code class="docutils literal notranslate"><span class="pre">AbortableStreamWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.util.download.AbortableStreamWrapper.read"><code class="docutils literal notranslate"><span class="pre">AbortableStreamWrapper.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.DownloadHelper"><code class="docutils literal notranslate"><span class="pre">DownloadHelper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.util.download.DownloadHelper.download"><code class="docutils literal notranslate"><span class="pre">DownloadHelper.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.Downloader"><code class="docutils literal notranslate"><span class="pre">Downloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.util.download.Downloader.download"><code class="docutils literal notranslate"><span class="pre">Downloader.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.GoogleSheetsDownloader"><code class="docutils literal notranslate"><span class="pre">GoogleSheetsDownloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.util.download.GoogleSheetsDownloader.download"><code class="docutils literal notranslate"><span class="pre">GoogleSheetsDownloader.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.GoogleStorageDownloader"><code class="docutils literal notranslate"><span class="pre">GoogleStorageDownloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.util.download.GoogleStorageDownloader.download"><code class="docutils literal notranslate"><span class="pre">GoogleStorageDownloader.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.HttpDownloader"><code class="docutils literal notranslate"><span class="pre">HttpDownloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.util.download.HttpDownloader.download"><code class="docutils literal notranslate"><span class="pre">HttpDownloader.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.download.download"><code class="docutils literal notranslate"><span class="pre">download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.util.logger">util.logger module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.logger.get_exception_info"><code class="docutils literal notranslate"><span class="pre">get_exception_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.logger.get_format_log"><code class="docutils literal notranslate"><span class="pre">get_format_log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.logger.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.logger.task_logging"><code class="docutils literal notranslate"><span class="pre">task_logging()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.util.misc">util.misc module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.misc.date_str"><code class="docutils literal notranslate"><span class="pre">date_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.misc.list_str"><code class="docutils literal notranslate"><span class="pre">list_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.util.misc.real_name"><code class="docutils literal notranslate"><span class="pre">real_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.util">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">util package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pis.util.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="util-package">
+<h1>util package<a class="headerlink" href="#util-package" title="Link to this heading"></a></h1>
+<section id="module-pis.util.errors">
+<span id="util-errors-module"></span><h2>util.errors module<a class="headerlink" href="#module-pis.util.errors" title="Link to this heading"></a></h2>
+<p>Custom exceptions for the pis package.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.DownloadError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">DownloadError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#DownloadError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.DownloadError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when an error occurs during a download.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.HelperError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">HelperError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#HelperError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.HelperError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when an error occurs in a helper.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.NotFoundError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">NotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#NotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.NotFoundError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when something is not found.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.PISCriticalError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">PISCriticalError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#PISCriticalError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.PISCriticalError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when a critical error occurs.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.PISError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">PISError</span></span><a class="reference internal" href="_modules/pis/util/errors.html#PISError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.PISError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base class for all exceptions in the PIS package.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.PreconditionFailedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">PreconditionFailedError</span></span><a class="reference internal" href="_modules/pis/util/errors.html#PreconditionFailedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.PreconditionFailedError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when a precondition fails.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.ScratchpadError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">ScratchpadError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentinel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#ScratchpadError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.ScratchpadError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when a key is not found in the scratchpad.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.StepFailedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">StepFailedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#StepFailedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.StepFailedError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when a step fails.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.StorageError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">StorageError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/errors.html#StorageError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.StorageError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when an error occurs in a storage class.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.TaskAbortedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">TaskAbortedError</span></span><a class="reference internal" href="_modules/pis/util/errors.html#TaskAbortedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.TaskAbortedError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when a task is aborted.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.util.errors.ValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.errors.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><a class="reference internal" href="_modules/pis/util/errors.html#ValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.errors.ValidationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.errors.PISError" title="pis.util.errors.PISError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PISError</span></code></a></p>
+<p>Raise when a validation fails.</p>
+</dd></dl>
+
+</section>
+<section id="module-pis.util.fs">
+<span id="util-fs-module"></span><h2>util.fs module<a class="headerlink" href="#module-pis.util.fs" title="Link to this heading"></a></h2>
+<p>File system utilities.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.fs.absolute_path">
+<span class="sig-prename descclassname"><span class="pre">pis.util.fs.</span></span><span class="sig-name descname"><span class="pre">absolute_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/fs.html#absolute_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.fs.absolute_path" title="Link to this definition"></a></dt>
+<dd><p>Get the full path of a file or directory.</p>
+<p>The function will try to figure if the path contains the work directory. If
+not, it will be prepended.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em> | </em><em>str</em>) – The path to the file or directory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The full path of the file or directory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.fs.check_dir">
+<span class="sig-prename descclassname"><span class="pre">pis.util.fs.</span></span><span class="sig-name descname"><span class="pre">check_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pis/util/fs.html#check_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.fs.check_dir" title="Link to this definition"></a></dt>
+<dd><p>Check working conditions for a path.</p>
+<p>The function will make sure that the directory exists and is writable. If it
+does not exist, the function will attempt to create it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to check. Must be a directory.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>SystemExit</strong> – If the directory is not writable.</p></li>
+<li><p><strong>SystemExit</strong> – If there is an error creating the directory.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>None</cite> if all checks pass.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.fs.check_file">
+<span class="sig-prename descclassname"><span class="pre">pis.util.fs.</span></span><span class="sig-name descname"><span class="pre">check_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pis/util/fs.html#check_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.fs.check_file" title="Link to this definition"></a></dt>
+<dd><p>Check working conditions for a file.</p>
+<p>The function will make sure that a file does not exist in the given path.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The function will delete the file if it already exists.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to check. Must be a file.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>SystemExit</strong> – If there is an error deleting the file.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>None</cite> if all checks pass.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.fs.check_fs">
+<span class="sig-prename descclassname"><span class="pre">pis.util.fs.</span></span><span class="sig-name descname"><span class="pre">check_fs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pis/util/fs.html#check_fs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.fs.check_fs" title="Link to this definition"></a></dt>
+<dd><p>Check working conditions for a file and its parent directory.</p>
+<p>The function will make sure that the file does not exist and that the parent
+directory exists and is writable. If the parent directory does not exist, the
+function will attempt to create it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The function will delete the file if it already exists.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to check. Must be a file.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>SystemExit</strong> – If the file already exists.</p></li>
+<li><p><strong>SystemExit</strong> – If the parent directory is not writable.</p></li>
+<li><p><strong>SystemExit</strong> – If there is an error creating the parent directory.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>None</cite> if all checks pass.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.util.download">
+<span id="util-download-module"></span><h2>util.download module<a class="headerlink" href="#module-pis.util.download" title="Link to this heading"></a></h2>
+<p>Helper that downloads files from various sources.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.util.download.AbortableStreamWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">AbortableStreamWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/download.html#AbortableStreamWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.AbortableStreamWrapper" title="Link to this definition"></a></dt>
+<dd><p>A wrapper around a stream that can be aborted.</p>
+<p>This class wraps a stream and in every read operation, it will raise a
+<a class="reference internal" href="#pis.util.errors.TaskAbortedError" title="pis.util.errors.TaskAbortedError"><code class="xref py py-class docutils literal notranslate"><span class="pre">pis.util.errors.TaskAbortedError</span></code></a> if the abort event
+is set. This is useful to abort downloads when another task fails.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.util.download.AbortableStreamWrapper.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#AbortableStreamWrapper.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.AbortableStreamWrapper.read" title="Link to this definition"></a></dt>
+<dd><p>Read from the stream and raise TaskAbortedError if the abort event is set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data read from the stream.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pis.util.errors.TaskAbortedError" title="pis.util.errors.TaskAbortedError"><strong>TaskAbortedError</strong></a> – If the abort event is set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.util.download.DownloadHelper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">DownloadHelper</span></span><a class="reference internal" href="_modules/pis/util/download.html#DownloadHelper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.DownloadHelper" title="Link to this definition"></a></dt>
+<dd><p>Helper that downloads files from various sources.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.util.download.DownloadHelper.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#DownloadHelper.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.DownloadHelper.download" title="Link to this definition"></a></dt>
+<dd><p>Download a file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.util.download.Downloader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">Downloader</span></span><a class="reference internal" href="_modules/pis/util/download.html#Downloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.Downloader" title="Link to this definition"></a></dt>
+<dd><p>Base class for downloaders.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.util.download.Downloader.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#Downloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.Downloader.download" title="Link to this definition"></a></dt>
+<dd><p>Download a file from a source to a destination.</p>
+<p>This method is a no-op and should be overridden by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>str</em>) – The source URL.</p></li>
+<li><p><strong>dst</strong> (<em>Path</em>) – The destination path.</p></li>
+<li><p><strong>abort</strong> (<em>Event</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – An event that can be set to abort the download, defaults to <cite>None</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The destination path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.util.download.GoogleSheetsDownloader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">GoogleSheetsDownloader</span></span><a class="reference internal" href="_modules/pis/util/download.html#GoogleSheetsDownloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.GoogleSheetsDownloader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.download.Downloader" title="pis.util.download.Downloader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Downloader</span></code></a></p>
+<p>Downloader for Google Sheets URLs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.util.download.GoogleSheetsDownloader.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#GoogleSheetsDownloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.GoogleSheetsDownloader.download" title="Link to this definition"></a></dt>
+<dd><p>Download a Google Sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.util.download.GoogleStorageDownloader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">GoogleStorageDownloader</span></span><a class="reference internal" href="_modules/pis/util/download.html#GoogleStorageDownloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.GoogleStorageDownloader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.download.Downloader" title="pis.util.download.Downloader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Downloader</span></code></a></p>
+<p>Downloader for Google Storage URLs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.util.download.GoogleStorageDownloader.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#GoogleStorageDownloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.GoogleStorageDownloader.download" title="Link to this definition"></a></dt>
+<dd><p>Download a file from Google Storage.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.util.download.HttpDownloader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">HttpDownloader</span></span><a class="reference internal" href="_modules/pis/util/download.html#HttpDownloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.HttpDownloader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.util.download.Downloader" title="pis.util.download.Downloader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Downloader</span></code></a></p>
+<p>Downloader for HTTP and HTTPS URLs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.util.download.HttpDownloader.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#HttpDownloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.HttpDownloader.download" title="Link to this definition"></a></dt>
+<dd><p>Download a file from an HTTP or HTTPS URL.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.download.download">
+<span class="sig-prename descclassname"><span class="pre">pis.util.download.</span></span><span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/pis/util/download.html#download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.download.download" title="Link to this definition"></a></dt>
+<dd><p>Instantiate a DownloadHelper and download a file.</p>
+</dd></dl>
+
+</section>
+<section id="module-pis.util.logger">
+<span id="util-logger-module"></span><h2>util.logger module<a class="headerlink" href="#module-pis.util.logger" title="Link to this heading"></a></h2>
+<p>Configures the logger for the application.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.logger.get_exception_info">
+<span class="sig-prename descclassname"><span class="pre">pis.util.logger.</span></span><span class="sig-name descname"><span class="pre">get_exception_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record_exception</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/util/logger.html#get_exception_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.logger.get_exception_info" title="Link to this definition"></a></dt>
+<dd><p>Get fields from the exception record.</p>
+<p>This function extracts the name, function and line number from an exception.
+It will go back in the stack to the first frame originated inside the app,
+that way it will make sure the error is meaningful in the logs. If we don’t
+do this, the error will be logged as raising from the in the report decorator,
+which is not very useful.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>record_exception: The exception record.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.logger.get_format_log">
+<span class="sig-prename descclassname"><span class="pre">pis.util.logger.</span></span><span class="sig-name descname"><span class="pre">get_format_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/util/logger.html#get_format_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.logger.get_format_log" title="Link to this definition"></a></dt>
+<dd><p>Get the format for the log messages.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.logger.init_logger">
+<span class="sig-prename descclassname"><span class="pre">pis.util.logger.</span></span><span class="sig-name descname"><span class="pre">init_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pis/util/logger.html#init_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.logger.init_logger" title="Link to this definition"></a></dt>
+<dd><p>Initializes the logger.</p>
+<p>PIS uses two handlers by default, one for the console and one for the log file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>log_level (str): The log level to use.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.logger.task_logging">
+<span class="sig-prename descclassname"><span class="pre">pis.util.logger.</span></span><span class="sig-name descname"><span class="pre">task_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><span class="pre">Task</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/util/logger.html#task_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.logger.task_logging" title="Link to this definition"></a></dt>
+<dd><p>Context manager that appends log messages to the task’s manifest.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>task (Task): The task to log messages to.</p>
+</dd>
+<dt>Yields:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.util.misc">
+<span id="util-misc-module"></span><h2>util.misc module<a class="headerlink" href="#module-pis.util.misc" title="Link to this heading"></a></h2>
+<p>Misc utility functions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.misc.date_str">
+<span class="sig-prename descclassname"><span class="pre">pis.util.misc.</span></span><span class="sig-name descname"><span class="pre">date_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/util/misc.html#date_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.misc.date_str" title="Link to this definition"></a></dt>
+<dd><p>Return a string representation of a datetime object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>datetime</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – datetime object to convert to string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string representation of the datetime object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.misc.list_str">
+<span class="sig-prename descclassname"><span class="pre">pis.util.misc.</span></span><span class="sig-name descname"><span class="pre">list_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/util/misc.html#list_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.misc.list_str" title="Link to this definition"></a></dt>
+<dd><p>Return a string representation of a list or dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a_list</strong> (<em>Iterable</em><em>[</em><em>Any</em><em>]</em>) – The list or dictionary to convert to a string.</p></li>
+<li><p><strong>dict_values</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the values of a dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A string representation of the list or dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.util.misc.real_name">
+<span class="sig-prename descclassname"><span class="pre">pis.util.misc.</span></span><span class="sig-name descname"><span class="pre">real_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><span class="pre">Task</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pis.config.html#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><span class="pre">BaseTaskDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/util/misc.html#real_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.util.misc.real_name" title="Link to this definition"></a></dt>
+<dd><p>Return the real name of a task.</p>
+<p>The naming convention is snake_case for task names.</p>
+<p>The real name of a task is the first word of the name. It determines the type of
+task that will be spawned when the task is run, so the name should exist in the
+task registry (a task with that name must exist in the tasks module).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><em>Task</em></a><em> | </em><a class="reference internal" href="pis.config.html#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><em>BaseTaskDefinition</em></a>) – Task or TaskDefinition object to get the real name of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The real name of the task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.util">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pis.util" title="Link to this heading"></a></h2>
+<p>PIS Utilities.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pis.tasks.html" class="btn btn-neutral float-left" title="tasks package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pis.validators.html" class="btn btn-neutral float-right" title="validators package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

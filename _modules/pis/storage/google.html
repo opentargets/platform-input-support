@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.storage.google &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pis.storage.google</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.storage.google</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Google Cloud Storage class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">google</span><span class="w"> </span><span class="kn">import</span> <span class="n">auth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.api_core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoogleAPICallError</span><span class="p">,</span> <span class="n">PreconditionFailed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">auth_exceptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.auth.transport.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthorizedSession</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.cloud</span><span class="w"> </span><span class="kn">import</span> <span class="n">storage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.cloud.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFound</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.storage.remote_storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemoteStorage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span><span class="p">,</span> <span class="n">PreconditionFailedError</span><span class="p">,</span> <span class="n">StorageError</span>
+
+<span class="n">GOOGLE_SCOPES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;https://www.googleapis.com/auth/cloud-platform&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;https://www.googleapis.com/auth/spreadsheets&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="GoogleStorage">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoogleStorage</span><span class="p">(</span><span class="n">RemoteStorage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Google Cloud Storage helper class.</span>
+
+<span class="sd">    This class implements the RemoteStorage interface for Google Cloud Storage.</span>
+
+<span class="sd">    :ivar credentials: The Google Cloud Storage credentials.</span>
+<span class="sd">    :vartype credentials: google.auth.credentials.Credentials</span>
+<span class="sd">    :ivar client: The Google Cloud Storage client.</span>
+<span class="sd">    :vartype client: google.cloud.storage.client.Client</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">credentials</span><span class="p">,</span> <span class="n">project_id</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="n">GOOGLE_SCOPES</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;gcp authenticated on project </span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">auth_exceptions</span><span class="o">.</span><span class="n">DefaultCredentialsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error authenticating on gcp: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="n">credentials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">uri_parts</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;gs://&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">bucket_name</span> <span class="o">=</span> <span class="n">uri_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">bucket_re</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^[a-z0-9][a-z0-9-_.]{2,221}[a-z0-9]$&#39;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">bucket_re</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;invalid bucket name: </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">uri_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">uri_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">storage</span><span class="o">.</span><span class="n">Bucket</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NotFound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">GoogleAPICallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;google api error checking bucket </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error checking bucket </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="n">storage</span><span class="o">.</span><span class="n">Bucket</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">storage</span><span class="o">.</span><span class="n">Blob</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;invalid prefix: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">blob</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">GoogleAPICallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error preparing blob: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">blob</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_blob_shallow</span><span class="p">(</span><span class="n">blob_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># make sure we select the given path, not all prefixes</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">prefix</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">/&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">blob_name</span> <span class="ow">or</span> <span class="n">blob_name</span> <span class="o">==</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">blob_name</span> <span class="o">=</span> <span class="n">blob_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">prefix</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;/&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">blob_name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">blob_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GoogleStorage.check">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.check">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a bucket exists in Google Cloud Storage.</span>
+
+<span class="sd">        :param uri: The URI of the file to check.</span>
+<span class="sd">        :type uri: str</span>
+<span class="sd">        :return: True if the file exists, False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;storage.buckets.get&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;storage.objects.list&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;storage.objects.get&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;storage.objects.create&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;storage.objects.delete&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;storage.objects.update&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NotFoundError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;bucket </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">actual_permissions</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">test_iam_permissions</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">actual_permissions</span> <span class="o">!=</span> <span class="n">permissions</span><span class="p">:</span>
+            <span class="n">missing_permissions</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">actual_permissions</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;bucket </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1"> exists but is missing </span><span class="si">{</span><span class="n">missing_permissions</span><span class="si">}</span><span class="s1"> permission&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;bucket </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1"> exists and is readable&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="GoogleStorage.stat">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.stat">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata for a file in Google Cloud Storage.</span>
+
+<span class="sd">        :param uri: The URI of the file to get metadata for.</span>
+<span class="sd">        :type uri: str</span>
+<span class="sd">        :return: A dictionary containing metadata.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        :raises NotFoundError: If the file does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_blob</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">blob</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NotFound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">GoogleAPICallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error getting metadata for </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;mtime&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">blob</span><span class="o">.</span><span class="n">updated</span><span class="p">)</span> <span class="k">if</span> <span class="n">blob</span><span class="o">.</span><span class="n">updated</span> <span class="k">else</span> <span class="kc">None</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="GoogleStorage.list">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List blobs in a bucket.</span>
+
+<span class="sd">        :param uri: The URI prefix to list blobs for.</span>
+<span class="sd">        :type uri: str</span>
+<span class="sd">        :param pattern: The pattern to match blobs against.</span>
+<span class="sd">        :type pattern: str | None</span>
+<span class="sd">        :return: A list of blob URIs.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        :raises NotFoundError: If the bucket or prefix does not exist.</span>
+<span class="sd">        :raises StorageError: If the prefix is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="n">blob_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">bucket</span><span class="o">.</span><span class="n">list_blobs</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">))]</span>
+
+        <span class="c1"># filter out blobs that have longer prefixes</span>
+        <span class="n">blob_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">blob_names</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_blob_shallow</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)]</span>
+        <span class="c1"># filter out blobs using include/exclude</span>
+        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">):</span>
+                <span class="n">blob_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">blob_name</span> <span class="k">for</span> <span class="n">blob_name</span> <span class="ow">in</span> <span class="n">blob_name_list</span> <span class="k">if</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">blob_name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">blob_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">blob_name</span> <span class="k">for</span> <span class="n">blob_name</span> <span class="ow">in</span> <span class="n">blob_name_list</span> <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">blob_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">blob_name_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no files found in </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;gs://</span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">blob_name</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">blob_name</span> <span class="ow">in</span> <span class="n">blob_name_list</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="GoogleStorage.download_to_file">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.download_to_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a file from Google Cloud Storage to the local filesystem.</span>
+
+<span class="sd">        :param uri: The URI of the file to download.</span>
+<span class="sd">        :type uri: str</span>
+<span class="sd">        :param dst: The destination path to download the file to.</span>
+<span class="sd">        :type dst: Path</span>
+<span class="sd">        :return: The generation number of the file.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :raises NotFoundError: If the file is not found.</span>
+<span class="sd">        :raises StorageError: If an error occurs while downloading the file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_blob</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">blob</span><span class="o">.</span><span class="n">download_to_filename</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NotFound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">GoogleAPICallError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error downloading </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">blob</span><span class="o">.</span><span class="n">generation</span> <span class="ow">or</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="GoogleStorage.download_to_string">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.download_to_string">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a file from Google Cloud Storage and return its contents as a string.</span>
+
+<span class="sd">        :param uri: The URI of the file to download.</span>
+<span class="sd">        :type uri: str</span>
+<span class="sd">        :raises NotFoundError: If the file is not found.</span>
+<span class="sd">        :raises StorageError: If an error occurs while downloading the file.</span>
+<span class="sd">        :return: A tuple containing the file contents and the generation number.</span>
+<span class="sd">        :rtype: tuple[str, int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_blob</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">blob_str</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">download_as_string</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NotFound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;file </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
+
+        <span class="n">decoded_blob</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">decoded_blob</span> <span class="o">=</span> <span class="n">blob_str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnicodeDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error decoding file </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">blob</span><span class="o">.</span><span class="n">generation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">decoded_blob</span><span class="p">,</span> <span class="n">blob</span><span class="o">.</span><span class="n">generation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GoogleStorage.upload">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.upload">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">revision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a file to Google Cloud Storage.</span>
+
+<span class="sd">        :param src: The source path of the file to upload.</span>
+<span class="sd">        :type src: Path</span>
+<span class="sd">        :param uri: The URI to upload the file to.</span>
+<span class="sd">        :type uri: str</span>
+<span class="sd">        :param revision: The expected revision number of the file.</span>
+<span class="sd">        :type revision: int | None</span>
+<span class="sd">        :return: The new revision number of the file.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :raises StorageError: If an error occurs during upload.</span>
+<span class="sd">        :raises PreconditionFailedError: If the revision number does not match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_blob</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">revision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">blob</span><span class="o">.</span><span class="n">upload_from_filename</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">if_generation_match</span><span class="o">=</span><span class="n">revision</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">blob</span><span class="o">.</span><span class="n">upload_from_filename</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">PreconditionFailed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;upload of </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1"> failed due to generation mismatch&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">GoogleAPICallError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error uploading </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">blob</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">blob</span><span class="o">.</span><span class="n">generation</span> <span class="ow">or</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="GoogleStorage.get_session">
+<a class="viewcode-back" href="../../../pis.storage.html#pis.storage.google.GoogleStorage.get_session">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorizedSession</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current authenticated session.</span>
+
+<span class="sd">        :return: An authorized session.</span>
+<span class="sd">        :rtype: AuthorizedSession</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">AuthorizedSession</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

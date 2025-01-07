@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.task.task &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../task.html">pis.task</a></li>
+      <li class="breadcrumb-item active">pis.task.task</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.task.task</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Task classes for PIS.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Self</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">scratchpad</span><span class="p">,</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTaskDefinition</span><span class="p">,</span> <span class="n">TaskDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.manifest.task_reporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskReporter</span><span class="p">,</span> <span class="n">report</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.storage.remote_storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_remote_storage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.fs</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_path</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pis.manifest.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resource</span>
+
+
+<div class="viewcode-block" id="Task">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task.Task">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Task</span><span class="p">(</span><span class="n">TaskReporter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all tasks.</span>
+
+<span class="sd">    Tasks are the main building blocks of PIS. They are responsible for running the</span>
+<span class="sd">    various operations that are needed to gather the data from the different sources.</span>
+
+<span class="sd">    Tasks are defined by a TaskDefinition object, which contains the configuration</span>
+<span class="sd">    fields for the task. The Task class only needs to implement how it runs and validates</span>
+<span class="sd">    itself. All the initialization, registration and reporting is handled internally</span>
+<span class="sd">    by parent classes and PIS itself.</span>
+
+<span class="sd">    To implement a new task, create a new TaskDefinition class that inherits from</span>
+<span class="sd">    TaskDefinition or and contains the configuration fields required. Then, create a</span>
+<span class="sd">    new class that inherits from Task and implements the run and the validate methods.</span>
+
+<span class="sd">    The name of the class, converted to snake_case, will be the real name of the task,</span>
+<span class="sd">    which is used to identify the task in the registry and in the configuration file.</span>
+
+<span class="sd">    For example, for a DoSomething task, the real name will be do_something, and</span>
+<span class="sd">    in the configuration file, it could be used inside a step like this:</span>
+
+<span class="sd">    .. code-block:: yaml</span>
+
+<span class="sd">        steps:</span>
+<span class="sd">            - do_something to create an example resource:</span>
+<span class="sd">                some_field: some_value</span>
+<span class="sd">                another_field: another_value</span>
+
+<span class="sd">    :param definition: The definition of the task.</span>
+<span class="sd">    :type definition: BaseTaskDefinition</span>
+<span class="sd">    :ivar definition: The definition of the task.</span>
+<span class="sd">    :vartype definition: BaseTaskDefinition</span>
+<span class="sd">    :ivar resource: The resource object associated with the task.</span>
+<span class="sd">    :vartype resource: Resource</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">BaseTaskDefinition</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">definition</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">definition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">:</span> <span class="n">Resource</span>
+
+        <span class="c1"># replace templates in the definition strings</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">scratchpad</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;initialized task </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Task.run">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task.Task.run">[docs]</a>
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the task.</span>
+
+<span class="sd">        This method contains the actual work of the task. All tasks must implement</span>
+<span class="sd">        `run`, and it must download or generate a resource in the path stored in the</span>
+<span class="sd">        destination field of the task definition.</span>
+
+<span class="sd">        Optionally, an `abort` event can be watched to stop the task if another task</span>
+<span class="sd">        has failed. This is useful for long running work that can be stopped midway</span>
+<span class="sd">        once the run is deemed to be a failure.</span>
+
+<span class="sd">        :param abort: The event that will be set if another task has failed.</span>
+<span class="sd">        :type abort: Event</span>
+<span class="sd">        :return: The task instance itself must be returned.</span>
+<span class="sd">        :rtype: Self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Task.validate">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task.Task.validate">[docs]</a>
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the task.</span>
+
+<span class="sd">        This method should be implemented by the task subclass to perform validation. If</span>
+<span class="sd">        not implemented, the task resource will always be considered valid.</span>
+
+<span class="sd">        The validate method should make use of the `v` method from the validators module</span>
+<span class="sd">        to invoke a series of validators. See :func:`pis.validators.v`.</span>
+
+<span class="sd">        :param abort: The event that will be set if another task has failed.</span>
+<span class="sd">        :type abort: Event</span>
+<span class="sd">        :return: The task instance itself must be returned.</span>
+<span class="sd">        :rtype: Self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Task.upload">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task.Task.upload">[docs]</a>
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload the task.</span>
+
+<span class="sd">        This method will upload the file generated by the task to the remote uri. The</span>
+<span class="sd">        destination field of the task definition will be used as the path in the bucket.</span>
+
+<span class="sd">        There is no need to implement this method in the subclass unless the task needs</span>
+<span class="sd">        some special handling for the upload, which is unlikely.</span>
+
+<span class="sd">        :param abort: The event that will be set if another task has failed.</span>
+<span class="sd">        :type abort: Event</span>
+<span class="sd">        :return: The task instance itself must be returned.</span>
+<span class="sd">        :rtype: Self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span> <span class="n">TaskDefinition</span><span class="p">)</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="n">absolute_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">destination</span><span class="p">)</span>
+        <span class="n">remote_uri</span> <span class="o">=</span> <span class="n">settings</span><span class="p">()</span><span class="o">.</span><span class="n">remote_uri</span>
+        <span class="k">assert</span> <span class="n">remote_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">remote_uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">destination</span><span class="si">!s}</span><span class="s1">&#39;</span>
+        <span class="n">remote_storage</span> <span class="o">=</span> <span class="n">get_remote_storage</span><span class="p">(</span><span class="n">remote_uri</span><span class="p">)</span>
+        <span class="n">remote_storage</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Pretask">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task.Pretask">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Pretask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all pretasks.</span>
+
+<span class="sd">    Pretasks are tasks that are run before the main tasks. They are used to prepare the</span>
+<span class="sd">    environment for the main tasks. For example: getting a list of files to later download</span>
+<span class="sd">    one or all of them; or generating a new set of tasks based on some parameters.</span>
+
+<span class="sd">    Pretasks are defined by a PretaskDefinition object, which contains the configuration</span>
+<span class="sd">    fields for the pretask. The Pretask class only needs to implement `run`. All the</span>
+<span class="sd">    initialization, registration and reporting is handled internally by parent classes</span>
+<span class="sd">    and PIS itself.</span>
+
+<span class="sd">    To implement a new pretask, create a new PretaskDefinition class that inherits from</span>
+<span class="sd">    TaskDefinition or and contains the configuration fields required. Then, create a</span>
+<span class="sd">    new class that inherits from Pretask and implements the run method.</span>
+
+<span class="sd">    The name of the class, converted to snake_case, will be the &#39;real name&#39; of the pretask,</span>
+<span class="sd">    which is used to identify the pretask in the registry and in the configuration file.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

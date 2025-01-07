@@ -1,0 +1,210 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>step package &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="storage package" href="pis.storage.html" />
+    <link rel="prev" title="manifest package" href="pis.manifest.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">step package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.step.step">step.step module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.step.step.Step"><code class="docutils literal notranslate"><span class="pre">Step</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.step.step.Step.execute"><code class="docutils literal notranslate"><span class="pre">Step.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.step.step.XPool"><code class="docutils literal notranslate"><span class="pre">XPool</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.step.step.XPool.xmap"><code class="docutils literal notranslate"><span class="pre">XPool.xmap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.step">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">step package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pis.step.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-package">
+<h1>step package<a class="headerlink" href="#step-package" title="Link to this heading"></a></h1>
+<section id="module-pis.step.step">
+<span id="step-step-module"></span><h2>step.step module<a class="headerlink" href="#module-pis.step.step" title="Link to this heading"></a></h2>
+<p>Step module.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.step.step.Step">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.step.step.</span></span><span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/step/step.html#Step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.step.step.Step" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.manifest.html#pis.manifest.step_reporter.StepReporter" title="pis.manifest.step_reporter.StepReporter"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepReporter</span></code></a></p>
+<p>Step class.</p>
+<p>This class represents a step in the pipeline. A step is a collection of pretasks and
+tasks. The step will:</p>
+<ol class="arabic simple">
+<li><p>Initialize the pretasks.</p></li>
+<li><p>Run the pretasks.</p></li>
+<li><p>Initialize the tasks.</p></li>
+<li><p>Send the tasks to the pool for parallel execution.</p></li>
+<li><p>Validate the tasks.</p></li>
+<li><p>Upload the tasks.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the step.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.step.step.Step.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/step/step.html#Step.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.step.step.Step.execute" title="Link to this definition"></a></dt>
+<dd><p>Execute the step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pis.util.html#pis.util.errors.StepFailedError" title="pis.util.errors.StepFailedError"><strong>StepFailedError</strong></a> – If the step execution fails at any point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The step instance itself.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pis.step.step.Step" title="pis.step.step.Step">Step</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.step.step.XPool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.step.step.</span></span><span class="sig-name descname"><span class="pre">XPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxtasksperchild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/step/step.html#XPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.step.step.XPool" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Pool</span></code></p>
+<p>Extended Pool class.</p>
+<p>This class extends the Pool class to add an xmap method that allows for the execution of
+a function on a list of tasks, while also providing an abort mechanism.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.step.step.XPool.xmap">
+<span class="sig-name descname"><span class="pre">xmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/step/step.html#XPool.xmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.step.step.XPool.xmap" title="Link to this definition"></a></dt>
+<dd><p>Execute a function on a list of tasks.</p>
+<p>This is a wrapper for imap_unordered that allows for the execution of a function
+on a list of tasks with arbitrary parameters without having to clump them together
+in a single tuple. It also provides an abort mechanism.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_name</strong> (<em>str</em>) – The name of the function to execute on the tasks.</p></li>
+<li><p><strong>tasks</strong> (<em>list</em><em>[</em><a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><em>Task</em></a><em>]</em>) – The list of tasks to execute the function on.</p></li>
+<li><p><strong>abort</strong> (<em>Event</em>) – The abort event to signal the tasks to stop execution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of tasks after the function has been executed on them.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task">Task</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.step">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pis.step" title="Link to this heading"></a></h2>
+<p>Step class.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pis.manifest.html" class="btn btn-neutral float-left" title="manifest package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pis.storage.html" class="btn btn-neutral float-right" title="storage package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

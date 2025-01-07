@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.step.step &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pis.step.step</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.step.step</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Step module.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span><span class="p">,</span> <span class="n">task_definitions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.manifest.step_reporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">StepReporter</span><span class="p">,</span> <span class="n">report</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">task_registry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">StepFailedError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">task_logging</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pis.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pretask</span><span class="p">,</span> <span class="n">Task</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_executor</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Task&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">task_logging</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">abort</span><span class="o">=</span><span class="n">abort</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">aborted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">task</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">task</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">abort</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">return</span> <span class="n">_executor</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="XPool">
+<a class="viewcode-back" href="../../../pis.step.html#pis.step.step.XPool">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">XPool</span><span class="p">(</span><span class="n">Pool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extended Pool class.</span>
+
+<span class="sd">    This class extends the Pool class to add an xmap method that allows for the execution of</span>
+<span class="sd">    a function on a list of tasks, while also providing an abort mechanism.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="XPool.xmap">
+<a class="viewcode-back" href="../../../pis.step.html#pis.step.step.XPool.xmap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">xmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">],</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute a function on a list of tasks.</span>
+
+<span class="sd">        This is a wrapper for imap_unordered that allows for the execution of a function</span>
+<span class="sd">        on a list of tasks with arbitrary parameters without having to clump them together</span>
+<span class="sd">        in a single tuple. It also provides an abort mechanism.</span>
+
+<span class="sd">        :param func_name: The name of the function to execute on the tasks.</span>
+<span class="sd">        :type func_name: str</span>
+<span class="sd">        :param tasks: The list of tasks to execute the function on.</span>
+<span class="sd">        :type tasks: list[Task]</span>
+<span class="sd">        :param abort: The abort event to signal the tasks to stop execution.</span>
+<span class="sd">        :type abort: Event</span>
+
+<span class="sd">        :return: The list of tasks after the function has been executed on them.</span>
+<span class="sd">        :rtype: list[Task]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">_execute</span><span class="p">,</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">]))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Step">
+<a class="viewcode-back" href="../../../pis.step.html#pis.step.step.Step">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Step</span><span class="p">(</span><span class="n">StepReporter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Step class.</span>
+
+<span class="sd">    This class represents a step in the pipeline. A step is a collection of pretasks and</span>
+<span class="sd">    tasks. The step will:</span>
+
+<span class="sd">    1. Initialize the pretasks.</span>
+<span class="sd">    2. Run the pretasks.</span>
+<span class="sd">    3. Initialize the tasks.</span>
+<span class="sd">    4. Send the tasks to the pool for parallel execution.</span>
+<span class="sd">    5. Validate the tasks.</span>
+<span class="sd">    6. Upload the tasks.</span>
+
+<span class="sd">    :ivar name: The name of the step.</span>
+<span class="sd">    :vartype name: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_instantiate_pretasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Pretask&#39;</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;instantiating pretasks&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">task_registry</span><span class="p">()</span><span class="o">.</span><span class="n">instantiate_p</span><span class="p">(</span><span class="n">td</span><span class="p">)</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">task_definitions</span><span class="p">()</span> <span class="k">if</span> <span class="n">task_registry</span><span class="p">()</span><span class="o">.</span><span class="n">is_pretask</span><span class="p">(</span><span class="n">td</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_instantiate_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;instantiating tasks&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">task_registry</span><span class="p">()</span><span class="o">.</span><span class="n">instantiate_t</span><span class="p">(</span><span class="n">td</span><span class="p">)</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">task_definitions</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">task_registry</span><span class="p">()</span><span class="o">.</span><span class="n">is_pretask</span><span class="p">(</span><span class="n">td</span><span class="p">)]</span>
+
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pretasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Pretask&#39;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;running </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pretasks</span><span class="p">)</span><span class="si">}</span><span class="s1"> pretasks&#39;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pretasks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;no pretasks to run in this step&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_executor</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pretasks</span><span class="p">]</span>
+
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;running </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">task_definitions</span><span class="p">())</span><span class="si">}</span><span class="s1"> main tasks&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">XPool</span><span class="p">(</span><span class="n">settings</span><span class="p">()</span><span class="o">.</span><span class="n">pool</span><span class="p">)</span> <span class="k">as</span> <span class="n">run_pool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">run_pool</span><span class="o">.</span><span class="n">xmap</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="n">tasks</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span>
+
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;validating </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">task_definitions</span><span class="p">())</span><span class="si">}</span><span class="s1"> main tasks&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">XPool</span><span class="p">(</span><span class="n">settings</span><span class="p">()</span><span class="o">.</span><span class="n">pool</span><span class="p">)</span> <span class="k">as</span> <span class="n">validation_pool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">validation_pool</span><span class="o">.</span><span class="n">xmap</span><span class="p">(</span><span class="s1">&#39;validate&#39;</span><span class="p">,</span> <span class="n">tasks</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span>
+
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Task&#39;</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;uploading </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">task_definitions</span><span class="p">())</span><span class="si">}</span><span class="s1"> main tasks&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">XPool</span><span class="p">(</span><span class="n">settings</span><span class="p">()</span><span class="o">.</span><span class="n">pool</span><span class="p">)</span> <span class="k">as</span> <span class="n">upload_pool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">upload_pool</span><span class="o">.</span><span class="n">xmap</span><span class="p">(</span><span class="s1">&#39;upload&#39;</span><span class="p">,</span> <span class="n">tasks</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Step.execute">
+<a class="viewcode-back" href="../../../pis.step.html#pis.step.step.Step.execute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the step.</span>
+
+<span class="sd">        :raises StepFailedError: If the step execution fails at any point.</span>
+<span class="sd">        :return: The step instance itself.</span>
+<span class="sd">        :rtype: Step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">Manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># pretask process, sequential execution of initialization tasks</span>
+                <span class="n">pretasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate_pretasks</span><span class="p">()</span>
+
+                <span class="n">pretasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">pretasks</span><span class="p">,</span> <span class="n">abort</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">StepFailedError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;initialization&#39;</span><span class="p">)</span>
+
+                <span class="c1"># main process, parallel execution of resource generating tasks</span>
+                <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate_tasks</span><span class="p">()</span>
+
+                <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">abort</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">StepFailedError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">)</span>
+
+                <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">abort</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">StepFailedError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;validation&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">settings</span><span class="p">()</span><span class="o">.</span><span class="n">remote_uri</span><span class="p">:</span>
+                    <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">abort</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="n">StepFailedError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;upload&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;no remote URI provided, skipping upload phase&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">failed</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;step execution failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

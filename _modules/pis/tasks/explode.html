@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.tasks.explode &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pis.tasks.explode</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.tasks.explode</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Pretask — explode tasks based on a list of dictionaries.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jq</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">scratchpad</span><span class="p">,</span> <span class="n">task_definitions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pretask</span><span class="p">,</span> <span class="n">PretaskDefinition</span><span class="p">,</span> <span class="n">TaskDefinition</span><span class="p">,</span> <span class="n">report</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.download</span><span class="w"> </span><span class="kn">import</span> <span class="n">download</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_str</span>
+
+
+<div class="viewcode-block" id="ExplodeDefinition">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.explode.ExplodeDefinition">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExplodeDefinition</span><span class="p">(</span><span class="n">PretaskDefinition</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration fields for the explode pretask.</span>
+
+<span class="sd">    This pretask has the following custom configuration fields:</span>
+<span class="sd">        - do (list[dict]): The tasks to explode. Each task in the list will be</span>
+<span class="sd">            duplicated for each iteration of the foreach list.</span>
+<span class="sd">        - foreach (list[dict[str, str]] | None): The list of dictionaries to iterate</span>
+<span class="sd">            over. Each item in the list will be used to replace the variables in the</span>
+<span class="sd">            tasks in the do list.</span>
+<span class="sd">        - foreach_function (str | None): If set, this function will be called to get</span>
+<span class="sd">            the foreach list. The function must return a list of dictionaries.</span>
+<span class="sd">        - foreach_function_args (dict[str, Any] | None): Arguments to pass to the</span>
+<span class="sd">            foreach function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">do</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+    <span class="n">foreach</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">foreach_function</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">foreach_function_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="Explode">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.explode.Explode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Explode</span><span class="p">(</span><span class="n">Pretask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretask — explode tasks based on a list of dictionaries.</span>
+
+<span class="sd">    This pretask will duplicate the tasks in the `do` list for each iteration of the</span>
+<span class="sd">    `foreach` list. The `foreach` list is a list of dictionaries where each dictionary</span>
+<span class="sd">    will be used to replace the variables in the tasks in the `do` list.</span>
+
+<span class="sd">    If the `foreach` list is not set, the `foreach_function` will be called to get the</span>
+<span class="sd">    list of dictionaries. The function must return a list of dictionaries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">TaskDefinition</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">:</span> <span class="n">ExplodeDefinition</span>
+
+<div class="viewcode-block" id="Explode.run">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.explode.Explode.run">[docs]</a>
+    <span class="nd">@report</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="n">do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">do</span>
+        <span class="n">foreach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">foreach</span>
+        <span class="n">foreach_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">foreach_function</span>
+        <span class="n">foreach_function_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">foreach_function_args</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">foreach</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">foreach_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;either foreach or foreach_function must be set&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exploding </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if foreach_function is set, call the function and use its return value as the foreach list</span>
+        <span class="k">if</span> <span class="n">foreach_function</span><span class="p">:</span>
+            <span class="n">func_obj</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">foreach_function</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">func_obj</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;function </span><span class="si">{</span><span class="n">foreach_function</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">func</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span> <span class="n">func_obj</span><span class="p">)</span>
+            <span class="n">args_str</span> <span class="o">=</span> <span class="n">list_str</span><span class="p">(</span><span class="n">foreach_function_args</span><span class="p">,</span> <span class="n">dict_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;calling function </span><span class="si">{</span><span class="n">foreach_function</span><span class="si">}</span><span class="s1"> with args </span><span class="si">{</span><span class="n">args_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">foreach</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">foreach_function_args</span><span class="p">)</span>
+
+        <span class="n">foreach</span> <span class="o">=</span> <span class="n">foreach</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exploding </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">do</span><span class="p">)</span><span class="si">}</span><span class="s1"> tasks by </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">foreach</span><span class="p">)</span><span class="si">}</span><span class="s1"> iterations&#39;</span><span class="p">)</span>
+        <span class="n">new_tasks</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">foreach</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">v1</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">scratchpad</span><span class="p">()</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">do</span><span class="p">:</span>
+                <span class="n">task_definition</span> <span class="o">=</span> <span class="p">{</span><span class="n">k2</span><span class="p">:</span> <span class="n">scratchpad</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span> <span class="k">for</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v2</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">task_definition</span><span class="p">)</span>
+                <span class="n">task_definitions</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="n">new_tasks</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exploded into </span><span class="si">{</span><span class="n">new_tasks</span><span class="si">}</span><span class="s1"> new tasks&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="urls_from_json">
+<a class="viewcode-back" href="../../../pis.tasks.html#pis.tasks.explode.urls_from_json">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">urls_from_json</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">json_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a list of URLs from a JSON file.</span>
+
+<span class="sd">    This function will download a JSON file from a URL, extract a list of URLs from it</span>
+<span class="sd">    using a JQ query, and return a list of dictionaries with the source and destination</span>
+<span class="sd">    URLs.</span>
+
+<span class="sd">    :param source: The URL of the JSON file to download.</span>
+<span class="sd">    :type source: str</span>
+<span class="sd">    :param destination: The destination file to save the JSON file to.</span>
+<span class="sd">    :type destination: str</span>
+<span class="sd">    :param json_path: The JQ query to extract the URLs from the JSON file.</span>
+<span class="sd">    :type json_path: str</span>
+<span class="sd">    :param prefix: If set, this prefix will be removed from the source URLs to generate</span>
+<span class="sd">        the destination file names.</span>
+<span class="sd">    :type prefix: str | None</span>
+
+<span class="sd">    :return: A list of dictionaries with the source and destination URLs.</span>
+<span class="sd">    :rtype: list[dict[str, str]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">destination_file</span> <span class="o">=</span> <span class="n">download</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+    <span class="n">file_content</span> <span class="o">=</span> <span class="n">destination_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+    <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="n">jq</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">json_path</span><span class="p">)</span><span class="o">.</span><span class="n">input_value</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+        <span class="n">dsts</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">srcs</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dsts</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">srcs</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;destination&#39;</span><span class="p">:</span> <span class="n">d</span><span class="p">}</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">srcs</span><span class="p">,</span> <span class="n">dsts</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

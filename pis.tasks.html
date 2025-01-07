@@ -1,0 +1,865 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tasks package &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="util package" href="pis.util.html" />
+    <link rel="prev" title="task package" href="pis.task.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.task.html">task package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">tasks package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.tasks.download">tasks.download module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.download.Download"><code class="docutils literal notranslate"><span class="pre">Download</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.download.Download.run"><code class="docutils literal notranslate"><span class="pre">Download.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.download.Download.validate"><code class="docutils literal notranslate"><span class="pre">Download.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.download.DownloadDefinition"><code class="docutils literal notranslate"><span class="pre">DownloadDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.download.DownloadDefinition.source"><code class="docutils literal notranslate"><span class="pre">DownloadDefinition.source</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.tasks.download_latest">tasks.download_latest module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatest"><code class="docutils literal notranslate"><span class="pre">DownloadLatest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatest.run"><code class="docutils literal notranslate"><span class="pre">DownloadLatest.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatestDefinition"><code class="docutils literal notranslate"><span class="pre">DownloadLatestDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatestDefinition.pattern"><code class="docutils literal notranslate"><span class="pre">DownloadLatestDefinition.pattern</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatestDefinition.source"><code class="docutils literal notranslate"><span class="pre">DownloadLatestDefinition.source</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.tasks.elasticsearch">tasks.elasticsearch module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.elasticsearch.Elasticsearch"><code class="docutils literal notranslate"><span class="pre">Elasticsearch</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.elasticsearch.Elasticsearch.run"><code class="docutils literal notranslate"><span class="pre">Elasticsearch.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.elasticsearch.Elasticsearch.validate"><code class="docutils literal notranslate"><span class="pre">Elasticsearch.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition"><code class="docutils literal notranslate"><span class="pre">ElasticsearchDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.destination"><code class="docutils literal notranslate"><span class="pre">ElasticsearchDefinition.destination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.fields"><code class="docutils literal notranslate"><span class="pre">ElasticsearchDefinition.fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.index"><code class="docutils literal notranslate"><span class="pre">ElasticsearchDefinition.index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.url"><code class="docutils literal notranslate"><span class="pre">ElasticsearchDefinition.url</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchError"><code class="docutils literal notranslate"><span class="pre">ElasticsearchError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.tasks.explode">tasks.explode module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.explode.Explode"><code class="docutils literal notranslate"><span class="pre">Explode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.explode.Explode.run"><code class="docutils literal notranslate"><span class="pre">Explode.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition"><code class="docutils literal notranslate"><span class="pre">ExplodeDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.do"><code class="docutils literal notranslate"><span class="pre">ExplodeDefinition.do</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.foreach"><code class="docutils literal notranslate"><span class="pre">ExplodeDefinition.foreach</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.foreach_function"><code class="docutils literal notranslate"><span class="pre">ExplodeDefinition.foreach_function</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.foreach_function_args"><code class="docutils literal notranslate"><span class="pre">ExplodeDefinition.foreach_function_args</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.explode.urls_from_json"><code class="docutils literal notranslate"><span class="pre">urls_from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.tasks.hello_world">tasks.hello_world module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.hello_world.HelloWorld"><code class="docutils literal notranslate"><span class="pre">HelloWorld</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.hello_world.HelloWorld.run"><code class="docutils literal notranslate"><span class="pre">HelloWorld.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.hello_world.HelloWorld.validate"><code class="docutils literal notranslate"><span class="pre">HelloWorld.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.tasks.hello_world.HelloWorldDefinition"><code class="docutils literal notranslate"><span class="pre">HelloWorldDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.tasks.hello_world.HelloWorldDefinition.who"><code class="docutils literal notranslate"><span class="pre">HelloWorldDefinition.who</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.tasks">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">tasks package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pis.tasks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tasks-package">
+<h1>tasks package<a class="headerlink" href="#tasks-package" title="Link to this heading"></a></h1>
+<p>This package contains the tasks that are run by pis. Any new tasks
+should be added to this package.</p>
+<section id="module-pis.tasks.download">
+<span id="tasks-download-module"></span><h2>tasks.download module<a class="headerlink" href="#module-pis.tasks.download" title="Link to this heading"></a></h2>
+<p>Simple download task.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.tasks.download.Download">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.download.</span></span><span class="sig-name descname"><span class="pre">Download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><span class="pre">TaskDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/tasks/download.html#Download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download.Download" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a></p>
+<p>Simple dowload task.</p>
+<p>Downloads a file from a URL to a local destination.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.download.Download.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/download.html#Download.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download.Download.run" title="Link to this definition"></a></dt>
+<dd><p>Download a file from the source URL to the destination path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.download.Download.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/download.html#Download.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download.Download.validate" title="Link to this definition"></a></dt>
+<dd><p>Check that the downloaded file exists and has a valid size.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.tasks.download.DownloadDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.download.</span></span><span class="sig-name descname"><span class="pre">DownloadDefinition</span></span><a class="reference internal" href="_modules/pis/tasks/download.html#DownloadDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download.DownloadDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a></p>
+<p>Configuration fields for the download task.</p>
+<dl class="simple">
+<dt>This task has the following custom configuration fields:</dt><dd><ul class="simple">
+<li><p>source (str): The URL of the file to download.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DownloadDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Source&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;destination&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;source&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.tasks.download.DownloadDefinition.source" title="pis.tasks.download.DownloadDefinition.source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.download.DownloadDefinition.source">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.download.DownloadDefinition.source" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.tasks.download_latest">
+<span id="tasks-download-latest-module"></span><h2>tasks.download_latest module<a class="headerlink" href="#module-pis.tasks.download_latest" title="Link to this heading"></a></h2>
+<p>Download the file with the latest modification date among those in a prefix URI.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.tasks.download_latest.DownloadLatest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.download_latest.</span></span><span class="sig-name descname"><span class="pre">DownloadLatest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><span class="pre">TaskDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/tasks/download_latest.html#DownloadLatest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download_latest.DownloadLatest" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a></p>
+<p>Download the file with the latest modification date among those in a prefix URI.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.download_latest.DownloadLatest.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/download_latest.html#DownloadLatest.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download_latest.DownloadLatest.run" title="Link to this definition"></a></dt>
+<dd><p>Run the task.</p>
+<p>This method contains the actual work of the task. All tasks must implement
+<cite>run</cite>, and it must download or generate a resource in the path stored in the
+destination field of the task definition.</p>
+<p>Optionally, an <cite>abort</cite> event can be watched to stop the task if another task
+has failed. This is useful for long running work that can be stopped midway
+once the run is deemed to be a failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abort</strong> (<em>Event</em>) – The event that will be set if another task has failed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task instance itself must be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.tasks.download_latest.DownloadLatestDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.download_latest.</span></span><span class="sig-name descname"><span class="pre">DownloadLatestDefinition</span></span><a class="reference internal" href="_modules/pis/tasks/download_latest.html#DownloadLatestDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.download_latest.DownloadLatestDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a></p>
+<p>Configuration fields for the download_latest task.</p>
+<dl class="simple">
+<dt>This task has the following custom configuration fields:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>source str: The prefix from where the file with the latest modification date will</dt><dd><p>be downloaded.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pattern str: Optional. The pattern to match files against. The pattern should be</dt><dd><p>a simple string match, preceded by an exclamation mark to exclude files. For
+example, ‘foo’ will match all files containing ‘foo’, while ‘!foo’ will exclude
+all files containing ‘foo’.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DownloadLatestDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Source&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pattern&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;destination&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;source&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatestDefinition.pattern" title="pis.tasks.download_latest.DownloadLatestDefinition.pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pattern</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.download_latest.DownloadLatestDefinition.source" title="pis.tasks.download_latest.DownloadLatestDefinition.source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.download_latest.DownloadLatestDefinition.pattern">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pattern</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.tasks.download_latest.DownloadLatestDefinition.pattern" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.download_latest.DownloadLatestDefinition.source">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.download_latest.DownloadLatestDefinition.source" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.tasks.elasticsearch">
+<span id="tasks-elasticsearch-module"></span><h2>tasks.elasticsearch module<a class="headerlink" href="#module-pis.tasks.elasticsearch" title="Link to this heading"></a></h2>
+<p>Download select fields from all documents in a series of ElasticSearch indexes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.Elasticsearch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.elasticsearch.</span></span><span class="sig-name descname"><span class="pre">Elasticsearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><span class="pre">TaskDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/tasks/elasticsearch.html#Elasticsearch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.elasticsearch.Elasticsearch" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a></p>
+<p>Download select fields from all documents in a series of ElasticSearch indexes.</p>
+<p>This task will scan an ElasticSearch index and write the selected fields from each document
+to a file.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.Elasticsearch.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/elasticsearch.html#Elasticsearch.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.elasticsearch.Elasticsearch.run" title="Link to this definition"></a></dt>
+<dd><p>Run the task.</p>
+<p>This method contains the actual work of the task. All tasks must implement
+<cite>run</cite>, and it must download or generate a resource in the path stored in the
+destination field of the task definition.</p>
+<p>Optionally, an <cite>abort</cite> event can be watched to stop the task if another task
+has failed. This is useful for long running work that can be stopped midway
+once the run is deemed to be a failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abort</strong> (<em>Event</em>) – The event that will be set if another task has failed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task instance itself must be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.Elasticsearch.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/elasticsearch.html#Elasticsearch.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.elasticsearch.Elasticsearch.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate the task.</p>
+<p>This method should be implemented by the task subclass to perform validation. If
+not implemented, the task resource will always be considered valid.</p>
+<p>The validate method should make use of the <cite>v</cite> method from the validators module
+to invoke a series of validators. See <a class="reference internal" href="pis.validators.html#pis.validators.v" title="pis.validators.v"><code class="xref py py-func docutils literal notranslate"><span class="pre">pis.validators.v()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abort</strong> (<em>Event</em>) – The event that will be set if another task has failed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task instance itself must be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.ElasticsearchDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.elasticsearch.</span></span><span class="sig-name descname"><span class="pre">ElasticsearchDefinition</span></span><a class="reference internal" href="_modules/pis/tasks/elasticsearch.html#ElasticsearchDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.elasticsearch.ElasticsearchDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a></p>
+<p>Configuration fields for the elasticsearch task.</p>
+<dl class="simple">
+<dt>This task has the following custom configuration fields:</dt><dd><ul class="simple">
+<li><p>url (str): The URL of the ElasticSearch instance.</p></li>
+<li><p>destination (str): The path to write the documents to.</p></li>
+<li><p>index (str): The index to scan.</p></li>
+<li><p>fields (list[str]): The fields to include in the documents</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ElasticsearchDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Url&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;index&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Index&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fields&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;destination&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;url&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;index&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;fields&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.destination" title="pis.tasks.elasticsearch.ElasticsearchDefinition.destination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">destination</span> <span class="pre">(pathlib._local.Path)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.fields" title="pis.tasks.elasticsearch.ElasticsearchDefinition.fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fields</span> <span class="pre">(list[str])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.index" title="pis.tasks.elasticsearch.ElasticsearchDefinition.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.url" title="pis.tasks.elasticsearch.ElasticsearchDefinition.url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">url</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.ElasticsearchDefinition.destination">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">destination</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.destination" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.ElasticsearchDefinition.fields">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.ElasticsearchDefinition.index">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.ElasticsearchDefinition.url">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.elasticsearch.ElasticsearchDefinition.url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pis.tasks.elasticsearch.ElasticsearchError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.elasticsearch.</span></span><span class="sig-name descname"><span class="pre">ElasticsearchError</span></span><a class="reference internal" href="_modules/pis/tasks/elasticsearch.html#ElasticsearchError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.elasticsearch.ElasticsearchError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base class for Elasticsearch errors.</p>
+</dd></dl>
+
+</section>
+<section id="module-pis.tasks.explode">
+<span id="tasks-explode-module"></span><h2>tasks.explode module<a class="headerlink" href="#module-pis.tasks.explode" title="Link to this heading"></a></h2>
+<p>Pretask — explode tasks based on a list of dictionaries.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.tasks.explode.Explode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.explode.</span></span><span class="sig-name descname"><span class="pre">Explode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><span class="pre">TaskDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/tasks/explode.html#Explode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.explode.Explode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.task.html#pis.task.task.Pretask" title="pis.task.task.Pretask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pretask</span></code></a></p>
+<p>Pretask — explode tasks based on a list of dictionaries.</p>
+<p>This pretask will duplicate the tasks in the <cite>do</cite> list for each iteration of the
+<cite>foreach</cite> list. The <cite>foreach</cite> list is a list of dictionaries where each dictionary
+will be used to replace the variables in the tasks in the <cite>do</cite> list.</p>
+<p>If the <cite>foreach</cite> list is not set, the <cite>foreach_function</cite> will be called to get the
+list of dictionaries. The function must return a list of dictionaries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.explode.Explode.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/explode.html#Explode.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.explode.Explode.run" title="Link to this definition"></a></dt>
+<dd><p>Run the task.</p>
+<p>This method contains the actual work of the task. All tasks must implement
+<cite>run</cite>, and it must download or generate a resource in the path stored in the
+destination field of the task definition.</p>
+<p>Optionally, an <cite>abort</cite> event can be watched to stop the task if another task
+has failed. This is useful for long running work that can be stopped midway
+once the run is deemed to be a failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abort</strong> (<em>Event</em>) – The event that will be set if another task has failed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task instance itself must be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.tasks.explode.ExplodeDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.explode.</span></span><span class="sig-name descname"><span class="pre">ExplodeDefinition</span></span><a class="reference internal" href="_modules/pis/tasks/explode.html#ExplodeDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.explode.ExplodeDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.config.html#pis.config.models.PretaskDefinition" title="pis.config.models.PretaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PretaskDefinition</span></code></a></p>
+<p>Configuration fields for the explode pretask.</p>
+<dl class="simple">
+<dt>This pretask has the following custom configuration fields:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>do (list[dict]): The tasks to explode. Each task in the list will be</dt><dd><p>duplicated for each iteration of the foreach list.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>foreach (list[dict[str, str]] | None): The list of dictionaries to iterate</dt><dd><p>over. Each item in the list will be used to replace the variables in the
+tasks in the do list.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>foreach_function (str | None): If set, this function will be called to get</dt><dd><p>the foreach list. The function must return a list of dictionaries.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>foreach_function_args (dict[str, Any] | None): Arguments to pass to the</dt><dd><p>foreach function.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ExplodeDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;do&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Do&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;foreach&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">               </span><span class="p">},</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Foreach&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;foreach_function&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Foreach Function&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;foreach_function_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Foreach Function Args&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;do&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.do" title="pis.tasks.explode.ExplodeDefinition.do"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do</span> <span class="pre">(list[dict])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.foreach" title="pis.tasks.explode.ExplodeDefinition.foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">foreach</span> <span class="pre">(list[dict[str,</span> <span class="pre">str]]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.foreach_function" title="pis.tasks.explode.ExplodeDefinition.foreach_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">foreach_function</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.tasks.explode.ExplodeDefinition.foreach_function_args" title="pis.tasks.explode.ExplodeDefinition.foreach_function_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">foreach_function_args</span> <span class="pre">(dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.explode.ExplodeDefinition.do">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">do</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.tasks.explode.ExplodeDefinition.do" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.explode.ExplodeDefinition.foreach">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">foreach</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.tasks.explode.ExplodeDefinition.foreach" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.explode.ExplodeDefinition.foreach_function">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">foreach_function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.tasks.explode.ExplodeDefinition.foreach_function" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.explode.ExplodeDefinition.foreach_function_args">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">foreach_function_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.tasks.explode.ExplodeDefinition.foreach_function_args" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.tasks.explode.urls_from_json">
+<span class="sig-prename descclassname"><span class="pre">pis.tasks.explode.</span></span><span class="sig-name descname"><span class="pre">urls_from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/tasks/explode.html#urls_from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.explode.urls_from_json" title="Link to this definition"></a></dt>
+<dd><p>Get a list of URLs from a JSON file.</p>
+<p>This function will download a JSON file from a URL, extract a list of URLs from it
+using a JQ query, and return a list of dictionaries with the source and destination
+URLs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>str</em>) – The URL of the JSON file to download.</p></li>
+<li><p><strong>destination</strong> (<em>str</em>) – The destination file to save the JSON file to.</p></li>
+<li><p><strong>json_path</strong> (<em>str</em>) – The JQ query to extract the URLs from the JSON file.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em> | </em><em>None</em>) – If set, this prefix will be removed from the source URLs to generate
+the destination file names.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of dictionaries with the source and destination URLs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict[str, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.tasks.hello_world">
+<span id="tasks-hello-world-module"></span><h2>tasks.hello_world module<a class="headerlink" href="#module-pis.tasks.hello_world" title="Link to this heading"></a></h2>
+<p>Simple hello world task.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.tasks.hello_world.HelloWorld">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.hello_world.</span></span><span class="sig-name descname"><span class="pre">HelloWorld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><span class="pre">TaskDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/tasks/hello_world.html#HelloWorld"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.hello_world.HelloWorld" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.task.html#pis.task.task.Task" title="pis.task.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a></p>
+<p>Simple hello world task.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.hello_world.HelloWorld.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/hello_world.html#HelloWorld.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.hello_world.HelloWorld.run" title="Link to this definition"></a></dt>
+<dd><p>Run the task.</p>
+<p>This method contains the actual work of the task. All tasks must implement
+<cite>run</cite>, and it must download or generate a resource in the path stored in the
+destination field of the task definition.</p>
+<p>Optionally, an <cite>abort</cite> event can be watched to stop the task if another task
+has failed. This is useful for long running work that can be stopped midway
+once the run is deemed to be a failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abort</strong> (<em>Event</em>) – The event that will be set if another task has failed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task instance itself must be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.tasks.hello_world.HelloWorld.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/pis/tasks/hello_world.html#HelloWorld.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.hello_world.HelloWorld.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate the task.</p>
+<p>This method should be implemented by the task subclass to perform validation. If
+not implemented, the task resource will always be considered valid.</p>
+<p>The validate method should make use of the <cite>v</cite> method from the validators module
+to invoke a series of validators. See <a class="reference internal" href="pis.validators.html#pis.validators.v" title="pis.validators.v"><code class="xref py py-func docutils literal notranslate"><span class="pre">pis.validators.v()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abort</strong> (<em>Event</em>) – The event that will be set if another task has failed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task instance itself must be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.tasks.hello_world.HelloWorldDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.tasks.hello_world.</span></span><span class="sig-name descname"><span class="pre">HelloWorldDefinition</span></span><a class="reference internal" href="_modules/pis/tasks/hello_world.html#HelloWorldDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.tasks.hello_world.HelloWorldDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pis.config.html#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a></p>
+<p>Configuration fields for the hello_world task.</p>
+<dl class="simple">
+<dt>This task has the following custom configuration fields:</dt><dd><ul class="simple">
+<li><p>who (str): The person to greet in the output file.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HelloWorldDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;who&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;world&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Who&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;destination&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.tasks.hello_world.HelloWorldDefinition.who" title="pis.tasks.hello_world.HelloWorldDefinition.who"><code class="xref py py-obj docutils literal notranslate"><span class="pre">who</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.tasks.hello_world.HelloWorldDefinition.who">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">who</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'world'</span></em><a class="headerlink" href="#pis.tasks.hello_world.HelloWorldDefinition.who" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.tasks">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pis.tasks" title="Link to this heading"></a></h2>
+<p>Task definitions.</p>
+<p>This module contains the task and pretask classes.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pis.task.html" class="btn btn-neutral float-left" title="task package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pis.util.html" class="btn btn-neutral float-right" title="util package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

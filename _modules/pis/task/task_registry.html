@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pis.task.task_registry &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../task.html">pis.task</a></li>
+      <li class="breadcrumb-item active">pis.task.task_registry</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pis.task.task_registry</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;TaskRegistry class handles the registry of tasks.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTaskDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.manifest.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskManifest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pretask</span><span class="p">,</span> <span class="n">Task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pis.util.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">real_name</span>
+
+<span class="n">TASKS_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;tasks&#39;</span>
+<span class="n">TASKS_MODULE</span> <span class="o">=</span> <span class="s1">&#39;pis.tasks&#39;</span>
+
+
+<div class="viewcode-block" id="TaskRegistry">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task_registry.TaskRegistry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TaskRegistry contains the registry of tasks.</span>
+
+<span class="sd">    The registry is where PIS will instantiate tasks from when it reads the configuration</span>
+<span class="sd">    file. It contains the mapping of task names to their respective classes, task definitions</span>
+<span class="sd">    and manifests.</span>
+
+<span class="sd">    :ivar tasks: Mapping of task names to their respective classes.</span>
+<span class="sd">    :vartype tasks: dict[str, type[Task]]</span>
+<span class="sd">    :ivar task_definitions: Mapping of task names to their respective task definition classes.</span>
+<span class="sd">    :vartype task_definitions: dict[str, type[BaseTaskDefinition]]</span>
+<span class="sd">    :ivar task_manifests: Mapping of task names to their respective task manifest classes.</span>
+<span class="sd">    :vartype task_manifests: dict[str, type[TaskManifest]]</span>
+<span class="sd">    :ivar pre_tasks: List of names of the pretasks.</span>
+<span class="sd">    :vartype pre_tasks: list[str]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Task</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_definitions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTaskDefinition</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_manifests</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">TaskManifest</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_filename_to_class</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TaskRegistry.is_pretask">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task_registry.TaskRegistry.is_pretask">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_pretask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_definition</span><span class="p">:</span> <span class="n">BaseTaskDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether the task is a pretask.</span>
+
+<span class="sd">        :param task_definition: The task definition to check.</span>
+<span class="sd">        :type task_definition: BaseTaskDefinition</span>
+<span class="sd">        :return: Whether the task is a pretask.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">real_name</span><span class="p">(</span><span class="n">task_definition</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_tasks</span></div>
+
+
+<div class="viewcode-block" id="TaskRegistry.register_tasks">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task_registry.TaskRegistry.register_tasks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register all tasks from the tasks directory.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;registering tasks from </span><span class="si">{</span><span class="n">TASKS_DIR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">task_path</span> <span class="ow">in</span> <span class="n">TASKS_DIR</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;[!</span><span class="si">{_}</span><span class="s1">]*.py&#39;</span><span class="p">):</span>
+            <span class="n">task_name</span> <span class="o">=</span> <span class="n">task_path</span><span class="o">.</span><span class="n">stem</span>
+            <span class="n">task_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TASKS_MODULE</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">task_class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename_to_class</span><span class="p">(</span><span class="n">task_name</span><span class="p">)</span>
+
+            <span class="c1"># if the task is a Pretask, add it to the list</span>
+            <span class="n">task_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task_module</span><span class="p">,</span> <span class="n">task_class_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">task_class</span><span class="o">.</span><span class="n">__base__</span><span class="p">,</span> <span class="n">Pretask</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pre_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_name</span><span class="p">)</span>
+
+            <span class="c1"># add task and its task_definition and manifest to the registry</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_class</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_definitions</span><span class="p">[</span><span class="n">task_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task_module</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">task_class_name</span><span class="si">}</span><span class="s1">Definition&#39;</span><span class="p">,</span> <span class="n">BaseTaskDefinition</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_manifests</span><span class="p">[</span><span class="n">task_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task_module</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">task_class_name</span><span class="si">}</span><span class="s1">Manifest&#39;</span><span class="p">,</span> <span class="n">TaskManifest</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_definition</span><span class="p">:</span> <span class="n">BaseTaskDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Task | Pretask&#39;</span><span class="p">:</span>
+        <span class="n">task_class_name</span> <span class="o">=</span> <span class="n">real_name</span><span class="p">(</span><span class="n">task_definition</span><span class="p">)</span>
+
+        <span class="c1"># get task class from the registry</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">task_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_class_name</span><span class="p">]</span>
+            <span class="n">task_definition_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_definitions</span><span class="p">[</span><span class="n">task_class_name</span><span class="p">]</span>
+            <span class="n">task_manifest_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manifests</span><span class="p">[</span><span class="n">task_class_name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;invalid task name: </span><span class="si">{</span><span class="n">task_class_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># create task_definition and manifest instances</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">task_definition</span> <span class="o">=</span> <span class="n">task_definition_class</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">task_definition</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+            <span class="n">manifest</span> <span class="o">=</span> <span class="n">task_manifest_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">task_definition</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="c1"># log a clear message if there are missing fields, otherwise error message</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ve</span><span class="o">.</span><span class="n">errors</span><span class="p">()</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;missing&#39;</span><span class="p">])</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;missing fields: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="n">ve</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;invalid task_definition for task </span><span class="si">{</span><span class="n">task_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># create task and attach manifest</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">task_class</span><span class="p">(</span><span class="n">task_definition</span><span class="p">)</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">_manifest</span> <span class="o">=</span> <span class="n">manifest</span>
+
+        <span class="k">return</span> <span class="n">task</span>
+
+<div class="viewcode-block" id="TaskRegistry.instantiate_t">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task_registry.TaskRegistry.instantiate_t">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instantiate_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_definition</span><span class="p">:</span> <span class="n">BaseTaskDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Task&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate a task.</span>
+
+<span class="sd">        :param task_definition: The task definition to instantiate the task from.</span>
+<span class="sd">        :type task_definition: BaseTaskDefinition</span>
+<span class="sd">        :return: The instantiated task.</span>
+<span class="sd">        :rtype: Task</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">task_definition</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">Task</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">task</span></div>
+
+
+<div class="viewcode-block" id="TaskRegistry.instantiate_p">
+<a class="viewcode-back" href="../../../pis.task.html#pis.task.task_registry.TaskRegistry.instantiate_p">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instantiate_p</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pretask_definition</span><span class="p">:</span> <span class="n">BaseTaskDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Pretask&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate a pretask.</span>
+
+<span class="sd">        :param pretask_definition: The pretask definition to instantiate the pretask from.</span>
+<span class="sd">        :type pretask_definition: BaseTaskDefinition</span>
+<span class="sd">        :return: The instantiated pretask.</span>
+<span class="sd">        :rtype: Pretask</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pretask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">pretask_definition</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pretask</span><span class="p">,</span> <span class="n">Pretask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pretask</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

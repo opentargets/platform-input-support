@@ -1,0 +1,1309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>config package &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="manifest package" href="pis.manifest.html" />
+    <link rel="prev" title="pis package" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">config package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config.config">config.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.config.Config.get_scratchpad_sentinel_dict"><code class="docutils literal notranslate"><span class="pre">Config.get_scratchpad_sentinel_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.config.Config.get_task_definitions"><code class="docutils literal notranslate"><span class="pre">Config.get_task_definitions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config.models">config.models module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.BaseTaskDefinition"><code class="docutils literal notranslate"><span class="pre">BaseTaskDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.BaseTaskDefinition.name"><code class="docutils literal notranslate"><span class="pre">BaseTaskDefinition.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.CliSettings"><code class="docutils literal notranslate"><span class="pre">CliSettings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.CliSettings.config_file"><code class="docutils literal notranslate"><span class="pre">CliSettings.config_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.CliSettings.log_level"><code class="docutils literal notranslate"><span class="pre">CliSettings.log_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.CliSettings.pool"><code class="docutils literal notranslate"><span class="pre">CliSettings.pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.CliSettings.remote_uri"><code class="docutils literal notranslate"><span class="pre">CliSettings.remote_uri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.CliSettings.step"><code class="docutils literal notranslate"><span class="pre">CliSettings.step</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.CliSettings.work_dir"><code class="docutils literal notranslate"><span class="pre">CliSettings.work_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.EnvSettings"><code class="docutils literal notranslate"><span class="pre">EnvSettings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.EnvSettings.config_file"><code class="docutils literal notranslate"><span class="pre">EnvSettings.config_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.EnvSettings.log_level"><code class="docutils literal notranslate"><span class="pre">EnvSettings.log_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.EnvSettings.pool"><code class="docutils literal notranslate"><span class="pre">EnvSettings.pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.EnvSettings.remote_uri"><code class="docutils literal notranslate"><span class="pre">EnvSettings.remote_uri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.EnvSettings.step"><code class="docutils literal notranslate"><span class="pre">EnvSettings.step</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.EnvSettings.work_dir"><code class="docutils literal notranslate"><span class="pre">EnvSettings.work_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.LOG_LEVELS"><code class="docutils literal notranslate"><span class="pre">LOG_LEVELS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.PretaskDefinition"><code class="docutils literal notranslate"><span class="pre">PretaskDefinition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.Settings"><code class="docutils literal notranslate"><span class="pre">Settings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.config_file"><code class="docutils literal notranslate"><span class="pre">Settings.config_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.log_level"><code class="docutils literal notranslate"><span class="pre">Settings.log_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.pool"><code class="docutils literal notranslate"><span class="pre">Settings.pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.remote_uri"><code class="docutils literal notranslate"><span class="pre">Settings.remote_uri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.step"><code class="docutils literal notranslate"><span class="pre">Settings.step</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.work_dir"><code class="docutils literal notranslate"><span class="pre">Settings.work_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.Settings.merge_model"><code class="docutils literal notranslate"><span class="pre">Settings.merge_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.TaskDefinition"><code class="docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.TaskDefinition.destination"><code class="docutils literal notranslate"><span class="pre">TaskDefinition.destination</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.YamlSettings"><code class="docutils literal notranslate"><span class="pre">YamlSettings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.YamlSettings.log_level"><code class="docutils literal notranslate"><span class="pre">YamlSettings.log_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.YamlSettings.pool"><code class="docutils literal notranslate"><span class="pre">YamlSettings.pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.YamlSettings.remote_uri"><code class="docutils literal notranslate"><span class="pre">YamlSettings.remote_uri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.models.YamlSettings.work_dir"><code class="docutils literal notranslate"><span class="pre">YamlSettings.work_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.models.remote_uri_is_valid"><code class="docutils literal notranslate"><span class="pre">remote_uri_is_valid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config.cli">config.cli module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.cli.parse_cli"><code class="docutils literal notranslate"><span class="pre">parse_cli()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.cli.to_env"><code class="docutils literal notranslate"><span class="pre">to_env()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config.env">config.env module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.env.parse_env"><code class="docutils literal notranslate"><span class="pre">parse_env()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.env.to_setting"><code class="docutils literal notranslate"><span class="pre">to_setting()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config.yaml">config.yaml module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.yaml.get_yaml_sentinel_dict"><code class="docutils literal notranslate"><span class="pre">get_yaml_sentinel_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.yaml.get_yaml_settings"><code class="docutils literal notranslate"><span class="pre">get_yaml_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.yaml.get_yaml_stepdefs"><code class="docutils literal notranslate"><span class="pre">get_yaml_stepdefs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.yaml.load_yaml_file"><code class="docutils literal notranslate"><span class="pre">load_yaml_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.yaml.parse_yaml"><code class="docutils literal notranslate"><span class="pre">parse_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.yaml.parse_yaml_string"><code class="docutils literal notranslate"><span class="pre">parse_yaml_string()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config.scratchpad">config.scratchpad module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.scratchpad.Scratchpad"><code class="docutils literal notranslate"><span class="pre">Scratchpad</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.scratchpad.Scratchpad.replace"><code class="docutils literal notranslate"><span class="pre">Scratchpad.replace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.scratchpad.Scratchpad.store"><code class="docutils literal notranslate"><span class="pre">Scratchpad.store()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.scratchpad.TemplateWithDots"><code class="docutils literal notranslate"><span class="pre">TemplateWithDots</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.scratchpad.TemplateWithDots.idpattern"><code class="docutils literal notranslate"><span class="pre">TemplateWithDots.idpattern</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.config.scratchpad.TemplateWithDots.pattern"><code class="docutils literal notranslate"><span class="pre">TemplateWithDots.pattern</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.config">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.init_config"><code class="docutils literal notranslate"><span class="pre">init_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.scratchpad"><code class="docutils literal notranslate"><span class="pre">scratchpad()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.settings"><code class="docutils literal notranslate"><span class="pre">settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.steps"><code class="docutils literal notranslate"><span class="pre">steps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.config.task_definitions"><code class="docutils literal notranslate"><span class="pre">task_definitions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.step.html">step package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.storage.html">storage package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">config package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pis.config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="config-package">
+<h1>config package<a class="headerlink" href="#config-package" title="Link to this heading"></a></h1>
+<p>This package contains the configuration models, parsers and utilities for PIS.</p>
+<section id="module-pis.config.config">
+<span id="config-config-module"></span><h2>config.config module<a class="headerlink" href="#module-pis.config.config" title="Link to this heading"></a></h2>
+<p>Main module in the config package.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.config.config.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/pis/config/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.config.Config" title="Link to this definition"></a></dt>
+<dd><p>The configuration object.</p>
+<p>This class loads the settings from different sources and merges them into a
+single settings object. The sources are, in order of precedence:</p>
+<ol class="arabic simple">
+<li><p>Command line arguments</p></li>
+<li><p>Environment variables</p></li>
+<li><p>YAML configuration file</p></li>
+<li><p>Default settings</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<a class="reference internal" href="#pis.config.models.Settings" title="pis.config.models.Settings"><em>Settings</em></a>) – The settings object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.config.config.Config.get_scratchpad_sentinel_dict">
+<span class="sig-name descname"><span class="pre">get_scratchpad_sentinel_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config/config.html#Config.get_scratchpad_sentinel_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.config.Config.get_scratchpad_sentinel_dict" title="Link to this definition"></a></dt>
+<dd><p>Return the sentinel dictionary for the scratchpad.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The sentinel dictionary for the scratchpad.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.config.config.Config.get_task_definitions">
+<span class="sig-name descname"><span class="pre">get_task_definitions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><span class="pre">BaseTaskDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config/config.html#Config.get_task_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.config.Config.get_task_definitions" title="Link to this definition"></a></dt>
+<dd><p>Validate the task definitions.</p>
+<p>Makes sure the task definitions specified in the configuration file for
+the step the application is going to run are valid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of task definitions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition">BaseTaskDefinition</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.config.models">
+<span id="config-models-module"></span><h2>config.models module<a class="headerlink" href="#module-pis.config.models" title="Link to this heading"></a></h2>
+<p>This module contains the models for the configuration settings.</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.BaseTaskDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">BaseTaskDefinition</span></span><a class="reference internal" href="_modules/pis/config/models.html#BaseTaskDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.BaseTaskDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Base Task definition model.</p>
+<p>This model is the base on which <a class="reference internal" href="#pis.config.models.TaskDefinition" title="pis.config.models.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">pis.config.models.TaskDefinition</span></code></a>
+and <a class="reference internal" href="#pis.config.models.PretaskDefinition" title="pis.config.models.PretaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">pis.config.models.PretaskDefinition</span></code></a> are built. Specific
+tasks or pretasks subclass those to add custom attributes.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseTaskDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base Task definition model.\n\nThis model is the base on which :class:`pis.config.models.TaskDefinition`\nand :class:`pis.config.models.PretaskDefinition` are built. Specific\ntasks or pretasks subclass those to add custom attributes.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.config.models.BaseTaskDefinition.name" title="pis.config.models.BaseTaskDefinition.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.BaseTaskDefinition.name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.config.models.BaseTaskDefinition.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">CliSettings</span></span><a class="reference internal" href="_modules/pis/config/models.html#CliSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.CliSettings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>CLI settings model.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CliSettings&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CLI settings model.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;config_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Config File&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;work_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Work Dir&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;remote_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remote Uri&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pool&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="s2">&quot;TRACE&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;CRITICAL&quot;</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Level&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.config.models.CliSettings.config_file" title="pis.config.models.CliSettings.config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">config_file</span> <span class="pre">(pathlib._local.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.CliSettings.log_level" title="pis.config.models.CliSettings.log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_level</span> <span class="pre">(Literal['TRACE',</span> <span class="pre">'DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'SUCCESS',</span> <span class="pre">'WARNING',</span> <span class="pre">'ERROR',</span> <span class="pre">'CRITICAL']</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.CliSettings.pool" title="pis.config.models.CliSettings.pool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pool</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.CliSettings.remote_uri" title="pis.config.models.CliSettings.remote_uri"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remote_uri</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.CliSettings.step" title="pis.config.models.CliSettings.step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.CliSettings.work_dir" title="pis.config.models.CliSettings.work_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_dir</span> <span class="pre">(pathlib._local.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings.config_file">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.CliSettings.config_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings.log_level">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'TRACE'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DEBUG'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'INFO'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SUCCESS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'WARNING'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ERROR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'CRITICAL'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.CliSettings.log_level" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings.pool">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.CliSettings.pool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings.remote_uri">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remote_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AfterValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">remote_uri_is_valid</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.CliSettings.remote_uri" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings.step">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#pis.config.models.CliSettings.step" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.CliSettings.work_dir">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">work_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.CliSettings.work_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">EnvSettings</span></span><a class="reference internal" href="_modules/pis/config/models.html#EnvSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.EnvSettings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Environment settings model.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EnvSettings&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Environment settings model.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;config_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Config File&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;work_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Work Dir&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;remote_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remote Uri&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pool&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="s2">&quot;TRACE&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;CRITICAL&quot;</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Level&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.config.models.EnvSettings.config_file" title="pis.config.models.EnvSettings.config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">config_file</span> <span class="pre">(pathlib._local.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.EnvSettings.log_level" title="pis.config.models.EnvSettings.log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_level</span> <span class="pre">(Literal['TRACE',</span> <span class="pre">'DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'SUCCESS',</span> <span class="pre">'WARNING',</span> <span class="pre">'ERROR',</span> <span class="pre">'CRITICAL']</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.EnvSettings.pool" title="pis.config.models.EnvSettings.pool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pool</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.EnvSettings.remote_uri" title="pis.config.models.EnvSettings.remote_uri"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remote_uri</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.EnvSettings.step" title="pis.config.models.EnvSettings.step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.EnvSettings.work_dir" title="pis.config.models.EnvSettings.work_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_dir</span> <span class="pre">(pathlib._local.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings.config_file">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.EnvSettings.config_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings.log_level">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'TRACE'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DEBUG'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'INFO'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SUCCESS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'WARNING'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ERROR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'CRITICAL'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.EnvSettings.log_level" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings.pool">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.EnvSettings.pool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings.remote_uri">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remote_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AfterValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">remote_uri_is_valid</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.EnvSettings.remote_uri" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings.step">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.EnvSettings.step" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.EnvSettings.work_dir">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">work_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.EnvSettings.work_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pis.config.models.LOG_LEVELS">
+<span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">LOG_LEVELS</span></span><a class="headerlink" href="#pis.config.models.LOG_LEVELS" title="Link to this definition"></a></dt>
+<dd><p>The log levels.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code>[‘TRACE’, ‘DEBUG’, ‘INFO’, ‘SUCCESS’, ‘WARNING’, ‘ERROR’, ‘CRITICAL’]</p>
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.PretaskDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">PretaskDefinition</span></span><a class="reference internal" href="_modules/pis/config/models.html#PretaskDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.PretaskDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTaskDefinition</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Pretask definition model.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PretaskDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pretask definition model.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.Settings">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">Settings</span></span><a class="reference internal" href="_modules/pis/config/models.html#Settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.Settings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Settings model.</p>
+<p>This model is used to define the settings for the application.</p>
+<p>It is constructed by merging the settings from the environment, CLI, and YAML
+configuration file. The fields are defined in order of precedence, with the
+environment settings taking precedence over the CLI settings, which take
+precedence over the YAML settings. All fields have defaults so that any field
+left unset after the merge will have a value.</p>
+<p>The <a class="reference internal" href="#pis.config.models.Settings.step" title="pis.config.models.Settings.step"><code class="xref py py-attr docutils literal notranslate"><span class="pre">step</span></code></a> field is required, but has an empty string as a default value,
+so objects can be created without setting it. Its validation is handled by
+Config class.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Settings&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Settings model.\n\nThis model is used to define the settings for the application.\n\nIt is constructed by merging the settings from the environment, CLI, and YAML\nconfiguration file. The fields are defined in order of precedence, with the\nenvironment settings taking precedence over the CLI settings, which take\nprecedence over the YAML settings. All fields have defaults so that any field\nleft unset after the merge will have a value.\n\nThe :attr:`step` field is required, but has an empty string as a default value,\nso objects can be created without setting it. Its validation is handled by\nConfig class.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;config_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;config.yaml&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Config File&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;work_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Work Dir&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;remote_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remote Uri&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pool&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;TRACE&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CRITICAL&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Level&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.config.models.Settings.config_file" title="pis.config.models.Settings.config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">config_file</span> <span class="pre">(pathlib._local.Path)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.Settings.log_level" title="pis.config.models.Settings.log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_level</span> <span class="pre">(Literal['TRACE',</span> <span class="pre">'DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'SUCCESS',</span> <span class="pre">'WARNING',</span> <span class="pre">'ERROR',</span> <span class="pre">'CRITICAL'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.Settings.pool" title="pis.config.models.Settings.pool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pool</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.Settings.remote_uri" title="pis.config.models.Settings.remote_uri"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remote_uri</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.Settings.step" title="pis.config.models.Settings.step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.Settings.work_dir" title="pis.config.models.Settings.work_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_dir</span> <span class="pre">(pathlib._local.Path)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.Settings.config_file">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('config.yaml')</span></em><a class="headerlink" href="#pis.config.models.Settings.config_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.Settings.log_level">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'TRACE'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DEBUG'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'INFO'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SUCCESS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'WARNING'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ERROR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'CRITICAL'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'INFO'</span></em><a class="headerlink" href="#pis.config.models.Settings.log_level" title="Link to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="#pis.config.models.LOG_LEVELS" title="pis.config.models.LOG_LEVELS"><code class="xref py py-data docutils literal notranslate"><span class="pre">LOG_LEVELS</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.Settings.pool">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#pis.config.models.Settings.pool" title="Link to this definition"></a></dt>
+<dd><p>The number of workers in the pool where tasks will run.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.Settings.remote_uri">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remote_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AfterValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">remote_uri_is_valid</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.Settings.remote_uri" title="Link to this definition"></a></dt>
+<dd><p>The remote working URI. If present, this is where resources, logs and manifest
+will be uploaded to.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.Settings.step">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#pis.config.models.Settings.step" title="Link to this definition"></a></dt>
+<dd><p>The step to run. This is a required field, and its validation is handled by
+<code class="xref py py-func docutils literal notranslate"><span class="pre">pis.config.config.Config._validate_step()</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.Settings.work_dir">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">work_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('output')</span></em><a class="headerlink" href="#pis.config.models.Settings.work_dir" title="Link to this definition"></a></dt>
+<dd><p>The local working directory path. This is where resources will be downloaded
+and the manifest and logs will be written to before upload to the GCS bucket.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.config.models.Settings.merge_model">
+<span class="sig-name descname"><span class="pre">merge_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incoming</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseModel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/config/models.html#Settings.merge_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.Settings.merge_model" title="Link to this definition"></a></dt>
+<dd><p>Merge the fields of another model into this model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>incoming</strong> (<em>BaseModel</em>) – The incoming model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.TaskDefinition">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">TaskDefinition</span></span><a class="reference internal" href="_modules/pis/config/models.html#TaskDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.TaskDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTaskDefinition</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Task definition model.</p>
+<p>This model is used to define the tasks to be run by the application. It includes
+the destination as a required field, as the tasks are expected to create a resource.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PIS is not intended to be used by chaining tasks, as there is no way to
+generate a dependency graph, all tasks will be sent to the worker pool at the same
+time.</p>
+</div>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TaskDefinition&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Task definition model.\n\nThis model is used to define the tasks to be run by the application. It includes\nthe destination as a required field, as the tasks are expected to create a resource.\n\n.. note:: PIS is not intended to be used by chaining tasks, as there is no way to\n    generate a dependency graph, all tasks will be sent to the worker pool at the same\n    time.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;destination&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = allow</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.config.models.TaskDefinition.destination" title="pis.config.models.TaskDefinition.destination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">destination</span> <span class="pre">(pathlib._local.Path)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.TaskDefinition.destination">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">destination</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#pis.config.models.TaskDefinition.destination" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="pis.config.models.YamlSettings">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">YamlSettings</span></span><a class="reference internal" href="_modules/pis/config/models.html#YamlSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.YamlSettings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>YAML settings model.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YamlSettings&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YAML settings model.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;work_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Work Dir&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;remote_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remote Uri&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pool&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="s2">&quot;TRACE&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;CRITICAL&quot;</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Level&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#pis.config.models.YamlSettings.log_level" title="pis.config.models.YamlSettings.log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_level</span> <span class="pre">(Literal['TRACE',</span> <span class="pre">'DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'SUCCESS',</span> <span class="pre">'WARNING',</span> <span class="pre">'ERROR',</span> <span class="pre">'CRITICAL']</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.YamlSettings.pool" title="pis.config.models.YamlSettings.pool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pool</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.YamlSettings.remote_uri" title="pis.config.models.YamlSettings.remote_uri"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remote_uri</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pis.config.models.YamlSettings.work_dir" title="pis.config.models.YamlSettings.work_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_dir</span> <span class="pre">(pathlib._local.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.YamlSettings.log_level">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'TRACE'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DEBUG'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'INFO'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SUCCESS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'WARNING'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ERROR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'CRITICAL'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.YamlSettings.log_level" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.YamlSettings.pool">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.YamlSettings.pool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.YamlSettings.remote_uri">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remote_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AfterValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">remote_uri_is_valid</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.YamlSettings.remote_uri" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="pis.config.models.YamlSettings.work_dir">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">work_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pis.config.models.YamlSettings.work_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.models.remote_uri_is_valid">
+<span class="sig-prename descclassname"><span class="pre">pis.config.models.</span></span><span class="sig-name descname"><span class="pre">remote_uri_is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/config/models.html#remote_uri_is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.models.remote_uri_is_valid" title="Link to this definition"></a></dt>
+<dd><p>Validate a remote URI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI to validate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The URI if it is valid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the URI does not contain a protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.config.cli">
+<span id="config-cli-module"></span><h2>config.cli module<a class="headerlink" href="#module-pis.config.cli" title="Link to this heading"></a></h2>
+<p>This module contains the functions to parse the command line arguments.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.cli.parse_cli">
+<span class="sig-prename descclassname"><span class="pre">pis.config.cli.</span></span><span class="sig-name descname"><span class="pre">parse_cli</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pis.config.models.CliSettings" title="pis.config.models.CliSettings"><span class="pre">CliSettings</span></a></span></span><a class="reference internal" href="_modules/pis/config/cli.html#parse_cli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.cli.parse_cli" title="Link to this definition"></a></dt>
+<dd><p>Parses the command line arguments and returns a CliSettings object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The parsed command line arguments.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pis.config.models.CliSettings" title="pis.config.models.CliSettings">CliSettings</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.cli.to_env">
+<span class="sig-prename descclassname"><span class="pre">pis.config.cli.</span></span><span class="sig-name descname"><span class="pre">to_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/config/cli.html#to_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.cli.to_env" title="Link to this definition"></a></dt>
+<dd><p>Converts a variable name to an environment variable name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>var</strong> (<em>str</em>) – The variable name to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The environment variable name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.config.env">
+<span id="config-env-module"></span><h2>config.env module<a class="headerlink" href="#module-pis.config.env" title="Link to this heading"></a></h2>
+<p>This module contains the functions to parse the environment variables.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.env.parse_env">
+<span class="sig-prename descclassname"><span class="pre">pis.config.env.</span></span><span class="sig-name descname"><span class="pre">parse_env</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pis.config.models.EnvSettings" title="pis.config.models.EnvSettings"><span class="pre">EnvSettings</span></a></span></span><a class="reference internal" href="_modules/pis/config/env.html#parse_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.env.parse_env" title="Link to this definition"></a></dt>
+<dd><p>Parses the environment variables and returns an EnvSettings object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The parsed environment variables.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pis.config.models.EnvSettings" title="pis.config.models.EnvSettings">EnvSettings</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.env.to_setting">
+<span class="sig-prename descclassname"><span class="pre">pis.config.env.</span></span><span class="sig-name descname"><span class="pre">to_setting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/config/env.html#to_setting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.env.to_setting" title="Link to this definition"></a></dt>
+<dd><p>Converts an environment variable name to a setting name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The environment variable name to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The setting name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.config.yaml">
+<span id="config-yaml-module"></span><h2>config.yaml module<a class="headerlink" href="#module-pis.config.yaml" title="Link to this heading"></a></h2>
+<p>This module contains the functions to parse yaml files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.yaml.get_yaml_sentinel_dict">
+<span class="sig-prename descclassname"><span class="pre">pis.config.yaml.</span></span><span class="sig-name descname"><span class="pre">get_yaml_sentinel_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config/yaml.html#get_yaml_sentinel_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.yaml.get_yaml_sentinel_dict" title="Link to this definition"></a></dt>
+<dd><p>Get the yaml sentinel dictionary.</p>
+<p>This function returns the sentinel dictionary for a scratchpad from the yaml
+settings. If the sentinel dictionary is not present, an empty dictionary is
+returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>yaml_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The yaml settings.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The sentinel dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.yaml.get_yaml_settings">
+<span class="sig-prename descclassname"><span class="pre">pis.config.yaml.</span></span><span class="sig-name descname"><span class="pre">get_yaml_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pis.config.models.YamlSettings" title="pis.config.models.YamlSettings"><span class="pre">YamlSettings</span></a></span></span><a class="reference internal" href="_modules/pis/config/yaml.html#get_yaml_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.yaml.get_yaml_settings" title="Link to this definition"></a></dt>
+<dd><p>Validate the yaml settings.</p>
+<p>This function validates the yaml settings against the YamlSettings model.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the settings are invalid, the program will log an error and
+exit.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>yaml_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The yaml settings.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The validated yaml settings.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pis.config.models.YamlSettings" title="pis.config.models.YamlSettings">YamlSettings</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.yaml.get_yaml_stepdefs">
+<span class="sig-prename descclassname"><span class="pre">pis.config.yaml.</span></span><span class="sig-name descname"><span class="pre">get_yaml_stepdefs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><span class="pre">BaseTaskDefinition</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config/yaml.html#get_yaml_stepdefs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.yaml.get_yaml_stepdefs" title="Link to this definition"></a></dt>
+<dd><p>Validate the yaml step definitions.</p>
+<p>This function validates the yaml step definitions against the BaseTaskDefinition
+model.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the step definitions are invalid, the program will log an error and
+exit.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>yaml_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The yaml settings.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The validated yaml step definitions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, list[<a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition">BaseTaskDefinition</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.yaml.load_yaml_file">
+<span class="sig-prename descclassname"><span class="pre">pis.config.yaml.</span></span><span class="sig-name descname"><span class="pre">load_yaml_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/config/yaml.html#load_yaml_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.yaml.load_yaml_file" title="Link to this definition"></a></dt>
+<dd><p>Load a yaml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_file</strong> (<em>Path</em>) – The path to the yaml file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The contents of the yaml file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.yaml.parse_yaml">
+<span class="sig-prename descclassname"><span class="pre">pis.config.yaml.</span></span><span class="sig-name descname"><span class="pre">parse_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config/yaml.html#parse_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.yaml.parse_yaml" title="Link to this definition"></a></dt>
+<dd><p>Parse a yaml file.</p>
+<p>This function loads a yaml file, parses its content, and returns it as a
+dictionary.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the file cannot be read or the content cannot be parsed, the
+program will log an error and exit.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_file</strong> (<em>Path</em>) – The path to the yaml file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parsed yaml content.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.yaml.parse_yaml_string">
+<span class="sig-prename descclassname"><span class="pre">pis.config.yaml.</span></span><span class="sig-name descname"><span class="pre">parse_yaml_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/pis/config/yaml.html#parse_yaml_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.yaml.parse_yaml_string" title="Link to this definition"></a></dt>
+<dd><p>Parse a yaml string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>yaml_string</strong> (<em>str</em>) – The yaml string to parse.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parsed yaml content.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.config.scratchpad">
+<span id="config-scratchpad-module"></span><h2>config.scratchpad module<a class="headerlink" href="#module-pis.config.scratchpad" title="Link to this heading"></a></h2>
+<p>Scratchpad module.</p>
+<p>This module defines the <cite>Scratchpad</cite> class, which is a centralized place to store
+key-value pairs in the configuration of the application. It provides utilities to
+perform template substition.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.config.scratchpad.Scratchpad">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.scratchpad.</span></span><span class="sig-name descname"><span class="pre">Scratchpad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentinel_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/config/scratchpad.html#Scratchpad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.scratchpad.Scratchpad" title="Link to this definition"></a></dt>
+<dd><p>A class to store and replace placeholders in strings.</p>
+<p>This class is used to store key-value pairs and replace placeholders in strings with
+the corresponding values. The placeholders are defined in the strings using the dollar
+sign followed by the placeholder name enclosed in curly braces, e.g., <cite>${person.name}</cite>.
+The placeholders can have dots in their names to represent nested dictionaries or objects.</p>
+<dl>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scratchpad</span> <span class="o">=</span> <span class="n">Scratchpad</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scratchpad</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;person.name&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scratchpad</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Hello, $</span><span class="si">{person.name}</span><span class="s1">!&#39;</span><span class="p">)</span>
+<span class="go">&#39;Hello, Alice!&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sentinel_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – A dictionary to store the key-value pairs.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.config.scratchpad.Scratchpad.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentinel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pis/config/scratchpad.html#Scratchpad.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.scratchpad.Scratchpad.replace" title="Link to this definition"></a></dt>
+<dd><p>Replace placeholders in a string with the corresponding values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sentinel</strong> (<em>str</em><em> | </em><em>Path</em>) – The string with placeholders to replace.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The string with the placeholders replaced by their values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pis.util.html#pis.util.errors.ScratchpadError" title="pis.util.errors.ScratchpadError"><strong>ScratchpadError</strong></a> – If a placeholder in the string does not have a
+corresponding value in the scratchpad.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.config.scratchpad.Scratchpad.store">
+<span class="sig-name descname"><span class="pre">store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/config/scratchpad.html#Scratchpad.store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.scratchpad.Scratchpad.store" title="Link to this definition"></a></dt>
+<dd><p>Store a key-value pair in the scratchpad.</p>
+<p>Both strings and lists of strings are accepted as values. It might be
+useful to extend it to accept dicts as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key to store.</p></li>
+<li><p><strong>value</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The value to store.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.config.scratchpad.TemplateWithDots">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.config.scratchpad.</span></span><span class="sig-name descname"><span class="pre">TemplateWithDots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/config/scratchpad.html#TemplateWithDots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.scratchpad.TemplateWithDots" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></p>
+<p>A subclass of <cite>string.Template</cite> that allows dots in placeholders.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pis.config.scratchpad.TemplateWithDots.idpattern">
+<span class="sig-name descname"><span class="pre">idpattern</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(?a:[_a-z][._a-z0-9]*)'</span></em><a class="headerlink" href="#pis.config.scratchpad.TemplateWithDots.idpattern" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pis.config.scratchpad.TemplateWithDots.pattern">
+<span class="sig-name descname"><span class="pre">pattern</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\$(?:\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;escaped&gt;\\$)</span>&#160; <span class="pre">|</span>&#160;&#160; <span class="pre">#</span> <span class="pre">Escape</span> <span class="pre">sequence</span> <span class="pre">of</span> <span class="pre">two</span> <span class="pre">delimiters\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;named&gt;(?a:[_a-z][._a-z0-9]*))</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">|</span>&#160;&#160; <span class="pre">#</span> <span class="pre">delimiter</span> <span class="pre">and</span> <span class="pre">a</span> <span class="pre">Python</span> <span class="pre">identifier\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#pis.config.scratchpad.TemplateWithDots.pattern" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.config">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pis.config" title="Link to this heading"></a></h2>
+<p>Configuration package.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.init_config">
+<span class="sig-prename descclassname"><span class="pre">pis.config.</span></span><span class="sig-name descname"><span class="pre">init_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pis/config.html#init_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.init_config" title="Link to this definition"></a></dt>
+<dd><p>Initialize the global configuration object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.scratchpad">
+<span class="sig-prename descclassname"><span class="pre">pis.config.</span></span><span class="sig-name descname"><span class="pre">scratchpad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pis.config.scratchpad.Scratchpad" title="pis.config.scratchpad.Scratchpad"><span class="pre">Scratchpad</span></a></span></span><a class="reference internal" href="_modules/pis/config.html#scratchpad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.scratchpad" title="Link to this definition"></a></dt>
+<dd><p>Return the scratchpad.</p>
+<p>If the scratchpad has not been initialized, it will be initialized. The
+scratchpad is stored for subsequent calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The scratchpad.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pis.config.scratchpad.Scratchpad" title="pis.config.scratchpad.Scratchpad">pis.config.scratchpad.Scratchpad</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.settings">
+<span class="sig-prename descclassname"><span class="pre">pis.config.</span></span><span class="sig-name descname"><span class="pre">settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pis.config.models.Settings" title="pis.config.models.Settings"><span class="pre">Settings</span></a></span></span><a class="reference internal" href="_modules/pis/config.html#settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.settings" title="Link to this definition"></a></dt>
+<dd><p>Return the application settings.</p>
+<p>See <a class="reference internal" href="#pis.config.models.Settings" title="pis.config.models.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">pis.config.models.Settings</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The settings object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pis.config.models.Settings" title="pis.config.models.Settings">pis.config.models.Settings</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.steps">
+<span class="sig-prename descclassname"><span class="pre">pis.config.</span></span><span class="sig-name descname"><span class="pre">steps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config.html#steps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.steps" title="Link to this definition"></a></dt>
+<dd><p>Return the steps.</p>
+<p>If the steps have not been loaded, they will be loaded from the configuration
+file. The steps are stored for subsequent calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The steps.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.config.task_definitions">
+<span class="sig-prename descclassname"><span class="pre">pis.config.</span></span><span class="sig-name descname"><span class="pre">task_definitions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition"><span class="pre">BaseTaskDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/config.html#task_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.config.task_definitions" title="Link to this definition"></a></dt>
+<dd><p>Return the task definitions.</p>
+<p>If the task definitions have not been loaded, they will be loaded from the
+configuration file. The task definitions are stored for subsequent calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The task definitions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="#pis.config.models.BaseTaskDefinition" title="pis.config.models.BaseTaskDefinition">BaseTaskDefinition</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="pis package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pis.manifest.html" class="btn btn-neutral float-right" title="manifest package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

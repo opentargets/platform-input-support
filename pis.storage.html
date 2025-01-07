@@ -1,0 +1,578 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>storage package &mdash; pis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="task package" href="pis.task.html" />
+    <link rel="prev" title="step package" href="pis.step.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pis
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pis.config.html">config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.manifest.html">manifest package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.step.html">step package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">storage package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#storage-remote-storage-module">storage.remote_storage module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage"><code class="docutils literal notranslate"><span class="pre">RemoteStorage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.check"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.download_to_file"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.download_to_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.download_to_string"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.download_to_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.get_session"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.get_session()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.list"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.stat"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.stat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage.upload"><code class="docutils literal notranslate"><span class="pre">RemoteStorage.upload()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pis.storage.remote_storage.get_remote_storage"><code class="docutils literal notranslate"><span class="pre">get_remote_storage()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.storage.google">storage.google module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.storage.google.GoogleStorage"><code class="docutils literal notranslate"><span class="pre">GoogleStorage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.check"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.download_to_file"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.download_to_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.download_to_string"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.download_to_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.get_session"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.get_session()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.list"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.stat"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.stat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.google.GoogleStorage.upload"><code class="docutils literal notranslate"><span class="pre">GoogleStorage.upload()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.storage.noop">storage.noop module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pis.storage.noop.NoopStorage"><code class="docutils literal notranslate"><span class="pre">NoopStorage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.check"><code class="docutils literal notranslate"><span class="pre">NoopStorage.check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.download_to_file"><code class="docutils literal notranslate"><span class="pre">NoopStorage.download_to_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.download_to_string"><code class="docutils literal notranslate"><span class="pre">NoopStorage.download_to_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.get_session"><code class="docutils literal notranslate"><span class="pre">NoopStorage.get_session()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.list"><code class="docutils literal notranslate"><span class="pre">NoopStorage.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.stat"><code class="docutils literal notranslate"><span class="pre">NoopStorage.stat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pis.storage.noop.NoopStorage.upload"><code class="docutils literal notranslate"><span class="pre">NoopStorage.upload()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pis.storage">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pis.task.html">task package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.tasks.html">tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.util.html">util package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pis.validators.html">validators package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">storage package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pis.storage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="storage-package">
+<h1>storage package<a class="headerlink" href="#storage-package" title="Link to this heading"></a></h1>
+<p>This package contains classes for interacting with remote storage services.</p>
+<section id="storage-remote-storage-module">
+<h2>storage.remote_storage module<a class="headerlink" href="#storage-remote-storage-module" title="Link to this heading"></a></h2>
+<p id="module-pis.storage.remote_storage">Abstract base class for remote storage services.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.storage.remote_storage.</span></span><span class="sig-name descname"><span class="pre">RemoteStorage</span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for remote storage services.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.check">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the provided storage is valid.</p>
+<p>This method should check if the storage exists and has proper permissions.
+On Google Cloud Storage, for example, this would check if the bucket exists
+and the service account has get, list and create permissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the storage exists, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.download_to_file">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">download_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.download_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.download_to_file" title="Link to this definition"></a></dt>
+<dd><p>Download a file to the local filesystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<em>str</em>) – The URI of the file to download.</p></li>
+<li><p><strong>dst</strong> (<em>Path</em>) – The destination path to download the file to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The revision number of the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the file does not exist.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.HelperError" title="pis.util.errors.HelperError"><strong>HelperError</strong></a> – If an error occurs during download.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.download_to_string">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">download_to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.download_to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.download_to_string" title="Link to this definition"></a></dt>
+<dd><p>Download a file and return its contents as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI of the file to download.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the file contents and the revision number.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, int]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the file does not exist.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.HelperError" title="pis.util.errors.HelperError"><strong>HelperError</strong></a> – If an error occurs during download</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.get_session">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.get_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.get_session" title="Link to this definition"></a></dt>
+<dd><p>Return a session for making requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The session.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.list">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.list" title="Link to this definition"></a></dt>
+<dd><p>List files in prefix URI.</p>
+<p>Optionally, a pattern can be provided to match files against. The pattern
+should be a simple string match, preceded by an exclamation mark to exclude
+files. For example, ‘foo’ will match all files containing ‘foo’, while ‘!foo’
+will exclude all files containing ‘foo’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<em>str</em>) – The prefix URI by which to list files.</p></li>
+<li><p><strong>pattern</strong> (<em>str</em><em> | </em><em>None</em>) – Optional. The pattern to match files against.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of file URIs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.stat">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.stat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.stat" title="Link to this definition"></a></dt>
+<dd><p>Get metadata for a file.</p>
+<p>Currently, only the modification time is required, as it is used for the
+download_latest task. This method should be expanded as needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI to get metadata for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing metadata.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the file does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.RemoteStorage.upload">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#RemoteStorage.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.RemoteStorage.upload" title="Link to this definition"></a></dt>
+<dd><p>Upload a file to the remote storage.</p>
+<p>Optionally, a revision number can be provided to ensure that the file has
+not been modified since the last time it was read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>Path</em>) – The source path of the file to upload.</p></li>
+<li><p><strong>uri</strong> (<em>str</em>) – The URI to upload the file to.</p></li>
+<li><p><strong>revision</strong> (<em>int</em><em> | </em><em>None</em>) – Optional. The expected revision number of the file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new revision number of the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.HelperError" title="pis.util.errors.HelperError"><strong>HelperError</strong></a> – If an error occurs during upload.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.PreconditionFailedError" title="pis.util.errors.PreconditionFailedError"><strong>PreconditionFailedError</strong></a> – If the revision number does not match.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pis.storage.remote_storage.get_remote_storage">
+<span class="sig-prename descclassname"><span class="pre">pis.storage.remote_storage.</span></span><span class="sig-name descname"><span class="pre">get_remote_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage" title="pis.storage.remote_storage.RemoteStorage"><span class="pre">RemoteStorage</span></a></span></span><a class="reference internal" href="_modules/pis/storage/remote_storage.html#get_remote_storage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.remote_storage.get_remote_storage" title="Link to this definition"></a></dt>
+<dd><p>Get a storage object for a URI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI to get a storage object for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A remote storage class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage" title="pis.storage.remote_storage.RemoteStorage">RemoteStorage</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the URI is not supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pis.storage.google">
+<span id="storage-google-module"></span><h2>storage.google module<a class="headerlink" href="#module-pis.storage.google" title="Link to this heading"></a></h2>
+<p>Google Cloud Storage class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.storage.google.</span></span><span class="sig-name descname"><span class="pre">GoogleStorage</span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage" title="pis.storage.remote_storage.RemoteStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteStorage</span></code></a></p>
+<p>Google Cloud Storage helper class.</p>
+<p>This class implements the RemoteStorage interface for Google Cloud Storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>credentials</strong> (<em>google.auth.credentials.Credentials</em>) – The Google Cloud Storage credentials.</p></li>
+<li><p><strong>client</strong> (<em>google.cloud.storage.client.Client</em>) – The Google Cloud Storage client.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.check" title="Link to this definition"></a></dt>
+<dd><p>Check if a bucket exists in Google Cloud Storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI of the file to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the file exists, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.download_to_file">
+<span class="sig-name descname"><span class="pre">download_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.download_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.download_to_file" title="Link to this definition"></a></dt>
+<dd><p>Download a file from Google Cloud Storage to the local filesystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<em>str</em>) – The URI of the file to download.</p></li>
+<li><p><strong>dst</strong> (<em>Path</em>) – The destination path to download the file to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generation number of the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the file is not found.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.StorageError" title="pis.util.errors.StorageError"><strong>StorageError</strong></a> – If an error occurs while downloading the file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.download_to_string">
+<span class="sig-name descname"><span class="pre">download_to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.download_to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.download_to_string" title="Link to this definition"></a></dt>
+<dd><p>Download a file from Google Cloud Storage and return its contents as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI of the file to download.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the file is not found.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.StorageError" title="pis.util.errors.StorageError"><strong>StorageError</strong></a> – If an error occurs while downloading the file.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple containing the file contents and the generation number.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.get_session">
+<span class="sig-name descname"><span class="pre">get_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AuthorizedSession</span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.get_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.get_session" title="Link to this definition"></a></dt>
+<dd><p>Get the current authenticated session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An authorized session.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>AuthorizedSession</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.list" title="Link to this definition"></a></dt>
+<dd><p>List blobs in a bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<em>str</em>) – The URI prefix to list blobs for.</p></li>
+<li><p><strong>pattern</strong> (<em>str</em><em> | </em><em>None</em>) – The pattern to match blobs against.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of blob URIs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the bucket or prefix does not exist.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.StorageError" title="pis.util.errors.StorageError"><strong>StorageError</strong></a> – If the prefix is invalid.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.stat">
+<span class="sig-name descname"><span class="pre">stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.stat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.stat" title="Link to this definition"></a></dt>
+<dd><p>Get metadata for a file in Google Cloud Storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> (<em>str</em>) – The URI of the file to get metadata for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing metadata.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pis.util.html#pis.util.errors.NotFoundError" title="pis.util.errors.NotFoundError"><strong>NotFoundError</strong></a> – If the file does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.google.GoogleStorage.upload">
+<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pis/storage/google.html#GoogleStorage.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.google.GoogleStorage.upload" title="Link to this definition"></a></dt>
+<dd><p>Upload a file to Google Cloud Storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>Path</em>) – The source path of the file to upload.</p></li>
+<li><p><strong>uri</strong> (<em>str</em>) – The URI to upload the file to.</p></li>
+<li><p><strong>revision</strong> (<em>int</em><em> | </em><em>None</em>) – The expected revision number of the file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new revision number of the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.StorageError" title="pis.util.errors.StorageError"><strong>StorageError</strong></a> – If an error occurs during upload.</p></li>
+<li><p><a class="reference internal" href="pis.util.html#pis.util.errors.PreconditionFailedError" title="pis.util.errors.PreconditionFailedError"><strong>PreconditionFailedError</strong></a> – If the revision number does not match.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.storage.noop">
+<span id="storage-noop-module"></span><h2>storage.noop module<a class="headerlink" href="#module-pis.storage.noop" title="Link to this heading"></a></h2>
+<p>No-op storage class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pis.storage.noop.</span></span><span class="sig-name descname"><span class="pre">NoopStorage</span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pis.storage.remote_storage.RemoteStorage" title="pis.storage.remote_storage.RemoteStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteStorage</span></code></a></p>
+<p>No-op storage helper class.</p>
+<p>This class implements the RemoteStorage interface but does not perform any
+operations. It is used when PIS is run locally.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.check" title="Link to this definition"></a></dt>
+<dd><p>Check if a file exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.download_to_file">
+<span class="sig-name descname"><span class="pre">download_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.download_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.download_to_file" title="Link to this definition"></a></dt>
+<dd><p>Download a file to the local filesystem.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.download_to_string">
+<span class="sig-name descname"><span class="pre">download_to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.download_to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.download_to_string" title="Link to this definition"></a></dt>
+<dd><p>Download a file and return its contents as a string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.get_session">
+<span class="sig-name descname"><span class="pre">get_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.get_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.get_session" title="Link to this definition"></a></dt>
+<dd><p>Return a session for making requests.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.list" title="Link to this definition"></a></dt>
+<dd><p>List files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.stat">
+<span class="sig-name descname"><span class="pre">stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.stat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.stat" title="Link to this definition"></a></dt>
+<dd><p>Get metadata for a file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pis.storage.noop.NoopStorage.upload">
+<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pis/storage/noop.html#NoopStorage.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pis.storage.noop.NoopStorage.upload" title="Link to this definition"></a></dt>
+<dd><p>Upload a file.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pis.storage">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pis.storage" title="Link to this heading"></a></h2>
+<p>Remote storage implementation classes.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pis.step.html" class="btn btn-neutral float-left" title="step package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pis.task.html" class="btn btn-neutral float-right" title="task package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Open Targets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
