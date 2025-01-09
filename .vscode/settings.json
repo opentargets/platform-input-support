@@ -20,4 +20,9 @@
     "build": true,
   },
   "autoDocstring.docstringFormat": "sphinx",
+  "yaml.schemas": {
+    "./.vscode/config-schema.json": [
+      "config.yaml"
+    ]
+  }
 }
