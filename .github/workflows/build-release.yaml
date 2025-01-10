@@ -1,4 +1,4 @@
-name: Build docker image and push to GHCR and GAR
+name: build-release
 
 on:
   release:
@@ -22,15 +22,23 @@ jobs:
       TAG: ${{ github.ref_name }}
 
     steps:
-      - id: prepare-tag
-        name: Prepare tag
-        run: echo "TAG=$(echo $TAG | sed 's/^v//')" >> $GITHUB_ENV
+      - id: prepare
+        name: Prepare the action and log details
+        shell: bash
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          TAG=$(echo $TAG | sed 's/^v//')
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "The tag for this build is $TAG"
+          echo "The repo name is: $REPO"
+          echo "Github context:\n$GITHUB_CONTEXT"
 
       - id: checkout
         name: Check out repo
         uses: actions/checkout@v4
 
-      - id: auth_ghcr
+      - id: auth-ghcr
         name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -38,7 +46,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: auth_google
+      - id: auth-google
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -48,13 +56,13 @@ jobs:
           service_account: github-actions@open-targets-eu-dev.iam.gserviceaccount.com
           access_token_lifetime: 300s
 
-      - id: auth_gar
+      - id: auth-gar
         name: Login to Google Artifact Registry
         uses: docker/login-action@v3
         with:
           registry: europe-west1-docker.pkg.dev
           username: oauth2accesstoken
-          password: ${{ steps.auth_google.outputs.access_token }}
+          password: ${{ steps.auth-google.outputs.access_token }}
 
       - id: push
         name: Build and push Docker image
@@ -65,13 +73,13 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ env.TAG }}
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis/pis:latest
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis/pis:${{ env.TAG }}
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/${{ env.REPO }}/${{ env.REPO }}:latest
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/${{ env.REPO }}/${{ env.REPO }}:${{ env.TAG }}
 
       - id: generate-attestations
         name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ghcr.io/${{ github.repository }}
+          subject-name: europe-west1-docker.pkg.dev/open-targets-eu-dev/${{ env.REPO }}/${{ env.REPO }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true

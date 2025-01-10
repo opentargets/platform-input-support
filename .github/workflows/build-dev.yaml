@@ -1,14 +1,16 @@
-name: Build docker image and push to GHCR
+name: build-dev
 
 on:
   push:
     tags:
-      # Matches tags with anything after YY.major.minor-
-      # that means things like 25.0.0-beta.1
-      - 'v[0-9]{2}\.[0-9]{1,2}\.[0-9]{1,2}-.*'
+      # Matches tags that contain a dash after YY.major.minor
+      # Example: 25.0.0-beta.1
+      # Keep in mind github does not support all regex features:
+      # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
 
 jobs:
-  push-to-ghcr-and-gar:
+  push-to-ghcr:
     name: Build docker image and push to GHCR
     runs-on: ubuntu-22.04
 
@@ -20,17 +22,26 @@ jobs:
 
     env:
       TAG: ${{ github.ref_name }}
+      REPO: ${{ github.event.repository.name }}
 
     steps:
-      - id: prepare-tag
-        name: Prepare tag
-        run: echo "TAG=$(echo $TAG | sed 's/^v//')" >> $GITHUB_ENV
+      - id: prepare
+        name: Prepare the action and log details
+        shell: bash
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          TAG=$(echo $TAG | sed 's/^v//')
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "The tag for this build is $TAG"
+          echo "The repo name is: $REPO"
+          echo "Github context:\n$GITHUB_CONTEXT"
 
       - id: checkout
         name: Check out repo
         uses: actions/checkout@v4
 
-      - id: auth_google
+      - id: auth-google
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -40,13 +51,13 @@ jobs:
           service_account: github-actions@open-targets-eu-dev.iam.gserviceaccount.com
           access_token_lifetime: 300s
 
-      - id: auth_gar
+      - id: auth-gar
         name: Login to Google Artifact Registry
         uses: docker/login-action@v3
         with:
           registry: europe-west1-docker.pkg.dev
           username: oauth2accesstoken
-          password: ${{ steps.auth_google.outputs.access_token }}
+          password: ${{ steps.auth-google.outputs.access_token }}
 
       - id: push
         name: Build and push Docker image
@@ -55,12 +66,12 @@ jobs:
           context: .
           push: true
           tags: |
-            europe-west1-docker.pkg.dev/open-targets-eu-dev/pis/pis:${{ env.TAG }}
+            europe-west1-docker.pkg.dev/open-targets-eu-dev/${{ env.REPO }}/${{ env.REPO }}:${{ env.TAG }}
 
       - id: generate-attestations
         name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: europe-west1-docker.pkg.dev/open-targets-eu-dev/pis/pis
+          subject-name: europe-west1-docker.pkg.dev/open-targets-eu-dev/${{ env.REPO }}/${{ env.REPO }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
