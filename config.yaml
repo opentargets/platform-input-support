@@ -5,7 +5,7 @@ pool: 8
 
 scratchpad:
   chembl_version: '34'
-  efo_version: v3.70.0
+  efo_version: '3.70.0'
   ensembl_version: '113'
 
 steps:
@@ -17,12 +17,12 @@ steps:
       source: https://github.com/obophenotype/uberon/releases/latest/download/uberon.json
       destination: biosample/uberon.json
     - name: download efo
-      source: https://github.com/EBISPOT/efo/releases/download/${efo_version}/efo.json
+      source: https://github.com/EBISPOT/efo/releases/download/v${efo_version}/efo.json
       destination: biosample/efo.json
 
   disease:
     - name: download efo otar_slim
-      source: https://github.com/EBISPOT/efo/releases/download/${efo_version}/efo_otar_slim.json
+      source: https://github.com/EBISPOT/efo/releases/download/v${efo_version}/efo_otar_slim.json
       destination: disease/efo_otar_slim.json
     - name: download hpo
       source: https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/v2021-10-10/hp.json
@@ -43,7 +43,7 @@ steps:
       destination: drug/drugbank.csv.gz
     - name: elasticsearch chembl drug indication
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_version}_drug_indication.jsonl
+      destination: drug/chembl_drug_indication.jsonl
       index: chembl_${chembl_version}_drug_indication
       fields:
         - _metadata
@@ -53,7 +53,7 @@ steps:
         - indication_refs
     - name: elasticsearch chembl drug warning
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_version}_drug_warning.jsonl
+      destination: drug/chembl_drug_warning.jsonl
       index: chembl_${chembl_version}_drug_warning
       fields:
         - _metadata
@@ -71,7 +71,7 @@ steps:
         - warning_year
     - name: elasticsearch chembl mechanism of action
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_version}_mechanism.jsonl
+      destination: drug/chembl_mechanism.jsonl
       index: chembl_${chembl_version}_mechanism
       fields:
         - _metadata
@@ -84,7 +84,7 @@ steps:
         - parent_molecule_chembl_id
     - name: elasticsearch chembl molecule
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_version}_molecule.jsonl
+      destination: drug/chembl_molecule.jsonl
       index: chembl_${chembl_version}_molecule
       fields:
         - molecule_chembl_id
@@ -101,7 +101,7 @@ steps:
         - molecule_structures
     - name: elasticsearch chembl target
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_version}_target.jsonl
+      destination: drug/chembl_target.jsonl
       index: chembl_${chembl_version}_target
       fields:
         - _metadata
@@ -190,13 +190,10 @@ steps:
       destination: expression/expression_hierarchy_curation.tsv
     - name: download tissue translation map
       source: https://raw.githubusercontent.com/opentargets/expression_hierarchy/master/process/map_with_efos.json
-      destination: expression/map_with_efos.jsonl
+      destination: expression/map_with_efos.json
     - name: download normal tissues
       source: https://www.proteinatlas.org/download/tsv/normal_tissue.tsv.zip
       destination: expression/normal_tissue.tsv.zip
-    - name: download_latest baseline expression
-      source: gs://otar000-evidence_input/BaselineExpression/json
-      destination: expression/baseline_expression.json.gz
     - name: download_latest baseline expression binned
       source: gs://atlas_baseline_expression/baseline_expression_binned
       destination: expression/baseline_expression_binned.tsv
@@ -215,19 +212,19 @@ steps:
   interaction:
     - name: download ensembl interactions grch38
       source: https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.GRCh38.${ensembl_version}.chr.gtf.gz
-      destination: interactions-inputs/Homo_sapiens.GRCh38.chr.gtf.gz
+      destination: interaction/Homo_sapiens.GRCh38.chr.gtf.gz
     - name: download human 9606 idmapping
       source: https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
-      destination: interactions-inputs/HUMAN_9606_idmapping.dat.gz
+      destination: interaction/HUMAN_9606_idmapping.dat.gz
     - name: download intact interactors
       source: https://ftp.ebi.ac.uk/pub/databases/intact/various/ot_graphdb/current/data/interactor_pair_interactions.json
-      destination: interactions-inputs/intact-interactors.json
+      destination: interaction/intact-interactors.json
     - name: download rna central
       source: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl.tsv
-      destination: interactions-inputs/rna_central_ensembl.tsv
+      destination: interaction/rna_central_ensembl.tsv
     - name: download_latest string interactions
       source: gs://otar001-core/stringInteractions
-      destination: interactions-inputs/string-interactions.txt.gz
+      destination: interaction/string-interactions.txt.gz
 
   l2g_prediction:
     - name: download model
@@ -237,7 +234,7 @@ steps:
   literature:
     - name: download literature
       source: https://ftp.ebi.ac.uk/pub/databases/pmc/DOI/PMID_PMCID_DOI.csv.gz
-      destination: literature-inputs/PMID_PMCID_DOI.csv.gz
+      destination: literature/PMID_PMCID_DOI.csv.gz
 
   openfda:
     - name: download blacklisted events
@@ -309,7 +306,7 @@ steps:
           destination: target/homologue/homologies/ncrna-${species}.tsv
     - name: elasticsearch chembl targets
       url: https://www.ebi.ac.uk/chembl/elk/es
-      destination: chembl-inputs/chembl_${chembl_version}_target.jsonl
+      destination: target/chembl/chembl_target.jsonl
       index: chembl_${chembl_version}_target
       fields:
         - _metadata
